@@ -213,11 +213,7 @@ export async function fetchSavedJobs(req, res) {
 }
 
 
-    //const application = await getSavedJobsService(user?.data[0]._id);
-    // if (application.success !== true) return res.status(403).json({ msg: application });
-    /*if (application.success === true)
-      return res.status(200).json(application.data);
-    res.status(503).json(application);*/
+  
 
     if (result?.success)
       return res.status(200).json(result.data);
@@ -461,104 +457,7 @@ export async function createReferralApplication(req, res) {
 }
 
 // oncampus 
-{/*export async function createOncampusApplication(req, res) {
-  const { jobId } = req.body;
-  const userId = req.user._id;
-  const userType = req.user?.userType;
 
-  console.log("🔥 createOncampusApplication HIT", {
-  userType: req.user.userType,
-  userId: req.user._id,
-  jobId: req.body.jobId,
-});
-
-
-  try {
-    let user;
-    switch (userType) {
-      case "college":
-        user = await getCollegeService(userId);
-        break;
-      case "company":
-        user = await getCompanyService(userId);
-        break;
-      case "employer":
-        user = await getEmployerService(req.user);
-        break;
-      default:
-        break;
-    }
-    if (user.data.length == 0 || !user || !jobId)
-      return res.status(404).json({ msg: "User or job not found!" });
-
-    const job = await JobPostingTable.findById(jobId)
-      .populate("companyPosted")
-      .populate("collegePosted");
-
-      console.log("🧾 JOB FOUND:", {
-  jobId: job?._id,
-  jobType: job?.jobType,
-  collegePosted: job?.collegePosted,
-  postedByUser: job?.postedByUser?._id,
-});
-
-    if (!job) return res.status(404).json({ msg: "Job not found" });
-
-    const jobType = job.jobType; // "On-campus" | "Off-campus" | "Pool-campus"
-
-
-
-    const application = await createApplicationService(
-      user.data[0]._id,
-      req.user.userType,
-      jobId,
-      "On-campus"
-    );
-    if (application.success === false)
-      return res.status(403).json({ msg: application.message });
-
-     // 🔔 NOTIFICATIONS
-    if (userType === "college" && job.companyPosted) {
-
-      console.log("🧠 NOTIFICATION CHECK:", {
-  userType,
-  hasCollegePosted: !!job.collegePosted,
-});
-
-      // College → Company
-      await notifyCompanyOnCollegeApply({
-        companyAuthId: job.companyPosted.authId,
-        collegeAuthId: userId,
-        collegeName:
-          user.data[0]?.collegeUniversityDetails?.collegeName ||
-          "A college",
-        jobTitle: job.jobTitle || "Job",
-        jobId: job._id,
-        jobType,
-      });
-    }
-
-    if (
-      (userType === "company" || userType === "employer") &&
-      job.collegePosted
-    ) {
-      // Company → College
-      await notifyCollegeOnCompanyApply({
-        collegeAuthId: job.collegePosted.authId,
-        companyAuthId: userId,
-        companyName: user.data[0]?.companyName || "A company",
-        jobTitle: job.jobTitle || "Campus job",
-        jobId: job._id,
-        jobType,
-      });
-    }
-
-    res.status(201).json(application);
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}*/}
 
 // oncampus -> notification done
 export async function createOncampusApplication(req, res) {
@@ -705,46 +604,7 @@ export async function createOncampusApplication(req, res) {
 
 
 // poolcampus
-{/*export async function createPoolcampusApplication(req, res) {
-  const { jobId } = req.body;
-  const userId = req.user._id;
-  const userType = req.user?.userType;
 
-  try {
-    let user;
-    switch (userType) {
-      case "college":
-        user = await getCollegeService(userId);
-        break;
-      case "company":
-        user = await getCompanyService(userId);
-        break;
-      case "employer":
-        user = await getEmployerService(req.user);
-        break;
-
-      default:
-        break;
-    }
-    if (user.data.length == 0 || !user || !jobId)
-      return res.status(404).json({ msg: "User or job not found!" });
-    // if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
-
-    const application = await createApplicationService(
-      user.data[0]._id,
-      req.user.userType,
-      jobId,
-      "Pool-campus"
-    );
-    if (application.success === false)
-      return res.status(403).json({ msg: application.message });
-
-    res.status(201).json(application);
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}*/}
 
 //pool campus notification done
 export async function createPoolcampusApplication(req, res) {
@@ -1011,51 +871,7 @@ export async function getApplicationsByJob(req, res) {
 }
 
 // oncampus and poolcampus
-{/*export async function getCollegeApplicationsByJob(req, res) {
-  const { jobId, jobType, targetStatus, isVisited } = req.query;
-  const userType = req.user.userType;
-  if (!jobId || !jobType || !targetStatus)
-    return res.status(404).json({ msg: "Job not found with given criteria!" });
 
-  try {
-    const response = await fetchCollegeSideApplicationsByJobService(
-      jobId,
-      jobType,
-      userType,
-      targetStatus,
-      isVisited
-    );
-
-    // to be implement -- sorting feature like ATS
-
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ Error: "Internal server error" });
-  }
-}*/}
-
-{/*export async function getCollegeApplicationsByJob(req, res) {
-  const { jobId, jobType, targetStatus, isVisited } = req.query;
-
-  if (!jobId || !jobType || !targetStatus) {
-    return res.status(404).json({ msg: "Job not found with given criteria!" });
-  }
-
-  try {
-    const response = await fetchCollegeApplicationsByJobService(
-      jobId,
-      jobType,
-      targetStatus,   // ✅ FIXED
-      isVisited
-    );
-
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ Error: "Internal server error" });
-  }
-}*/}
 
 //past new working for company prathmesh
 export async function getCollegeApplicationsByJob(req, res) { 
@@ -1417,93 +1233,7 @@ export async function rejectCompanyApplicationByCollege(req, res) {
 
 
 //incase below fails
-{/*export async function acceptApplicant(req, res) {
-  const { applicationId } = req.params;
-  const { jobRole } = req.body;
-  if (!applicationId)
-    return res.status(404).json({ msg: "Application not found!" });
-  try {
-    console.log("hello")
-    const response = await ChangeStatusService(applicationId, "Accepted");
 
-    if (response.success === true) {
-      // service -> send mail to candidate
-      let applicantMail;
-      switch (response.data.applicantType) {
-        case "student":
-        case "fresher":
-        case "professional":
-          applicantMail = await getCandidatEmail(response.data.applicant);
-          break;
-        case "college":
-          applicantMail = await getCollegeEmail(response.data.applicant);
-          break;
-        case "company":
-          applicantMail = await getCompanyEmail(response.data.applicant);
-          break;
-        default:
-          break;
-      }
-      if (applicantMail.success) {
-        sendStatusChangeEmail(
-          applicantMail.email,
-          response.data.currentStatus,
-          response.data._id,
-          jobRole 
-        ).catch(err => {
-          console.error("Email sending failed:", err.message);
-        });
-      }
-
-      // 🔔 SEND NOTIFICATION TO COLLEGE ON ACCEPT
-      if (response.data.applicantType === "college") {
-        try {
-          const companyResult = await getEmployerService(req.user);
-          if (!companyResult.success) return;
-        
-          const companyId = companyResult.data[0]._id;
-        
-          const companyProfile = await CompanyProfile.findById(companyId)
-            .select("companyDetails.companyName");
-        
-          const companyName =
-            companyProfile?.companyDetails?.companyName || "Company";
-        
-          // ✅ Convert CollegeOnboarding → Auth ID
-          const collegeOnboarding = await CollegeOnboarding.findById(
-            response.data.applicant
-          ).select("userId");
-        
-          if (!collegeOnboarding?.userId) {
-            console.error(
-              "❌ College auth userId missing for onboardingId:",
-              response.data.applicant
-            );
-            return;
-          }
-        
-          notifyOnApplicationStatusChange({
-            recipientId: collegeOnboarding.userId, // ✅ AUTH ID
-            senderId: req.user._id,                // company AUTH ID
-            companyName,
-            status: "Accepted",
-            applicationId: response.data._id
-          });
-        
-        } catch (err) {
-          console.error("Accept notification failed:", err);
-        }
-      }
-
-
-      return res.status(200).json(response);
-    }
-    return res.status(404).json(response);
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ Error: "Internal server error" });
-  }
-}*/}
 
 //important fixed
 export async function acceptApplicant(req, res) {
@@ -1723,53 +1453,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
   }
 }
 
-// schdule Interview
-{/*export async function scheduleInterview(req, res) {
-  const companyId = req.user._id;
-  const { applicantId, applicantType, jobRole } = req.body;
-  const { date, time, meetLink, message } = req.body.data;
-  // console.log("data", applicantId, applicantType, date, meetLink, jobRole);
-  if (!date || !time || !meetLink || !jobRole)
-    return res.status(404).json({ msg: "required fields missing" });
 
-  try {
-    const company = await getCompanyService(companyId);
-    if (!company) return res.status(404).json({ msg: "company not found!" });
-
-    if (company.success === true) {
-      const companyName = company.data[0].companyDetails.companyName;
-      let applicantMail;
-      switch (applicantType) {
-        case "student":
-        case "fresher":
-        case "professional":
-          applicantMail = await getCandidatEmail(applicantId);
-          break;
-        case "college":
-          applicantMail = await getCollegeEmail(applicantId);
-          break;
-        case "company":
-          applicantMail = await getCompanyEmail(applicantId);
-          break;
-        default:
-          return res.status(404).json({ msg: "Invalid User!" });
-      }
-      const response = await sendScheduledInterviewEmail(
-        applicantMail.email,
-        date,
-        time,
-        message,
-        meetLink,
-        jobRole,
-        companyName
-      );
-      res.status(200).json({ success: true, msg: "Interview Scheduled!" });
-    }
-  } catch (error) {
-    console.log("Error: ", error);
-    res.status(500).json({ Error: "Internal server error" });
-  }
-}*/}
 
 //Prathmesh interview schedule fix
 export async function scheduleInterview(req, res) {
@@ -2072,43 +1756,7 @@ export async function submitAlternateDates(req, res) {
     });
   }
 }
-// controllers/applicationController.js
 
-
-// export const updateApplicationStatus = async (req, res) => {
-//     try {
-//         const { applicationId } = req.params;
-//         const { status } = req.body; // "Accepted" or "Rejected"
-
-//         // Basic validation
-//         if (!["Accepted", "Rejected"].includes(status)) {
-//             return res.status(400).json({ 
-//                 success: false, 
-//                 message: "Status must be either 'Accepted' or 'Rejected'" 
-//             });
-//         }
-
-//         const updatedApplication = await Application.findByIdAndUpdate(
-//             applicationId,
-//             { currentStatus: status },
-//             { new: true }
-//         );
-
-//         if (!updatedApplication) {
-//             return res.status(404).json({ success: false, message: "Application not found" });
-//         }
-
-//         res.status(200).json({
-//             success: true,
-//             message: `Status updated to ${status}`,
-//             data: updatedApplication
-//         });
-//     } catch (error) {
-//         res.status(500).json({ success: false, error: error.message });
-//     }
-// };
-
-// controllers/applicationController.js
 
 export const updateApplicationStatus = async (req, res) => {
   const { applicationId } = req.params;
