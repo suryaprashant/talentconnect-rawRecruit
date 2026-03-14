@@ -635,7 +635,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                                 Saved
                               </span>
                             </div>
-
+{console.log(job)}
                             {roles.length > 0 && (
                               <div className="flex flex-wrap gap-2 mt-3">
                                 {roles.slice(0, 3).map((role, index) => (

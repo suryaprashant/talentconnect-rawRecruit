@@ -116,6 +116,7 @@ export async function getSavedJobsService(userId) {
     const applications = await Application.find({
       currentStatus: "Saved",
       applicant: userId,
+      
     })
     .populate({
       path: "job",
@@ -273,6 +274,14 @@ export async function createApplicationService({
   jobId,
   jobType,
 }) {
+
+  console.log("🔍 createApplicationService called with:", {
+    appliedByUserId,
+    appliedByType,
+    appliedForCompanyId,
+    jobId,
+    jobType,
+  });
   try {
     // 1️⃣ Decide applicant
     let applicantId;
@@ -306,6 +315,7 @@ export async function createApplicationService({
     const match = {
       job: jobId,
       jobType,
+       applicant: applicantId,
     };
 
     if (appliedForCompanyId) {
