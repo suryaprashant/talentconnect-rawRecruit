@@ -23,6 +23,10 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { UnsaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import { 
+  ApplyForOncampusOppurtunity, 
+  ApplyForPoolcampusOppurtunity 
+} from '@/lib/Company_AxiosInstance';
 
 // Utility functions
 const splitIntoMeaningfulPoints = (text) => {
@@ -178,18 +182,89 @@ const CompanyJobDetail = () => {
     }
   };
 
-  const handleApply = async () => {
-    try {
-      setIsApplying(true);
-      // Your apply API call here
-      toast.success("Applied successfully!");
-    } catch (err) {
-      console.error("Apply error:", err);
-      toast.error("Something went wrong");
-    } finally {
+// const handleApply = async () => {
+//   try {
+//     setIsApplying(true);
+
+//     // Normalize the job type to handle various string formats
+//     const rawType = job?.jobType || "";
+//     const normalizedType = rawType.toLowerCase().replace(/[^a-z]/g, ""); 
+
+//     let response;
+
+//     if (normalizedType === "oncampus") {
+//       response = await ApplyForOncampusOppurtunity(job._id);
+//     } else if (normalizedType === "poolcampus") {
+//       response = await ApplyForPoolcampusOppurtunity(job._id);
+//     } else {
+//       console.warn("Unknown job type detected:", rawType);
+//       toast.error("Invalid opportunity type");
+//       setIsApplying(false);
+//       return;
+//     }
+
+//     if (response?.data?.success) {
+//       toast.success(user?.role === 'company' ? "Invitation Accepted" : "Applied Successfully");
+      
+//       // Update local state so the 'Apply' button hides immediately
+//       setJob(prev => ({
+//         ...prev,
+//         isApplied: true
+//       }));
+//     } else {
+//       toast.error(response?.data?.message || "Failed to process request");
+//     }
+//   } catch (err) {
+//     console.error("Application Error:", err);
+//     toast.error(err.response?.data?.message || "Something went wrong");
+//   } finally {
+//     setIsApplying(false);
+//   }
+// };
+
+const handleApply = async () => {
+  try {
+    setIsApplying(true);
+
+    const rawType = job?.jobType || "";
+    const normalizedType = rawType.toLowerCase().replace(/[^a-z]/g, "");
+
+    let response;
+
+    if (normalizedType === "oncampus") {
+      response = await ApplyForOncampusOppurtunity(job._id);
+    } else if (normalizedType === "poolcampus") {
+      response = await ApplyForPoolcampusOppurtunity(job._id);
+    } else {
+      console.warn("Unknown job type detected:", rawType);
+      toast.error("Invalid opportunity type");
       setIsApplying(false);
+      return;
     }
-  };
+
+    if (response?.data?.success) {
+      toast.success(user?.role === 'company' ? "Invitation Accepted" : "Applied Successfully");
+
+      // ✅ Remove from saved jobs after successful application
+      try {
+        await UnsaveOppurtunity(job._id);
+      } catch (unsaveErr) {
+        // Non-blocking — application already succeeded
+        console.warn("Unsave after apply failed:", unsaveErr);
+      }
+
+      // Navigate back so the saved list refreshes without this job
+      setTimeout(() => handleBackToList(), 1000);
+    } else {
+      toast.error(response?.data?.message || "Failed to process request");
+    }
+  } catch (err) {
+    console.error("Application Error:", err);
+    toast.error(err.response?.data?.message || "Something went wrong");
+  } finally {
+    setIsApplying(false);
+  }
+};
 
   if (loading) {
     return (

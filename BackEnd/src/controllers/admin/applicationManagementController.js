@@ -1,6 +1,7 @@
 import { getAll, getTotalJobApplicationSubmited } from "../../services/applicationService.js";
 import Application from "../../models/applicationModel.js";
 import { fetchReferralApplicationsService, getReferralApplicationsForAdminService, updateReferralApplicationStatusService } from "../../services/adminService.js";
+import { notifyCandidateOnReferralApproval } from "../../services/notificationService.js";
 
 export const getApplicationOverView = async (req, res) => {
   try {
@@ -395,6 +396,15 @@ export const updateReferralApplicationStatus = async (req, res) => {
     const response = await updateReferralApplicationStatusService({
       applicationId,
       action,
+    });
+
+    // 🔔 Notify candidate
+    await notifyCandidateOnReferralApproval({
+      applicationId: response._id,
+      applicantProfileId: response.applicant,
+      applicantType: response.applicantType,
+      action,
+      adminAuthId: req.user._id
     });
 
     return res.status(200).json({

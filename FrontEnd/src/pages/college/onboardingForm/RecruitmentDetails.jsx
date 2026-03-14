@@ -382,24 +382,64 @@ export default function RecruitmentDetails({
     fetchDegrees();
   }, []);
 
-  // Fetch ALL streams across all degrees — for Popular Courses field
+  //fetch streams based on degrees
   useEffect(() => {
-    const allIds = Object.values(degreeIdMap);
-    if (allIds.length === 0) return;
-    const fetchAllStreams = async () => {
+    const selectedPrograms = initializeArrayField("programsOffered");
+
+    if (selectedPrograms.length === 0) {
+      setAllStreamsOptions([]);
+      return;
+    }
+
+    const ids = selectedPrograms
+      .map(p => degreeIdMap[p])
+      .filter(Boolean);
+
+    if (ids.length === 0) return;
+
+    const fetchStreams = async () => {
       setIsLoadingAllStreams(true);
+
       try {
-        const results = await Promise.all(allIds.map(id => getMasterDataByType("STREAM", id)));
-        const all = results.flatMap(r => (r?.data?.data || r?.data || []).map(item => item.value));
-        setAllStreamsOptions([...new Set(all)]);
+        const results = await Promise.all(
+          ids.map(id => getMasterDataByType("STREAM", id))
+        );
+
+        const streams = results.flatMap(res =>
+          (res?.data?.data || []).map(item => item.value)
+        );
+
+        setAllStreamsOptions([...new Set(streams)]);
       } catch (err) {
-        console.error("Error fetching all streams", err);
+        console.error("Error fetching streams", err);
       } finally {
         setIsLoadingAllStreams(false);
       }
     };
-    fetchAllStreams();
-  }, [JSON.stringify(degreeIdMap)]);
+
+    fetchStreams();
+
+  }, [JSON.stringify(formData.programsOffered), JSON.stringify(degreeIdMap)]);
+
+  // Fetch ALL streams across all degrees — for Popular Courses field
+  // useEffect(() => {
+  //   const allIds = Object.values(degreeIdMap);
+  //   if (allIds.length === 0) return;
+  //   const fetchAllStreams = async () => {
+  //     setIsLoadingAllStreams(true);
+  //     try {
+  //       const results = await Promise.all(allIds.map(id => getMasterDataByType("STREAM", id)));
+  //       const all = results.flatMap(r => (r?.data?.data || r?.data || []).map(item => item.value));
+  //       setAllStreamsOptions([...new Set(all)]);
+  //     } catch (err) {
+  //       console.error("Error fetching all streams", err);
+  //     } finally {
+  //       setIsLoadingAllStreams(false);
+  //     }
+  //   };
+  //   fetchAllStreams();
+  // }, [JSON.stringify(degreeIdMap)]);
+
   const selectedDegrees = initializeArrayField('degrees');
   const selectedDegreesKey = selectedDegrees.join(',');
 
@@ -805,7 +845,7 @@ export default function RecruitmentDetails({
               )}
 
               {/* Degree — dynamic from DB, multi-select */}
-              {renderDropdown(
+              {/* {renderDropdown(
                 'degree',
                 'degrees',
                 'Eligible Degrees',
@@ -817,7 +857,7 @@ export default function RecruitmentDetails({
                 }
               )}
 
-              {/* Stream — dynamic from DB, depends on selected degrees */}
+              {/* Stream — dynamic from DB, depends on selected degrees 
               {renderDropdown(
                 'stream',
                 'studentStreams',
@@ -829,7 +869,7 @@ export default function RecruitmentDetails({
                   isDisabled: selectedDegrees.length === 0,
                   onAddCustom: handleAddCustomStream,
                 }
-              )}
+              )} */}
 
               {/* Recruitment Services */}
               <div className="border-t border-gray-200/50 pt-8">
