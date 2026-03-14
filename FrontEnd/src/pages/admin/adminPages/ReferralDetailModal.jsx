@@ -8,12 +8,13 @@ import {
   Target, Info, XCircle, Loader2
 } from 'lucide-react';
 import { updateReferralStatus } from '@/lib/Admin_AxiosInstance';
+import ReferrerDetailModal from './ReferrerDetailModal';
 
 const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
   // --- 1. HOOKS (Must always be at the top) ---
   const modalContentRef = useRef(null);
   const [loadingAction, setLoadingAction] = useState(null);
-
+  const [isReferrerModalOpen, setIsReferrerModalOpen] = useState(false);
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
@@ -102,9 +103,9 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
             <MetricBox label="Openings" value={openings} icon={<Users size={12}/>} />
             <MetricBox label="Employment" value={job?.employmentType?.[0]} icon={<Clock size={12}/>} />
             <MetricBox label="Work Mode" value={workMode} icon={<Laptop size={12}/>} />
-            <div className="bg-indigo-600 rounded-lg p-3 text-white">
-              <p className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Package</p>
-              <p className="text-sm font-bold truncate">{ctc}</p>
+            <div className="bg-indigo-600 rounded-lg p-3 ">
+              <p className="text-[10px] font-medium  uppercase text-white tracking-wider">Package</p>
+              <p className="text-sm text-white font-bold truncate">{ctc}</p>
             </div>
           </div>
 
@@ -158,7 +159,10 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
                 </div>
               </section>
 
-              <section>
+              <section
+                className="cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition"
+                onClick={() => setIsReferrerModalOpen(true)}
+              >
                 <SectionTitle title="Referrer" icon={<UserCircle size={14}/>} />
                 <div className="flex items-center gap-3 mt-3">
                   <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
@@ -178,6 +182,9 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
                     <ShieldCheck size={12} /> Verified
                   </div>
                 </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Click to view full profile
+                </p>
               </section>
             </div>
           </div>
@@ -204,6 +211,11 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
           </button>
         </div>
       </div>
+      <ReferrerDetailModal
+        referrer={referrer}
+        isOpen={isReferrerModalOpen}
+        onClose={() => setIsReferrerModalOpen(false)}
+      />
     </div>,
     document.body
   );

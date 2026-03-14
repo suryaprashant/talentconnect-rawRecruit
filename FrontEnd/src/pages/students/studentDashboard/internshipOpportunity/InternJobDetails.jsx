@@ -613,7 +613,7 @@ const InternJobDetails = () => {
         {/* Internship Details */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Internship Details
+            Internship Details Hii
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">

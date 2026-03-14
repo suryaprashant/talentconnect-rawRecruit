@@ -1083,7 +1083,7 @@ const handleSelectOrAdd = async (skillName) => {
                     </div>
 
                     {/* Work Authorization */}
-                    <div>
+                    {/* <div>
                       <label htmlFor="workAuthorization" className="block font-medium mb-2 text-sm text-gray-700">
                         Work Authorization Requirement
                       </label>
@@ -1102,7 +1102,7 @@ const handleSelectOrAdd = async (skillName) => {
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Tags */}

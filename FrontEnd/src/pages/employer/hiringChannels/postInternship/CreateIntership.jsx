@@ -86,6 +86,57 @@ export default function EmployerPostIntership() {
   const studentStreamsRef = useRef(null);
   const tagsRef = useRef(null);
 
+
+  const [skillsOptions, setSkillsOptions] = useState([]);
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`
+        );
+
+        // const skillNames = data.map(item => item.skills);
+        const skillNames = (data.data || data).map(item => item.skills);
+        setSkillsOptions(skillNames);
+
+      } catch (err) {
+        console.error("Error fetching skills", err);
+      }
+    };
+
+    fetchSkills();
+  }, []);
+
+  const addNewSkill = async () => {
+    const trimmed = customSkill.trim();
+    if (!trimmed) return;
+
+    if (skillsOptions.includes(trimmed)) {
+      toast.error("Skill already exists");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`,
+        { skills: trimmed }
+      );
+
+      const newSkill = data.skills;
+
+      setSkillsOptions(prev => [...prev, newSkill]);
+
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, newSkill]
+      }));
+
+      setCustomSkill('');
+
+    } catch (err) {
+      toast.error("Skill already exists or failed to add");
+    }
+  };
   // ─── Fetch job roles on mount ──────────────────────────────────────────────
     useEffect(() => {
       const fetchJobRoles = async () => {
@@ -811,7 +862,8 @@ export default function EmployerPostIntership() {
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') {
                                     e.preventDefault();
-                                    handleCustomAdd('skills', customSkill, setCustomSkill);
+                                    // handleCustomAdd('skills', customSkill, setCustomSkill);
+                                    addNewSkill()
                                   }
                                 }}
                                 className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
@@ -820,7 +872,8 @@ export default function EmployerPostIntership() {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleCustomAdd('skills', customSkill, setCustomSkill);
+                                  // handleCustomAdd('skills', customSkill, setCustomSkill);
+                                  addNewSkill()
                                 }}
                                 className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
@@ -830,7 +883,7 @@ export default function EmployerPostIntership() {
                           </div>
                           
                           <div className="overflow-y-auto max-h-48">
-                            {allSkills.map((skill, index) => (
+                            {skillsOptions.map((skill, index) => (
                               <div
                                 key={index}
                                 onClick={() => handleMultiSelect('skills', skill)}
@@ -960,7 +1013,7 @@ export default function EmployerPostIntership() {
                   </div>
 
                   {/* Work Authorization */}
-                  <div>
+                  {/* <div>
                     <label htmlFor="workAuthorization" className="block font-medium mb-2 text-sm text-gray-700">
                       Work Authorization Requirement
                     </label>
@@ -979,7 +1032,7 @@ export default function EmployerPostIntership() {
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Tags */}
