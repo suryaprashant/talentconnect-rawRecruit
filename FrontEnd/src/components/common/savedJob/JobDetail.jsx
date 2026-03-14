@@ -453,7 +453,8 @@ const normalizeJobType = (jobType) => {
 };
 
 
-const resolveApplyApi = ({ userType, jobType }) => {
+const  resolveApplyApi = ({ userType, jobType }) => {
+  console.log('usertype',userType)
   const normalizedJobType = normalizeJobType(jobType);
   const normalizedUserType = userType?.toLowerCase();
 
@@ -554,60 +555,108 @@ const UnifiedJobDetail = () => {
     }
   };
 
+  // const handleApply = async () => {
+  //   console.log('clicked for collge')
+  //   try {
+  //     if (!userType) {
+  //       toast.error("Please login to apply");
+  //       return;
+  //     }
+
+  //     const applyApi = resolveApplyApi({
+  //       userType,
+  //       jobType: job.jobType,
+  //     });
+
+  //     console.log("DEBUG APPLY →", {
+  //       userType,
+  //       jobType: job.jobType,
+  //       fullJob: job,
+  //     });
+
+
+  //     if (!applyApi) {
+  //       toast.error("You are not allowed to apply for this opportunity");
+  //       return;
+  //     }
+
+  //     setIsApplying(true);
+
+
+  //     // internship uses internshipId, others use jobId
+  //     const payloadId =
+  //       job.jobType === "internship" ? job._id : job._id;
+
+  //     const response = await applyApi(payloadId);
+
+  //     if (response?.data?.success) {
+  //       toast.success("Applied successfully 🎉");
+
+  //       // optional: update UI status immediately
+  //       setJob(prev => ({
+  //         ...prev,
+  //         currentStatus: "Applied",
+  //       }));
+  //     } else {
+  //       toast.error(
+  //         response?.response?.data?.message || "Failed to apply"
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error("Apply error:", err);
+  //     toast.error("Something went wrong");
+  //   } finally {
+  //     setIsApplying(false);
+  //   }
+  // };
+
   const handleApply = async () => {
-    try {
-      if (!userType) {
-        toast.error("Please login to apply");
-        return;
-      }
-
-      const applyApi = resolveApplyApi({
-        userType,
-        jobType: job.jobType,
-      });
-
-      console.log("DEBUG APPLY →", {
-        userType,
-        jobType: job.jobType,
-        fullJob: job,
-      });
-
-
-      if (!applyApi) {
-        toast.error("You are not allowed to apply for this opportunity");
-        return;
-      }
-
-      setIsApplying(true);
-
-
-      // internship uses internshipId, others use jobId
-      const payloadId =
-        job.jobType === "internship" ? job._id : job._id;
-
-      const response = await applyApi(payloadId);
-
-      if (response?.data?.success) {
-        toast.success("Applied successfully 🎉");
-
-        // optional: update UI status immediately
-        setJob(prev => ({
-          ...prev,
-          currentStatus: "Applied",
-        }));
-      } else {
-        toast.error(
-          response?.response?.data?.message || "Failed to apply"
-        );
-      }
-    } catch (err) {
-      console.error("Apply error:", err);
-      toast.error("Something went wrong");
-    } finally {
-      setIsApplying(false);
+  try {
+    if (!userType) {
+      toast.error("Please login to apply");
+      return;
     }
-  };
 
+    const applyApi = resolveApplyApi({
+      userType,
+      jobType: job.jobType,
+    });
+
+    if (!applyApi) {
+      toast.error("You are not allowed to apply for this opportunity");
+      return;
+    }
+
+    setIsApplying(true);
+
+    const response = await applyApi(job._id);
+
+    if (response?.data?.success) {
+      toast.success("Applied successfully 🎉");
+
+      // ✅ Remove from saved jobs after successful application
+      try {
+        await UnsaveOppurtunity(job._id);
+      } catch (unsaveErr) {
+        // Non-blocking — application already succeeded
+        console.warn("Unsave after apply failed:", unsaveErr);
+      }
+
+      // Navigate back so the saved list refreshes without this job
+      setTimeout(() => handleBackToList(), 1000);
+
+    } else {
+      toast.error(
+        response?.response?.data?.message || "Failed to apply"
+      );
+    }
+  } catch (err) {
+    console.error("Apply error:", err);
+    toast.error("Something went wrong");
+  } finally {
+    setIsApplying(false);
+  }
+};
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
