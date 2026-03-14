@@ -445,3 +445,67 @@ export const notifyOnNewChatMessage = async ({
     console.error("Chat notification error:", err.message);
   }
 };
+
+export const notifyCandidateOnReferralApproval = async ({
+  applicationId,
+  applicantProfileId,
+  applicantType,
+  action,
+  adminAuthId
+}) => {
+  try {
+    let candidateAuthId = null;
+
+    // 🔹 Resolve candidate AUTH ID (who applied)
+    if (
+      applicantType === "student" ||
+      applicantType === "fresher" ||
+      applicantType === "professional"
+    ) {
+      const onboarding = await Onboarding.findById(applicantProfileId)
+        .select("userId");
+
+      candidateAuthId = onboarding?.userId;
+    }
+
+    if (!candidateAuthId) {
+      console.error("❌ Candidate authId not found:", applicantProfileId);
+      return;
+    }
+
+    // 🔹 Resolve company name from job poster onboarding
+    const application = await Application.findById(applicationId)
+      .populate("job");
+      
+    let companyName = "the company";
+      
+    if (application?.job?.candidatePosted) {
+    
+      const jobPosterOnboarding = await Onboarding.findById(
+        application.job.candidatePosted
+      ).select("currentCompany");
+    
+      if (jobPosterOnboarding?.currentCompany) {
+        companyName = jobPosterOnboarding.currentCompany;
+      }
+    }
+
+    // 🔹 Build notification message
+    const message =
+      action === "Approved"
+        ? `Your referral application has been approved by admin for ${companyName}`
+        : `Your referral application has been rejected by admin for ${companyName}`;
+
+    await sendNotification({
+      recipientId: candidateAuthId,
+      senderId: adminAuthId,
+      type: `REFERRAL_APPLICATION_${action.toUpperCase()}`,
+      message,
+      referenceId: applicationId,
+      jobType: "Referral",
+    });
+
+  } catch (error) {
+    console.error("Referral approval notification failed:", error.message);
+  }
+};

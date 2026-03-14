@@ -32,7 +32,8 @@ const notificationSchema = new mongoose.Schema({
     "JOB_REGISTRATION",
     "INTERVIEW_SCHEDULED",
     "ALTERNATE_DATE_REQUEST",
-    "NEW_CHAT_MESSAGE"
+    "NEW_CHAT_MESSAGE",
+    "REFERRAL_APPLICATION_APPROVED"
   ],
         required: true,
     },
