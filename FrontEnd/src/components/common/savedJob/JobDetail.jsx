@@ -246,6 +246,7 @@ import {
 import {
   ApplyForOppurtunity,
   ApplyForInternship,
+  ApplyForReferral,
 } from "@/lib/User_AxiosInstance";
 
 
@@ -440,14 +441,14 @@ const normalizeJobData = (savedJob, userType) => {
 const normalizeJobType = (jobType) => {
   if (!jobType) return null;
 
-  const type = jobType
-    .toLowerCase()
-    .replace(/[\s-_]/g, ""); // remove space, dash, underscore
+  const type = jobType.toLowerCase().replace(/[\s-_]/g, "")
+   
 
   if (type.includes("oncampus")) return "oncampus";
   if (type.includes("poolcampus")) return "poolcampus";
   if (type.includes("offcampus")) return "offcampus";
   if (type.includes("intern")) return "internship";
+  if (type.includes("referral")) return "referral";
 
   return null;
 };
@@ -476,6 +477,10 @@ const  resolveApplyApi = ({ userType, jobType }) => {
   if (["student", "fresher"].includes(normalizedUserType)) {
     if (normalizedJobType === "offcampus") return ApplyForOppurtunity;
     if (normalizedJobType === "internship") return ApplyForInternship;
+  }
+
+  if(normalizedUserType === "professional"){
+    return ApplyForReferral;
   }
 
   return null;
@@ -621,7 +626,7 @@ const UnifiedJobDetail = () => {
       userType,
       jobType: job.jobType,
     });
-
+    console.log(applyApi)
     if (!applyApi) {
       toast.error("You are not allowed to apply for this opportunity");
       return;

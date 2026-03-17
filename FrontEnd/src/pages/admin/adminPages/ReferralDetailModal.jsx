@@ -158,7 +158,7 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
                   </div>
                 </div>
               </section>
-
+               {console.log(referrer)}
               <section
                 className="cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition"
                 onClick={() => setIsReferrerModalOpen(true)}

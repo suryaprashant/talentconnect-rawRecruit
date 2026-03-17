@@ -323,6 +323,7 @@ function JobManagementApplication() {
             </div>
         ) : (
             currentJobs.map(job => {
+                console.log(job)
                 const jobId = job._id || job.id;
                 const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : 'N/A';
                 const jobLocation = Array.isArray(job.location) ?
@@ -333,6 +334,10 @@ function JobManagementApplication() {
                 const applications = job.applicationCount || job.applications || 0;
                 const jobStatus = job.jobStatus || 'Unknown';
                 const collegeId = job.collegeId || job.college?._id || jobId;
+                const jobAddress = job.collegeAddress;
+const addressString = jobAddress?.city 
+    ? `${jobAddress.city}, ${jobAddress.state}` 
+    : (Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A');
                 
                 const isViewDisabled = false;
                 
@@ -350,7 +355,8 @@ function JobManagementApplication() {
                                     </h3>
                                     <div className="flex items-center gap-2 mt-1">
                                         <MapPin className="h-3 w-3 text-gray-400" />
-                                        <span className="text-sm text-gray-500 capitalize">{jobLocation}</span>
+                                        <span className="text-sm text-gray-500 capitalize">{}</span>
+                                       
                                     </div>
                                 </div>
                             </div>
