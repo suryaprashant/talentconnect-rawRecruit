@@ -272,6 +272,9 @@ import ReferralLayout from "./components/student/professionaDashboard/referralJo
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
 import SaveJob from "./components/common/savedJob/JobDetail"
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DeleteAccount from "./pages/DeleteAccount";
+
 
 // Create query client
 const queryClient = new QueryClient();
@@ -286,9 +289,9 @@ function AppRoutes() {
       <Route path="/userselection" element={<RoleSelection />} />
       <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
+       <Route path="/privacypolicy" element={<PrivacyPolicy />} />
 
-
-
+<Route path="/delete" element={<DeleteAccount />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />

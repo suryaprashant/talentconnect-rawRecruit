@@ -71,7 +71,7 @@ const App = () => {
   const [isCareersModalOpen, setIsCareersModalOpen] = useState(false);
   const [isHelpCenterModalOpen, setIsHelpCenterModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState(null);
   const [featureModalConfig, setFeatureModalConfig] = useState(null);
@@ -1924,10 +1924,18 @@ const ArrowRightIcon = () => (
                   </li>
                   <li>
                     <button
-                      onClick={() => setIsPrivacyModalOpen(true)}
+                    onClick={() => navigate("/privacypolicy")}
                       className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
                     >
                       Privacy
+                    </button>
+                  </li>
+                   <li>
+                    <button
+                    onClick={() => navigate("/delete")}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Delete your Account
                     </button>
                   </li>
                 </ul>
@@ -1976,10 +1984,7 @@ const ArrowRightIcon = () => (
           onClose={() => setIsContactModalOpen(false)}
         />
 
-        <PrivacyModal
-          isOpen={isPrivacyModalOpen}
-          onClose={() => setIsPrivacyModalOpen(false)}
-        />
+      
 
         {/* Keep existing Terms Modal for "Privacy & Terms" link */}
         <TermsModal

@@ -1,6 +1,6 @@
 // src/routes/auth.js
 import express from 'express';
-import { signup, login, logout,getCountOfTotalUsers, sendSignupOtp, getMe, getUserById } from '../controllers/authentication/manualAuthController.js';
+import { signup, login, logout,getCountOfTotalUsers, sendSignupOtp, getMe, getUserById ,deleteAccount} from '../controllers/authentication/manualAuthController.js';
 import { googleAuth } from '../controllers/authentication/googleAuthController.js';
 import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/linkedInAuthController.js';
 import { requestPasswordReset, resetPassword, validateResetToken } from '../controllers/authentication/forgotPasswordController.js';
@@ -15,6 +15,7 @@ const router = express.Router();
 router.get("/me", optionalAuth, getMe);
 router.post('/signup', signup);
 router.post('/login', login);
+router.delete('/delete',secureRoute, deleteAccount);
 router.post('/google', googleAuth);
 router.get('/linkedin', redirectToLinkedIn);
 router.get('/linkedin/callback', handleLinkedInCallback)
