@@ -110,7 +110,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             // --- NEW: Lookup College Details ---
             {
                 $lookup: {
-                    from: "collegeprofiles", // Ensure this matches your MongoDB collection name
+                    from:  "collegeonboardings", // Ensure this matches your MongoDB collection name
                     localField: "collegePosted",
                     foreignField: "_id",
                     as: "collegeInfo"
@@ -129,12 +129,13 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             {
                 $addFields: {
                     // Extracting the specific address fields you requested
-                    collegeAddress: {
-                        location: "$collegeInfo.collegeDetails.collegeLocation",
-                        city: "$collegeInfo.collegeDetails.city",
-                        state: "$collegeInfo.collegeDetails.state",
-                        pincode: "$collegeInfo.collegeDetails.pincode"
-                    },
+                 // FIXED
+collegeAddress: {
+    location: "$collegeInfo.collegeUniversityDetails.collegeLocation",
+    city: "$collegeInfo.collegeUniversityDetails.city",
+    state: "$collegeInfo.collegeUniversityDetails.state",
+    pincode: "$collegeInfo.collegeUniversityDetails.pincode"
+},
                     applicationCount: {
                         $size: {
                             $filter: {
