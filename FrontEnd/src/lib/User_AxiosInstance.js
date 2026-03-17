@@ -22,6 +22,14 @@ export function viewed(jobId) {
     .catch(error => error);
 }
 
+// Change this in User_AxiosInstance.js
+export const deleteAccountApi = async (email, password) => {
+  const response = await axiosClient.delete("/api/auth/delete", {
+    data: { email, password } // DELETE requests need 'data' property in axios
+  });
+  return response.data;
+};
+
 export function getJobDetails(jobId) {
   return axiosClient.get(`/jobs/jobDetails/${jobId}`)
     .then(response => response)

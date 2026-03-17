@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
 import Otp from "../../models/otpModel.js";
 import StudentProfile from '../../models/studentProfileModel.js';
@@ -127,6 +128,66 @@ export const logout = async (req, res) => {
   } catch (error) {
     console.error('Logout Error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+
+export const deleteAccount = async (req, res) => {
+  console.log('here')
+    try {
+   if (!req.user || !req.user._id) {
+  return res.status(401).json({ message: "Session expired, please login again" });
+}
+
+    
+   const userId = req.user._id;
+    const { password } = req.body;
+
+    const user = await Auth.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    // password check only for manual users
+    if (user.authProvider === "manual") {
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res.status(401).json({
+          message: "Invalid password"
+        });
+      }
+    }
+
+    await Promise.all([
+      StudentProfile.deleteOne({ userId }),
+      FresherProfile.deleteOne({ userId }),
+      CollegeProfile.deleteOne({ userId })
+    ]);
+
+    await Auth.deleteOne({ _id: userId });
+
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      path: "/"
+    });
+
+    res.status(200).json({
+      message: "Account deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Delete Account Error:", error);
+
+    res.status(500).json({
+      message: "Internal Server Error"
+    });
   }
 };
 

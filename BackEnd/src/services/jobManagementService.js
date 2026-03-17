@@ -16,30 +16,89 @@ export async function getOffCampusJobsService(companyId) {
 }
 
 
-export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited) => {
-    let target = "";
+// export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited) => {
+//     let target = "";
 
-    switch (key) {
-        case "campus-placement":
-            target = "Applied";
-            break;
-        case "on-campus-opportunities":
-            target = "Shortlisted";
-            break;
-        case "poolCampus-placement":
-            target = "Applied";
-            break;
-        case "pool-campus-opportunities":
-            target = "Shortlisted";
-            break;    
-        case "poolcampus":
-            target = "Shortlisted";
-            break;
-        default:
-            target = "";
-            break;
-    }
+//     switch (key) {
+//         case "campus-placement":
+//             target = "Applied";
+//             break;
+//         case "on-campus-opportunities":
+//             target = "Shortlisted";
+//             break;
+//         case "poolCampus-placement":
+//             target = "Applied";
+//             break;
+//         case "pool-campus-opportunities":
+//             target = "Shortlisted";
+//             break;    
+//         case "poolcampus":
+//             target = "Shortlisted";
+//             break;
+//         default:
+//             target = "";
+//             break;
+//     }
     
+//     try {
+//         const response = await JobPostingTable.aggregate([
+//             {
+//                 $match: {
+//                     collegePosted: new mongoose.Types.ObjectId(collegeId),
+//                     jobType: jobType
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "applications",
+//                     localField: "_id",
+//                     foreignField: "job",
+//                     as: "jobApplications"
+//                 }
+//             },
+//             {
+//                 $addFields: {
+//                     applicationCount: {
+//                         $size: {
+//                             $filter: {
+//                                 input: "$jobApplications",
+//                                 as: "application",
+//                                 cond: { 
+//                                     $and: [
+//                                         { $eq: ["$$application.currentStatus", target] },
+//                                         { $eq: ["$$application.jobType", jobType] },
+//                                         { $eq: ["$$application.isVisited", false] },
+//                                     ]
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     jobApplications: 0
+//                 }
+//             }
+//         ]);
+
+//         return { success: true, response };
+//     } catch (error) {
+//         throw new Error("Failed to fetch jobs with applied application counts");
+//     }
+// };
+
+export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited) => {
+    const targetMap = {
+        "campus-placement": "Applied",
+        "poolCampus-placement": "Applied",
+        "on-campus-opportunities": "Shortlisted",
+        "pool-campus-opportunities": "Shortlisted",
+        "poolcampus": "Shortlisted"
+    };
+
+    const target = targetMap[key] || "";
+
     try {
         const response = await JobPostingTable.aggregate([
             {
@@ -48,6 +107,17 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
                     jobType: jobType
                 }
             },
+            // --- NEW: Lookup College Details ---
+            {
+                $lookup: {
+                    from: "collegeprofiles", // Ensure this matches your MongoDB collection name
+                    localField: "collegePosted",
+                    foreignField: "_id",
+                    as: "collegeInfo"
+                }
+            },
+            { $unwind: { path: "$collegeInfo", preserveNullAndEmptyArrays: true } },
+            // ----------------------------------
             {
                 $lookup: {
                     from: "applications",
@@ -58,6 +128,13 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             },
             {
                 $addFields: {
+                    // Extracting the specific address fields you requested
+                    collegeAddress: {
+                        location: "$collegeInfo.collegeDetails.collegeLocation",
+                        city: "$collegeInfo.collegeDetails.city",
+                        state: "$collegeInfo.collegeDetails.state",
+                        pincode: "$collegeInfo.collegeDetails.pincode"
+                    },
                     applicationCount: {
                         $size: {
                             $filter: {
@@ -66,8 +143,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
                                 cond: { 
                                     $and: [
                                         { $eq: ["$$application.currentStatus", target] },
-                                        { $eq: ["$$application.jobType", jobType] },
-                                        { $eq: ["$$application.isVisited", false] },
+                                        { $eq: ["$$application.isVisited", isVisited === 'true' || isVisited === true] },
                                     ]
                                 }
                             }
@@ -77,14 +153,16 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             },
             {
                 $project: {
-                    jobApplications: 0
+                    jobApplications: 0,
+                    collegeInfo: 0 // Remove the raw join data after extracting what we need
                 }
             }
         ]);
 
         return { success: true, response };
     } catch (error) {
-        throw new Error("Failed to fetch jobs with applied application counts");
+        console.error("Aggregation Error:", error);
+        throw new Error("Failed to fetch jobs with college address");
     }
 };
 
