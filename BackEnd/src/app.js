@@ -119,6 +119,7 @@ import { seedDB } from "./scripts/metaScript.js";
 import collegeRoutes from './routes/collegeNameRoute.js';
 import companyRoute from "./routes/companyRoute.js"
 import CustomDropDown from "./routes/CustomDropDown.js"
+import CandidateRoute from "./routes/CandidateRoute.js"
 app.use("/api/auth", authRoutes);
 
 app.use('/api/colleges', collegeRoutes);
@@ -130,6 +131,8 @@ app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement);
 app.use("/api/admin/servicerequest", serviceRequestManagement);
+app.use("/api/candidate", CandidateRoute);
+
 
 app.use("/api/meta", CustomDropDown);
 // admin relatd auth ends

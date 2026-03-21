@@ -1,7 +1,9 @@
 import React, { useState, useEffect , useRef} from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, X } from "lucide-react"; // Import X for the tags
-
+import CreatableSelect from "react-select/creatable";
+import { fetchAllCompaniesName, getCompanyMasterDataByType,
+  createCompanyMasterData } from '@/lib/Company_AxiosInstance';
 const experienceOptions = [
   "Less than 1 year", "1-3 years", "3-5 years", "5-8 years",
   "8-12 years", "12-15 years", "15+ years",
@@ -41,28 +43,45 @@ const SelectedTag = ({ item, onRemove }) => (
 
 
 export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) => {
-  const companyOptions = [
-    ...new Set([
-      formData.currentCompany,
-      "Tech Mahindra",
-      "Infosys",
-      "Tata Consultancy Services (TCS)",
-      "Wipro",
-      "HCL Technologies",
-      "Cognizant",
-      "Accenture",
-      "Capgemini",
-      "Other"
-    ].filter(Boolean))
-  ];
-  const [localFormData, setLocalFormData] = useState({
-    totalExperience: "",
-    domainKnowledge: [],
-    currentCompany: "",
-    noticePeriod: "",
-    servingNoticePeriod: false,
-    noticePeriodStartDate: "",
+
+  const [companyOptions, setCompanyOptions] = useState([]);
+const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+ 
+const [localFormData, setLocalFormData] = useState({
+    totalExperience: formData.totalExperience || "",
+    domainKnowledge: formData.domainKnowledge || [],
+    currentCompany: formData.currentCompany || "",
+    noticePeriod: formData.noticePeriod || "",
+    servingNoticePeriod: formData.servingNoticePeriod === true || formData.servingNoticePeriod === 'true',
+    noticePeriodStartDate: formData.noticePeriodStartDate || "",
   });
+
+useEffect(() => {
+  const loadCompanies = async () => {
+    try {
+      setIsLoadingCompanies(true);
+      const response = await fetchAllCompaniesName();
+
+      let companyData = [];
+      if (Array.isArray(response?.data)) {
+        companyData = response.data;
+      } else if (Array.isArray(response)) {
+        companyData = response;
+      }
+
+      // companyData is likely an array of { value, label } already
+      // or strings — check what CompanyInfoStep receives and match it
+      setCompanyOptions(companyData);
+    } catch (err) {
+      console.error("Failed to load companies", err);
+    } finally {
+      setIsLoadingCompanies(false);
+    }
+  };
+  loadCompanies();
+}, []);
+
+
 
   const [isDomainDropdownOpen, setIsDomainDropdownOpen] = useState(false);
   const domainDropdownRef = useRef(null);
@@ -88,28 +107,23 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
   }, [formData]);
 
   // Handle outside click logic for the custom dropdown
-  useEffect(() => {
+ useEffect(() => {
     const handleClickOutside = (event) => {
-      // Use mousedown event logic here
       if (domainDropdownRef.current && !domainDropdownRef.current.contains(event.target)) {
         setIsDomainDropdownOpen(false);
       }
     };
-    // Use mousedown listener for better compatibility with interactive elements
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleChange = (e) => {
+ const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
 
     setLocalFormData((prev) => ({
       ...prev,
       [name]: newValue,
-      // Clear start date if user unchecks the box
       ...(name === "servingNoticePeriod" && !checked && { noticePeriodStartDate: "" }),
     }));
   };
@@ -167,7 +181,8 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
       <ProgressIndicator currentStep={6} totalSteps={7} /> 
       <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
         <h2 className="text-gray-900 text-[32px] font-bold leading-[42px] max-md:max-w-full">
-          Your Professional Details
+          
+          
         </h2>
         <p className="text-gray-600 text-base font-normal leading-6 mt-2 max-md:max-w-full">
           Provide your current employment and availability information.
@@ -236,16 +251,48 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
           </div>
 
           {/* Current Company */}
-          <div className="w-full mt-6">
-            <label htmlFor="currentCompany" className="block text-black mb-2 font-medium">Current Company</label>
-            <div className="relative">
-              <select id="currentCompany" name="currentCompany" value={localFormData.currentCompany} onChange={handleChange} className="appearance-none bg-white flex min-h-12 w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black">
-                <option value="" disabled>Select your current employer</option>
-                {companyOptions.map(company => <option key={company} value={company}>{company}</option>)}
-              </select>
-              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
+       <div className="w-full mt-6">
+  <label className="block text-black mb-2 font-medium">
+    Current Company
+  </label>
+
+  <CreatableSelect
+    isClearable
+    isLoading={isLoadingCompanies}
+    options={companyOptions}
+    getOptionLabel={(e) => e.label}
+getOptionValue={(e) => e.value}
+ value={
+  localFormData.currentCompany
+    ? {
+        value: localFormData.currentCompany,
+        label: localFormData.currentCompany,
+      }
+    : null
+}
+    placeholder="Select or type your company"
+   onChange={async (selected) => {
+  if (!selected) {
+    setLocalFormData(prev => ({ ...prev, currentCompany: "" }));
+    return;
+  }
+
+  if (!selected.__isNew__) {
+    setLocalFormData(prev => ({ ...prev, currentCompany: selected.value }));
+    return;
+  }
+
+  // ✅ Just add locally — no DB call needed
+  const newOption = {
+    value: selected.value,
+    label: selected.value,
+  };
+
+  setCompanyOptions(prev => [...prev, newOption]);
+  setLocalFormData(prev => ({ ...prev, currentCompany: selected.value }));
+}}
+  />
+</div>
 
           {/* Notice Period */}
           <div className="w-full mt-6">
