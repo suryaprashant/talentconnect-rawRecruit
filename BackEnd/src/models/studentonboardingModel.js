@@ -133,7 +133,14 @@ const studentOnboardingSchema = new mongoose.Schema(
     noticePeriodStartDate: String,
     totalYearsOfExperience: String,
 
-
+companyEmail: {
+  type: String,
+  default: "",
+},
+emailVerified: {
+  type: Boolean,
+  default: false,
+},
 
     certifications: String,
     linkedin: String,
