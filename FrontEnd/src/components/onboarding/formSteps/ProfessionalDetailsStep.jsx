@@ -1,8 +1,9 @@
 import React, { useState, useEffect , useRef} from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon, X } from "lucide-react"; // Import X for the tags
+import { ChevronDownIcon, X , CheckCircle, AlertCircle, Mail} from "lucide-react"; // Import X for the tags
 import CreatableSelect from "react-select/creatable";
 import { fetchAllCompaniesName, getCompanyMasterDataByType,
+
   createCompanyMasterData } from '@/lib/Company_AxiosInstance';
 const experienceOptions = [
   "Less than 1 year", "1-3 years", "3-5 years", "5-8 years",
@@ -27,6 +28,121 @@ const domainKnowledgeOptions = [
 // ];
 
 // --- Helper Components for Multi-Select UI (Copied from previous file for style) ---
+
+// ── Email domain verification helpers ──────────────────────────────────────
+
+const FREE_PROVIDERS = [
+  "gmail","yahoo","hotmail","outlook","rediffmail",
+  "icloud","protonmail","zoho","yandex","aol",
+];
+
+/**
+ * Builds TWO domain candidates from a company name:
+ *
+ * 1. FULL SLUG  — every word joined, common suffixes stripped
+ *    "Google LLC"                  → "google"
+ *    "Tata Consultancy Services"   → "tataconsultancyservices"
+ *    "Tech Mahindra Ltd"           → "techmahindra"
+ *
+ * 2. ACRONYM — first letter of each meaningful word (≥2 chars, non-suffix)
+ *    "Tata Consultancy Services"   → "tcs"
+ *    "Tech Mahindra"               → "tm"
+ *    "Google"                      → null  (single word → no acronym)
+ *
+ * Both are matched against the domain label (part before first dot).
+ */
+const STRIP_WORDS = new Set([
+  "private","pvt","ltd","limited","inc","llc","llp",
+  "corp","corporation","group","and","the","of","&",
+]);
+
+function buildCandidates(companyName) {
+  if (!companyName) return [];
+
+  // Extract explicit abbreviation from parentheses e.g. "(TCS)"
+  const parenMatch = companyName.match(/\(([^)]+)\)/);
+  const parenAbbrev = parenMatch
+    ? parenMatch[1].toLowerCase().replace(/\s+/g, "")
+    : null;
+
+  const cleaned = companyName
+    .replace(/\([^)]*\)/g, "")          // remove parentheticals
+    .replace(/[^a-zA-Z0-9\s]/g, " ")    // punctuation → space
+    .trim();
+
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  const meaningfulWords = words.filter(
+    (w) => !STRIP_WORDS.has(w.toLowerCase())
+  );
+
+  // 1. Full slug (meaningful words joined)
+  const fullSlug = meaningfulWords.map((w) => w.toLowerCase()).join("");
+
+  // 2. Acronym (first letter of each meaningful word, only if >1 word)
+  const acronym =
+    meaningfulWords.length > 1
+      ? meaningfulWords.map((w) => w[0].toLowerCase()).join("")
+      : null;
+
+  const candidates = new Set();
+  if (fullSlug) candidates.add(fullSlug);
+  if (acronym) candidates.add(acronym);
+  if (parenAbbrev) candidates.add(parenAbbrev);
+
+  return Array.from(candidates);
+}
+
+/**
+ * Core check: domain label must EXACTLY equal one of the candidates.
+ * e.g. "google" === "google" ✓
+ *      "tcs"    === "tcs"    ✓
+ *      "tataconsultancyservices" === "tataconsultancyservices" ✓
+ */
+function doesEmailMatchCompany(email, companyName) {
+  if (!email || !companyName) return false;
+  const atIdx = email.lastIndexOf("@");
+  if (atIdx === -1) return false;
+
+  const domain = email.slice(atIdx + 1).toLowerCase();
+  const domainLabel = domain.split(".")[0];
+  if (!domainLabel) return false;
+
+  if (FREE_PROVIDERS.includes(domainLabel)) return "free";
+
+  const candidates = buildCandidates(companyName);
+  return candidates.includes(domainLabel) ? "valid" : "invalid";
+}
+
+// Badge shown below the email input
+const EmailVerificationBadge = ({ status }) => {
+  if (status === "valid")
+    return (
+      <div className="flex items-center gap-2 mt-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+        <CheckCircle size={15} className="shrink-0" />
+        <span>Email domain matches the company — verified.</span>
+      </div>
+    );
+  if (status === "invalid")
+    return (
+      <div className="flex items-center gap-2 mt-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+        <AlertCircle size={15} className="shrink-0" />
+        <span>
+          Domain doesn&apos;t match the company. You can still proceed but it
+          won&apos;t be verified.
+        </span>
+      </div>
+    );
+  if (status === "free")
+    return (
+      <div className="flex items-center gap-2 mt-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <AlertCircle size={15} className="shrink-0" />
+        <span>Please use your official work email, not a personal address.</span>
+      </div>
+    );
+  return null;
+};
+// ────────────────────────────────────────────────────────────────────────────
+
 const SelectedTag = ({ item, onRemove }) => (
     <div className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full text-black">
         <span>{item}</span>
@@ -54,7 +170,26 @@ const [localFormData, setLocalFormData] = useState({
     noticePeriod: formData.noticePeriod || "",
     servingNoticePeriod: formData.servingNoticePeriod === true || formData.servingNoticePeriod === 'true',
     noticePeriodStartDate: formData.noticePeriodStartDate || "",
+    // existing fields stay, add these two:
+companyEmail: formData.companyEmail || "",
+emailVerified: formData.emailVerified === true || formData.emailVerified === "true",
   });
+// Derived verification status — recomputes on every render
+const emailVerificationStatus = (() => {
+  const { companyEmail, currentCompany } = localFormData;
+  if (!companyEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(companyEmail))
+    return "idle";
+  if (!currentCompany) return "idle";
+  return doesEmailMatchCompany(companyEmail, currentCompany);
+})();
+
+// Keep emailVerified boolean in sync with live status
+useEffect(() => {
+  setLocalFormData((prev) => ({
+    ...prev,
+    emailVerified: emailVerificationStatus === "valid",
+  }));
+}, [emailVerificationStatus]);
 
 useEffect(() => {
   const loadCompanies = async () => {
@@ -104,6 +239,10 @@ useEffect(() => {
     if (Object.keys(updates).length > 0) {
       setLocalFormData(prev => ({ ...prev, ...updates }));
     }
+    if (formData.companyEmail) updates.companyEmail = formData.companyEmail;
+if (formData.emailVerified !== undefined)
+  updates.emailVerified =
+    formData.emailVerified === true || formData.emailVerified === "true";
   }, [formData]);
 
   // Handle outside click logic for the custom dropdown
@@ -272,11 +411,16 @@ getOptionValue={(e) => e.value}
 }
     placeholder="Select or type your company"
    onChange={async (selected) => {
-  if (!selected) {
-    setLocalFormData(prev => ({ ...prev, currentCompany: "" }));
-    return;
-  }
-
+ // AFTER
+if (!selected) {
+  setLocalFormData(prev => ({
+    ...prev,
+    currentCompany: "",
+    companyEmail: "",
+    emailVerified: false,
+  }));
+  return;
+}
   if (!selected.__isNew__) {
     setLocalFormData(prev => ({ ...prev, currentCompany: selected.value }));
     return;
@@ -292,6 +436,47 @@ getOptionValue={(e) => e.value}
   setLocalFormData(prev => ({ ...prev, currentCompany: selected.value }));
 }}
   />
+</div>
+
+{/* Company Official Email */}
+<div className="w-full mt-6">
+  <label htmlFor="companyEmail" className="block text-black mb-2 font-medium">
+    Company Official Email
+    {localFormData.emailVerified && (
+      <span className="ml-2 inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-100 border border-green-200 rounded-full px-2 py-0.5">
+        <CheckCircle size={11} />
+        Verified
+      </span>
+    )}
+  </label>
+  <div className="relative">
+    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+      <Mail size={16} />
+    </span>
+    <input
+      id="companyEmail"
+      name="companyEmail"
+      type="email"
+      value={localFormData.companyEmail}
+      onChange={handleChange}
+      placeholder="yourname@yourcompany.com"
+      className={`pl-9 flex min-h-12 w-full p-3 border rounded focus:ring-2 focus:outline-none transition-colors ${
+        emailVerificationStatus === "valid"
+          ? "border-green-400 focus:ring-green-300 bg-green-50"
+          : emailVerificationStatus === "invalid"
+          ? "border-amber-400 focus:ring-amber-300 bg-amber-50"
+          : emailVerificationStatus === "free"
+          ? "border-red-400 focus:ring-red-300 bg-red-50"
+          : "border-gray-300 focus:ring-black focus:border-black"
+      }`}
+    />
+  </div>
+  <EmailVerificationBadge status={emailVerificationStatus} />
+  {!localFormData.currentCompany && localFormData.companyEmail.length > 0 && (
+    <p className="text-xs text-gray-500 mt-1">
+      Select a company above so we can verify this email.
+    </p>
+  )}
 </div>
 
           {/* Notice Period */}

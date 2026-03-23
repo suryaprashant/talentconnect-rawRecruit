@@ -92,6 +92,8 @@ export async function submitOnboardingFormService(userId, body, files) {
     servingNoticePeriod: body.servingNoticePeriod === "true",
     totalYearsOfExperience: body.totalYearsOfExperience,
     currentCompany: body.currentCompany,
+    companyEmail: body.companyEmail || "",
+emailVerified: body.emailVerified === "true" || body.emailVerified === true,
 
     certifications: body.certifications,
     linkedin: body.linkedin,
