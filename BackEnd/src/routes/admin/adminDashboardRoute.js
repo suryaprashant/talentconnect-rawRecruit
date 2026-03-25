@@ -1,7 +1,7 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
 import {getAdminDashboardOverView, getAdminScheduledInterviews, scheduleInterviewByAdmin} from "../../controllers/admin/adminDashboardController.js"
-import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin} from "../../controllers/admin/jobDriveManagementController.js";
+import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin, updateJobVisibilityThreshold} from "../../controllers/admin/jobDriveManagementController.js";
 import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from "../../controllers/admin/applicationManagementController.js";
 
 const router = express.Router();
@@ -17,6 +17,12 @@ router.get(
   "/referral-jobs/pending",
   adminAuth,
   getPendingReferralJobsForAdmin
+);
+router.patch(
+  "/updateThreshold",
+  adminAuth,
+  updateJobVisibilityThreshold
+
 );
 
 router.get(

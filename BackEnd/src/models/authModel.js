@@ -67,6 +67,12 @@ const AuthSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'CompanyProfile',
     default: null,
+  },
+   jobVisibilityThreshold: {
+    type: Number,
+    default: 0,  // 0 = show all jobs
+    min: 0,
+    max: 100
   }
 
 }, { timestamps: true });

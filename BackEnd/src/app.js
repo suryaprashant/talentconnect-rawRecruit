@@ -126,7 +126,9 @@ app.use('/api/colleges', collegeRoutes);
 
 // admin related auths
 app.use("/api/admin", adminAuth);
+
 app.use("/api/admin/dashboard", adminDashboard);
+
 app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement);

@@ -5,7 +5,7 @@ import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
 import { ok } from "assert";
-
+import Auth from "../../models/authModel.js";
 export const getJobDriveOverView = async (req, res) => {
   try {
     const [
@@ -324,5 +324,23 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+};
+
+// PATCH /api/admin/job-threshold
+export const updateJobVisibilityThreshold = async (req, res) => {
+  try {
+    const { threshold } = req.body;
+
+    if (threshold === undefined || threshold < 0 || threshold > 100) {
+      return res.status(400).json({ error: "Threshold must be between 0 and 100" });
+    }
+
+    // Updates all admin accounts (global config pattern)
+    await Auth.updateMany({ userType: "admin" }, { jobVisibilityThreshold: threshold });
+
+    res.status(200).json({ message: `Threshold updated to ${threshold}%` });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
