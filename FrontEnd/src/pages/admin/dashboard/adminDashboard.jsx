@@ -560,8 +560,8 @@ const AdminDashboard = () => {
           </div>
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Settings</h3>
-            <p className="text-gray-500 mb-4">Configure system settings</p>
-            <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Open Settings</button>
+            <p className="text-gray-500 mb-4 my-5">Configure system settings</p>
+            <button className="w-full bg-purple-600 text-white py-2 px-4 my-4 rounded-md hover:bg-purple-700">Open Settings</button>
           </div>
 
           {/* Threshold card — now matches orange Applications stat card */}

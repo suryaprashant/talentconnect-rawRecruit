@@ -336,18 +336,18 @@ if (allJobRoles.length === 0) {
   }
 
   // ── BROADCAST FILTER ────────────────────────────────────────────────────────
-  let broadcastAllowed = true;
-  let broadcastLog = "Everyone → allowed";
-  if (job.broadcastType === "Location") {
-    const venueNorm = norm(job.venue);
-    const venueMatch = venueNorm && sLocs.includes(venueNorm);
-    const workLocMatch = allJobLocs.some((l) => sLocs.includes(l));
-    broadcastAllowed = venueMatch || workLocMatch;
-    broadcastLog = broadcastAllowed
-      ? `Location broadcast → allowed`
-      : `Location broadcast → BLOCKED (student: [${sLocs.join(", ")}], job: [${allJobLocs.join(", ")}])`;
-  }
-  console.log("DEBUG ROLES → job.jobTitle:", job.jobTitle, "| student.jobRoles:", student.jobRoles);
+  // let broadcastAllowed = true;
+  // let broadcastLog = "Everyone → allowed";
+  // if (job.broadcastType === "Location") {
+  //   const venueNorm = norm(job.venue);
+  //   const venueMatch = venueNorm && sLocs.includes(venueNorm);
+  //   const workLocMatch = allJobLocs.some((l) => sLocs.includes(l));
+  //   broadcastAllowed = venueMatch || workLocMatch;
+  //   broadcastLog = broadcastAllowed
+  //     ? `Location broadcast → allowed`
+  //     : `Location broadcast → BLOCKED (student: [${sLocs.join(", ")}], job: [${allJobLocs.join(", ")}])`;
+  // }
+  // console.log("DEBUG ROLES → job.jobTitle:", job.jobTitle, "| student.jobRoles:", student.jobRoles);
 
   // ── TOTAL ───────────────────────────────────────────────────────────────────
   const totalScore = Math.min(
@@ -368,17 +368,16 @@ if (allJobRoles.length === 0) {
   console.log(`\x1b[36m│  Degree     : ${logs.degree}\x1b[0m`);
   console.log(`\x1b[36m│  Stream     : ${logs.stream}\x1b[0m`);
   console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
-  console.log(`\x1b[36m│  Broadcast  : ${broadcastLog}\x1b[0m`);
-  console.log(
-    `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: N/A here | ` +
-    `Broadcast: ${broadcastAllowed ? "\x1b[32mALLOWED\x1b[0m" : "\x1b[31mBLOCKED\x1b[0m"}\n`
-  );
+ // console.log(`\x1b[36m│  Broadcast  : ${broadcastLog}\x1b[0m`);
+ console.log(
+  `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: N/A here\n`
+);
 
   return {
     ...job,
     matchScore: totalScore,
     // Expose poster name consistently regardless of job type
     companyName: posterName,
-    _broadcastAllowed: broadcastAllowed,
+   // _broadcastAllowed: broadcastAllowed,
   };
 };
