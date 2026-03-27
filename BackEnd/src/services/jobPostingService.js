@@ -299,23 +299,16 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
   const belowThreshold = scoredJobs.filter(
     (j) => j.matchScore < visibilityThreshold
   ).length;
-  const broadcastBlocked = scoredJobs.filter(
-    (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
-  ).length;
+ 
 
   const finalData = scoredJobs
     .filter((j) => j.matchScore >= visibilityThreshold)
-    .filter((j) => j._broadcastAllowed)
+   
     .sort((a, b) => b.matchScore - a.matchScore)
-    .map(({ _broadcastAllowed, ...job }) => job);
+    
 
   // ── Summary log ──────────────────────────────────────────────────────────
-  console.log("\x1b[33m╔══════════════════ REFERRAL SUMMARY ══════════════╗\x1b[0m");
-  console.log(`\x1b[33m║  Total fetched         : ${String(jobs.length).padEnd(24)}\x1b[0m║`);
-  console.log(`\x1b[33m║  Below threshold       : ${String(belowThreshold).padEnd(24)}\x1b[0m║`);
-  console.log(`\x1b[33m║  Broadcast blocked     : ${String(broadcastBlocked).padEnd(24)}\x1b[0m║`);
-  console.log(`\x1b[33m║  Returned to client    : ${String(finalData.length).padEnd(24)}\x1b[0m║`);
-  console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
+ 
 
   return finalData;
 };
