@@ -132,8 +132,8 @@ export function fetchSavedJobs(applicantType) {
 }
 
 // application
-export function ApplyForOppurtunity(jobId) {
-  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId })
+export function ApplyForOppurtunity(jobId, matchScore) {
+  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId, matchScore: matchScore, })
     .then(response => response)
     .catch(error => error);
 }
@@ -144,14 +144,14 @@ export function ApplyForJobListingOppurtunity(jobId) {
     .catch(error => error);
 }
 
-export function ApplyForInternship(internshipId) {
-  return axiosClient.post(`/application/candidate/internship`, { internshipId: internshipId })
+export function ApplyForInternship(internshipId, matchScore) {
+  return axiosClient.post(`/application/candidate/internship`, { internshipId: internshipId, matchScore: matchScore, })
     .then(response => response)
     .catch(error => error);
 }
 
-export function ApplyForReferral(referralId) {
-  return axiosClient.post(`/application/candidate/referral`, { referralId: referralId })
+export function ApplyForReferral(referralId, matchScore) {
+  return axiosClient.post(`/application/candidate/referral`, { referralId: referralId, matchScore: matchScore, })
     .then(response => response)
     .catch(error => error);
 }
@@ -276,8 +276,8 @@ export function getOffCampusJobDetail(jobId) {
     .catch(error => error);
 }
 
-export function ApplyForOffCampusJob(jobId) {
-  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId })
+export function ApplyForOffCampusJob(jobId, matchScore) {
+  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId, matchScore: matchScore, })
     .then(response => response)
     .catch(error => error);
 }

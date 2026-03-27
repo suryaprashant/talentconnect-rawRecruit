@@ -287,6 +287,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
 const ReferralJobDetailModal = ({
   jobId,
+  matchScore,
   isOpen,
   onClose,
   isApplied: propIsApplied,
@@ -383,7 +384,7 @@ const ReferralJobDetailModal = ({
     if (!isAuthenticated) { setShowLoginModal(true); return; }
     setIsSubmitting(true);
     try {
-      const response = await ApplyForReferral(jobId);
+      const response = await ApplyForReferral(jobId, matchScore);
       console.log('Apply response:', response);
       if (response?.data?.success === true) {
         toast.success('Application submitted successfully!');

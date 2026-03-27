@@ -120,6 +120,9 @@ import collegeRoutes from './routes/collegeNameRoute.js';
 import companyRoute from "./routes/companyRoute.js"
 import CustomDropDown from "./routes/CustomDropDown.js"
 import CandidateRoute from "./routes/CandidateRoute.js"
+import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
+
+
 app.use("/api/auth", authRoutes);
 
 app.use('/api/colleges', collegeRoutes);
@@ -162,6 +165,7 @@ app.use("/dropdown" , dropDownItems) ;
 
 //student dashboard
 app.use("/api/student-dashboard", studentDashboardRoute);
+app.use("/api/career-insights", CareerInsightsRoute);
 
 // employer Hiring channel
 app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);

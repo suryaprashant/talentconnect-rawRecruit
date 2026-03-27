@@ -257,19 +257,34 @@ export async function fetchSavedJobs(req, res) {
 }*/}
 
 export async function createOffcampusApplication(req, res) {
-  console.log('applied offcampus')
-  const { jobId } = req.body;
+  console.log('applied offcampus');
+
+  const { jobId, matchScore } = req.body; //  added matchScore
   const userId = req.user._id;
-  const userType = req.user.userType; // student | fresher
+  const userType = req.user.userType;
 
   try {
     const user = await getStudentService(userId);
+
     if (!jobId) {
       return res.status(404).json({ msg: "Job not found!" });
     }
 
-    if ( !user || !user.data?.length) {
+    if (!user || !user.data?.length) {
       return res.status(404).json({ msg: "User not found!" });
+    }
+
+    //  VALIDATE MATCH SCORE
+    if (matchScore !== undefined) {
+      if (
+        typeof matchScore !== "number" ||
+        matchScore < 0 ||
+        matchScore > 100
+      ) {
+        return res.status(400).json({
+          msg: "Invalid match score. Must be between 0 and 100.",
+        });
+      }
     }
 
     const actorProfile = user.data[0];
@@ -282,18 +297,20 @@ export async function createOffcampusApplication(req, res) {
     }
 
     const application = await createApplicationService({
-      appliedByUserId: actorProfile._id,   // student profile id
-      appliedByType: userType,             // student | fresher | professional
-      appliedForCompanyId: null,           // 🔑 off-campus has NO company context
+      appliedByUserId: actorProfile._id,
+      appliedByType: userType,
+      appliedForCompanyId: null,
       jobId,
       jobType: "Off-campus",
+
+      matchScore: matchScore ?? null, //  SAVE HERE
     });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
 
-    // 🔔 NOTIFICATION (NON-BLOCKING)
+    //  NOTIFICATION (NON-BLOCKING)
     try {
       if (job.companyPosted?.userId) {
         const studentName =
@@ -319,6 +336,7 @@ export async function createOffcampusApplication(req, res) {
     }
 
     return res.status(201).json(application);
+
   } catch (error) {
     console.log("❌ createOffcampusApplication error:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -357,17 +375,29 @@ export async function createJobListingApplication(req, res) {
 
 // internship
 export async function createIntershipApplication(req, res) {
-  const { internshipId } = req.body;
+  const { internshipId, matchScore } = req.body; // ✅ added
   const userId = req.user._id;
   const userType = req.user.userType;
-  console.log("🔥 hit me")
+  console.log("🔥 hit me");
 
   try {
-    // to get userId from user database
     const user = await getStudentService(userId);
 
     if (!user || !user.data?.length || !internshipId) {
       return res.status(404).json({ msg: "User or Internship not found!" });
+    }
+
+    //  VALIDATE MATCH SCORE
+    if (matchScore !== undefined) {
+      if (
+        typeof matchScore !== "number" ||
+        matchScore < 0 ||
+        matchScore > 100
+      ) {
+        return res.status(400).json({
+          msg: "Invalid match score",
+        });
+      }
     }
 
     const actorProfile = user.data[0];
@@ -381,18 +411,18 @@ export async function createIntershipApplication(req, res) {
 
     const application = await createApplicationService({
       appliedByUserId: actorProfile._id,
-      appliedByType: userType,          // student / fresher
+      appliedByType: userType,
       appliedForCompanyId: internship.companyPosted?._id || null,
       jobId: internshipId,
       jobType: "Internship",
+
+      matchScore: matchScore ?? null, //  SAVE HERE
     });
-
-
 
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
-     // 🔔 NOTIFICATION (NON-BLOCKING)
+    //  NOTIFICATION (NON-BLOCKING)
     try {
       if (internship.companyPosted?.userId) {
         const studentName =
@@ -410,7 +440,7 @@ export async function createIntershipApplication(req, res) {
           studentName,
           jobTitle,
           jobId: internship._id,
-          jobType: internship.jobType, // "Internship"
+          jobType: internship.jobType,
         });
       }
     } catch (notifyErr) {
@@ -418,6 +448,7 @@ export async function createIntershipApplication(req, res) {
     }
 
     res.status(201).json(application);
+
   } catch (error) {
     console.log("❌ createIntershipApplication error: ", error);
     res.status(500).json({ error: "Internal server error" });
@@ -426,30 +457,49 @@ export async function createIntershipApplication(req, res) {
 
 // referral step 3 apply
 export async function createReferralApplication(req, res) {
-  const { referralId } = req.body;
+  const { referralId, matchScore } = req.body; //  added
   const userId = req.user._id;
   const userType = req.user.userType;
 
   try {
-    // to get userId from user database
     const user = await getStudentService(userId);
     console.log(user, " ", referralId);
-    if (!user || !referralId) return res.status(404).json({ msg: "Invalid" });
 
-     const actorProfile = user.data[0];
+    if (!user || !referralId) {
+      return res.status(404).json({ msg: "Invalid" });
+    }
+
+    //  VALIDATE MATCH SCORE
+    if (matchScore !== undefined) {
+      if (
+        typeof matchScore !== "number" ||
+        matchScore < 0 ||
+        matchScore > 100
+      ) {
+        return res.status(400).json({
+          msg: "Invalid match score",
+        });
+      }
+    }
+
+    const actorProfile = user.data[0];
 
     const application = await createApplicationService({
-      appliedByUserId: actorProfile._id,     // 🔑 FIX
-      appliedByType: userType,               // 🔑 FIX
-      appliedForCompanyId: null,              // 🔑 Referral has no company context
-      jobId: referralId,                      // 🔑 FIX
+      appliedByUserId: actorProfile._id,
+      appliedByType: userType,
+      appliedForCompanyId: null,
+      jobId: referralId,
       jobType: "Referral",
+
+      matchScore: matchScore ?? null, //  SAVE HERE
     });
 
-    if (application.success === false)
+    if (application.success === false) {
       return res.status(403).json({ msg: application.message });
+    }
 
     res.status(201).json(application);
+
   } catch (error) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });

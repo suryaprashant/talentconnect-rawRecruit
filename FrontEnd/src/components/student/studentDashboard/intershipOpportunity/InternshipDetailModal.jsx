@@ -332,7 +332,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   );
 };
 
-const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved, isInZoomedView = false, onApplySuccess }) => {
+const InternshipDetailModal = ({ jobId, matchScore, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved, isInZoomedView = false, onApplySuccess }) => {
   const [jobDetail, setJobDetail] = useState(null);
   const [saved, setSaved] = useState(propIsSaved || false);
   const [loading, setLoading] = useState(true);
@@ -443,7 +443,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
     setIsSubmitting(true);
     try {
       console.log("🎯 Applying for internship with jobId:", jobId);
-      const response = await ApplyForInternship(jobId);
+      const response = await ApplyForInternship(jobId, matchScore);
       console.log("📦 Application response:", response);
 
       if (response?.data?.success === true) {

@@ -41,6 +41,7 @@ const InternshipLayout = ({ userType = 'student' }) => {
           <div className="w-[900px] h-full bg-white">
             <InternshipDetailModal
               jobId={selectedJob._id}
+              matchScore={selectedJob.matchScore}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
               isInZoomedView={true}
@@ -98,6 +99,7 @@ const InternshipLayout = ({ userType = 'student' }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <InternshipDetailModal
+          matchScore={selectedJob.matchScore}
             jobId={selectedJob._id}
             isOpen={isModalOpen}
             onClose={handleCloseModal}

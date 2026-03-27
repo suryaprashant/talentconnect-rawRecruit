@@ -5,10 +5,11 @@ import {
   getOnboardingFormService,
   updateOnboardingFormService,
   submitOnboardingFormService,
-  handleOnboardingUpdate
+  handleOnboardingUpdate,
+  getCategorizedSkillsService 
 } from "../services/studentService.js";
-
-
+import { categorizeSkillsService } from "../services/skillCategorizationService.js";
+import Onboarding from "../models/studentonboardingModel.js";
 
 export const getAllOnboardingForms = async (req, res) => {
   try {
@@ -31,24 +32,57 @@ export const getAllOnboardingForms = async (req, res) => {
 export const submitOnboardingForm = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ error: "Unauthorized: User not authenticated." });
+      return res.status(401).json({
+        error: "Unauthorized: User not authenticated."
+      });
     }
-    const result = await submitOnboardingFormService(req.user._id, req.body, req.files);
+
+    const result = await submitOnboardingFormService(
+      req.user._id,
+      req.body,
+      req.files
+    );
+
     if (!result.updatedUser) {
-      return res.status(404).json({ error: "User not found after update." });
+      return res.status(404).json({
+        error: "User not found after update."
+      });
     }
+
+    const onboardingData = result.updatedOnboarding;
+
+    let careerInsights = null;
+
+    try {
+      careerInsights = await categorizeSkillsService(
+        req.user._id,
+        onboardingData
+      );
+    } catch (err) {
+      console.error("Career insights generation failed:", err.message);
+    }
+
     res.status(201).json({
       message: "Form submitted successfully!",
       userType: req.user.userType,
       user: result.updatedUser,
-      onboarding: result.updatedOnboarding
+      onboarding: result.updatedOnboarding,
+      careerInsights 
     });
+
   } catch (error) {
     console.error("Form submission error (backend):", error);
+
     if (error.code === 11000) {
-      return res.status(409).json({ error: "A profile for this user already exists." });
+      return res.status(409).json({
+        error: "A profile for this user already exists."
+      });
     }
-    res.status(500).json({ error: "Form submission failed.", details: error.message });
+
+    res.status(500).json({
+      error: "Form submission failed.",
+      details: error.message
+    });
   }
 };
 
@@ -71,17 +105,117 @@ export const getOnboardingForm = async (req, res) => {
 };
 
 
+// export const updateOnboardingForm = async (req, res) => {
+//   try {
+//     if (!req.user || !req.user._id) {
+//       return res.status(401).json({ error: "Unauthorized: User not authenticated." });
+//     }
+//     const updated = await updateOnboardingFormService(req.user._id, req.body, req.files);
+//     if (!updated) return res.status(404).json({ error: "Entry not found." });
+//     res.json({ message: "Form updated successfully.", data: updated });
+//   } catch (error) {
+//     console.error("Update error:", error);
+//     res.status(500).json({ error: "Update failed.", details: error.message });
+//   }
+// };
+
 export const updateOnboardingForm = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ error: "Unauthorized: User not authenticated." });
+      return res.status(401).json({
+        error: "Unauthorized: User not authenticated."
+      });
     }
-    const updated = await updateOnboardingFormService(req.user._id, req.body, req.files);
-    if (!updated) return res.status(404).json({ error: "Entry not found." });
-    res.json({ message: "Form updated successfully.", data: updated });
+
+    // UNIVERSAL CLEAN FUNCTION
+    const cleanArrayField = (value) => {
+      if (!value) return undefined;
+
+      if (typeof value === "string") {
+        if (value.trim() === "") return undefined;
+        return [value.trim()];
+      }
+
+      if (Array.isArray(value)) {
+        const cleaned = value
+          .map((item) => item?.trim())
+          .filter((item) => item && item !== "");
+
+        return cleaned.length > 0 ? cleaned : undefined;
+      }
+
+      return undefined;
+    };
+
+    // CLEAN ENUM FIELDS
+    req.body.lookingFor = cleanArrayField(req.body.lookingFor);
+    req.body.employmentType = cleanArrayField(req.body.employmentType);
+
+    if (!req.body.lookingFor) delete req.body.lookingFor;
+    if (!req.body.employmentType) delete req.body.employmentType;
+
+    // FIX SKILLS
+    if (typeof req.body.skills === "string") {
+      req.body.skills = req.body.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    // FIX OTHER ARRAY FIELDS
+    const arrayFields = [
+      "languagesKnown",
+      "toolsAndPlatforms",
+      "domainKnowledge",
+      "industry",
+      "jobRoles",
+      "locations"
+    ];
+
+    arrayFields.forEach((field) => {
+      if (typeof req.body[field] === "string") {
+        req.body[field] = req.body[field]
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+    });
+
+    // UPDATE DB
+    const updated = await updateOnboardingFormService(
+      req.user._id,
+      req.body,
+      req.files
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Entry not found." });
+    }
+
+    let careerInsights = null;
+
+    try {
+      careerInsights = await categorizeSkillsService(
+        req.user._id,
+        updated
+      );
+    } catch (err) {
+      console.error("Career insights generation failed:", err.message);
+    }
+
+    res.json({
+      message: "Form updated successfully.",
+      data: updated,
+      careerInsights
+    });
+
   } catch (error) {
     console.error("Update error:", error);
-    res.status(500).json({ error: "Update failed.", details: error.message });
+
+    res.status(500).json({
+      error: "Update failed.",
+      details: error.message
+    });
   }
 };
 
@@ -169,5 +303,38 @@ export const createMasterData = async (req, res) => {
     }
 
     res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+export const getCategorizedSkills = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        error: "Unauthorized: User not authenticated."
+      });
+    }
+
+    const categorizedSkills = await getCategorizedSkillsService(
+      req.user._id
+    );
+
+    if (!categorizedSkills) {
+      return res.status(404).json({
+        error: "Onboarding data not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      categorizedSkills
+    });
+
+  } catch (error) {
+    console.error("Controller error (getCategorizedSkills):", error);
+
+    res.status(500).json({
+      error: "Failed to fetch categorized skills",
+      details: error.message
+    });
   }
 };
