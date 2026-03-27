@@ -88,7 +88,7 @@ const DEFAULTS = {
 };
 
 /* ─────────────────────────────────────────────
-   RelevancyWeightsModal
+   RelevancyWeightsModal  (harmonized palette)
 ───────────────────────────────────────────── */
 const RelevancyWeightsModal = ({ isOpen, onClose }) => {
   const [weights, setWeights]   = useState({ ...DEFAULTS });
@@ -166,42 +166,45 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
   const academicsKeys = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'academics');
   const academicsSum  = academicsKeys.reduce((s, k) => s + (Number(weights[k]) || 0), 0);
 
-  return (
-    <div ref={overlayRef} onClick={handleOverlay} style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.6)', backdropFilter:'blur(5px)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, animation:'fadeIn .18s ease', padding:'16px' }}>
-      <div style={{ background:'#fff', borderRadius:'22px', width:'100%', maxWidth:'580px', maxHeight:'92vh', display:'flex', flexDirection:'column', boxShadow:'0 40px 100px rgba(0,0,0,0.28)', animation:'slideUp .24s cubic-bezier(0.34,1.4,0.64,1)', overflow:'hidden' }}>
+  /* colour matching the dashboard purple card */
+  const headerBg = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)';
 
-        {/* Header */}
-        <div style={{ background:'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', padding:'22px 26px 18px', flexShrink:0 }}>
+  return (
+    <div ref={overlayRef} onClick={handleOverlay} style={{ position:'fixed', inset:0, background:'rgba(107,114,128,0.5)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, animation:'fadeIn .18s ease', padding:'16px' }}>
+      <div style={{ background:'#fff', borderRadius:'16px', width:'100%', maxWidth:'580px', maxHeight:'92vh', display:'flex', flexDirection:'column', boxShadow:'0 20px 60px rgba(0,0,0,0.18)', animation:'slideUp .24s cubic-bezier(0.34,1.4,0.64,1)', overflow:'hidden' }}>
+
+        {/* Header — purple to match the Settings card */}
+        <div style={{ background: headerBg, padding:'22px 26px 18px', flexShrink:0 }}>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
             <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-              <div style={{ background:'rgba(255,255,255,0.12)', borderRadius:'10px', padding:'8px' }}>
-                <BarChart3 size={20} color="#7dd3fc" />
+              <div style={{ background:'rgba(255,255,255,0.2)', borderRadius:'10px', padding:'8px' }}>
+                <BarChart3 size={20} color="#fff" />
               </div>
               <div>
-                <h2 style={{ margin:0, color:'#f0f9ff', fontSize:'17px', fontWeight:700, fontFamily:"'DM Sans', sans-serif" }}>Relevancy Weights</h2>
-                <p style={{ margin:'3px 0 0', color:'#93c5fd', fontSize:'12.5px', fontFamily:'sans-serif' }}>Configure how match scores are calculated</p>
+                <h2 style={{ margin:0, color:'#fff', fontSize:'17px', fontWeight:700, fontFamily:"'DM Sans', sans-serif" }}>Relevancy Weights</h2>
+                <p style={{ margin:'3px 0 0', color:'#ede9fe', fontSize:'12.5px', fontFamily:'sans-serif' }}>Configure how match scores are calculated</p>
               </div>
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-              <div style={{ background:'rgba(255,255,255,0.08)', border:`1.5px solid ${isValid ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.4)'}`, borderRadius:'999px', padding:'4px 12px', fontSize:'13px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color: isValid ? '#6ee7b7' : '#fca5a5' }}>
+              <div style={{ background:'rgba(255,255,255,0.15)', border:`1.5px solid ${isValid ? 'rgba(167,243,208,0.7)' : 'rgba(252,165,165,0.6)'}`, borderRadius:'999px', padding:'4px 12px', fontSize:'13px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color: isValid ? '#d1fae5' : '#fee2e2' }}>
                 {total}/100
               </div>
-              <button onClick={onClose} style={{ background:'rgba(255,255,255,0.1)', border:'none', borderRadius:'8px', padding:'6px', cursor:'pointer', display:'flex' }}>
-                <X size={16} color="#cbd5e1" />
+              <button onClick={onClose} style={{ background:'rgba(255,255,255,0.15)', border:'none', borderRadius:'8px', padding:'6px', cursor:'pointer', display:'flex' }}>
+                <X size={16} color="#fff" />
               </button>
             </div>
           </div>
           {/* progress bar */}
           <div style={{ marginTop:'14px' }}>
-            <div style={{ height:'5px', borderRadius:'999px', background:'rgba(255,255,255,0.1)', overflow:'hidden' }}>
-              <div style={{ height:'100%', width:`${Math.min(total,100)}%`, background: isValid ? 'linear-gradient(90deg,#34d399,#10b981)' : total > 100 ? 'linear-gradient(90deg,#f87171,#ef4444)' : 'linear-gradient(90deg,#fbbf24,#f59e0b)', borderRadius:'999px', transition:'width .25s ease, background .3s ease' }} />
+            <div style={{ height:'5px', borderRadius:'999px', background:'rgba(255,255,255,0.2)', overflow:'hidden' }}>
+              <div style={{ height:'100%', width:`${Math.min(total,100)}%`, background: isValid ? 'rgba(167,243,208,0.9)' : total > 100 ? 'rgba(252,165,165,0.9)' : 'rgba(253,230,138,0.9)', borderRadius:'999px', transition:'width .25s ease, background .3s ease' }} />
             </div>
             <div style={{ display:'flex', justifyContent:'space-between', marginTop:'5px' }}>
-              <span style={{ color:'#93c5fd', fontSize:'11px', fontFamily:'sans-serif' }}>
+              <span style={{ color:'#ede9fe', fontSize:'11px', fontFamily:'sans-serif' }}>
                 {isValid ? '✓ Weights sum to 100' : total < 100 ? `${remaining} remaining` : `${total - 100} over limit`}
               </span>
-              <span style={{ color:'#64748b', fontSize:'11px', fontFamily:'sans-serif' }}>
-                Academics subtotal: <strong style={{ color:'#93c5fd' }}>{academicsSum}</strong>
+              <span style={{ color:'#c4b5fd', fontSize:'11px', fontFamily:'sans-serif' }}>
+                Academics subtotal: <strong style={{ color:'#ede9fe' }}>{academicsSum}</strong>
               </span>
             </div>
           </div>
@@ -211,7 +214,7 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
         <div style={{ overflowY:'auto', flex:1, padding:'20px 26px' }}>
           {fetching ? (
             <div style={{ textAlign:'center', padding:'48px 0', color:'#94a3b8', fontFamily:'sans-serif' }}>
-              <div style={{ width:28, height:28, border:'3px solid #e2e8f0', borderTopColor:'#6366f1', borderRadius:'50%', animation:'spin .7s linear infinite', margin:'0 auto 12px' }} />
+              <div style={{ width:28, height:28, border:'3px solid #e2e8f0', borderTopColor:'#7c3aed', borderRadius:'50%', animation:'spin .7s linear infinite', margin:'0 auto 12px' }} />
               Loading current weights…
             </div>
           ) : (
@@ -262,7 +265,7 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
               Cancel
             </button>
             <button onClick={handleSave} disabled={!isValid || saving}
-              style={{ flex:2, padding:'11px', border:'none', borderRadius:'10px', background: !isValid || saving ? '#cbd5e1' : 'linear-gradient(135deg, #0f172a, #1e40af)', fontSize:'13.5px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color:'#fff', cursor: !isValid || saving ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', transition:'opacity .15s, transform .1s' }}
+              style={{ flex:2, padding:'11px', border:'none', borderRadius:'10px', background: !isValid || saving ? '#d1d5db' : 'linear-gradient(135deg, #7c3aed, #6d28d9)', fontSize:'13.5px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color:'#fff', cursor: !isValid || saving ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', transition:'opacity .15s' }}
               onMouseEnter={e => { if (!saving && isValid) e.currentTarget.style.opacity='0.88'; }} onMouseLeave={e => { e.currentTarget.style.opacity='1'; }}>
               {saving ? (
                 <><span style={{ width:13, height:13, border:'2px solid rgba(255,255,255,.3)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin .7s linear infinite' }} />Saving…</>
@@ -292,7 +295,7 @@ const WeightRow = ({ label, color, value, onChange, onInputChange }) => (
 );
 
 /* ─────────────────────────────────────────────
-   ThresholdModal
+   ThresholdModal  (harmonized palette)
 ───────────────────────────────────────────── */
 const ThresholdModal = ({ isOpen, onClose }) => {
   const [threshold, setThreshold] = useState(50);
@@ -320,25 +323,32 @@ const ThresholdModal = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
+
+  /* Keep semantic track colour for the slider value indicator */
   const trackColor = threshold < 33 ? '#22c55e' : threshold < 66 ? '#f59e0b' : '#ef4444';
+  /* Header matches the orange Applications card */
+  const headerBg = 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)';
 
   return (
-    <div ref={overlayRef} onClick={handleOverlay} style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, animation:'fadeIn .18s ease' }}>
-      <div style={{ background:'#fff', borderRadius:'20px', width:'100%', maxWidth:'460px', margin:'0 16px', boxShadow:'0 32px 80px rgba(0,0,0,0.22)', animation:'slideUp .22s cubic-bezier(0.34,1.56,0.64,1)', overflow:'hidden' }}>
-        <div style={{ background:'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', padding:'24px 28px 20px', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
+    <div ref={overlayRef} onClick={handleOverlay} style={{ position:'fixed', inset:0, background:'rgba(107,114,128,0.5)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, animation:'fadeIn .18s ease' }}>
+      <div style={{ background:'#fff', borderRadius:'16px', width:'100%', maxWidth:'460px', margin:'0 16px', boxShadow:'0 20px 60px rgba(0,0,0,0.18)', animation:'slideUp .22s cubic-bezier(0.34,1.56,0.64,1)', overflow:'hidden' }}>
+
+        {/* Header — orange to match Applications stat card */}
+        <div style={{ background: headerBg, padding:'24px 28px 20px', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-            <div style={{ background:'rgba(255,255,255,0.12)', borderRadius:'10px', padding:'8px' }}>
-              <SlidersHorizontal size={20} color="#7dd3fc" />
+            <div style={{ background:'rgba(255,255,255,0.2)', borderRadius:'10px', padding:'8px' }}>
+              <SlidersHorizontal size={20} color="#fff" />
             </div>
             <div>
-              <h2 style={{ margin:0, color:'#f0f9ff', fontSize:'17px', fontWeight:700, fontFamily:"'DM Sans', sans-serif" }}>Job Visibility Threshold</h2>
-              <p style={{ margin:'3px 0 0', color:'#93c5fd', fontSize:'12.5px', fontFamily:'sans-serif' }}>Control which jobs are visible to candidates</p>
+              <h2 style={{ margin:0, color:'#fff', fontSize:'17px', fontWeight:700, fontFamily:"'DM Sans', sans-serif" }}>Job Visibility Threshold</h2>
+              <p style={{ margin:'3px 0 0', color:'#ffedd5', fontSize:'12.5px', fontFamily:'sans-serif' }}>Control which jobs are visible to candidates</p>
             </div>
           </div>
-          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.1)', border:'none', borderRadius:'8px', padding:'6px', cursor:'pointer', display:'flex' }}>
-            <X size={16} color="#cbd5e1" />
+          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.2)', border:'none', borderRadius:'8px', padding:'6px', cursor:'pointer', display:'flex' }}>
+            <X size={16} color="#fff" />
           </button>
         </div>
+
         <div style={{ padding:'28px' }}>
           <div style={{ textAlign:'center', marginBottom:'28px' }}>
             <span style={{ fontSize:'64px', fontWeight:800, fontFamily:"'DM Sans', sans-serif", color:trackColor, lineHeight:1, transition:'color .3s ease', display:'block' }}>
@@ -382,7 +392,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={loading}
-              style={{ flex:2, padding:'12px', border:'none', borderRadius:'10px', background: loading ? '#94a3b8' : 'linear-gradient(135deg, #0f172a, #1e40af)', fontSize:'14px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color:'#fff', cursor: loading ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px' }}>
+              style={{ flex:2, padding:'12px', border:'none', borderRadius:'10px', background: loading ? '#d1d5db' : 'linear-gradient(135deg, #f97316, #ea580c)', fontSize:'14px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", color:'#fff', cursor: loading ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px' }}>
               {loading ? (
                 <><span style={{ width:14, height:14, border:'2px solid rgba(255,255,255,.3)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin .7s linear infinite' }} />Updating…</>
               ) : (
@@ -400,7 +410,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
    Main Dashboard
 ───────────────────────────────────────────── */
 const AdminDashboard = () => {
-  const { adminUser, logout } = useAdmin();   // ← original context preserved
+  const { adminUser, logout } = useAdmin();
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalCompanies: 0,
@@ -409,8 +419,8 @@ const AdminDashboard = () => {
     recentActivity: []
   });
   const [loading, setLoading]             = useState(true);
-  const [thresholdOpen, setThresholdOpen] = useState(false);  // new
-  const [weightsOpen, setWeightsOpen]     = useState(false);  // new
+  const [thresholdOpen, setThresholdOpen] = useState(false);
+  const [weightsOpen, setWeightsOpen]     = useState(false);
 
   useEffect(() => { fetchDashboardData(); }, []);
 
@@ -431,7 +441,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = async () => { await logout(); };  // ← original preserved
+  const handleLogout = async () => { await logout(); };
 
   if (loading) {
     return (
@@ -479,7 +489,7 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Main — original layout preserved */}
+      {/* Main */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
 
         {/* Stats Grid — original, unchanged */}
@@ -535,7 +545,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions — original 3 cards + 1 new threshold card */}
+        {/* Quick Actions — original 3 cards + 1 updated threshold card */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* original 3 — unchanged */}
           <div className="bg-white shadow rounded-lg p-6">
@@ -554,61 +564,64 @@ const AdminDashboard = () => {
             <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Open Settings</button>
           </div>
 
-          {/* NEW: Threshold card */}
+          {/* Threshold card — now matches orange Applications stat card */}
           <div
             onClick={() => setThresholdOpen(true)}
-            style={{ background:'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', borderRadius:'12px', padding:'24px', cursor:'pointer', boxShadow:'0 4px 20px rgba(15,23,42,0.25)', transition:'transform .18s, box-shadow .18s', position:'relative', overflow:'hidden' }}
-            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(15,23,42,0.35)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 4px 20px rgba(15,23,42,0.25)'; }}
+            className="bg-white shadow rounded-lg p-6 cursor-pointer border-2 border-transparent hover:border-orange-200 hover:shadow-md transition-all duration-200"
+            style={{ position:'relative', overflow:'hidden' }}
+            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; }}
           >
-            <div style={{ position:'absolute', top:'-20px', right:'-20px', width:'80px', height:'80px', borderRadius:'50%', background:'rgba(125,211,252,0.08)' }} />
+            {/* coloured top accent bar */}
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:'4px', background:'linear-gradient(90deg, #f97316, #ea580c)' }} />
             <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
-              <div style={{ background:'rgba(125,211,252,0.15)', borderRadius:'8px', padding:'7px', display:'flex' }}>
-                <Eye size={18} color="#7dd3fc" />
+              <div className="p-3 rounded-md bg-orange-500" style={{ display:'flex', flexShrink:0 }}>
+                <Eye size={18} color="#fff" />
               </div>
-              <h3 style={{ margin:0, color:'#f0f9ff', fontSize:'15px', fontWeight:700, fontFamily:"'DM Sans', sans-serif" }}>Job Visibility</h3>
+              <h3 className="text-lg font-medium text-gray-900">Job Visibility</h3>
             </div>
-            <p style={{ margin:'0 0 16px', color:'#93c5fd', fontSize:'13px', fontFamily:'sans-serif', lineHeight:1.5 }}>
+            <p className="text-gray-500 mb-4" style={{ fontSize:'14px' }}>
               Set the match-score threshold to control which jobs candidates see.
             </p>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:'rgba(125,211,252,0.12)', border:'1px solid rgba(125,211,252,0.25)', borderRadius:'8px', padding:'7px 14px', color:'#7dd3fc', fontSize:'13px', fontWeight:600, fontFamily:"'DM Sans', sans-serif" }}>
+            <button className="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 font-medium text-sm" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'6px' }}>
               <SlidersHorizontal size={14} />
               Update Threshold
-            </div>
+            </button>
           </div>
         </div>
 
-        {/* NEW: Relevancy Weights full-width banner */}
+        {/* Relevancy Weights banner — now matches purple Settings card */}
         <div
           onClick={() => setWeightsOpen(true)}
-          style={{ marginTop:'24px', background:'linear-gradient(135deg, #0f172a 0%, #312e81 60%, #1e3a5f 100%)', borderRadius:'16px', padding:'28px 32px', cursor:'pointer', boxShadow:'0 4px 24px rgba(15,23,42,0.22)', transition:'transform .18s, box-shadow .18s', position:'relative', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'20px' }}
-          onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 10px 40px rgba(15,23,42,0.35)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 4px 24px rgba(15,23,42,0.22)'; }}
+          className="mt-6 bg-white shadow rounded-lg cursor-pointer border-2 border-transparent hover:border-purple-200 hover:shadow-md transition-all duration-200"
+          style={{ position:'relative', overflow:'hidden' }}
+          onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; }}
         >
-          <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'160px', height:'160px', borderRadius:'50%', background:'rgba(99,102,241,0.12)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'-30px', right:'200px', width:'100px', height:'100px', borderRadius:'50%', background:'rgba(125,211,252,0.07)', pointerEvents:'none' }} />
-
-          <div style={{ display:'flex', alignItems:'center', gap:'16px', zIndex:1 }}>
-            <div style={{ background:'rgba(99,102,241,0.2)', borderRadius:'12px', padding:'12px', display:'flex', flexShrink:0 }}>
-              <BarChart3 size={26} color="#a5b4fc" />
+          {/* coloured left accent bar */}
+          <div style={{ position:'absolute', top:0, left:0, bottom:0, width:'4px', background:'linear-gradient(180deg, #7c3aed, #6d28d9)' }} />
+          <div style={{ padding:'24px 28px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'20px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
+              <div className="p-3 rounded-md bg-purple-500" style={{ display:'flex', flexShrink:0 }}>
+                <BarChart3 size={22} color="#fff" />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900" style={{ marginBottom:'4px' }}>Relevancy Weights</h3>
+                <p className="text-gray-500" style={{ fontSize:'13.5px', maxWidth:'420px', lineHeight:1.5 }}>
+                  Fine-tune how each factor — skills, experience, academics, location and more — contributes to candidate match scores.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 style={{ margin:0, color:'#f0f9ff', fontSize:'17px', fontWeight:700, fontFamily:"'DM Sans', sans-serif", marginBottom:'4px' }}>Relevancy Weights</h3>
-              <p style={{ margin:0, color:'#a5b4fc', fontSize:'13.5px', fontFamily:'sans-serif', maxWidth:'420px', lineHeight:1.5 }}>
-                Fine-tune how each factor — skills, experience, academics, location and more — contributes to candidate match scores.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'12px', zIndex:1 }}>
-            <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', justifyContent:'flex-end' }}>
-              {[['Skills','#6366f1'],['Experience','#0ea5e9'],['Academics','#10b981'],['Location','#14b8a6'],['Salary','#f59e0b']].map(([f,c]) => (
-                <span key={f} style={{ background:`${c}22`, border:`1px solid ${c}55`, color: c==='#f59e0b'?'#fcd34d':c==='#10b981'?'#6ee7b7':c==='#14b8a6'?'#5eead4':c==='#0ea5e9'?'#7dd3fc':'#c7d2fe', borderRadius:'999px', padding:'3px 10px', fontSize:'11.5px', fontWeight:600, fontFamily:"'DM Sans', sans-serif" }}>{f}</span>
-              ))}
-            </div>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(99,102,241,0.18)', border:'1px solid rgba(165,180,252,0.3)', borderRadius:'10px', padding:'9px 18px', color:'#c7d2fe', fontSize:'13.5px', fontWeight:600, fontFamily:"'DM Sans', sans-serif" }}>
-              <BarChart3 size={15} />
-              Configure Weights
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'12px' }}>
+              <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', justifyContent:'flex-end' }}>
+                {[['Skills','bg-indigo-100 text-indigo-700'],['Experience','bg-sky-100 text-sky-700'],['Academics','bg-green-100 text-green-700'],['Location','bg-teal-100 text-teal-700'],['Salary','bg-amber-100 text-amber-700']].map(([f, cls]) => (
+                  <span key={f} className={`${cls} text-xs font-semibold px-3 py-1 rounded-full`}>{f}</span>
+                ))}
+              </div>
+              <button className="bg-purple-600 text-white py-2 px-5 rounded-md hover:bg-purple-700 font-medium text-sm" style={{ display:'flex', alignItems:'center', gap:'7px' }}>
+                <BarChart3 size={14} />
+                Configure Weights
+              </button>
             </div>
           </div>
         </div>
