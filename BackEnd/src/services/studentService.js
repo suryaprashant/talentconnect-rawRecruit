@@ -381,3 +381,27 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     updatedOnboarding
   };
 };
+
+export const getCategorizedSkillsService = async (userId) => {
+  try {
+    const onboarding = await OnboardingModel.findOne(
+      { userId },
+      { categorizedSkills: 1, _id: 0 }
+    );
+
+    if (!onboarding) {
+      return null;
+    }
+
+    return onboarding.categorizedSkills || {
+      highInDemand: [],
+      growing: [],
+      saturated: [],
+      obsolete: []
+    };
+
+  } catch (error) {
+    console.error("Service error (getCategorizedSkills):", error);
+    throw error;
+  }
+};
