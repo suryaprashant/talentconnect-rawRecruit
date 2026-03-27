@@ -3,6 +3,10 @@ import adminAuth from "../../middlewares/adminMiddleware.js";
 import {getAdminDashboardOverView, getAdminScheduledInterviews, scheduleInterviewByAdmin} from "../../controllers/admin/adminDashboardController.js"
 import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin, updateJobVisibilityThreshold} from "../../controllers/admin/jobDriveManagementController.js";
 import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from "../../controllers/admin/applicationManagementController.js";
+import {
+  getRelevancyWeights,
+  updateRelevancyWeights,
+} from "../../controllers/Relevancyweightscontroller.js";
 
 const router = express.Router();
 
@@ -12,6 +16,9 @@ router.use(adminAuth);
 // Admin dashboard overview
 router.get('/overviewdata', getAdminDashboardOverView);
 router.get("/overview", getAdminDashboardOverView);
+
+router.get("/relevancy-weights", adminAuth, getRelevancyWeights);
+router.patch("/relevancy-weights", adminAuth,updateRelevancyWeights);
 
 router.get(
   "/referral-jobs/pending",
