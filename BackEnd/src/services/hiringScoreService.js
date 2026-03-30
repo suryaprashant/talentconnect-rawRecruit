@@ -47,8 +47,8 @@ export const calculateHiringScoreService = async (userId) => {
 
     let activityScore = 0;
 
-    if (applicationCount >= 50) activityScore = 100;
-    else activityScore = applicationCount * 2;
+    if (applicationCount >= 20) activityScore = 100;
+    else activityScore = applicationCount * 5;
 
     // 🔹 4. APPLICATION QUALITY SCORE
     let avgMatchScore = 0;
