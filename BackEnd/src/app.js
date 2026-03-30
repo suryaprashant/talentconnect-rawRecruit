@@ -5,7 +5,8 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import { startRankingCron } from "./cron/rankingCron.js";
+startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
 import { app, server } from "./socketIO/server.js";
@@ -246,5 +247,8 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+import testRoute from "./routes/test.js";
+app.use("/api/test", testRoute);
 
 startServer();
