@@ -100,9 +100,10 @@ function Fresher_Profile() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        const backendUrl = import.meta.env.VITE_Backend_URL;
         const [rankingRes, careerRes] = await Promise.all([
-          axios.get('/api/career-insights/ranking'),  
-          axios.get('/api/career-insights'),
+          axios.get(`${backendUrl}/api/career-insights/ranking`),
+          axios.get(`${backendUrl}/api/career-insights`),
         ]);
         const insights = careerRes.data.data;
         const ranking = rankingRes.data.data;
