@@ -6,7 +6,7 @@ const careerInsightsSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Auth",
       required: true,
-      unique: true, // ✅ keep only this (remove schema.index)
+      unique: true,
     },
 
     categorizedSkills: {
@@ -45,7 +45,7 @@ const careerInsightsSchema = new mongoose.Schema(
       default: [],
     },
 
-    // 🔥 Hiring Score Fields
+    // 🔥 Hiring Score
     hiringScore: {
       type: Number,
       default: 0,
@@ -54,24 +54,38 @@ const careerInsightsSchema = new mongoose.Schema(
     },
 
     hiringBreakdown: {
-      profileScore: {
-        type: Number,
-        default: 0,
-      },
-      activityScore: {
-        type: Number,
-        default: 0,
-      },
-      applicationQualityScore: {
-        type: Number,
-        default: 0,
-      },
+      profileScore: { type: Number, default: 0 },
+      activityScore: { type: Number, default: 0 },
+      applicationQualityScore: { type: Number, default: 0 },
     },
 
-    // 🔥 ADD THIS (missing earlier)
     hiringInsights: {
       type: [{ type: String, trim: true }],
       default: [],
+    },
+
+    // 🔥 NEW: Ranking Fields
+    rank: {
+      type: Number,
+      default: null,
+      index: true, // ⚡ helps leaderboard queries
+    },
+
+    percentile: {
+      type: Number,
+      default: null,
+    },
+
+    rankingLabel: {
+      type: String,
+      enum: ["Top 10%", "Top 20%", "Top 50%", "Below 50%"],
+      default: null,
+    },
+
+    // 🔥 Useful for debugging & freshness
+    lastScoreUpdatedAt: {
+      type: Date,
+      default: null,
     },
 
     lastAnalyzedAt: {
@@ -82,7 +96,8 @@ const careerInsightsSchema = new mongoose.Schema(
   { timestamps: true, versionKey: false }
 );
 
-// careerInsightsSchema.index({ userId: 1 }, { unique: true });
+// 🔥 IMPORTANT INDEX (for ranking performance)
+careerInsightsSchema.index({ hiringScore: -1 });
 
 export default mongoose.models.CareerInsights ||
   mongoose.model("CareerInsights", careerInsightsSchema);

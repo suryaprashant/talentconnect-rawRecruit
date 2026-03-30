@@ -44,6 +44,7 @@ import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
 import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js"
+import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
 // controllers/professionalController.js
 export const getReferralApplicationsForProfessional = async (req, res, next) => {
   try {
@@ -256,10 +257,11 @@ export async function fetchSavedJobs(req, res) {
   }
 }*/}
 
+//updated for debounced score update 
 export async function createOffcampusApplication(req, res) {
   console.log('applied offcampus');
 
-  const { jobId, matchScore } = req.body; //  added matchScore
+  const { jobId, matchScore } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
 
@@ -274,7 +276,7 @@ export async function createOffcampusApplication(req, res) {
       return res.status(404).json({ msg: "User not found!" });
     }
 
-    //  VALIDATE MATCH SCORE
+    // 🔹 Validate match score
     if (matchScore !== undefined) {
       if (
         typeof matchScore !== "number" ||
@@ -296,21 +298,25 @@ export async function createOffcampusApplication(req, res) {
       return res.status(404).json({ msg: "Job not found" });
     }
 
+    // 🔹 Create application
     const application = await createApplicationService({
       appliedByUserId: actorProfile._id,
       appliedByType: userType,
       appliedForCompanyId: null,
       jobId,
       jobType: "Off-campus",
-
-      matchScore: matchScore ?? null, //  SAVE HERE
+      matchScore: matchScore ?? null,
     });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
+    // NEW: Trigger score + ranking calculation (debounced, non-blocking)
+    scheduleScoreUpdate(userId).catch((err) => {
+      console.error("❌ Failed to schedule score update:", err);
+    });
 
-    //  NOTIFICATION (NON-BLOCKING)
+    // 🔹 Notification (non-blocking)
     try {
       if (job.companyPosted?.userId) {
         const studentName =
@@ -422,6 +428,11 @@ export async function createIntershipApplication(req, res) {
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
+    // NEW: Trigger score + ranking calculation (debounced, non-blocking)
+    scheduleScoreUpdate(userId).catch((err) => {
+      console.error("❌ Failed to schedule score update:", err);
+    });
+
     //  NOTIFICATION (NON-BLOCKING)
     try {
       if (internship.companyPosted?.userId) {
@@ -497,7 +508,11 @@ export async function createReferralApplication(req, res) {
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
-
+    // NEW: Trigger score + ranking calculation (debounced, non-blocking)
+    scheduleScoreUpdate(userId).catch((err) => {
+      console.error("❌ Failed to schedule score update:", err);
+    });
+    
     res.status(201).json(application);
 
   } catch (error) {
