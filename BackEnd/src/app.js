@@ -126,12 +126,12 @@ import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
 
 
 
-import getAlumini from   "./routes/getAlumnijob.js"
+
 
 app.use("/api/auth", authRoutes);
 app.use('/api/colleges', collegeRoutes);
 
-app.use('/api/candidate',getAlumini)
+app.use('/api/candidate',CandidateRoute)
 
 // admin related auths
 app.use("/api/admin", adminAuth);
