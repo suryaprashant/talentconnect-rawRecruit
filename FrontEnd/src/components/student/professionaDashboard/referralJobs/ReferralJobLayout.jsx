@@ -34,6 +34,7 @@ const ReferralLayout = () => {
           <div className="w-[900px] h-full bg-white">
             <ReferralJobDetailModal
               jobId={selectedJob._id}
+              matchScore={selectedJob.matchScore}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
               isInZoomedView={true}
@@ -85,6 +86,7 @@ const ReferralLayout = () => {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <ReferralJobDetailModal
             jobId={selectedJob._id}
+            matchScore={selectedJob.matchScore}
             isOpen={isModalOpen}
             onClose={handleCloseModal}
           />

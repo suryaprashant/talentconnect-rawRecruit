@@ -39,6 +39,7 @@ const OffCampusLayout = () => {
           <div className="w-[900px] h-full bg-white">
             <OffCampusJobDetailModal
               jobId={selectedJob._id}
+              matchScore={selectedJob.matchScore}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
               isInZoomedView={true}
@@ -96,6 +97,7 @@ const OffCampusLayout = () => {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <OffCampusJobDetailModal
             jobId={selectedJob._id}
+            matchScore={selectedJob.matchScore}
             isOpen={isModalOpen}
             onClose={handleCloseModal}
           />

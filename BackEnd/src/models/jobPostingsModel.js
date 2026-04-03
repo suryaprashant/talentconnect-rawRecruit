@@ -121,9 +121,15 @@ const jobPostingSchema = new mongoose.Schema({
     minEducation: {
         type: String,
     },
+
     yearsOfExperience: {
         type: String,
     },
+    
+    minYearofExperience:{
+        type: String,
+    },
+
     skills: [{ type: String }],
     certifications: [{ type: String }],
     workAuthorization: {

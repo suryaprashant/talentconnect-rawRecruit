@@ -113,6 +113,12 @@ const studentOnboardingSchema = new mongoose.Schema(
     projectsHandled: projectsHandledSchema,
 
     skills: [String],
+    categorizedSkills: {
+      highInDemand: { type: [String], default: [] },
+      growing: { type: [String], default: [] },
+      saturated: { type: [String], default: [] },
+      obsolete: { type: [String], default: [] }
+    },
     languagesKnown: [String],
     toolsAndPlatforms: [String],
     domainKnowledge: [String],
@@ -133,7 +139,14 @@ const studentOnboardingSchema = new mongoose.Schema(
     noticePeriodStartDate: String,
     totalYearsOfExperience: String,
 
-
+companyEmail: {
+  type: String,
+  default: "",
+},
+emailVerified: {
+  type: Boolean,
+  default: false,
+},
 
     certifications: String,
     linkedin: String,

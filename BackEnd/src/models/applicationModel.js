@@ -91,6 +91,12 @@ const ApplicationSchema = new mongoose.Schema(
             ],
             default: "Applied",
         },
+         matchScore: {
+            type: Number,
+            min: 0,
+            max: 100,
+            default: null, 
+            }
     },
     { timestamps: true }
 );

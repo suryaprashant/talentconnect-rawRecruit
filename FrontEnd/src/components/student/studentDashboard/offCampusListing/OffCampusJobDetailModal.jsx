@@ -333,7 +333,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   );
 };
 
-const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved, isInZoomedView = false }) => {
+const OffCampusJobDetailModal = ({ jobId, matchScore, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved, isInZoomedView = false }) => {
   const [jobDetail, setJobDetail] = useState(null);
   const [saved, setSaved] = useState(propIsSaved || false);
   const [loading, setLoading] = useState(true);
@@ -440,7 +440,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     }
     setIsSubmitting(true);
     try {
-      const response = await ApplyForOppurtunity(jobId);
+      const response = await ApplyForOppurtunity(jobId, matchScore);
       console.log('Apply response:', response);
       if (response?.data?.success === true) {
         toast.success('Application submitted successfully!');

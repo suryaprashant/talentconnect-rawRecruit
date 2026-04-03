@@ -5,7 +5,8 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import { startRankingCron } from "./cron/rankingCron.js";
+startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
 import { app, server } from "./socketIO/server.js";
@@ -119,17 +120,27 @@ import { seedDB } from "./scripts/metaScript.js";
 import collegeRoutes from './routes/collegeNameRoute.js';
 import companyRoute from "./routes/companyRoute.js"
 import CustomDropDown from "./routes/CustomDropDown.js"
-import CandidateRoute from "./routes/CandidateRoute.js"
-app.use("/api/auth", authRoutes);
 
+import CandidateRoute from "./routes/CandidateRoute.js"
+import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
+
+
+
+
+
+app.use("/api/auth", authRoutes);
 app.use('/api/colleges', collegeRoutes);
+
+app.use('/api/candidate',CandidateRoute)
 
 // admin related auths
 app.use("/api/admin", adminAuth);
+
 app.use("/api/admin/dashboard", adminDashboard);
+
 app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
-app.use("/api/admin/application", applicationManagement);
+app.use("/api/admin/application", applicationManagement)
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 app.use("/api/candidate", CandidateRoute);
 
@@ -160,6 +171,7 @@ app.use("/dropdown" , dropDownItems) ;
 
 //student dashboard
 app.use("/api/student-dashboard", studentDashboardRoute);
+app.use("/api/career-insights", CareerInsightsRoute);
 
 // employer Hiring channel
 app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
@@ -240,5 +252,8 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+import testRoute from "./routes/test.js";
+app.use("/api/test", testRoute);
 
 startServer();

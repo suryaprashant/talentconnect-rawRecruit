@@ -273,6 +273,7 @@ export async function createApplicationService({
   appliedForCompanyId,
   jobId,
   jobType,
+  matchScore, //  added
 }) {
 
   console.log("🔍 createApplicationService called with:", {
@@ -281,15 +282,30 @@ export async function createApplicationService({
     appliedForCompanyId,
     jobId,
     jobType,
+    matchScore, //  log it
   });
+
   try {
-    // 1️⃣ Decide applicant
+    //  EXTRA SAFETY VALIDATION (defense-in-depth)
+    if (matchScore !== undefined && matchScore !== null) {
+      if (
+        typeof matchScore !== "number" ||
+        matchScore < 0 ||
+        matchScore > 100
+      ) {
+        return {
+          success: false,
+          message: "Invalid match score",
+        };
+      }
+    }
+
+    //  Decide applicant
     let applicantId;
 
     if (appliedByType === "company") {
       applicantId = appliedForCompanyId;
     } else {
-      // employer / student / college / fresher / professional
       applicantId = appliedByUserId;
     }
 
@@ -298,11 +314,11 @@ export async function createApplicationService({
         _id: jobId,
         jobType: "Referral",
       }).select("approvalStatus");
-    
+
       if (!job) {
         return { success: false, message: "Referral job not found" };
       }
-    
+
       if (job.approvalStatus !== "Approved") {
         return {
           success: false,
@@ -311,18 +327,16 @@ export async function createApplicationService({
       }
     }
 
-    // 2️⃣ Build SAFE uniqueness condition
+    //  Build SAFE uniqueness condition
     const match = {
       job: jobId,
       jobType,
-       applicant: applicantId,
+      applicant: applicantId,
     };
 
     if (appliedForCompanyId) {
-      // company or employer-on-behalf
       match.appliedForCompany = appliedForCompanyId;
     } else {
-      // student / college / employer independent
       match.applicant = applicantId;
     }
 
@@ -345,12 +359,19 @@ export async function createApplicationService({
       if (existing.currentStatus === "Saved") {
         existing.currentStatus = "Applied";
         existing.statusHistory.push({ status: "Applied" });
+
+        //  UPDATE MATCH SCORE ALSO
+        if (matchScore !== undefined) {
+          existing.matchScore = matchScore;
+        }
+
         await existing.save();
+
         return { success: true, message: "Application submitted!" };
       }
     }
 
-    // 3️⃣ Create new application
+    //  Create new application
     const newApplication = new Application({
       applicant: applicantId,
       applicantType: appliedByType,
@@ -360,11 +381,14 @@ export async function createApplicationService({
       jobType,
       statusHistory: [{ status: "Applied" }],
       currentStatus: "Applied",
+
+      matchScore: matchScore ?? null, //  STORE HERE
     });
 
     await newApplication.save();
 
     return { success: true, message: "Application submitted!" };
+
   } catch (error) {
     console.error("createApplicationService error:", error);
     throw new Error("Failed to Save");

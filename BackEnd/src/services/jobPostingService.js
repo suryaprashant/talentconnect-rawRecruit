@@ -3,6 +3,12 @@ import { JobPostingTable } from '../models/jobPostingsModel.js';
 import Application from "../models/applicationModel.js";
 import OnboardingModel from '../models/studentonboardingModel.js';
 import { getStudentService } from './studentService.js';
+import {
+  fetchWeights,
+  fetchThreshold,
+  scoreJob,
+  logConfig,
+} from "../utils/relevancyEngine.js";
 export const getProfessionalReferralsService = async (userId) => {
   try {
         // Step 1: 
@@ -192,47 +198,120 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
 
    
 
-export const getReferralJobsService = async (jobType, candidatePostedId) => {
-    try {
-        const response = await JobPostingTable.find({
-            jobType: jobType,
-            approvalStatus: "Approved", 
-            candidatePosted: { $ne: candidatePostedId }
-        })
-            .populate('candidatePosted')
-            .lean()
-            .sort({ createdAt: -1 });
+// export const getReferralJobsService = async (jobType, candidatePostedId) => {
+//     try {
+//         const response = await JobPostingTable.find({
+//             jobType: jobType,
+//             approvalStatus: "Approved", 
+//             candidatePosted: { $ne: candidatePostedId }
+//         })
+//             .populate('candidatePosted')
+//             .lean()
+//             .sort({ createdAt: -1 });
 
-        // If userId provided, filter out jobs the user already applied for
-        if (candidatePostedId) {
-            try {
-                let applicantId = candidatePostedId;
+//         // If userId provided, filter out jobs the user already applied for
+//         if (candidatePostedId) {
+//             try {
+//                 let applicantId = candidatePostedId;
 
-                if (!applicantId) {
-                    try {
-                        applicantId = new mongoose.Types.ObjectId(userId);
-                    } catch (e) {
-                        applicantId = userId;
-                    }
-                }
+//                 if (!applicantId) {
+//                     try {
+//                         applicantId = new mongoose.Types.ObjectId(userId);
+//                     } catch (e) {
+//                         applicantId = userId;
+//                     }
+//                 }
 
-                const jobIds = response.map(r => r._id);
-                const applications = await Application.find({ applicant: applicantId, job: { $in: jobIds } }).select('job').lean();
-                const appliedJobIds = new Set(applications.map(a => String(a.job)));
-                const filtered = response.filter(r => !appliedJobIds.has(String(r._id)));
-                return filtered;
-            } catch (err) {
-                console.error('Error filtering referral jobs by applications:', err);
-                return { success: true, response };
-            }
-        }
+//                 const jobIds = response.map(r => r._id);
+//                 const applications = await Application.find({ applicant: applicantId, job: { $in: jobIds } }).select('job').lean();
+//                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
+//                 const filtered = response.filter(r => !appliedJobIds.has(String(r._id)));
+//                 return filtered;
+//             } catch (err) {
+//                 console.error('Error filtering referral jobs by applications:', err);
+//                 return { success: true, response };
+//             }
+//         }
 
-        return response;
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
-    }
-}
+//         return response;
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+export const getReferralJobsService = async (candidatePostedId, userId) => {
+  // ── STEP 1: Weights & threshold in parallel ──────────────────────────────
+  const [W, thresholdConfig] = await Promise.all([
+    fetchWeights(),
+    fetchThreshold(),
+  ]);
+  const visibilityThreshold = thresholdConfig.value;
+
+  logConfig(W, thresholdConfig, "REFERRAL JOBS ENGINE");
+
+  // ── STEP 2: Student profile + applied jobs ───────────────────────────────
+  const student = userId
+    ? await OnboardingModel.findOne({ userId }).lean()
+    : null;
+
+  const appliedJobIds = student
+    ? await Application.find({ applicant: student._id }).distinct("job")
+    : [];
+
+  // ── STEP 3: DB query ─────────────────────────────────────────────────────
+  // Referral jobs: approved, not posted by this student, not already applied
+  const query = {
+    jobType: "Referral",
+    approvalStatus: "Approved",
+    candidatePosted: { $ne: candidatePostedId },
+    ...(appliedJobIds.length > 0 && { _id: { $nin: appliedJobIds } }),
+  };
+
+  const jobs = await JobPostingTable.find(query)
+    .populate("candidatePosted")   // poster's Onboarding doc (name, email, etc.)
+    .populate("companyPosted")     // in case some referral jobs have a company too
+    .lean()
+    .sort({ createdAt: -1 });
+
+  console.log(
+    `\x1b[35m[REFERRAL ENGINE] ${jobs.length} jobs to score` +
+    `${student ? ` for: ${student.name} (${student.email})` : " — guest"}\x1b[0m\n`
+  );
+
+  // ── STEP 4: Guest — no profile, return unscored ──────────────────────────
+  if (!student) {
+    return jobs
+      .map((job) => ({
+        ...job,
+        matchScore: 0,
+        companyName: job.candidatePosted?.name || "Unknown",
+      }))
+      .filter((job) => job.matchScore >= visibilityThreshold);
+  }
+
+  // ── STEP 5: Score every job ──────────────────────────────────────────────
+  const scoredJobs = jobs.map((job, i) =>
+    scoreJob(job, student, W, i, "Referral Job")
+  );
+
+  // ── STEP 6: Threshold + broadcast filter, sort, strip internal flag ───────
+  const belowThreshold = scoredJobs.filter(
+    (j) => j.matchScore < visibilityThreshold
+  ).length;
+ 
+
+  const finalData = scoredJobs
+    .filter((j) => j.matchScore >= visibilityThreshold)
+   
+    .sort((a, b) => b.matchScore - a.matchScore)
+    
+
+  // ── Summary log ──────────────────────────────────────────────────────────
+ 
+
+  return finalData;
+};
 
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {
     try {

@@ -16,6 +16,11 @@ function Fresher_Profile() {
   const [switchToPro, setSwitchToPro] = useState(false);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [hasOnboardingData, setHasOnboardingData] = useState(true);
+  const [stats, setStats] = useState({
+    hiringScore: null,
+    rank: null,
+    resumeScore: null,
+  });
   const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState({
@@ -90,6 +95,29 @@ function Fresher_Profile() {
         label: city.name,
       }))
       ?.sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_Backend_URL;
+        const [rankingRes, careerRes] = await Promise.all([
+          axios.get(`${backendUrl}/api/career-insights/ranking`),
+          axios.get(`${backendUrl}/api/career-insights`),
+        ]);
+        const insights = careerRes.data.data;
+        const ranking = rankingRes.data.data;
+        setStats({
+          hiringScore: insights.hiringScore,
+          rank: ranking.rank,
+          resumeScore: insights.resumeScore,
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   useEffect(() => {
@@ -2275,11 +2303,49 @@ function Fresher_Profile() {
             </div>
           </div>
           <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
+            {/* <div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                 {profileData.fullName || 'Name Surname'}
               </h2>
               <p className="text-gray-600">{profileData.email || 'hello@gmail.com'}</p>
+            </div> */}
+            <div className="flex items-center justify-between w-full">
+              {/* LEFT: Name + Email */}
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  {profileData.fullName || 'Name Surname'}
+                </h2>
+                <p className="text-gray-600">
+                  {profileData.email || 'hello@gmail.com'}
+                </p>
+              </div>
+
+              {/* RIGHT: Scores */}
+              <div className="flex gap-6">
+                {/* Hiring Score */}
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-[#667eea]">
+                    {stats.hiringScore ?? '--'}
+                  </p>
+                  <p className="text-sm text-gray-500">Hiring Score</p>
+                </div>
+
+                {/* Rank */}
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-[#667eea]">
+                    {stats.rank ?? '--'}
+                  </p>
+                  <p className="text-sm text-gray-500">Rank</p>
+                </div>
+
+                {/* Resume Score */}
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-[#667eea]">
+                    {stats.resumeScore ?? '--'}
+                  </p>
+                  <p className="text-sm text-gray-500">Resume Score</p>
+                </div>
+              </div>
             </div>
             {/*<div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Switch to Professional</span>

@@ -5,6 +5,7 @@ import OnboardingModel from "../../models/studentonboardingModel.js";
 import { getStudentService } from "../../services/studentService.js";
 import { getCompanyService, getEmployerService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
+import RelevancyWeights from "../../models/Relevancyweightsmodel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
 import {getProfessionalReferralsService} from "../../services/jobPostingService.js"
@@ -1104,67 +1105,479 @@ export const getJobPostings = async (req, res) => {
 //     }
 // };
 
-export const getInternshipPostings = async (req, res) => {
-    console.log('here i am ')
-    try {
-        const userId = req.user?._id;
-        let studentLocations = [];
-        let studentProfileId = null;
-        let appliedJobIds = [];
+// export const getInternshipPostings = async (req, res) => {
+//     console.log('here i am ')
+//     try {
+//         const userId = req.user?._id;
+//         let studentLocations = [];
+//         let studentProfileId = null;
+//         let appliedJobIds = [];
 
-        // 1. Fetch Student Profile Standardized
-        if (userId) {
-            const studentProfile = await getStudentService(userId);
-            if (studentProfile?.success && studentProfile.data?.length > 0) {
-                const student = studentProfile.data[0];
-                studentProfileId = student._id;
-                studentLocations = student.locations || [];
+//         // 1. Fetch Student Profile Standardized
+//         if (userId) {
+//             const studentProfile = await getStudentService(userId);
+//             if (studentProfile?.success && studentProfile.data?.length > 0) {
+//                 const student = studentProfile.data[0];
+//                 studentProfileId = student._id;
+//                 studentLocations = student.locations || [];
 
-                // Fetch jobs student already applied to
-                appliedJobIds = await Application.find({ applicant: studentProfileId }).distinct("job");
-            }
-        }
+//                 // Fetch jobs student already applied to
+//                 appliedJobIds = await Application.find({ applicant: studentProfileId }).distinct("job");
+//             }
+//         }
 
-        // 2. Fetch Base Postings (assuming this service handles basic db fetching)
-        const postings = await getJobPostingsByJobTypeService("Internship", userId);
+//         // 2. Fetch Base Postings (assuming this service handles basic db fetching)
+//         const postings = await getJobPostingsByJobTypeService("Internship", userId);
 
-        // 3. Apply Strict Visibility Logic
-        const filteredByBroadcast = postings.filter((posting) => {
-            // Respect basic visibility
-            if (posting.visibleTo === "College") return false;
+//         // 3. Apply Strict Visibility Logic
+//         const filteredByBroadcast = postings.filter((posting) => {
+//             // Respect basic visibility
+//             if (posting.visibleTo === "College") return false;
 
-            // Strict Broadcast Logic: student must have job venue in their locations
-            if (posting.broadcastType === "Location") {
-                if (!studentLocations.length) return false;
+//             // Strict Broadcast Logic: student must have job venue in their locations
+//             if (posting.broadcastType === "Location") {
+//                 if (!studentLocations.length) return false;
 
-                const norm = (v) => v ? String(v).toLowerCase().replace(/[\s.-]/g, "").trim() : "";
-                const jVenue = norm(posting.location);
-                const sLocs = studentLocations.map(norm);
+//                 const norm = (v) => v ? String(v).toLowerCase().replace(/[\s.-]/g, "").trim() : "";
+//                 const jVenue = norm(posting.location);
+//                 const sLocs = studentLocations.map(norm);
 
-                // MATCH: Does student's preference list include the job venue?
-                const isVenueMatch = sLocs.includes(jVenue);
+//                 // MATCH: Does student's preference list include the job venue?
+//                 const isVenueMatch = sLocs.includes(jVenue);
 
-                // Bypass if workMode is Remote (Standard practice)
-                // if (posting.workMode?.includes("Remote")) return true;
+//                 // Bypass if workMode is Remote (Standard practice)
+//                 // if (posting.workMode?.includes("Remote")) return true;
 
-                if (!isVenueMatch) return false;
-            }
-            return true;
-        });
+//                 if (!isVenueMatch) return false;
+//             }
+//             return true;
+//         });
 
-        // 4. Remove Already Applied Postings
-        const finalPostings = userId && appliedJobIds.length > 0
-            ? filteredByBroadcast.filter(p => !appliedJobIds.some(id => id.equals(p._id)))
-            : filteredByBroadcast;
+//         // 4. Remove Already Applied Postings
+//         const finalPostings = userId && appliedJobIds.length > 0
+//             ? filteredByBroadcast.filter(p => !appliedJobIds.some(id => id.equals(p._id)))
+//             : filteredByBroadcast;
 
-        sendResponse(res, 200, { data: finalPostings });
+//         sendResponse(res, 200, { data: finalPostings });
 
-    } catch (error) {
-        console.error("Internship error:", error.message);
-        sendError(res, 500, "Internal server error");
+//     } catch (error) {
+//         console.error("Internship error:", error.message);
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
+
+
+
+
+
+
+/*
+ * WEIGHT DISTRIBUTION — loaded dynamically from RelevancyWeights collection
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Job Roles     → 30%   (W.jobRoles)
+ *  Skills        → 25%   (W.skills)
+ *  Academics     → 15%   (W.cgpa [7%] + W.batchYear [8%])
+ *  Location      → 15%   (W.location)
+ *  Salary        → 10%   (W.salary)
+ *  Tools         →  5%   (W.tools)
+ *  ─────────────────
+ *  Total           100%
+ *
+ * Weights are fetched fresh on each request from the DB so admin changes
+ * take effect immediately without restarting the server.
+ *
+ * Threshold is fetched from the admin Auth document (jobVisibilityThreshold).
+ * Broadcasting filter (broadcastType === "Location") is applied BEFORE scoring
+ * (strict visibility gate preserved from original).
+ */
+
+// ─── Helper: normalise strings for loose comparison ──────────────────────────
+const norm = (v) =>
+  v ? String(v).toLowerCase().replace(/[\s.\-_]/g, "").trim() : "";
+
+// ─── Fetch weights from DB with fallback to hardcoded defaults ───────────────
+const fetchWeights = async () => {
+  try {
+    const config = await RelevancyWeights.findOne().lean();
+    if (config) {
+      return {
+        jobRoles:  config.internshipJobRoles  ?? config.jobRoles   ?? 30,
+        skills:    config.internshipSkills    ?? config.skills     ?? 25,
+        cgpa:      config.internshipCgpa      ?? config.cgpa       ??  7,
+        batchYear: config.internshipBatchYear ?? config.batchYear  ??  8,
+        location:  config.internshipLocation  ?? config.location   ?? 15,
+        salary:    config.internshipSalary    ?? config.salary     ?? 10,
+        tools:     config.internshipTools     ?? config.tools      ??  5,
+        _source: "database",
+      };
     }
+  } catch (err) {
+    console.error(
+      "\x1b[31m[WEIGHTS] DB fetch failed, using defaults:\x1b[0m",
+      err.message
+    );
+  }
+  // Hardcoded fallback defaults
+  return {
+    jobRoles: 30, skills: 25, cgpa: 7,
+    batchYear: 8, location: 15, salary: 10, tools: 5,
+    _source: "hardcoded-defaults",
+  };
 };
 
+// ─── Fetch admin visibility threshold from Auth collection ───────────────────
+const fetchThreshold = async () => {
+  try {
+    const adminDoc = await Auth.findOne({ userType: "admin" })
+      .select("jobVisibilityThreshold email")
+      .lean();
+
+    if (adminDoc) {
+      return {
+        value:      adminDoc.jobVisibilityThreshold ?? 0,
+        adminEmail: adminDoc.email || "unknown",
+        _source:    "database",
+      };
+    }
+  } catch (err) {
+    console.error(
+      "\x1b[31m[THRESHOLD] DB fetch failed, defaulting to 0:\x1b[0m",
+      err.message
+    );
+  }
+  return { value: 0, adminEmail: "N/A", _source: "hardcoded-default" };
+};
+
+// ─── Pretty-print weights & threshold for verification ───────────────────────
+const logConfig = (W, threshold) => {
+  const total =
+    W.jobRoles + W.skills + W.cgpa + W.batchYear +
+    W.location + W.salary + W.tools;
+
+  console.log("\n\x1b[33m╔══════════════════════════════════════════════╗\x1b[0m");
+  console.log(  "\x1b[33m║    INTERNSHIP RELEVANCY ENGINE CONFIG        ║\x1b[0m");
+  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
+  console.log(`\x1b[33m║  Source (Weights)   : ${String(W._source).padEnd(22)}\x1b[0m║`);
+  console.log(`\x1b[33m║  Source (Threshold) : ${String(threshold._source).padEnd(22)}\x1b[0m║`);
+  console.log(`\x1b[33m║  Admin Email        : ${String(threshold.adminEmail).padEnd(22)}\x1b[0m║`);
+  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
+  console.log(  "\x1b[33m║  WEIGHTS                                     ║\x1b[0m");
+  console.log(`\x1b[33m║    Job Roles     : ${String(W.jobRoles  + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    Skills        : ${String(W.skills    + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    CGPA          : ${String(W.cgpa      + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    Batch Year    : ${String(W.batchYear + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    Location      : ${String(W.location  + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    Salary        : ${String(W.salary    + "%").padEnd(26)}\x1b[0m║`);
+  console.log(`\x1b[33m║    Tools         : ${String(W.tools     + "%").padEnd(26)}\x1b[0m║`);
+  console.log(  "\x1b[33m║    ─────────────────────────────────         ║\x1b[0m");
+  console.log(
+    `\x1b[33m║    TOTAL         : ${String(total + "%").padEnd(26)}\x1b[0m` +
+    `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`
+  );
+  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
+  console.log(`\x1b[33m║  THRESHOLD       : ${String(threshold.value + "%").padEnd(26)}\x1b[0m║`);
+  console.log(  "\x1b[33m╚══════════════════════════════════════════════╝\x1b[0m\n");
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+export const getInternshipPostings = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    let studentLocations = [];
+    let studentProfileId = null;
+    let appliedJobIds = [];
+    let student = null;
+
+    // ── STEP 1: Fetch weights & threshold in parallel ─────────────────────
+    const [W, thresholdConfig] = await Promise.all([
+      fetchWeights(),
+      fetchThreshold(),
+    ]);
+    const visibilityThreshold = thresholdConfig.value;
+
+    // Print verified config to console for admin/developer verification
+    logConfig(W, thresholdConfig);
+
+    // ── STEP 2: Fetch student profile & applied jobs ───────────────────────
+    if (userId) {
+      const studentProfile = await getStudentService(userId);
+      if (studentProfile?.success && studentProfile.data?.length > 0) {
+        student = studentProfile.data[0];
+        studentProfileId = student._id;
+        studentLocations = student.locations || [];
+
+        appliedJobIds = await Application
+          .find({ applicant: studentProfileId })
+          .distinct("job");
+      }
+    }
+
+    // ── STEP 3: Fetch base internship postings ────────────────────────────
+    const postings = await getJobPostingsByJobTypeService("Internship", userId);
+
+    // ── STEP 4: Strict visibility + broadcast filter (preserved) ─────────
+    const filteredByBroadcast = postings.filter((posting) => {
+      if (posting.visibleTo === "College") return false;
+
+      if (posting.broadcastType === "Location") {
+        if (!studentLocations.length) return false;
+
+        const jVenue = norm(posting.location);
+        const sLocs  = studentLocations.map(norm);
+
+        if (!sLocs.includes(jVenue)) return false;
+      }
+
+      return true;
+    });
+
+    // ── STEP 5: Remove already-applied postings ───────────────────────────
+    const afterAppliedFilter =
+      userId && appliedJobIds.length > 0
+        ? filteredByBroadcast.filter(
+            (p) => !appliedJobIds.some((id) => id.equals(p._id))
+          )
+        : filteredByBroadcast;
+
+    // ── STEP 6: GUEST (not logged in) — return all, score 0 ──────────────
+    if (!student) {
+      console.log("\x1b[35m[RELEVANCY] Guest user — skipping scoring\x1b[0m");
+      const guestPostings = afterAppliedFilter
+        .map((p) => ({ ...p, matchScore: 0 }))
+        .filter((p) => p.matchScore >= visibilityThreshold);
+
+      return sendResponse(res, 200, { data: guestPostings });
+    }
+
+    console.log(
+      `\x1b[35m[RELEVANCY ENGINE] Scoring ${afterAppliedFilter.length} internships for student: ${student.name} (${student.email})\x1b[0m\n`
+    );
+
+    // ── STEP 7: Score every internship ────────────────────────────────────
+    const scoredPostings = afterAppliedFilter.map((job, index) => {
+      let breakdown = {
+        roles: 0, skills: 0, cgpa: 0,
+        batchYear: 0, location: 0, salary: 0, tools: 0,
+      };
+      let logs = { ...breakdown };
+
+      const fullJobText = (
+        (job.description || "") + " " + (job.eligibilityCriteria || "")
+      ).toLowerCase();
+
+      const normJobText = norm(
+        (job.description || "") + " " + (job.eligibilityCriteria || "")
+      );
+
+      const jobReqSkills = (job.skills || []).map(norm);
+      const companyName =
+        job.companyPosted?.companyDetails?.companyName ||
+        job.companyName ||
+        "Company";
+
+      // ── 1. JOB ROLES (W.jobRoles %) ─────────────────────────────────
+      const sRoles = (student.jobRoles || []).map(norm);
+      const jRoles = (job.jobRoles || []).map(norm);
+
+      if (jRoles.length === 0) {
+        breakdown.roles = W.jobRoles;
+        logs.roles = `Full Credit (no roles specified) → ${W.jobRoles}/${W.jobRoles}`;
+      } else {
+        const matchedRoles = sRoles.filter((r) => jRoles.includes(r));
+        if (matchedRoles.length > 0) {
+          breakdown.roles = Math.min(
+            Math.round((matchedRoles.length / jRoles.length) * W.jobRoles),
+            W.jobRoles
+          );
+          logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
+        } else {
+          const softMatch = sRoles.some((r) => normJobText.includes(r));
+          if (softMatch) {
+            breakdown.roles = Math.round(W.jobRoles * 0.33); // ~10 at default 30
+            logs.roles = `Soft match via description → ${breakdown.roles}/${W.jobRoles}`;
+          } else {
+            logs.roles = `No match → 0/${W.jobRoles}`;
+          }
+        }
+      }
+
+      // ── 2. CORE SKILLS (W.skills %) ──────────────────────────────────
+      const studentSkills = (student.skills || []).map(norm);
+
+      if (jobReqSkills.length === 0) {
+        breakdown.skills = W.skills;
+        logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
+      } else {
+        const matchedSkills = jobReqSkills.filter(
+          (s) => studentSkills.includes(s) || normJobText.includes(s)
+        );
+        breakdown.skills = Math.round(
+          (matchedSkills.length / jobReqSkills.length) * W.skills
+        );
+        logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
+      }
+
+      // ── 3. CGPA (W.cgpa %) ───────────────────────────────────────────
+      const sCGPA = parseFloat(student.cgpa) || 0;
+      const requiredCGPA = parseFloat(job.cgpa) || 0;
+      const cgpaRegex =
+        /(?:cgpa|cut-off|cutoff|minimum|min)\s*[:>=]*\s*([0-9]\.[0-9]{1,2})/i;
+
+      const effectiveCGPA =
+        requiredCGPA > 0
+          ? requiredCGPA
+          : (() => {
+              const m = fullJobText.match(cgpaRegex);
+              return m ? parseFloat(m[1]) : 0;
+            })();
+
+      if (effectiveCGPA === 0) {
+        breakdown.cgpa = W.cgpa;
+        logs.cgpa = `Full Credit (no min CGPA) → ${W.cgpa}/${W.cgpa}`;
+      } else if (sCGPA >= effectiveCGPA) {
+        breakdown.cgpa = W.cgpa;
+        logs.cgpa = `Match (${sCGPA} ≥ ${effectiveCGPA}) → ${W.cgpa}/${W.cgpa}`;
+      } else {
+        logs.cgpa = `Fail (${sCGPA} < ${effectiveCGPA}) → 0/${W.cgpa}`;
+      }
+
+      // ── 4. BATCH YEAR (W.batchYear %) ────────────────────────────────
+      const sYear = norm(student.yearOfGraduation);
+      const yearRegex = /\b(202[0-9]|2030)\b/;
+
+      if (!yearRegex.test(fullJobText)) {
+        breakdown.batchYear = W.batchYear;
+        logs.batchYear = `Full Credit (no batch year specified) → ${W.batchYear}/${W.batchYear}`;
+      } else if (sYear && fullJobText.includes(sYear)) {
+        breakdown.batchYear = W.batchYear;
+        logs.batchYear = `Match (${sYear}) → ${W.batchYear}/${W.batchYear}`;
+      } else {
+        logs.batchYear = `Fail (batch mismatch) → 0/${W.batchYear}`;
+      }
+
+      // ── 5. LOCATION (W.location %) ───────────────────────────────────
+      const sLocs = (student.locations || []).map(norm);
+      const jLocs = (job.workLocation || []).map(norm);
+      const isRemote = (job.workMode || []).some((m) =>
+        norm(m).includes("remote")
+      );
+
+      if (jLocs.length === 0 && !job.city && !job.venue && !job.location) {
+        breakdown.location = W.location;
+        logs.location = `Full Credit (no location specified) → ${W.location}/${W.location}`;
+      } else if (isRemote) {
+        breakdown.location = W.location;
+        logs.location = `Remote role → ${W.location}/${W.location}`;
+      } else {
+        const matchedLocs = sLocs.filter(
+          (l) =>
+            jLocs.includes(l) ||
+            norm(job.city) === l ||
+            norm(job.venue).includes(l) ||
+            norm(job.location) === l       // internship-specific field
+        );
+        if (matchedLocs.length > 0) {
+          breakdown.location = W.location;
+          logs.location = `Matched [${matchedLocs.join(", ")}] → ${W.location}/${W.location}`;
+        } else {
+          logs.location = `Mismatch → 0/${W.location}`;
+        }
+      }
+
+      // ── 6. SALARY (W.salary %) ───────────────────────────────────────
+      const sExp = Number(student.expectedSalaryAmount) || 0;
+      const jSal = Number(job.packageDetails?.totalCTC) || 0;
+
+      if (sExp === 0 || jSal === 0) {
+        breakdown.salary = W.salary;
+        logs.salary = `Full Credit (no salary preference/hidden) → ${W.salary}/${W.salary}`;
+      } else if (jSal >= sExp) {
+        breakdown.salary = W.salary;
+        logs.salary = `Match (${jSal} ≥ ${sExp}) → ${W.salary}/${W.salary}`;
+      } else if (jSal >= sExp * 0.85) {
+        breakdown.salary = Math.round(W.salary * 0.5); // ~5 at default 10
+        logs.salary = `Near match 85%+ → ${breakdown.salary}/${W.salary}`;
+      } else {
+        logs.salary = `Below target (${jSal} < ${sExp}) → 0/${W.salary}`;
+      }
+
+      // ── 7. TOOLS & PLATFORMS (W.tools %) ─────────────────────────────
+      const studentTools = (student.toolsAndPlatforms || []).map(norm);
+      const jobTools = (job.toolsAndPlatforms || []).map(norm);
+
+      if (jobTools.length === 0) {
+        breakdown.tools = W.tools;
+        logs.tools = `Full Credit (no tools specified) → ${W.tools}/${W.tools}`;
+      } else {
+        const matchedTools = studentTools.filter(
+          (t) => jobTools.includes(t) || normJobText.includes(t)
+        );
+        if (matchedTools.length >= 2) {
+          breakdown.tools = W.tools;
+        } else if (matchedTools.length === 1) {
+          breakdown.tools = Math.round(W.tools * 0.6); // ~3 at default 5
+        }
+        logs.tools = `[${matchedTools.join(", ") || "none"}] → ${breakdown.tools}/${W.tools}`;
+      }
+
+      // ── TOTAL SCORE ──────────────────────────────────────────────────
+      const totalScore = Math.min(
+        breakdown.roles +
+          breakdown.skills +
+          breakdown.cgpa +
+          breakdown.batchYear +
+          breakdown.location +
+          breakdown.salary +
+          breakdown.tools,
+        100
+      );
+
+      // ── PER-JOB CONSOLE LOG ──────────────────────────────────────────
+      console.log(`\x1b[36m┌─ Internship #${index + 1}: ${companyName} | "${job.jobTitle || "N/A"}"\x1b[0m`);
+      console.log(`\x1b[36m│  Roles      : ${logs.roles}\x1b[0m`);
+      console.log(`\x1b[36m│  Skills     : ${logs.skills}\x1b[0m`);
+      console.log(`\x1b[36m│  CGPA       : ${logs.cgpa}\x1b[0m`);
+      console.log(`\x1b[36m│  Batch Year : ${logs.batchYear}\x1b[0m`);
+      console.log(`\x1b[36m│  Location   : ${logs.location}\x1b[0m`);
+      console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
+      console.log(`\x1b[36m│  Tools      : ${logs.tools}\x1b[0m`);
+      console.log(
+        `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: ${visibilityThreshold}% | ` +
+          `${totalScore >= visibilityThreshold
+            ? "\x1b[32mPASS\x1b[0m"
+            : "\x1b[31mFAIL (below threshold)\x1b[0m"}\n`
+      );
+
+      return {
+        ...job,
+        matchScore: totalScore,
+        companyName,
+      };
+    });
+
+    // ── STEP 8: Apply threshold & sort ────────────────────────────────────
+    const belowThreshold = scoredPostings.filter(
+      (j) => j.matchScore < visibilityThreshold
+    ).length;
+
+    const finalPostings = scoredPostings
+      .filter((j) => j.matchScore >= visibilityThreshold)
+      .sort((a, b) => b.matchScore - a.matchScore);
+
+    // ── Summary log ───────────────────────────────────────────────────────
+    console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
+    console.log(`\x1b[33m║  Total internships fetched : ${String(afterAppliedFilter.length).padEnd(20)}\x1b[0m║`);
+    console.log(`\x1b[33m║  Below threshold (<${String(visibilityThreshold + "%)").padEnd(4)})  : ${String(belowThreshold).padEnd(20)}\x1b[0m║`);
+    console.log(`\x1b[33m║  Returned to client        : ${String(finalPostings.length).padEnd(20)}\x1b[0m║`);
+    console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
+
+    sendResponse(res, 200, { data: finalPostings });
+  } catch (error) {
+    console.error("\x1b[31m[INTERNSHIP RELEVANCY ERROR]\x1b[0m", error);
+    sendError(res, 500, "Internal server error");
+  }
+};
 
 export const getIntershipById = async (req, res) => {
     console.log('in internship section')
@@ -1251,21 +1664,20 @@ export const getIntershipById = async (req, res) => {
      */}
 
 export const getReferralJobs = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const postId = await getStudentService(userId);
+  try {
+    const userId = req.user._id;
 
-        const candidatePostedId = postId.data[0]._id;
+    const postId = await getStudentService(userId);
+    const candidatePostedId = postId.data[0]._id;
 
-        const response = await getReferralJobsService("Referral", candidatePostedId);
-        res.status(200).json({ success: true, data: response });
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
+    const data = await getReferralJobsService(candidatePostedId, userId);
 
-    }
-}
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error("[getReferralJobs]", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const getReferralJobById = async (req, res) => {
     const { id } = req.params;

@@ -92,6 +92,8 @@ export async function submitOnboardingFormService(userId, body, files) {
     servingNoticePeriod: body.servingNoticePeriod === "true",
     totalYearsOfExperience: body.totalYearsOfExperience,
     currentCompany: body.currentCompany,
+    companyEmail: body.companyEmail || "",
+emailVerified: body.emailVerified === "true" || body.emailVerified === true,
 
     certifications: body.certifications,
     linkedin: body.linkedin,
@@ -378,4 +380,28 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     updatedUser,
     updatedOnboarding
   };
+};
+
+export const getCategorizedSkillsService = async (userId) => {
+  try {
+    const onboarding = await OnboardingModel.findOne(
+      { userId },
+      { categorizedSkills: 1, _id: 0 }
+    );
+
+    if (!onboarding) {
+      return null;
+    }
+
+    return onboarding.categorizedSkills || {
+      highInDemand: [],
+      growing: [],
+      saturated: [],
+      obsolete: []
+    };
+
+  } catch (error) {
+    console.error("Service error (getCategorizedSkills):", error);
+    throw error;
+  }
 };

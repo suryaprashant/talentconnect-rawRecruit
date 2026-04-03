@@ -6,6 +6,7 @@ import {
   updateOnboardingForm,
   getMasterData,
   createMasterData,
+  getCategorizedSkills,
 } from "../controllers/studentOnboardingController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js"; 
 import multer from "multer"; 
@@ -39,6 +40,9 @@ router.post(
 
 router.get("/onboarding/me", secureRoute, getOnboardingForm);
 
+// // fetch categorized skills
+// router.get("/onboarding/categorized-skills", secureRoute, getCategorizedSkills);
+
 router.put(
   "/onboarding/update",
   secureRoute, // Apply secureRoute here
@@ -62,7 +66,5 @@ router.get("/master-data", getMasterData);
 
 // Add custom option (during onboarding)
 router.post("/master-data", secureRoute, createMasterData);
-
-
 
 export default router;

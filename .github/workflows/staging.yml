@@ -57,3 +57,4 @@ jobs:
             cd ../BackEnd
             npm install
             pm2 reload rawrecruit-test || pm2 start src/app.js --name rawrecruit-test
+            pm2 reload rr-test-worker || pm2 start src/workers/scoreWorker.js --name rr-test-worker
