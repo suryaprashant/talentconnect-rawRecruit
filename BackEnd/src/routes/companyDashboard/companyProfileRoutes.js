@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 
-import { createCompanyProfile, getCompanyProfile, updateCompanyProfile, getCompanyImageByUserId } from '../../controllers/CompanyDashboard/companyProfileController.js';
+import { createCompanyProfile, getCompanyProfile, updateCompanyProfile, getCompanyImageByUserId, getCompanyProfileCompleteness } from '../../controllers/CompanyDashboard/companyProfileController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -20,6 +20,8 @@ router.post(
 router.get('/getInformation/:userId',secureRoute, getCompanyImageByUserId)
 router.get('/getInformation', secureRoute, getCompanyProfile);
 
+router.get('/profile-completeness',secureRoute,getCompanyProfileCompleteness)
+
 router.put(
   '/updateInformation', 
   secureRoute,
@@ -31,5 +33,7 @@ router.put(
   updateCompanyProfile
 );
 //router.get("/profile-image/:userId",secureRoute, getCompanyImageByUserId);
+
+
 
 export default router;
