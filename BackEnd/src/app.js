@@ -10,6 +10,7 @@ startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
 import { app, server } from "./socketIO/server.js";
+import {startScoreWorker} from "./workers/scoreWorker.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -241,6 +242,12 @@ const startServer = async () => {
     // THEN start the server
     server.listen(PORT, () => {
       console.log(`Server is running on PORT: ${PORT}`);
+      if (!global.workersStarted) {
+        startScoreWorker();
+        global.workersStarted = true;
+
+        console.log(" Score workers started ");
+      }
     });
   } catch (error) {
     console.error('Failed to start server:', error);
