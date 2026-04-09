@@ -69,7 +69,7 @@ export function getOncampusJobs() {
     .then(response => response)
     .catch(error => error);
 }
-
+//pool
 export function getPoolCampusForCompany() {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
     .then(response => response)
