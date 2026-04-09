@@ -120,15 +120,20 @@ import { seedDB } from "./scripts/metaScript.js";
 import collegeRoutes from './routes/collegeNameRoute.js';
 import companyRoute from "./routes/companyRoute.js"
 import CustomDropDown from "./routes/CustomDropDown.js"
+
 import CandidateRoute from "./routes/CandidateRoute.js"
 import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
 import adminBlogRoute from "./routes/admin/adminBlogRoute.js";
 import blogRoutes from "./routes/blogRoutes.js";
 
-app.use("/api/auth", authRoutes);
 
+
+
+app.use("/api/auth", authRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use("/api/blogs", blogRoutes);
+
+app.use('/api/candidate',CandidateRoute)
 
 // admin related auths
 app.use("/api/admin", adminAuth);
@@ -137,7 +142,7 @@ app.use("/api/admin/dashboard", adminDashboard);
 app.use("/api/admin/blogs", adminBlogRoute);
 app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
-app.use("/api/admin/application", applicationManagement);
+app.use("/api/admin/application", applicationManagement)
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 app.use("/api/candidate", CandidateRoute);
 

@@ -178,26 +178,51 @@ if (allJobRoles.length === 0) {
   }
 }
 
-  // ── 3. EXPERIENCE ───────────────────────────────────────────────────────────
-  const jobExpRequired = parseYearsFromString(job.yearsOfExperience);
-  const expRegex = /([0-9]+(?:\.[0-9]+)?)\s*(?:\+\s*)?years?\s*(?:of\s*)?(?:experience|exp)/i;
-  const effectiveExp =
-    jobExpRequired > 0
-      ? jobExpRequired
-      : (() => { const m = fullJobText.match(expRegex); return m ? parseFloat(m[1]) : 0; })();
 
-  if (effectiveExp === 0) {
-    breakdown.experience = W.experience;
-    logs.experience = `Full Credit (no exp req) → ${W.experience}/${W.experience}`;
-  } else if (studentExpYears >= effectiveExp) {
-    breakdown.experience = W.experience;
-    logs.experience = `Match (${studentExpYears.toFixed(1)}y ≥ ${effectiveExp}y) → ${W.experience}/${W.experience}`;
-  } else if (studentExpYears >= effectiveExp * 0.7) {
-    breakdown.experience = Math.round(W.experience * 0.5);
-    logs.experience = `Near match (${studentExpYears.toFixed(1)}y) → ${breakdown.experience}/${W.experience}`;
-  } else {
-    logs.experience = `Fail (${studentExpYears.toFixed(1)}y < ${effectiveExp}y) → 0/${W.experience}`;
-  }
+ // ── 3. EXPERIENCE ───────────────────────────────────────────────────────────
+const jobMinExp = parseYearsFromString(job.minYearofExperience);
+const jobMaxExp = parseYearsFromString(job.yearsOfExperience);
+
+const expRegex = /([0-9]+(?:\.[0-9]+)?)\s*(?:\+\s*)?years?\s*(?:of\s*)?(?:experience|exp)/i;
+
+const effectiveMin =
+  jobMinExp > 0
+    ? jobMinExp
+    : (() => { const m = fullJobText.match(expRegex); return m ? parseFloat(m[1]) : 0; })();
+
+const effectiveMax = jobMaxExp > 0 ? jobMaxExp : 0;
+
+console.log(`\x1b[33m[EXP DEBUG] Student Exp   : ${studentExpYears.toFixed(2)} yrs\x1b[0m`);
+console.log(`\x1b[33m[EXP DEBUG] Job Min Exp    : ${effectiveMin} yrs ${jobMinExp > 0 ? "(from field)" : "(from description/fallback)"}\x1b[0m`);
+console.log(`\x1b[33m[EXP DEBUG] Job Max Exp    : ${effectiveMax > 0 ? effectiveMax + " yrs" + (jobMaxExp > 0 ? " (from field)" : " (from description)") : "Not set"}\x1b[0m`);
+
+if (effectiveMin === 0 && effectiveMax === 0) {
+  breakdown.experience = W.experience;
+  logs.experience = `Full Credit (no exp req) → ${W.experience}/${W.experience}`;
+  console.log(`\x1b[32m[EXP DEBUG] Result: No requirement → Full Credit (${W.experience})\x1b[0m`);
+
+} else if (effectiveMax > 0 && studentExpYears > effectiveMax) {
+  const ratio = effectiveMax / studentExpYears;
+  breakdown.experience = Math.round(W.experience * Math.max(ratio, 0));
+  logs.experience = `Overqualified (${studentExpYears.toFixed(1)}y > max ${effectiveMax}y) → ${breakdown.experience}/${W.experience}`;
+  console.log(`\x1b[31m[EXP DEBUG] Result: Overqualified | ratio=${ratio.toFixed(2)} | score=${breakdown.experience}/${W.experience}\x1b[0m`);
+
+} else if (effectiveMin > 0 && studentExpYears >= effectiveMin) {
+  breakdown.experience = W.experience;
+  logs.experience = `In range (${studentExpYears.toFixed(1)}y ≥ min ${effectiveMin}y) → ${W.experience}/${W.experience}`;
+  console.log(`\x1b[32m[EXP DEBUG] Result: In range → Full Credit (${W.experience})\x1b[0m`);
+
+} else if (effectiveMin > 0 && studentExpYears >= effectiveMin * 0.7) {
+  const ratio = studentExpYears / effectiveMin;
+  breakdown.experience = Math.round(W.experience * ratio);
+  logs.experience = `Partial (${studentExpYears.toFixed(1)}y is ${Math.round(ratio * 100)}% of min ${effectiveMin}y) → ${breakdown.experience}/${W.experience}`;
+  console.log(`\x1b[33m[EXP DEBUG] Result: Partial | ratio=${ratio.toFixed(2)} (${Math.round(ratio * 100)}%) | score=${breakdown.experience}/${W.experience}\x1b[0m`);
+
+} else {
+  breakdown.experience = 0;
+  logs.experience = `Fail (${studentExpYears.toFixed(1)}y < 70% of min ${effectiveMin}y) → 0/${W.experience}`;
+  console.log(`\x1b[31m[EXP DEBUG] Result: Fail | ${studentExpYears.toFixed(2)}y < ${(effectiveMin * 0.7).toFixed(2)}y (70% of ${effectiveMin}y) | score=0/${W.experience}\x1b[0m`);
+}
 
   // ── 4. DEGREE ───────────────────────────────────────────────────────────────
   const studentDegree = norm(student.degree);

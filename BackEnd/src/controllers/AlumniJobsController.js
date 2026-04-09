@@ -1,7 +1,8 @@
 import  Onboarding  from "../models/studentonboardingModel.js";
 import {JobPostingTable}  from "../models/jobPostingsModel.js";
 import OpenAI from "openai";
-
+import Application from "../models/applicationModel.js";
+import mongoose from "mongoose";
 const openai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY, // Ensure this is in your .env file
   baseURL: "https://api.groq.com/openai/v1", // This tells the SDK to talk to Groq
@@ -153,5 +154,52 @@ export const getAlumniPostedJobs = async (req, res) => {
   } catch (error) {
     console.error("Profile Score API Error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+export const getNewApplications = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Get professional's onboarding profile ID
+    const myProfile = await Onboarding.findOne({ userId });
+    if (!myProfile) {
+      return res.status(404).json({ success: false, message: "Profile not found" });
+    }
+
+    const count = await Application.aggregate([
+      {
+        $match: {
+          jobType: "Referral",
+          isVisited: false,
+          adminApprovalStatus: "Approved",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobpostingtables",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobData",
+        },
+      },
+      { $unwind: "$jobData" },
+      {
+        $match: {
+          "jobData.candidatePosted": new mongoose.Types.ObjectId(myProfile._id), 
+        },
+      },
+      {
+        $count: "newApplications",
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      newApplications: count[0]?.newApplications || 0,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
