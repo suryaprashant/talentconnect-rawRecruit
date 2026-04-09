@@ -4,7 +4,7 @@ import Onboarding from "../models/studentonboardingModel.js";
 
 export const calculateHiringScoreService = async (userId) => {
   try {
-    // 🔹 1. Fetch career insights
+    //  1. Fetch career insights
     const insights = await CareerInsights.findOne({ userId }).lean();
 
     if (!insights) {
@@ -17,7 +17,7 @@ export const calculateHiringScoreService = async (userId) => {
       categorizedSkills = { highInDemand: [] }
     } = insights;
 
-    // 🔹 2. PROFILE SCORE
+    //  2. PROFILE SCORE
     const highDemandCount = categorizedSkills?.highInDemand?.length || 0;
 
     let profileScore =
@@ -25,7 +25,7 @@ export const calculateHiringScoreService = async (userId) => {
 
     profileScore = Math.min(100, profileScore);
 
-    // 🔹 3. ACTIVITY SCORE (last 3 days)
+    //  3. ACTIVITY SCORE (last 3 days)
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
     const onboarding = await Onboarding.findOne({ userId }).lean();
@@ -33,7 +33,7 @@ export const calculateHiringScoreService = async (userId) => {
       console.warn("No onboarding found for user:", userId);
       return null;
     }
-    // 🔥 only fetch required fields (performance)
+    //  only fetch required fields (performance)
     const recentApplications = await Application.find({
       applicant: onboarding._id,
       createdAt: { $gte: threeDaysAgo },
@@ -50,7 +50,7 @@ export const calculateHiringScoreService = async (userId) => {
     if (applicationCount >= 20) activityScore = 100;
     else activityScore = applicationCount * 5;
 
-    // 🔹 4. APPLICATION QUALITY SCORE
+    //  4. APPLICATION QUALITY SCORE
     let avgMatchScore = 0;
 
     if (applicationCount > 0) {
@@ -64,13 +64,13 @@ export const calculateHiringScoreService = async (userId) => {
 
     const applicationQualityScore = avgMatchScore;
 
-    // 🔹 5. FINAL HIRING SCORE
+    //  5. FINAL HIRING SCORE
     const hiringScore =
       (profileScore * 0.5) +
       (activityScore * 0.2) +
       (applicationQualityScore * 0.3);
 
-    // 🔹 6. INSIGHTS
+    //  6. INSIGHTS
     const insightsText = [];
 
     if (profileScore < 60) {
@@ -95,7 +95,7 @@ export const calculateHiringScoreService = async (userId) => {
       hiringInsights: insightsText
     };
 
-    // 🔥 7. SAVE IN SAME MODEL (IMPORTANT)
+    //  7. SAVE IN SAME MODEL (IMPORTANT)
     await CareerInsights.findOneAndUpdate(
       { userId },
       {

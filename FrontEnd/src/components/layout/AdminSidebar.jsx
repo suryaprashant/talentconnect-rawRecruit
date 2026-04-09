@@ -16,8 +16,9 @@ import { RiAccountPinCircleFill } from "react-icons/ri";
 const sidebarItems = [
   { name: "Dashboard", to: "/admin/dashboard", icon: <FaTachometerAlt /> },
   { name: "User Management", to: "/admin/users", icon: <FaUsers /> },
-  {name:   "referral posted", to: "/admin/referral-posted", icon :<IoAlbums />},
+  {name:   "Referral Posted", to: "/admin/referral-posted", icon :<IoAlbums />},
   { name:  "Manage Referral", to:"/admin/manage-referral",icon:<RiAccountPinCircleFill />},
+  { name: "Manage Blogs", to: "/admin/manage-blogs", icon: <IoAlbums /> },
   { name:  "Scheduled Interviews", to:"/admin/scheduled-interviews",icon:<RiAccountPinCircleFill />},
   { name: "Jobs & Drives", to: "/admin/jobs", icon: <FaBriefcase /> },
   { name: "Applications", to: "/admin/applications", icon: <FaClipboardList /> },
