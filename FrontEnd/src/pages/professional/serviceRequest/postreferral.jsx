@@ -99,7 +99,8 @@ function PostReferralJobPage() {
         },
         numberOfOpenings: '',
         minEducation: '',
-        yearsOfExperience: '',
+      minYearsOfExperience: '',
+maxYearsOfExperience: '',
         skills: [],
         certifications: [],
         workAuthorization: '',
@@ -135,7 +136,7 @@ function PostReferralJobPage() {
     const benefitsDropdownRef = useRef(null);
     const tagsDropdownRef = useRef(null);
 
-    const experienceOptions = ["0-1 years", "1-3 years", "3-5 years", "5-10 years", "10+ years"];
+    const experienceOptions = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "15", "20+"];
     const allCertifications = ["AWS Certified", "Microsoft Certified", "Google Cloud Certified", "Cisco Certified", "PMP"];
     const allBenefits = ["Health Insurance", "401(k)", "Paid Time Off", "Flexible Schedule", "Dental Insurance"];
     const workAuthOptions = ["Citizens Only", "Permanent Residents", "Work Visa Holders", "Any"];
@@ -375,6 +376,8 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
 
         const payload = {
             ...formData,
+            yearsOfExperience: formData.maxYearsOfExperience,
+            minYearofExperience: formData.minYearsOfExperience,
             packageDetails: {
                 currency: formData.packageDetails.currency,
                 totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
@@ -684,16 +687,26 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
 
                     {/* Experience + Work Auth */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                        <div>
-                            <FieldLabel htmlFor="yearsOfExperience">Years of Experience</FieldLabel>
-                            <div className="relative">
-                                <select id="yearsOfExperience" name="yearsOfExperience" className={`${inputCls} appearance-none pr-9`} value={formData.yearsOfExperience} onChange={handleInputChange}>
-                                    <option value="">Select experience range</option>
-                                    {experienceOptions.map((o, i) => <option key={i} value={o}>{o}</option>)}
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
-                            </div>
-                        </div>
+                       <div>
+    <FieldLabel htmlFor="minYearsOfExperience">Min. Years of Experience</FieldLabel>
+    <div className="relative">
+        <select id="minYearsOfExperience" name="minYearsOfExperience" className={`${inputCls} appearance-none pr-9`} value={formData.minYearsOfExperience} onChange={handleInputChange}>
+            <option value="">Select min experience</option>
+            {experienceOptions.map((o, i) => <option key={i} value={o}>{o}</option>)}
+        </select>
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+    </div>
+</div>
+<div>
+    <FieldLabel htmlFor="maxYearsOfExperience">Max. Years of Experience</FieldLabel>
+    <div className="relative">
+        <select id="maxYearsOfExperience" name="maxYearsOfExperience" className={`${inputCls} appearance-none pr-9`} value={formData.maxYearsOfExperience} onChange={handleInputChange}>
+            <option value="">Select max experience</option>
+            {experienceOptions.map((o, i) => <option key={i} value={o}>{o}</option>)}
+        </select>
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+    </div>
+</div>
                         <div>
                             <FieldLabel htmlFor="workAuthorization">Work Authorization</FieldLabel>
                             <div className="relative">

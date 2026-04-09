@@ -1,8 +1,78 @@
 import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
-import { updateCollegeProfileService, getStudentsByCollegeIdService } from '../../services/collegeService.js';
+import { updateCollegeProfileService } from '../../services/collegeService.js';
+import CollegeOnboarding from "../../models/collegeDashboard/collegeOnboardingModel.js";
 
+
+
+
+
+const PROFILE_FIELDS = [
+  // ── College / University Details ──────────────────────────────────────
+  { section: "collegeUniversityDetails", path: "collegeName"          },
+  { section: "collegeUniversityDetails", path: "affiliatedUniversity" },
+  { section: "collegeUniversityDetails", path: "establishedYear"      },
+  { section: "collegeUniversityDetails", path: "phoneNumber"          },
+  { section: "collegeUniversityDetails", path: "alternatePhoneNumber" },
+  { section: "collegeUniversityDetails", path: "collegeLocation"      },
+  { section: "collegeUniversityDetails", path: "country"              },
+  { section: "collegeUniversityDetails", path: "state"                },
+  { section: "collegeUniversityDetails", path: "pincode"              },
+ 
+  // ── Placement Coordinator Details ─────────────────────────────────────
+  { section: "placementCoordinatorDetails", path: "coordinatorName"   },
+  { section: "placementCoordinatorDetails", path: "designation"       },
+  { section: "placementCoordinatorDetails", path: "officialEmail"     },
+  { section: "placementCoordinatorDetails", path: "officialMobile"    },
+  { section: "placementCoordinatorDetails", path: "linkedinUrl"       },
+ 
+  // ── Placement & Recruitment Details ───────────────────────────────────
+  { section: "placementRecruitmentDetails", path: "programsOffered",              isArray: true },
+  { section: "placementRecruitmentDetails", path: "popularCoursesForRecruitment", isArray: true },
+  { section: "placementRecruitmentDetails", path: "preferredHiringCompanies",     isArray: true },
+  { section: "placementRecruitmentDetails", path: "recruitmentServicesRequired",  isArray: true },
+  { section: "placementRecruitmentDetails", path: "collegeBrochureUrl"            },
+ 
+  // ── College Profile & Achievements ────────────────────────────────────
+  { section: "profileAchievements", path: "collegeWebsite"    },
+  { section: "profileAchievements", path: "linkedinProfile"   },
+ 
+  // ── Dynamic sections (at least 1 entry = filled) ─────────────────────
+  { section: null, path: "workshops",    isTopLevelArray: true },
+  { section: null, path: "volunteering", isTopLevelArray: true },
+  { section: null, path: "awards",       isTopLevelArray: true },
+ 
+  // ── Images ────────────────────────────────────────────────────────────
+  { section: null, path: "profileImage"    },
+  { section: null, path: "backgroundImage" },
+];
+ 
+const TOTAL_FIELDS = PROFILE_FIELDS.length; // 26
+ 
+function isFilled(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return true;
+}
+ 
+function calcPercentage(profile) {
+  let filled = 0;
+ 
+  for (const field of PROFILE_FIELDS) {
+    if (field.isTopLevelArray) {
+      // Dynamic sections: filled if array has at least 1 entry
+      if (isFilled(profile[field.path])) filled++;
+      continue;
+    }
+ 
+    const parent = field.section ? (profile[field.section] || {}) : profile;
+    if (isFilled(parent[field.path])) filled++;
+  }
+ 
+  return Math.round((filled / TOTAL_FIELDS) * 100);
+}
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -193,3 +263,21 @@ export const updateCollegeProfile = async (req, res) => {
   }
 };
 
+
+
+export const getProfileCompleteness = async (req, res) => {
+  try {
+    const profile = await CollegeOnboarding.findOne({ userId: req.user._id }).lean();
+
+    if (!profile) {
+      return res.status(404).json({ success: false, message: "Profile not found." });
+    }
+
+    const percentage = calcPercentage(profile);
+
+    return res.status(200).json({ success: true, percentage });
+  } catch (error) {
+    console.error("[getProfileCompleteness]", error);
+    return res.status(500).json({ success: false, message: "Internal server error." });
+  }
+};

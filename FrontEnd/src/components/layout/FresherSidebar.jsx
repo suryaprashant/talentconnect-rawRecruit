@@ -62,7 +62,7 @@ function FresherSidebar({ activePath }) {
               label="Internship Opportunities" 
               active={activePath === '/fresher-dashboard/Internship'} 
             /> 
-            {/* <SidebarNavItem
+            <SidebarNavItem
               to="/fresher-dashboard/Referral"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -72,7 +72,7 @@ function FresherSidebar({ activePath }) {
               }
               label="Referral Jobs"
               active={activePath === '/fresher-dashboard/Referral'}
-            /> */}
+            />
             {/*
             <SidebarNavItem
               to="/fresher-dashboard/hackathon"

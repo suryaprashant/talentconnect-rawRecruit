@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createCollegeProfile , updateCollegeProfile, getStudentsByCollegeId} from '../../controllers/collegeDashboard/collegeProfileController.js'
+import { createCollegeProfile , updateCollegeProfile, getProfileCompleteness} from '../../controllers/collegeDashboard/collegeProfileController.js'
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -29,6 +29,7 @@ router.put(
   updateCollegeProfile
 );
 
-router.get("/:collegeId/students", getStudentsByCollegeId);
+router.get('/get-completeness-score',secureRoute,getProfileCompleteness)
+
 export default router;
 

@@ -10,6 +10,62 @@ import { updateAuthUserService } from '../../services/authService.js';
 
 import { getCompanyService, updateCompanyProfileService } from '../../services/companyService.js'
 
+const COMPANY_FIELDS = [
+  // ── Company Details ───────────────────────────────────────────────────
+  { section: "companyDetails", path: "companyName"          },
+  { section: "companyDetails", path: "description"          },
+  { section: "companyDetails", path: "companyType"          },
+  { section: "companyDetails", path: "industryType"         },
+  { section: "companyDetails", path: "numberOfEmployees"    },
+  { section: "companyDetails", path: "establishedYear"      },
+  { section: "companyDetails", path: "phoneNumber"          },
+  { section: "companyDetails", path: "alternatePhoneNumber" },
+  { section: "companyDetails", path: "country"              },
+  { section: "companyDetails", path: "state"                },
+  { section: "companyDetails", path: "city"                 },
+  { section: "companyDetails", path: "pincode"              },
+ 
+  // ── Hiring Preferences ────────────────────────────────────────────────
+  { section: "hiringPreferences", path: "jobRoles",        isArray: true },
+  { section: "hiringPreferences", path: "hiringLocations", isArray: true },
+  { section: "hiringPreferences", path: "lookingFor",      isArray: true },
+  { section: "hiringPreferences", path: "employmentType",  isArray: true },
+ 
+  // ── KYC / Verification ────────────────────────────────────────────────
+  { section: "kycDetails", path: "kycDocuments",             isArray: true },
+  { section: "kycDetails", path: "TAN"                       },
+  { section: "kycDetails", path: "GSTNumber"                 },
+  { section: "kycDetails", path: "companyRegistrationNumber" },
+  { section: "kycDetails", path: "GSTIN"                     },
+  { section: "kycDetails", path: "address"                   },
+ 
+  // ── Company Profiles ──────────────────────────────────────────────────
+  { section: "companyDetails", path: "companyLinkedin" },
+  { section: "companyDetails", path: "websiteUrl"      },
+ 
+  // ── Images (top-level fields) ─────────────────────────────────────────
+  { section: null, path: "profileImageUrl"    },
+  { section: null, path: "backgroundImageUrl" },
+];
+ 
+const TOTAL_FIELDS = COMPANY_FIELDS.length; // 26
+ 
+function isFilled(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return true;
+}
+ 
+function calcPercentage(profile) {
+  let filled = 0;
+  for (const field of COMPANY_FIELDS) {
+    const parent = field.section ? (profile[field.section] || {}) : profile;
+    if (isFilled(parent[field.path])) filled++;
+  }
+  return Math.round((filled / TOTAL_FIELDS) * 100);
+}
+
 // Utility for streaming upload
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {
@@ -255,5 +311,22 @@ export const getCompanyImageByUserId = async (req, res) => {
       message: 'Failed to fetch company profile',
       error: error.message
     });
+  }
+};
+
+export const getCompanyProfileCompleteness = async (req, res) => {
+  try {
+    const profile = await CompanyProfile.findOne({ userId: req.user._id }).lean();
+ 
+    if (!profile) {
+      return res.status(404).json({ success: false, message: "Company profile not found." });
+    }
+ 
+    const percentage = calcPercentage(profile);
+ 
+    return res.status(200).json({ success: true, percentage });
+  } catch (error) {
+    console.error("[getCompanyProfileCompleteness]", error);
+    return res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
