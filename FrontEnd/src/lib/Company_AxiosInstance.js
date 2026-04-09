@@ -19,6 +19,7 @@ export const getCompanyImageUrl = (companyId) => {
   .then((response) => response)
     .catch((error) => error);
 };
+// college
 export function getRegisteredColleges() {
   return axiosClient
     .get(`/api/student-dashboard/on-campus`)
