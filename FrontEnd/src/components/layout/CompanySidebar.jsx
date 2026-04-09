@@ -50,8 +50,8 @@ const [authUser] = useLegacyAuth();
           />
 
           {/* Company Dashboard */}
-          <SidebarNavGroup 
-            label="Company Dashboard" 
+          {/* <SidebarNavGroup 
+            label="College Request" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                 <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
@@ -59,8 +59,8 @@ const [authUser] = useLegacyAuth();
             } 
             active={activePath.includes('/company-dashboard')}
             onHelp={() => handleOpenHelp("companyDashboard")}
-          >
-            <SidebarNavItem
+          > */}
+            {/* <SidebarNavItem
               to="/company-dashboard/On-campus"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -79,7 +79,7 @@ const [authUser] = useLegacyAuth();
               }
               label="Pool Campus Requests"
               active={activePath === '/company-dashboard/Pool-campus'}
-            />
+            /> */}
             {/* <SidebarNavItem
               to="/company-dashboard/resume-search"
               icon={
@@ -90,8 +90,18 @@ const [authUser] = useLegacyAuth();
               label="Resume Search"
               active={activePath === '/company-dashboard/resume-search'}
             /> */}
-          </SidebarNavGroup>
-
+          {/* </SidebarNavGroup> */}
+<SidebarNavItem 
+  to="/company-dashboard/On-campus" 
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+    </svg>
+  } 
+  label="College Request"
+  active={activePath.includes('/company-dashboard')} 
+  onHelp={() => handleOpenHelp("companyDashboard")}
+/>
           {/* Service Request */}
           <SidebarNavGroup 
             label="Service Request" 
@@ -140,7 +150,7 @@ const [authUser] = useLegacyAuth();
           </SidebarNavGroup>
 
           {/* Application Status */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Application Status" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -171,7 +181,20 @@ const [authUser] = useLegacyAuth();
               label="Pool Campus"
               active={activePath === '/company/application-status/poolcampus'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
+          {/* Application Status - Changed from Group to direct NavItem */}
+<SidebarNavItem 
+  to="/company/application-status/oncampus" 
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
+      <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zm9.586 4.594a.75.75 0 00-1.172-.938l-2.476 3.096-.634-.682a.75.75 0 00-1.06 1.06l1.125 1.125a.75.75 0 001.116-.062l3-3.75z" clipRule="evenodd" />
+    </svg>
+  } 
+  label="Application Status" 
+  active={activePath.includes('/company/application-status')}
+  onHelp={() => handleOpenHelp("applicationStatus")}
+/>
 
           {/* Hiring Channels */}
           <SidebarNavGroup 

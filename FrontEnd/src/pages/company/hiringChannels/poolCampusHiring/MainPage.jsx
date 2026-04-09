@@ -1,7 +1,8 @@
 import React from 'react';
 import { Building2, Users, Zap, Target } from 'lucide-react';
-
-export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
+import { useNavigate } from 'react-router-dom';
+export default function MainPage({ onRegisterClick, onRequestInfoClick }) {4
+  const navigate = useNavigate(); 
   // SEO Card Content
   const serviceData = [
     {
@@ -51,6 +52,43 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+      <div className="container mx-auto px-4 pt-8 max-w-6xl">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#00153d]">Hiring Channels</h2>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-200 pb-1">
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                On-campus Hiring
+              </button>
+              
+              {/* Pool Campus: Active Highlight */}
+              <button 
+                className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+              >
+                Pool Campus Hiring
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/off-campus-hiring')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                Off-campus Hiring
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/post-an-internship')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                Post an Internship
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}

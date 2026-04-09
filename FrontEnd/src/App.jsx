@@ -274,6 +274,7 @@ import InternshipListingEmployer from "./pages/employer/jobManagement/internship
 import SaveJob from "./components/common/savedJob/JobDetail"
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DeleteAccount from "./pages/DeleteAccount";
+import CompanyNewJobs from "./pages/company/CompanyNewJob"
 
 
 // Create query client
@@ -492,6 +493,8 @@ function AppRoutes() {
               <Route path="/company-profile" element={<CompanyProfile />} />
 
               <Route path="/company/saved-jobs/*" element={<JobRoutes />} />
+              {/* new page for v3  */}
+              <Route path="/company/post-jobs" element={<CompanyNewJobs />} />
 
               <Route path="/company-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />
