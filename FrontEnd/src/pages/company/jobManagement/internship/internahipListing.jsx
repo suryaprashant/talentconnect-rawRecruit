@@ -186,6 +186,46 @@ export default function InternshipListing() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+            <div className="container mx-auto px-4 pt-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-2xl font-bold text-[#00153d]">Job Management</h2>
+          <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+            {jobs?.length || 0}
+          </span>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-200 pb-1">
+          <button 
+            onClick={() => navigate('/job-management/On-campus')}
+            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+          >
+            On-Campus
+          </button>
+          
+          <button 
+            onClick={() => navigate('/job-management/Pool-campus')}
+            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+          >
+            Pool-Campus
+          </button>
+
+          <button 
+            onClick={() => navigate('/job-management/Off-campus')}
+            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+          >
+            Off-Campus
+          </button>
+
+          {/* Internship: Active State */}
+          <button 
+            className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+          >
+            Internship
+          </button>
+        </div>
+      </div>
+    </div>
             <div className="container mx-auto px-4 py-8 pt-22">
                 {/* Header Section */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
