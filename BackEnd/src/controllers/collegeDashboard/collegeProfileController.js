@@ -1,7 +1,7 @@
 import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
-import { updateCollegeProfileService } from '../../services/collegeService.js';
+import { updateCollegeProfileService, getStudentsByCollegeIdService } from '../../services/collegeService.js';
 
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {
@@ -91,6 +91,27 @@ export const createCollegeProfile = async (req, res) => {
   }
 };
 
+export const getStudentsByCollegeId = async (req, res) => {
+  try {
+    const { collegeId } = req.params;
+
+    const result = await getStudentsByCollegeIdService(collegeId);
+
+    return res.status(result.status).json({
+      success: result.success,
+      message: result.message,
+      count: result.count,
+      data: result.data,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 
 // export const updateCollegeProfile = async (req, res) => {
 //   try {
@@ -171,3 +192,4 @@ export const updateCollegeProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
