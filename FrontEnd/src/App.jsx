@@ -286,7 +286,8 @@ function AppRoutes() {
       {/* Auth Routes */}
       
       <Route path="/mock" element={<PostIntership />} />
-      <Route path="/userselection" element={<RoleSelection />} />
+      {/* <Route path="/userselection" element={<RoleSelection />} /> */}
+      <Route path="/userselection" element={<Navigate to="/signup" replace />} />
       <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
