@@ -1,7 +1,7 @@
 import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
-import { updateCollegeProfileService } from '../../services/collegeService.js';
+import { updateCollegeProfileService, getStudentsByCollegeIdService } from '../../services/collegeService.js';
 import CollegeOnboarding from "../../models/collegeDashboard/collegeOnboardingModel.js";
 
 
