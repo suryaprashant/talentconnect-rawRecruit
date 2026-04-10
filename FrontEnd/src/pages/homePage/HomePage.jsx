@@ -1,4 +1,4 @@
-import Navbar from "@/components/home/NavBar";
+import Navbar from "@/components/home/Navbar";
 import HeroSection from "@/components/home/Hero";
 import RoleCards from "@/components/home/RoleCard";
 import LiveJobs from "@/components/home/LiveJobs";
