@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
-import { FiSearch, FiUsers, FiCheckCircle, FiClock, FiTrendingUp, FiBriefcase, FiTarget, FiFileText, FiBarChart2 } from 'react-icons/fi'
-import { getCollegeServiceRequestStatus } from '@/lib/College_AxiosIntance'
+import { FiSearch, FiUsers, FiCheckCircle, FiClock, FiTrendingUp, FiBriefcase, FiTarget, FiFileText, FiBarChart2,FiUserPlus, FiSend } from 'react-icons/fi'
+//import { getCollegeServiceRequestStatus } from '@/lib/College_AxiosIntance'
+import { getCollegeServiceRequestStatus, getCompanyPostingForOncampus, getCollegePostingForPoolcampus } from '@/lib/College_AxiosIntance'
 import { getCompanyDashboardMetrics } from '@/lib/Company_AxiosInstance'
-
+import ActivationBlock from '@/components/dashboard/ActivationBlock'
+import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 function Home() {
   const navigate = useNavigate()
+  const [collegeOppTab, setCollegeOppTab] = useState('On-Campus');
+const [onCampusJobs, setOnCampusJobs] = useState([]);
+const [poolCampusJobs, setPoolCampusJobs] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     appliedByCategory: {
       'On-campus': 0,
@@ -30,10 +35,72 @@ function Home() {
     },
     loading: true
   })
+const [appTab, setAppTab] = useState('On-Campus');
+const [myApplications, setMyApplications] = useState({
+  onCampus: [],
+  poolCampus: [],
+  loading: true
+});
+useEffect(() => {
+  const fetchMyApplications = async () => {
+    try {
+      setMyApplications(prev => ({ ...prev, loading: true }));
+      const [onCampusRes, poolCampusRes] = await Promise.all([
+        getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
+        getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } }))
+      ]);
 
+    const mapJobs = (rawData) =>
+  (rawData || []).map(item => {
+    // Determine the correct job details object
+    const jobInfo = item.jobDetails || {};
+    
+    return {
+      id: item._id,
+      companyName: item.companyProfile?.companyDetails?.companyName || 
+                   item.companyPosted?.companyDetails?.companyName || 'Company',
+      companyLogo: item.companyProfile?.profileImage || null,
+      
+      // FIX: Ensure this logic matches your Application Status component
+      location: jobInfo.venue || (jobInfo.workLocation && jobInfo.workLocation[0]) || 'N/A',
+      
+      jobTitle: jobInfo.jobRoles?.[0] || jobInfo.lookingFor || 'Position',
+      status: item.currentStatus || 'Applied',
+      date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
+    };
+  });
+
+      setMyApplications({
+        onCampus: mapJobs(onCampusRes.data?.data),
+        poolCampus: mapJobs(poolCampusRes.data?.data),
+        loading: false
+      });
+    } catch (error) {
+      console.error('Failed to fetch applications:', error);
+      setMyApplications(prev => ({ ...prev, loading: false }));
+    }
+  };
+  fetchMyApplications();
+}, []);
   useEffect(() => {
     fetchDashboardData()
   }, [])
+
+  useEffect(() => {
+  const fetchOpportunities = async () => {
+    try {
+      const [onRes, poolRes] = await Promise.all([
+        getCompanyPostingForOncampus().catch(() => ({ data: { data: [] } })),
+        getCollegePostingForPoolcampus().catch(() => ({ data: { data: [] } })),
+      ]);
+      setOnCampusJobs(onRes.data?.data || []);
+      setPoolCampusJobs(poolRes.data?.data || []);
+    } catch (err) {
+      console.error('Failed to fetch campus opportunities:', err);
+    }
+  };
+  fetchOpportunities();
+}, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -135,7 +202,44 @@ function Home() {
             </div>
           </div>
         </div>
-
+{/* --- START OF ACTIVATION BLOCK --- */}
+<ActivationBlock
+  greeting="Get companies for your campus !"
+  subtitle="Drive placements with structured hiring requests"
+  steps={[
+    { number: 1, label: "Post Hiring Request" },
+    { number: 2, label: "Companies Apply" },
+    { number: 3, label: "Confirm Drives" },
+  ]}
+>
+  <div className="flex flex-col items-center lg:items-end gap-4">
+    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-200/50 px-2 py-1 mx-auto rounded-full">
+      Post a request
+    </span>
+    
+    <div className="grid grid-cols-2 gap-3">
+      {[
+       
+        { label: 'On Campus', path: '/service-request/campus-placement', icon: <FiBriefcase className="w-3 h-3 mr-2" /> },
+        { label: 'Pool Campus', path: '/service-request/poolcampus-placement', icon: <FiTarget className="w-3 h-3 mr-2" /> },
+      
+      ].map((btn) => (
+        <button
+          key={btn.label}
+          onClick={() => navigate(btn.path)}
+      className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-900 text-white rounded-xl transition-all duration-300 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
+          //  className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-600 text-white rounded-xl transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
+        >
+          {btn.icon}
+          <span className="text-[11px] font-bold uppercase tracking-tight">
+            {btn.label}
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+</ActivationBlock>
+{/* --- END OF ACTIVATION BLOCK --- */}
         {/* Key Metrics Cards */}
 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
   
@@ -328,6 +432,225 @@ function Home() {
 </div>
 
         {/* Service Requests Status & Application Funnel */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Campus Opportunities */}
+<div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
+  {/* Header */}
+  <div className="flex items-center gap-3 mb-5">
+    <h2 className="text-lg font-semibold text-gray-900">Campus Opportunities</h2>
+    <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
+      {collegeOppTab === 'On-Campus' ? onCampusJobs.length : poolCampusJobs.length}
+    </span>
+  </div>
+
+  {/* Tabs */}
+  <div className="flex gap-2 mb-5">
+    {['On-Campus', 'Pool-Campus'].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setCollegeOppTab(tab)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+          collegeOppTab === tab
+            ? 'bg-blue-900 text-white'
+            : 'text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+
+  {/* Job Cards */}
+  <div className="grid grid-cols-1 gap-4">
+    {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs)
+      .slice(0, 2)
+      .map((job, index) => {
+        const roles = job.title || 
+                      (Array.isArray(job.jobRoles) ? job.jobRoles.join(', ') : job.jobRoles) || 
+                      job.position || 
+                      'Role Not Specified';
+
+        const degree = Array.isArray(job.degree) ? job.degree.join(', ') : 
+                       Array.isArray(job.studentStreams) ? job.studentStreams.join(', ') :
+                       job.degree || job.studentStreams || 'All Streams';
+
+        const jobSkills = job.skills || [];
+        const displaySkills = jobSkills.slice(0, 2);
+        const remainingSkillsCount = jobSkills.length - 2;
+
+        return (
+          <div
+            key={job._id || index}
+            className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <FiBriefcase className="w-5 h-5 text-blue-700" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm truncate max-w-[150px]">
+                    {job.companyPosted?.companyDetails?.companyName || 'Unknown Company'}
+                  </h3>
+                  <p className="text-[10px] text-gray-500">
+                    {job.location || (job.workLocation && job.workLocation[0]) || 'Location N/A'}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider">
+                {collegeOppTab === 'On-Campus' ? 'On Campus' : 'Pool Campus'}
+              </span>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <p className="text-sm text-gray-700 line-clamp-1">
+                <span className="font-medium text-gray-500">Role:</span>{' '}
+                <span className="font-bold text-blue-900">{roles}</span>
+              </p>
+              
+              <p className="text-xs text-gray-600 line-clamp-1">
+                <span className="font-medium text-gray-400">Degree:</span> {degree}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <span className="text-[10px] font-medium text-gray-400 mr-1">Skills:</span>
+                {displaySkills.length > 0 ? (
+                  <>
+                    {displaySkills.map((skill, i) => (
+                      <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200">
+                        {skill}
+                      </span>
+                    ))}
+                    {remainingSkillsCount > 0 && (
+                      <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md font-bold">
+                        +{remainingSkillsCount} more
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-[10px] text-gray-400 italic">See details</span>
+                )}
+              </div>
+            </div>
+
+            {/* View Details Button with Dynamic Navigation */}
+            <button
+              onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
+              className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
+            >
+              View Details
+            </button>
+          </div>
+        );
+      })}
+
+    {/* Empty State */}
+    {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs).length === 0 && (
+      <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
+        <p className="text-sm text-gray-500">No {collegeOppTab} opportunities available</p>
+      </div>
+    )}
+  </div>
+
+  {/* Footer Button with Dynamic Navigation */}
+  <div className="mt-4">
+    <Button
+      variant="outline"
+      size="md"
+      onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
+      className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+    >
+      See All {collegeOppTab} Opportunities
+    </Button>
+  </div>
+</div>
+
+          {/* Applications Overview */}
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
+    <div className="flex items-center gap-3 mb-5">
+      <h2 className="text-lg font-semibold text-gray-900">My Applications</h2>
+      <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
+        {appTab === 'On-Campus' ? myApplications.onCampus.length : myApplications.poolCampus.length}
+      </span>
+    </div>
+
+    <div className="flex gap-2 mb-5">
+      {['On-Campus', 'Pool-Campus'].map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setAppTab(tab)}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+            appTab === tab ? 'bg-blue-900 text-white' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+
+    <div className="grid grid-cols-1 gap-4">
+      {myApplications.loading ? (
+        <div className="flex items-center justify-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900"></div>
+        </div>
+      ) : (appTab === 'On-Campus' ? myApplications.onCampus : myApplications.poolCampus)
+          .slice(0, 2)
+          .map((job, index) => (
+            <div
+              key={job.id || index}
+              className="border border-gray-200 rounded-2xl p-4 bg-white hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate(appTab === 'On-Campus' ? '/application-status/oncampus' : '/application-status/poolcampus')}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <FiBriefcase className="w-4 h-4 text-blue-700" />
+                  </div>
+                  <div>
+                    {console.log(job)}
+                    <h3 className="font-bold text-gray-900 text-sm truncate max-w-[130px]">{job.companyName}</h3>
+                    <p className="text-[10px] text-gray-500">{job.location}</p>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${
+                  job.status === 'Accepted' ? 'bg-green-50 text-green-700' :
+                  job.status === 'Shortlisted' ? 'bg-amber-50 text-amber-700' :
+                  job.status === 'Rejected' ? 'bg-red-50 text-red-700' :
+                  'bg-blue-50 text-blue-700'
+                }`}>
+                  {job.status}
+                </span>
+              </div>
+              <p className="text-xs text-gray-700 mb-3 line-clamp-1">
+                <span className="font-medium text-gray-400">Role:</span>{' '}
+                <span className="font-bold text-blue-900">{job.jobTitle}</span>
+              </p>
+              <button className="w-full py-1.5 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors">
+                Track Status
+              </button>
+            </div>
+          ))
+      }
+
+      {!myApplications.loading && (appTab === 'On-Campus' ? myApplications.onCampus : myApplications.poolCampus).length === 0 && (
+        <div className="text-center py-8 border border-dashed border-gray-200 rounded-2xl">
+          <p className="text-sm text-gray-500">No {appTab} applications yet</p>
+        </div>
+      )}
+    </div>
+
+    <div className="mt-4">
+      <Button
+        variant="outline"
+        size="md"
+        onClick={() => navigate(appTab === 'On-Campus' ? '/application-status/oncampus' : '/application-status/poolcampus')}
+        className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200"
+      >
+        See All {appTab} Applications
+      </Button>
+    </div>
+  </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Service Requests Status */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">

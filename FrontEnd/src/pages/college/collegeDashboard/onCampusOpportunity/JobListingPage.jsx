@@ -3,8 +3,9 @@ import JobCard from '@/components/college/collegeDashboard/onCampusOpprtunity/Jo
 import { Filter, ChevronDown, ChevronUp, X, Search, Briefcase, Calendar, Users, MapPin, TrendingUp, RefreshCw, AlertCircle, Building, GraduationCap, BookOpen } from 'lucide-react';
 import { getCompanyPostingForOncampus } from '@/lib/College_AxiosIntance';
 import JobDetailModal from '@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal';
-
+import { useNavigate } from 'react-router-dom'; // <--- ADD THIS
 const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
+  const navigate = useNavigate();
   const [jobPosted, setjobPosted] = useState([]);
   const [filteredjobPosted, setFilteredjobPosted] = useState([]);
   const [filters, setFilters] = useState({
@@ -389,8 +390,35 @@ if (compact) {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8 pt-20">
+        
         {/* Header Section */}
         <div className="mb-8 -mt-10">
+          {/* --- START OF NEW NAVIGATION SECTION --- */}
+<div className="mb-8 -mt-10">
+  <div className="flex items-center gap-3 mb-6">
+    <h2 className="text-2xl font-bold text-[#00153d]">Campus Opportunities</h2>
+    <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+      {jobPosted.length}
+    </span>
+  </div>
+  
+  <div className="flex items-center gap-6 border-b border-gray-200 pb-1 mb-8">
+    {/* ON-CAMPUS: Currently Active */}
+    <button 
+      className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+    >
+      On-Campus
+    </button>
+    
+    {/* POOL-CAMPUS: Navigates away */}
+    <button 
+      onClick={() => navigate('/college-dashboard/Pool-campus')}
+      className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+    >
+      Pool-Campus
+    </button>
+  </div>
+</div>
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">

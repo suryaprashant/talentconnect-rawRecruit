@@ -137,6 +137,7 @@ export default {
 		  sm: 'calc(var(--radius) - 4px)'
 		},
 		colors: {
+			primaryBrand: "#143694",
 		  border: "hsl(var(--border))", // Merged with your earlier "#E5E7EB"
 		  background: 'hsl(var(--background))',
 		  foreground: 'hsl(var(--foreground))',
