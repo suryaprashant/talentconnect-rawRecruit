@@ -85,18 +85,30 @@ const LiveJobs = () => {
 
   // APPLY BUTTON
   const handleApply = () => {
-    if (!isAuthenticated) {
-      sessionStorage.setItem("tempSelectedRole", "candidate");
-      localStorage.setItem("selectedRole", "candidate");
-      navigate("/signup");
+    
+
+    // ROLE BASED ROUTING
+    if (activeRole === "Company") {
+      navigate("/company-dashboard/On-campus");
       return;
     }
 
-    if (role !== "candidate") {
-      alert("Please login as a candidate to apply for jobs.");
+    if (activeRole === "Freshers") {
+      navigate("/fresher-dashboard/Off-campus");
       return;
     }
 
+    if (activeRole === "Student" || activeRole === "candidate") {
+      navigate("/student-dashboard/Off-campus");
+      return;
+    }
+
+    if (activeRole === "College") {
+      navigate("/college-dashboard/On-campus");
+      return;
+    }
+
+    // fallback
     navigate("/jobs");
   };
 
