@@ -163,7 +163,9 @@ export const createCollegeProfile = async (req, res) => {
 
 export const getStudentsByCollegeId = async (req, res) => {
   try {
-    const { collegeId } = req.params;
+    console.log('ok',req.user)
+    const collegeId  =  req.user._id;
+    
 
     const result = await getStudentsByCollegeIdService(collegeId);
 

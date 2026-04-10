@@ -197,7 +197,7 @@ const [authUser] = useLegacyAuth();
 />
 
           {/* Hiring Channels */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Hiring Channels" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -248,10 +248,22 @@ const [authUser] = useLegacyAuth();
               label="Post an Internship"
               active={activePath === '/hiring-channels/post-an-internship'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
+          <SidebarNavItem 
+  to="/hiring-channels/on-campus-hiring"
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M7.5 5.25a3 3 0 013-3h3a3 3 0 013 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0112 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 017.5 5.455V5.25zm7.5 0v.09a49.488 49.488 0 00-6 0v-.09a1.5 1.5 0 011.5-1.5h3a1.5 1.5 0 011.5 1.5zm-3 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+      <path d="M3 18.4v-2.796a4.3 4.3 0 00.713.31A26.226 26.226 0 0012 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 01-6.477-.427C4.047 21.128 3 19.852 3 18.4z" />
+    </svg>
+  } 
+  label="Hiring Channel"
+  active={activePath === '/hiring-channels/on-campus-hiring'}
+  onHelp={() => handleOpenHelp("hiringChannels")}
+/>
 
           {/* Job Management */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Job Management" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -302,10 +314,23 @@ const [authUser] = useLegacyAuth();
               label="Internship Listings"
               active={activePath === '/job-management/Internship'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
+
+<SidebarNavItem 
+  to="/job-management/On-campus"
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M7.5 5.25a3 3 0 013-3h3a3 3 0 013 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0112 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 017.5 5.455V5.25zm7.5 0v.09a49.488 49.488 0 00-6 0v-.09a1.5 1.5 0 011.5-1.5h3a1.5 1.5 0 011.5 1.5zm-3 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+      <path d="M3 18.4v-2.796a4.3 4.3 0 00.713.31A26.226 26.226 0 0012 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 01-6.477-.427C4.047 21.128 3 19.852 3 18.4z" />
+    </svg>
+  } 
+  label="Job Management"
+  active={activePath === '/job-management/On-campus'}
+  onHelp={() => handleOpenHelp("jobManagement")}
+/>
 
           {/* Shortlisted Candidates/Colleges */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Shortlisted Candidates/Colleges" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -356,10 +381,20 @@ const [authUser] = useLegacyAuth();
               label="Internship Listings"
               active={activePath === '/shortlisted/internship-listings'}
             />
-          </SidebarNavGroup>
-
+          </SidebarNavGroup> */}
+    <SidebarNavItem 
+  to="/shortlisted/on-campus-listings"
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+    </svg>
+  } 
+  label="Shortlisted Candidates"
+  active={activePath.includes('/shortlisted')}
+  onHelp={() => handleOpenHelp("shortlisted")}
+/>
           {/* Accepted Candidates/Colleges */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Accepted Candidates/Colleges" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -409,8 +444,19 @@ const [authUser] = useLegacyAuth();
               label="Internship Listings"
               active={activePath === '/accepted/internship-listings'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
 
+<SidebarNavItem 
+  to="/accepted/on-campus-listings"
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" clipRule="evenodd" />
+    </svg>
+  } 
+  label="Accepted Candidates"
+  active={activePath.includes('/accepted')}
+  onHelp={() => handleOpenHelp("accepted")}
+/>
           {/* Quick Actions at Bottom */}
           <div className="pt-4 mt-4">
             {/* Removed border-t border-gray-200 */}

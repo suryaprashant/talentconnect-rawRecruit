@@ -44,18 +44,17 @@ export async function updateCollegeProfileService(userId, updates) {
 const normalizeString = (str) =>
   str?.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim();
 
-export const getStudentsByCollegeIdService = async (collegeId) => {
+export const getStudentsByCollegeIdService = async (authUserId) => {
   //  Fetch college
-  const college = await collegeOnboardingModel.findById(collegeId);
+ const college = await collegeOnboardingModel.findOne({ userId: authUserId }).lean();
 
   if (!college) {
     return {
       success: false,
       status: 404,
-      message: "College not found",
+      message: "College profile not found for this user",
     };
   }
-
   //  Extract college name
   const collegeName =
     college.collegeUniversityDetails?.collegeName || "";

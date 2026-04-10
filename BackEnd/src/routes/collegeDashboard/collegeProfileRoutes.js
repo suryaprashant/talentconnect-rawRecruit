@@ -30,6 +30,6 @@ router.put(
 );
 
 router.get('/get-completeness-score',secureRoute,getProfileCompleteness)
-router.get('/:collegeId/students',secureRoute,getStudentsByCollegeId)
+router.get('/students',secureRoute,getStudentsByCollegeId)
 export default router;
 
