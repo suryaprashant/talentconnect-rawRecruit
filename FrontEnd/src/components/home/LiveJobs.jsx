@@ -58,6 +58,7 @@ const LiveJobs = () => {
   // FETCH JOBS
   const fetchJobs = async () => {
     const endpoint = getApiEndpoint(activeRole, activeType);
+
     if (!endpoint) {
       setJobs([]);
       return;
@@ -65,11 +66,24 @@ const LiveJobs = () => {
 
     try {
       setLoading(true);
-      const res = await fetch(endpoint);
+
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
+      );
+
+      const contentType = res.headers.get("content-type");
+
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("❌ Invalid response (not JSON):", text);
+        setJobs([]);
+        return;
+      }
+
       const data = await res.json();
 
-      // adjust if backend structure differs
       setJobs(data?.data || data || []);
+
     } catch (err) {
       console.error("Error fetching jobs:", err);
       setJobs([]);
