@@ -275,6 +275,7 @@ import SaveJob from "./components/common/savedJob/JobDetail"
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DeleteAccount from "./pages/DeleteAccount";
 import CompanyNewJobs from "./pages/company/CompanyNewJob"
+import StudentPool from "./pages/college/StudentPool";
 
 
 // Create query client
@@ -679,6 +680,7 @@ function AppRoutes() {
 </Route>
 
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
+              <Route path="/college/student-pool" element={<StudentPool />} />
               <Route path="/college-dashboard/Internship/:id" element={<InternJobDetailPage />} />
 
               {/* <Route path="/college-dashboard/Pool-campus" element={<PoolJobListingPage />} />

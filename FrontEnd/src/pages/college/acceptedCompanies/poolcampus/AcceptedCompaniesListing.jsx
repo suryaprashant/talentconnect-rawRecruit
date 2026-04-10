@@ -651,6 +651,32 @@ export default function PoolCampusJobManagement() {
 
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Header Section */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-2xl font-bold text-[#00153d]">Accepted Companies</h2>
+          <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+            {jobs.length}
+          </span>
+        </div>
+        
+        <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
+          <button 
+            onClick={() => navigate('/accepted/on-campus-request')}
+            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+          >
+            On-Campus
+          </button>
+          
+          {/* Pool-Campus: Active Highlight */}
+          <button 
+            className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+          >
+            Pool-Campus
+          </button>
+        </div>
+      </div>
+    </div>
         <div className="mb-12">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
             <div className="text-center md:text-left">

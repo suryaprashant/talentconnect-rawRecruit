@@ -705,6 +705,32 @@ function JobManagementApplicationForPool() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-2xl font-bold text-[#00153d]">Manage application</h2>
+          <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+            {jobs.length}
+          </span>
+        </div>
+        
+        <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
+          <button 
+            onClick={() => navigate('/manage-application/campus-placement')}
+            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+          >
+            On-Campus
+          </button>
+          
+          {/* Pool-Campus: Active Highlight */}
+          <button 
+            className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+          >
+            Pool-Campus
+          </button>
+        </div>
+      </div>
+    </div>
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
@@ -723,7 +749,7 @@ function JobManagementApplicationForPool() {
                 Manage Pool-Campus Applications
               </h1>
               <p className="text-gray-600 text-lg md:text-xl max-w-2xl">
-                Track Your Pool Campus Drives and Streamline Applications 
+                Track Your Pool Campus Drives and Streamline Applications
               </p>
             </div>
           </div>
