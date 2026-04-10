@@ -12,7 +12,7 @@ const subFiltersMap = {
   Student: [ "Off-Campus", "Internship"],
   Company: ["On-Campus", "Pool-Campus"],
   College: ["On-Campus", "Pool-Campus"],
-  Freshers: ["Referral", "Off-Campus", "Internship"],
+  Freshers: ["Off-Campus", "Referral", "Internship"],
 };
 
 const LiveJobs = () => {

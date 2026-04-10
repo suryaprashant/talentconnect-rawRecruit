@@ -1665,14 +1665,29 @@ export const getIntershipById = async (req, res) => {
 
 export const getReferralJobs = async (req, res) => {
   try {
+    // 1. Check if user is logged in
+    if (!req.user) {
+       // Optional: Return a limited set of jobs for guests to see what's available
+       const publicData = await JobPostingTable.find({ jobType: "Referral" }).limit(10).lean();
+       return res.status(200).json({ 
+         success: true, 
+         data: publicData, 
+         isGuest: true,
+         message: "Login to see all referrals from your college" 
+       });
+    }
+
     const userId = req.user._id;
-
     const postId = await getStudentService(userId);
-    const candidatePostedId = postId.data[0]._id;
+    
+    if (!postId.data || postId.data.length === 0) {
+        return res.status(404).json({ message: "Student profile not found" });
+    }
 
+    const candidatePostedId = postId.data[0]._id;
     const data = await getReferralJobsService(candidatePostedId, userId);
 
-    res.status(200).json({ success: true, data });
+    res.status(200).json({ success: true, data, isGuest: false });
   } catch (err) {
     console.error("[getReferralJobs]", err);
     res.status(500).json({ error: err.message });

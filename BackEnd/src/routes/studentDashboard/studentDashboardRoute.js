@@ -24,7 +24,7 @@ router.get('/job-postings', secureRoute, getJobPostings);
 router.get('/internship-postings', verifyUser, getInternshipPostings);
 router.get('/getInternshipDetail/:id',getIntershipById)
 
-router.get('/referral-jobs', secureRoute, getReferralJobs);
+router.get('/referral-jobs', verifyUser, getReferralJobs);
 router.get('/posted-referral-job', secureRoute, getProfessionalReferrals);
 
 
