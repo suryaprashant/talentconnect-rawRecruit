@@ -25,6 +25,13 @@ export function getCompanyPostingForOncampus() {
     .catch(error => error);
 }
 
+
+export function getAllStudentsInCollege() {
+  return axiosClient.get('/api/college/students')
+    .then(response => response)
+    .catch(error => error);
+}
+
 export function getCompanyPostingForOncampusDetail(jobId) {
   return axiosClient.get(`/api/student-dashboard/oncampus/college/${jobId}`)
     .then(response => response)
@@ -69,7 +76,7 @@ export function getOncampusJobs() {
     .then(response => response)
     .catch(error => error);
 }
-
+//pool
 export function getPoolCampusForCompany() {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
     .then(response => response)
