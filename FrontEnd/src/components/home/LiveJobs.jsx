@@ -88,22 +88,49 @@ const LiveJobs = () => {
     
 
     // ROLE BASED ROUTING
-    if (activeRole === "Company") {
+    if (activeRole === "Company" && activeType === "On-Campus") {
       navigate("/company-dashboard/On-campus");
       return;
     }
+    if (activeRole === "Company" && activeType === "Pool-Campus") {
+      navigate("/company-dashboard/Pool-Campus");
+      return;
+    }
 
-    if (activeRole === "Freshers") {
+    if (activeRole === "Freshers" && activeType === "Off-Campus") {
       navigate("/fresher-dashboard/Off-campus");
       return;
     }
 
-    if (activeRole === "Student" || activeRole === "candidate") {
-      navigate("/student-dashboard/Off-campus");
+    if (activeRole === "Freshers" && activeType === "Internship") {
+      navigate("/fresher-dashboard/Internship");
       return;
     }
 
-    if (activeRole === "College") {
+    if (activeRole === "Freshers" && activeType === "Referral") {
+      navigate("/fresher-dashboard/Referral");
+      return;
+    }
+
+    if (activeRole === "Student" && activeType === "Off-Campus") {
+      navigate("/student-dashboard/Off-campus");
+      return;
+    }
+    if (activeRole === "Student" && activeType === "On-Campus") {
+      navigate("/student-dashboard/On-campus");
+      return;
+    }
+    if (activeRole === "Student" && activeType === "Internship") {
+      navigate("/student-dashboard/Internship");
+      return;
+    }
+
+    if (activeRole === "College" && activeType === "Pool-Campus") {
+      navigate("/college-dashboard/Pool-Campus");
+      return;
+    }
+
+    if (activeRole === "College" && activeType === "On-Campus") {
       navigate("/college-dashboard/On-campus");
       return;
     }
@@ -280,7 +307,7 @@ const LiveJobs = () => {
       {/* CTA */}
       <div className="text-center mt-12">
         <button
-          onClick={() => navigate("/jobs")}
+          onClick={handleApply}
           className="px-8 py-3 border border-primaryBrand text-primaryBrand rounded-xl hover:bg-primaryBrand hover:text-white transition"
         >
           View All Jobs
