@@ -68,7 +68,7 @@ const LiveJobs = () => {
       setLoading(true);
 
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}${endpoint}`
+        `${import.meta.env.VITE_Backend_URL}${endpoint}`
       );
 
       const contentType = res.headers.get("content-type");
