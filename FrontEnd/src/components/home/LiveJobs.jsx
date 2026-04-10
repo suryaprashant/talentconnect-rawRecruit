@@ -175,8 +175,11 @@ const LiveJobs = () => {
       "Company";
 
     const location =
-      job.companyPosted?.hiringPreferences?.hiringLocations?.[0] || 
-      job.collegePosted.collegeUniversityDetails.collegeLocation || job.location ||
+      job.companyPosted?.hiringPreferences?.hiringLocations?.[0] ||
+      (Array.isArray(job.location) && job.location.length > 0
+        ? job.location[0]
+        : null) ||
+      job.collegePosted?.collegeUniversityDetails?.collegeLocation ||
       "Location not specified";
 
     const salary = job.packageDetails?.totalCTC
