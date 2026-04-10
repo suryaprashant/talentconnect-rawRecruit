@@ -14,7 +14,7 @@ import AdminSidebar from "../components/layout/AdminSidebar";
 import AllReferralPost from "@/pages/admin/adminPages/AllReferralPost";
 import ManageReferral from "@/pages/admin/adminPages/ManageReferral";
 import ScheduledInterviewPage from "@/pages/admin/adminPages/ScheduledInterviewPage";
-import AdminManageBlogs from "@/pages/admin/adminPages/AdminBlog";
+import AdminManageBlogs from "@/pages/admin/adminPages/adminBlog";
 
 const AdminRoutes = () => {
   return (
