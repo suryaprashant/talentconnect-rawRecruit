@@ -41,10 +41,93 @@ import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
-import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
+import { fetchReferralApplicationsService,getAllProfessionalReferralsService,getCompanyReferralFeedService } from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js"
 import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
+
+// export const getReferralsForCompany = async (req, res, next) => {
+//   try {
+//     const userId = req.user._id;
+//     let professionalProfileId = req.user._id;
+
+//     // Resolve Professional Profile if not in token
+//     if (!professionalProfileId) {
+//       const profile = await getStudentService(userId); 
+//       if (profile?.success && profile.data?.length > 0) {
+//         professionalProfileId = profile.data[0]._id;
+//       }
+//     }
+
+//     if (!professionalProfileId) {
+//       return res.status(404).json({ success: false, message: "Professional profile not found." });
+//     }
+
+//     // Use the service that looks for jobs POSTED by this professional
+//     const response = await getAllProfessionalReferralsService(professionalProfileId);
+//     return res.status(200).json(response);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+export const getReferralsForCompany = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const userProfile = await getStudentService(userId);
+    console.log("👤 userProfile:", JSON.stringify(userProfile?.data?.[0], null, 2));
+
+    if (!userProfile?.data?.length) {
+      return res.status(404).json({ success: false, message: "Professional profile not found." });
+    }
+
+    const professionalProfileId = userProfile.data[0]._id;
+    console.log("🔑 professionalProfileId:", professionalProfileId);
+
+    // ✅ DEBUG: Check raw applications
+    const rawApps = await Application.find({ jobType: "Referral" }).limit(5).lean();
+    console.log("📋 Raw Referral Applications:", JSON.stringify(rawApps, null, 2));
+
+    // ✅ DEBUG: Check jobs posted by this professional
+    const jobs = await JobPostingTable.find({ 
+      candidatePosted: professionalProfileId,
+      jobType: "Referral"
+    }).lean();
+    console.log("💼 Jobs posted by professional:", JSON.stringify(jobs, null, 2));
+
+    const response = await getAllProfessionalReferralsService(professionalProfileId);
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getGlobalReferralApplications = async (req, res, next) => {
+  try {
+    const userId = req.user._id; // This is the Auth ID
+    
+    // 1. Manually resolve the professional profile if profileId isn't on req.user
+    const userProfile = await getStudentService(userId); 
+    
+    if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Professional profile not found for this account." 
+      });
+    }
+
+    const professionalProfileId = userProfile.data[0]._id;
+
+    // 2. Call the service with the resolved ID
+    const response = await getAllProfessionalReferralsService(professionalProfileId);
+    
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // controllers/professionalController.js
 export const getReferralApplicationsForProfessional = async (req, res, next) => {
   try {
