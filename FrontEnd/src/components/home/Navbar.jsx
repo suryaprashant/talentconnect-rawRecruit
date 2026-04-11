@@ -71,7 +71,7 @@ const Navbar = () => {
               <button onClick={() => navigate("/login")} className="text-sm font-medium text-foreground px-4 py-2 hover:bg-muted rounded-lg">
                 Log in
               </button>
-              <button onClick={handleGetStarted} className="btn-primary bg-primaryBrand text-sm py-2.5 px-5">
+              <button onClick={handleGetStarted} className="btn-primary bg-primaryBrand text-sm py-2.5 px-5 hover:bg-white hover:text-primaryBrand hover:font-bold">
                 Get Started
               </button>
             </>
