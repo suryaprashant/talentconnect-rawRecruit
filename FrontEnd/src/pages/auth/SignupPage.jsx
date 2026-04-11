@@ -296,21 +296,21 @@ function SignupPage() {
 };
 
   return (
-  <div className="bg-[#fbf9fa] min-h-screen font-[Inter] text-[#1b1c1d] flex flex-col">
+  <div className="bg-[#f4f7ff] min-h-screen font-[Inter] text-[#1b1c1d] flex flex-col">
 
     <main className="flex-grow flex items-center justify-center px-6 py-6 relative">
 
       {/* Background blur */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[60%] bg-green-200/10 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[60%] bg-blue-200/10 blur-[120px] rounded-full"></div>
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-[5%] right-[5%] w-[500px] h-[500px] bg-[#143694]/40 blur-[160px] rounded-full"></div>
+        <div className="absolute bottom-[5%] left-[5%] w-[500px] h-[500px] bg-[#143694]/40 blur-[160px] rounded-full"></div>
       </div>
 
       {/* MAIN CARD */}
       <div className="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(27,28,29,0.08)] overflow-hidden">
 
         {/* LEFT SIDE */}
-        <div className="hidden md:flex md:w-5/12 bg-gradient-to-br from-[#0b1f3b] to-[#000616] p-10 flex-col justify-between text-white relative overflow-hidden">
+        <div className="hidden md:flex md:w-5/12 bg-[#143694] p-10 flex-col justify-between text-white relative overflow-hidden">
 
           {/* Background glow */}
           <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -324,9 +324,17 @@ function SignupPage() {
             {/* LOGO */}
             <div className="flex items-center gap-2 mb-16">
               <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg">
-                <span className="material-symbols-outlined text-[#0b1f3b]">account_tree</span>
+                <span
+                  className="material-symbols-outlined text-[#143694] cursor-pointer"
+                  onClick={() => navigate("/")}
+                >
+                  account_tree
+                </span>
               </div>
-              <span className="text-xl font-extrabold tracking-tight">
+              <span
+                className="text-xl font-extrabold tracking-tight cursor-pointer"
+                onClick={() => navigate("/")}
+              >
                 RawRecruit
               </span>
             </div>
@@ -374,7 +382,7 @@ function SignupPage() {
                 <div>
                   <p className="font-semibold text-lg text-white/95">
                     Trusted by Colleges & Companies
-                  </p> 
+                  </p>
                   <p className="text-sm opacity-70 text-white">
                     The architectural ledger for top-tier academic and corporate institutions.
                   </p>
@@ -411,26 +419,19 @@ function SignupPage() {
                 key={role}
                 onClick={() => {
                   if (selectedRole === role) {
-                    //  Deselect
                     setSelectedRole("");
                     sessionStorage.removeItem("tempSelectedRole");
                   } else {
-                    //  Select
                     setSelectedRole(role);
                     sessionStorage.setItem("tempSelectedRole", role);
                   }
                 }}
                 className={`flex flex-col items-center p-3 rounded-xl border transition ${
                   selectedRole === role
-                    ? "border-[#041627] bg-gray-100"
+                    ? "border-[#143694] bg-[#143694]/10"
                     : "border-gray-200"
                 }`}
               >
-                {/* <span className="material-symbols-outlined mb-2">
-                  {role === "company" ? "corporate_fare" :
-                   role === "college" ? "school" : "person_search"}
-                </span> */}
-
                 <span className="text-[10px] uppercase font-bold tracking-widest">
                   {role}
                 </span>
@@ -442,9 +443,10 @@ function SignupPage() {
           <div className="grid grid-cols-2 gap-4 mb-6">
             <button
               onClick={handleLinkedInClick}
-              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl hover:bg-gray-50"
+              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl 
+              hover:bg-[#143694]/5 hover:border-[#143694] transition"
             >
-              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-7 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
               </svg>
               Continue with LinkedIn
@@ -452,12 +454,15 @@ function SignupPage() {
 
             <button
               onClick={handleGoogleClick}
-              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl hover:bg-gray-50"
+              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl bg-primaryBrand text-white
+              hover:bg-[#143694]/5 hover:border-[#143694] transition hover:text-black"
             >
-              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
+              <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                fill="currentColor" 
+                d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
               </svg>
-              Sign in with Google
+              Sign up with Google
             </button>
           </div>
 
@@ -481,7 +486,8 @@ function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   name="email"
-                  className="w-full bg-gray-100 p-3 rounded-xl outline-none"
+                  className="w-full bg-gray-100 p-3 rounded-xl outline-none 
+                  focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
                 />
 
                 <input
@@ -490,7 +496,8 @@ function SignupPage() {
                   value={formData.password}
                   onChange={handleChange}
                   name="password"
-                  className="w-full bg-gray-100 p-3 rounded-xl"
+                  className="w-full bg-gray-100 p-3 rounded-xl 
+                  focus:ring-2 focus:ring-[#143694]/30"
                 />
 
                 <input
@@ -512,21 +519,19 @@ function SignupPage() {
               />
             )}
 
-            <button className="w-full bg-gradient-to-r from-[#041627] to-[#1a2b3c] text-white py-4 rounded-xl font-bold">
+            <button className="w-full bg-[#143694] text-white py-4 rounded-xl font-bold hover:bg-white hover:text-[#143694] border-2 border-[#143694] transition-all duration-300">
               {isOtpSent ? "Verify & Enter Portal" : "Enter Portal"}
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t text-center text-sm text-gray-500">
-            Already have an account?{' '}
-            <span className="font-bold text-[#041627] cursor-pointer">
-              <Link 
-                 to="/login" 
-                 className="text-[#667eea] font-semibold hover:text-[#764ba2] hover:underline transition-colors"
-              >
-                 Log In
-             </Link>
-            </span>
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-[#143694] font-semibold hover:underline"
+            >
+              Log In
+            </Link>
           </div>
 
         </div>
