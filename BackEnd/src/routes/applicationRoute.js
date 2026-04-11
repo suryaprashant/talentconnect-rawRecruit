@@ -3,7 +3,9 @@ import { createOffcampusApplication, createIntershipApplication, createJobListin
 getCompanyDashboardMetrics,
 submitAlternateDates,getReferralApplicationsForProfessional,
 getProfessionalDashboardMetrics,
- updateApplicationStatus
+ updateApplicationStatus,
+ getGlobalReferralApplications,
+ getReferralsForCompany
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -86,4 +88,15 @@ router.get(
   getReferralApplicationsForProfessional
 );
 
+router.get(
+  "/all-referrals",
+  secureRoute,
+  getGlobalReferralApplications
+);
+
+router.get(
+  "/company/referred-candidates",
+  secureRoute,
+  getReferralsForCompany
+);
 export default router;
