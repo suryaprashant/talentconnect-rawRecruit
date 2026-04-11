@@ -5,7 +5,7 @@ const UrgencyBanner = () => {
   const navigate = useNavigate();
 
   return (
-  <section className="py-16 bg-white">
+  <section className="py-16 bg-[#f8fafc]">
     <div className="max-w-6xl mx-auto px-6">
 
       <motion.div

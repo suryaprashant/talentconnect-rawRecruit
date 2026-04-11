@@ -15,7 +15,16 @@ import Footer from "@/components/home/Footer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
-
+import { Activity } from "lucide-react";
+import LiveTicker from "@/components/home/ActivityTicker";
+import { FeaturesModal } from "@/components/onboarding/FeatureModal";
+import { SolutionsModal } from "@/components/onboarding/SolutionModal";
+import { DemoModal } from "@/components/onboarding/DemoModal";
+import { AboutModal } from "@/components/onboarding/AboutModal";
+import { CareersModal } from "@/components/onboarding/CareerModal";
+import { HelpCenterModal } from "@/components/onboarding/HelpModal";
+import { ContactModal } from "@/components/onboarding/ContactModal";
+import { TermsModal } from "@/components/onboarding/Terms&conditionModal";
 const HomePage = () => {
   const handleLogoClick = () => {
     navigate('/');
@@ -40,7 +49,7 @@ const HomePage = () => {
 
         {/* 2. Hero */}
         <HeroSection />
-
+        <LiveTicker />
         {/* 3. Role Selection (Decision Point) */}
         <RoleCards />
 
@@ -54,7 +63,7 @@ const HomePage = () => {
         <GettingStarted />
 
         {/* 7. What Happens Next */}
-        <WhatHappensNext />
+        {/* <WhatHappensNext /> */}
 
         {/* 8. Differentiation */}
         <Differentiation />
@@ -63,10 +72,10 @@ const HomePage = () => {
         <ProductDepth />
 
         {/* 10  . Trust Section */}
-        <TrustSection />
+        {/* <TrustSection /> */}
 
         {/* 11. WhatsApp CTA (Growth Lever) */}
-        <WhatsAppCTA />
+        {/* <WhatsAppCTA /> */}
 
         {/* 12. Urgency Banner */}
         <UrgencyBanner />
@@ -87,6 +96,47 @@ const HomePage = () => {
         setIsHelpCenterModalOpen={setIsHelpCenterModalOpen}
         setIsContactModalOpen={setIsContactModalOpen}
         setIsTermsModalOpen={setIsTermsModalOpen}
+      />
+      {/* Modals */}
+
+      <FeaturesModal
+        isOpen={isFeaturesModalOpen}
+        onClose={() => setIsFeaturesModalOpen(false)}
+      />
+
+      <SolutionsModal
+        isOpen={isSolutionsModalOpen}
+        onClose={() => setIsSolutionsModalOpen(false)}
+      />
+
+      <DemoModal
+        isOpen={isDemoModalOpen}
+        onClose={() => setIsDemoModalOpen(false)}
+      />
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
+
+      <CareersModal
+        isOpen={isCareersModalOpen}
+        onClose={() => setIsCareersModalOpen(false)}
+      />
+
+      <HelpCenterModal
+        isOpen={isHelpCenterModalOpen}
+        onClose={() => setIsHelpCenterModalOpen(false)}
+      />
+
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
+
+      <TermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
       />
 
     </div>
