@@ -93,7 +93,8 @@ export default function HeroSection() {
               onClick={() => handleRoleSelect("company")}
               onMouseEnter={() => setHoveredAction("hire")}
               onMouseLeave={() => setHoveredAction("hire")}
-              className="px-6 py-3 rounded-xl bg-[#143694] text-white text-lg shadow-md hover:shadow-lg transition"
+              className="px-6 py-3 rounded-xl bg-primaryBrand text-white font-medium shadow-md transition-all duration-300 ease-out
+              hover:shadow-xl hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
             >
               Start Hiring
             </button>
@@ -101,7 +102,8 @@ export default function HeroSection() {
               onMouseEnter={() => setHoveredAction("college")}
               onMouseLeave={() => setHoveredAction("hire")}
               onClick={() => handleRoleSelect("college")}
-              className="px-6 py-3 rounded-xl border-2 border-[#143694] text-[#143694] text-lg hover:bg-[#143694] hover:text-white transition"
+              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
+              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
             >
               Partner as College
             </button>
@@ -109,7 +111,8 @@ export default function HeroSection() {
               onMouseEnter={() => setHoveredAction("apply")}
               onMouseLeave={() => setHoveredAction("hire")}
               onClick={() => handleRoleSelect("candidate")}
-              className="px-6 py-3 rounded-xl border-2 border-[#143694] text-[#143694] text-lg hover:bg-[#143694] hover:text-white transition"
+              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
+              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
             >
               Apply for Jobs
             </button>
