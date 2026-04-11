@@ -45,14 +45,15 @@ const Navbar = () => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          <button onClick={() => handleRoleSelect("candidate")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-            For Students
-          </button>
+          
           <button onClick={() => handleRoleSelect("company")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Companies
           </button>
           <button onClick={() => handleRoleSelect("college")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Colleges
+          </button>
+          <button onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            For Candidate
           </button>
           {/* <button onClick={() => navigate("/help")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Help
@@ -70,7 +71,7 @@ const Navbar = () => {
               <button onClick={() => navigate("/login")} className="text-sm font-medium text-foreground px-4 py-2 hover:bg-muted rounded-lg">
                 Log in
               </button>
-              <button onClick={handleGetStarted} className="btn-primary bg-primaryBrand text-sm py-2.5 px-5">
+              <button onClick={handleGetStarted} className="btn-primary bg-primaryBrand text-sm py-2.5 px-5 hover:bg-white hover:text-primaryBrand hover:font-bold">
                 Get Started
               </button>
             </>
@@ -97,7 +98,7 @@ const Navbar = () => {
           <button onClick={() => navigate("/help")} className="block text-sm">Help</button>
 
           <div className="pt-3 flex gap-3">
-            <button onClick={() => navigate("/demo")} className="text-sm">View Demo</button>
+            {/* <button onClick={() => navigate("/demo")} className="text-sm">View Demo</button> */}
             <button onClick={() => navigate("/login")} className="text-sm">Log in</button>
             <button onClick={handleGetStarted} className="btn-primary text-sm py-2 px-5">
               Get Started

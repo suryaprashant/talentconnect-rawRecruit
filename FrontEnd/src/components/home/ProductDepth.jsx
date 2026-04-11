@@ -5,7 +5,7 @@ const ProductDepth = () => {
   const navigate = useNavigate();
 
   return (
-  <section className="py-16 bg-[#f8fafc]">
+  <section className="py-16 bg-white">
     <div className="max-w-6xl mx-auto px-6">
 
       {/* Header */}

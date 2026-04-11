@@ -29,8 +29,8 @@ const collegeSteps = [
 
 const tabs = [
   { key: "company", label: "For Companies" },
-  { key: "candidate", label: "For Students" }, // UI label = Students, key = candidate
   { key: "college", label: "For Colleges" },
+  { key: "candidate", label: "For Candidates" }, 
 ];
 
 const stepsMap = {
@@ -78,9 +78,9 @@ const HowItWorks = () => {
         whileInView={{ opacity: 1, y: 0 }}
         className="text-center mb-16"
       >
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
           How It Works
-        </h2>
+        </h3>
 
         {/* Tabs */}
         <div className="flex justify-center gap-3 flex-wrap">
