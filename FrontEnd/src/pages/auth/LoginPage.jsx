@@ -294,202 +294,172 @@ function LoginPage() {
 };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-      {/* Background decorative elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
+  <div className="bg-white min-h-screen font-[Inter] text-[#1b1c1d] flex flex-col">
+
+    <main className="flex-grow flex items-start pt-4 justify-center px-6 py-6 relative">
+
+      {/* Background blur */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+
+        {/* Top Right Blob */}
+        <div className="absolute top-[5%] right-[5%] w-[500px] h-[500px] 
+        bg-[#143694]/40 blur-[160px] rounded-full"></div>
+
+        {/* Bottom Left Blob */}
+        <div className="absolute bottom-[5%] left-[5%] w-[500px] h-[500px] 
+        bg-[#143694]/40 blur-[160px] rounded-full"></div>
+
       </div>
 
-      {/* Header - Same format as RoleSelection and Signup */}
-      <header className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
-        <div className="px-8 py-3 flex justify-between items-center">
-          {/* RawRecruit Logo on left */}
-          <button 
-            onClick={handleLogoClick}
-            className="focus:outline-none"
-          >
-            <img 
-              src={heroImage} 
-              alt="RawRecruit Logo" 
-              className="h-16 w-auto object-contain"
-            />
-          </button>
+      {/* MAIN CARD */}
+      <div className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row bg-white/80 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(27,28,29,0.08)] overflow-hidden">
 
-          {/* Empty middle and right side since we only want the logo */}
-          <div></div>
-          <div></div>
+        {/* LEFT SIDE (SAME AS SIGNUP) */}
+        <div className="hidden md:flex md:w-5/12 bg-primaryBrand p-10 flex-col justify-between text-white relative overflow-hidden">
+
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="relative z-10">
+            {/* Logo */}
+            <div className="flex items-center gap-2 mb-16 cursor-pointer" onClick={handleLogoClick}>
+              <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg">
+                <span className="material-symbols-outlined text-[#143694]">
+                  account_tree
+                </span>
+              </div>
+              <span className="text-xl font-extrabold tracking-tight">
+                RawRecruit
+              </span>
+            </div>
+
+            {/* Heading */}
+            <h1 className="text-3xl font-bold mb-6">
+              Welcome Back
+            </h1>
+
+            {/* Points */}
+            <div className="space-y-5 text-sm ">
+              <p className="text-base opacity-90 text-white">Access your dashboard and manage your journey</p>
+              <p className="text-base opacity-90 text-white">Continue hiring, applying, or managing placements</p>
+              <p className="text-base opacity-90 text-white">Secure and seamless login experience</p>
+            </div>
+          </div>
+
+          <div className="text-xs opacity-60 border-t border-white/10 pt-6">
+            Global Hiring Network
+          </div>
         </div>
-      </header>
 
-      {/* Centered Login Card */}
-      <div className="min-h-screen flex items-center justify-center p-4 pt-32">
-        <div className="relative w-full max-w-md">
-          {/* Blur Background behind card */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
-          
-          {/* Main Login Card */}
-          <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8">
-            {/* Decorative top bar */}
-            <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
-            
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-                </svg>
-                Welcome Back
-              </div>
-              
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                Log In to Your Account
-              </h1>
-              
-              <p className="text-gray-600">
-                Access your dashboard and continue your journey
-              </p>
-            </div>
+        {/* RIGHT SIDE */}
+        <div className="w-full md:w-7/12 p-8 md:p-6">
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
-                  placeholder="Email Address"
-                  required
-                />
-              </div>
-
-              <div>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
-                  placeholder="Password"
-                  required
-                />
-              </div>
-
-              {/* Forgot Password Link */}
-              <div className="flex justify-end">
-                <Link 
-                  to="/forgot-password" 
-                  className="text-sm text-[#667eea] hover:text-[#764ba2] hover:underline transition-colors"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-
-              {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-md"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Logging In...
-                  </span>
-                ) : (
-                  'Log In'
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="my-6 relative flex items-center">
-              <div className="flex-grow border-t border-gray-200"></div>
-              <span className="mx-4 text-gray-500 text-sm">Or continue with</span>
-              <div className="flex-grow border-t border-gray-200"></div>
-            </div>
-
-            {/* Social Login Buttons */}
-            <div className="space-y-3">
-              <button
-                onClick={handleGoogleClick}
-                className="w-full border border-gray-200 py-3 rounded-xl flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 hover:shadow-sm"
-                disabled={googleLoading}
-              >
-                {googleLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-gray-800" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Logging in...
-                  </span>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
-                    </svg>
-                    Log in with Google
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={handleLinkedInLogin}
-                className="w-full border border-gray-200 py-3 rounded-xl flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 hover:shadow-sm"
-                disabled={linkedinLoading}
-              >
-                {linkedinLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-gray-800" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Logging in...
-                  </span>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-                    </svg>
-                    Log in with LinkedIn
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Signup Link */}
-            <p className="text-center mt-6 text-gray-600">
-              Don't have an account?{' '}
-              <Link 
-                to="/signup" 
-                className="text-[#667eea] font-semibold hover:text-[#764ba2] hover:underline transition-colors"
-              >
-                Sign Up
-              </Link>
+          {/* Header */}
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-[#041627]">
+              Login to RawRecruit
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">
+              Continue your journey seamlessly
             </p>
           </div>
+
+          {/* Social */}
+          <div className="grid grid-cols-1 gap-4 mb-6">
+            <button
+              onClick={handleLinkedInLogin}
+              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl 
+              hover:bg-[#143694]/5 hover:border-[#143694] transition"
+            >
+              <svg className="w-5 h-7 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+               <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+              </svg>
+              LinkedIn
+            </button>
+
+            <button
+              onClick={handleGoogleClick}
+              className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl 
+              hover:bg-[#143694]/5 hover:border-[#143694] transition"
+            >
+              <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
+              </svg>
+              Google
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center mb-6">
+            <div className="flex-grow border-t"></div>
+            <span className="mx-4 text-xs text-gray-400">
+              OR CONTINUE WITH EMAIL
+            </span>
+            <div className="flex-grow border-t"></div>
+          </div>
+
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full bg-gray-100 p-3 rounded-xl outline-none 
+              focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
+              placeholder="Email"
+            />
+
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full bg-gray-100 p-3 rounded-xl outline-none 
+                focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
+              placeholder="Password"
+            />
+
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm text-primaryBrand hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#143694] text-white py-4 rounded-xl font-bold 
+              hover:bg-white hover:text-[#143694] border-2 border-[#143694] transition-all duration-300"
+            >
+              {loading ? "Logging in..." : "Enter Portal"}
+            </button>
+          </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-500 text-sm">
-              © 2025 RawRecruit. All rights reserved.
-            </p>
+          <div className="mt-6 pt-6 border-t text-center text-sm text-gray-500">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="text-primaryBrand font-semibold hover:underline">
+              Sign Up
+            </Link>
           </div>
+
         </div>
       </div>
-    </div>
-  );
+    </main>
+
+    <footer className="py-10 text-center text-xs text-gray-500 border-t">
+      © 2025 RawRecruit. Built for intentional connections.
+    </footer>
+  </div>
+);
 }
 
 export default LoginPage;

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, BrowserRouter } from "react-router-dom";
+import ScrollToTop from "./utils/ScrollToTop";
 import ReactGA from "react-ga4";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -274,6 +275,8 @@ import InternshipListingEmployer from "./pages/employer/jobManagement/internship
 import SaveJob from "./components/common/savedJob/JobDetail"
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DeleteAccount from "./pages/DeleteAccount";
+import CompanyNewJobs from "./pages/company/CompanyNewJob"
+import StudentPool from "./pages/college/StudentPool";
 
 
 // Create query client
@@ -282,11 +285,14 @@ function AppRoutes() {
   const [authUser] = useLegacyAuth();
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       {/* Auth Routes */}
       
       <Route path="/mock" element={<PostIntership />} />
-      <Route path="/userselection" element={<RoleSelection />} />
+      {/* <Route path="/userselection" element={<RoleSelection />} /> */}
+      <Route path="/userselection" element={<Navigate to="/signup" replace />} />
       <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
@@ -491,6 +497,8 @@ function AppRoutes() {
               <Route path="/company-profile" element={<CompanyProfile />} />
 
               <Route path="/company/saved-jobs/*" element={<JobRoutes />} />
+              {/* new page for v3  */}
+              <Route path="/company/post-jobs" element={<CompanyNewJobs />} />
 
               <Route path="/company-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />
@@ -675,6 +683,7 @@ function AppRoutes() {
 </Route>
 
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
+              <Route path="/college/student-pool" element={<StudentPool />} />
               <Route path="/college-dashboard/Internship/:id" element={<InternJobDetailPage />} />
 
               {/* <Route path="/college-dashboard/Pool-campus" element={<PoolJobListingPage />} />
@@ -807,6 +816,7 @@ function AppRoutes() {
         ))}
       </Route>
     </Routes>
+    </>
   );
 }
 

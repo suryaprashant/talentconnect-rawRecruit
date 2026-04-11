@@ -47,7 +47,7 @@ function CollegeSidebar({ activePath }) {
           />
 
           {/* College Dashboard */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="College Dashboard" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -78,8 +78,34 @@ function CollegeSidebar({ activePath }) {
               label="Pool Campus Opportunities"
               active={activePath === '/college-dashboard/Pool-campus'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}   
+          {/* College Dashboard - Now Single Item */}
+          <SidebarNavItem 
+            to="/college-dashboard/On-campus" 
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+              </svg>
+            } 
+            label="College Dashboard" 
+            active={activePath.includes('/college-dashboard')} 
+            onHelp={() => handleOpenHelp("collegeDashboard")}
+          />
 
+
+
+{/* Student Pool */}
+<SidebarNavItem 
+  to="/college/student-pool" 
+  icon={
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path d="M12 12a5 5 0 110-10 5 5 0 010 10zM3.5 18a8.5 8.5 0 0117 0V19a2 2 0 01-2 2H5.5a2 2 0 01-2-2v-1z" />
+    </svg>
+  } 
+  label="Students" 
+  active={activePath === '/college/student-pool'} 
+  onHelp={() => handleOpenHelp("students")}
+/>
           {/* Service Request */}
           <SidebarNavGroup 
             label="Service Request" 
@@ -147,7 +173,7 @@ function CollegeSidebar({ activePath }) {
           </SidebarNavGroup>
 
           {/* Manage Application */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Manage Application" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -177,10 +203,10 @@ function CollegeSidebar({ activePath }) {
               label="Pool-Campus Placement"
               active={activePath === '/manage-application/poolCampus-placement'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
 
           {/* Application Status */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Application Status" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -211,10 +237,10 @@ function CollegeSidebar({ activePath }) {
               label="Pool Campus"
               active={activePath === '/application-status/poolcampus'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
 
           {/* Registered / Shortlisted */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Shortlisted Companies" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -244,10 +270,10 @@ function CollegeSidebar({ activePath }) {
               label="Pool Campus Opportunities"
               active={activePath === '/registered/pool-campus-opportunities'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
 
           {/* Accepted Companies */}
-          <SidebarNavGroup 
+          {/* <SidebarNavGroup 
             label="Accepted Companies" 
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -277,7 +303,60 @@ function CollegeSidebar({ activePath }) {
               label="Pool Campus Request"
               active={activePath === '/accepted/pool-campus-request'}
             />
-          </SidebarNavGroup>
+          </SidebarNavGroup> */}
+
+          {/* Manage Application - Now Single Item */}
+          <SidebarNavItem 
+            to="/manage-application/campus-placement" 
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M4.5 2.25c-1.036 0-1.875.84-1.875 1.875v11.25c0 1.035.84 1.875 1.875 1.875h15c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-15zM3.75 20.625c0 1.035.84 1.875 1.875 1.875h15c1.035 0 1.875-.84 1.875-1.875V12.75c0-1.036-.84-1.875-1.875-1.875h-15c-1.036 0-1.875.84-1.875 1.875v7.875z" clipRule="evenodd" />
+              </svg>
+            } 
+            label="Manage Application" 
+            active={activePath.includes('/manage-application')} 
+            onHelp={() => handleOpenHelp("manageApplication")}
+          />
+
+          {/* Application Status - Now Single Item */}
+          <SidebarNavItem 
+            to="/application-status/oncampus" 
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zm9.586 4.594a.75.75 0 00-1.172-.938l-2.476 3.096-.634-.682a.75.75 0 00-1.06 1.06l1.125 1.125a.75.75 0 001.116-.062l3-3.75z" clipRule="evenodd" />
+              </svg>
+            } 
+            label="Application Status" 
+            active={activePath.includes('/application-status')} 
+            onHelp={() => handleOpenHelp("applicationStatus")}
+          />
+
+          {/* Shortlisted Companies - Now Single Item */}
+          <SidebarNavItem 
+            to="/registered/on-campus-opportunities" 
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+              </svg>
+            } 
+            label="Shortlisted Companies" 
+            active={activePath.includes('/registered')} 
+            onHelp={() => handleOpenHelp("registered")}
+          />
+
+          {/* Accepted Companies - Now Single Item */}
+          <SidebarNavItem 
+            to="/accepted/on-campus-request" 
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" clipRule="evenodd" />
+              </svg>
+            } 
+            label="Accepted Companies" 
+            active={activePath.includes('/accepted')} 
+            onHelp={() => handleOpenHelp("accepted")}
+          />
 
           {/* Chats */}
           <SidebarNavItem

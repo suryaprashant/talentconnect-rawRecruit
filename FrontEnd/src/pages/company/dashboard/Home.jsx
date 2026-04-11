@@ -3,9 +3,120 @@ import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
 import { FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus, getShortlistedCandidates, getAcceptedCandidates } from '@/lib/Company_AxiosInstance'
+//import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus, getShortlistedCandidates, getAcceptedCandidates ,getRegisteredColleges  } from '@/lib/Company_AxiosInstance'
+import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus, getShortlistedCandidates, getAcceptedCandidates, getRegisteredColleges, getPostedJobs } from '@/lib/Company_AxiosInstance'
+import ActivationBlock from '@/components/dashboard/ActivationBlock'
+// ADD this line after existing imports
+import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 
+import { getPoolCampusForCompany } from '@/lib/College_AxiosIntance';
 function Home() {
+  const onCampusColleges = [
+  { name: 'IIT Delhi',        location: 'Delhi',      students: 200, streams: 'CSE, ECE',          timeline: 'April 2025',     note: 'Looking for top tech companies',       applied: true  },
+  { name: 'VIT Vellore',      location: 'Tamil Nadu', students: 500, streams: 'CSE, IT, ECE, Mech', timeline: 'April-May 2025', note: 'Large batch, flexible on requirements', applied: true  },
+  { name: 'RVCE Bangalore',   location: 'Bangalore',  students: 250, streams: 'CSE, ISE, ECE',      timeline: 'April 2025',     note: 'Preferred companies with good packages',applied: false },
+];
+
+const poolCampusColleges = [
+  { name: 'NIT Trichy',       location: 'Tamil Nadu', students: 400, streams: 'CSE, ECE, EEE',      timeline: 'May 2025',       note: 'Strong placement record',              applied: false },
+  { name: 'BITS Pilani',      location: 'Rajasthan',  students: 300, streams: 'CS, Mech, Chem',     timeline: 'May-June 2025',  note: 'Top-tier candidates available',        applied: true  },
+];
+
+const [collegeRequests, setCollegeRequests] = useState({
+    onCampus: [],
+    poolCampus: [],
+    loading: true
+  });
+  
+  const [appTab, setAppTab] = useState('On-Campus');
+const [myApplications, setMyApplications] = useState({
+  onCampus: [],
+  poolCampus: [],
+  loading: true
+});
+
+const [jobTab, setJobTab] = useState('On-campus');
+const [tabJobs, setTabJobs] = useState({ 'On-campus': [], 'Pool-campus': [], 'Off-campus': [], 'Internship': [] });
+const [tabJobsLoading, setTabJobsLoading] = useState(false);
+
+useEffect(() => {
+  const fetchTabJobs = async () => {
+    setTabJobsLoading(true);
+    try {
+      const [onRes, poolRes, offRes, internRes] = await Promise.all([
+        getPostedJobs('On-campus',   'Applied').catch(() => ({ data: [] })),
+        getPostedJobs('Pool-campus', 'Applied').catch(() => ({ data: [] })),
+        getPostedJobs('Off-campus',  'Applied').catch(() => ({ data: [] })),
+        getPostedJobs('Internship',  'Applied').catch(() => ({ data: [] })),
+      ]);
+
+      // ADD THESE 4 LINES temporarily
+      console.log('On-campus raw:', onRes);
+      console.log('Pool-campus raw:', poolRes);
+      console.log('Off-campus raw:', offRes);
+      console.log('Internship raw:', internRes);
+
+      const normalize = (res) =>
+        Array.isArray(res?.data) ? res.data : res?.data?.jobs || [];
+
+      setTabJobs({
+        'On-campus':   normalize(onRes),
+        'Pool-campus': normalize(poolRes),
+        'Off-campus':  normalize(offRes),
+        'Internship':  normalize(internRes),
+      });
+    } catch (err) {
+      console.error('Failed to fetch tab jobs:', err);
+    } finally {
+      setTabJobsLoading(false);
+    }
+  };
+  fetchTabJobs();
+}, []);
+
+useEffect(() => {
+  const fetchMyApplications = async () => {
+    try {
+      setMyApplications(prev => ({ ...prev, loading: true }));
+
+      const [onCampusRes, poolCampusRes] = await Promise.all([
+        getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
+        getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } }))
+      ]);
+
+      const mapJobs = (rawData) =>
+        (rawData || [])
+          .filter(item => item.jobDetails && item.collegeDetails)
+          .map(item => ({
+            id: item._id,
+            collegeName:
+              item.collegeDetails?.collegeUniversityDetails?.collegeName || 'College',
+            collegeLogo: item.collegeDetails?.profileImage || null,
+            location:
+              Array.isArray(item.jobDetails?.location) && item.jobDetails.location.length > 0
+                ? item.jobDetails.location[0]
+                : item.jobDetails?.venue || 'N/A',
+            degree:
+              Array.isArray(item.jobDetails?.degree) && item.jobDetails.degree.length > 0
+                ? item.jobDetails.degree.join(', ')
+                : 'Various Streams',
+            status: item.currentStatus || 'Applied',
+          }));
+
+      setMyApplications({
+        onCampus: mapJobs(onCampusRes.data?.data),
+        poolCampus: mapJobs(poolCampusRes.data?.data),
+        loading: false
+      });
+
+    } catch (error) {
+      console.error('Failed to fetch my applications:', error);
+      setMyApplications(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  fetchMyApplications();
+}, []);
   const navigate = useNavigate()
   const [dashboardData, setDashboardData] = useState({
     appliedByCategory: {
@@ -48,9 +159,36 @@ function Home() {
     loading: true
   })
 
+useEffect(() => {
+  const fetchCollegeRequests = async () => {
+    try {
+      setCollegeRequests(prev => ({ ...prev, loading: true }));
+
+      const [onCampusRes, poolCampusRes] = await Promise.all([
+        getRegisteredColleges().catch(() => ({ data: { data: [] } })),
+        getPoolCampusForCompany().catch(() => ({ data: { data: [] } }))
+      ]);
+
+      setCollegeRequests({
+        onCampus: onCampusRes.data?.data || [],
+        poolCampus: poolCampusRes.data?.data || [],
+        loading: false
+      });
+
+    } catch (error) {
+      console.error('Failed to fetch college requests:', error);
+      setCollegeRequests(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  fetchCollegeRequests();
+}, []);
   useEffect(() => {
     fetchDashboardData()
   }, [])
+
+  // Add this state at the top of your Home function
+const [activeTab, setActiveTab] = useState('On-Campus');
 
   const fetchDashboardData = async () => {
   try {
@@ -232,6 +370,7 @@ function Home() {
         }
       }
 
+
       setDashboardData({
         appliedByCategory,
         shortlistedByCategory: finalShortlistedByCategory,
@@ -284,6 +423,50 @@ function Home() {
             </div>
           </div>
         </div>
+
+       
+<ActivationBlock
+  greeting="Welcome back !"
+  subtitle="Get candidates in 24 hours"
+  steps={[
+    { number: 1, label: "Post Job" },
+    { number: 2, label: "Get Applications" },
+    { number: 3, label: "Shortlist" },
+  ]}
+>
+  <div className="flex flex-col items-center lg:items-end gap-4">
+    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-200/50 px-2 py-1 mx-auto rounded-full">
+      Start Hiring
+    </span>
+    
+    <div className="grid grid-cols-2 gap-3">
+      {[
+        { label: 'On Campus', path: '/hiring-channels/on-campus-hiring' },
+        { label: 'Off Campus', path: '/hiring-channels/off-campus-hiring' },
+        { label: 'Pool Campus', path: '/hiring-channels/pool-campus-hiring' },
+        { label: 'Internship', path: '/hiring-channels/post-an-internship' }
+      ].map((btn) => (
+        <button
+          key={btn.label}
+          onClick={() => navigate(btn.path)}
+          className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-900 text-white rounded-xl transition-all duration-300 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
+        >
+          <span className="text-[11px] font-bold uppercase tracking-tight">
+            {btn.label}
+          </span>
+          {/* Subtle arrow that appears on hover */}
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-3 w-3 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" 
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      ))}
+    </div>
+  </div>
+</ActivationBlock>
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 auto-rows-fr gap-3 mb-8">
@@ -522,6 +705,209 @@ function Home() {
 
         {/* Rest of the dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+         
+         {/* College Hiring Requests */}
+
+{/* College Hiring Requests */}
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+  {/* Header */}
+  <div className="flex items-center gap-3 mb-5">
+    <h2 className="text-lg font-semibold text-gray-900">College Hiring Requests</h2>
+    <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
+      {activeTab === 'On-Campus' ? collegeRequests.onCampus.length : collegeRequests.poolCampus.length}
+    </span>
+  </div>
+
+  {/* Tabs */}
+  <div className="flex gap-2 mb-5">
+    {['On-Campus', 'Pool-Campus'].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+          activeTab === tab ? 'bg-blue-900 text-white' : 'text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+
+  {/* Vertical Stack Container */}
+  <div className="grid grid-cols-1 gap-4">
+    {(activeTab === 'On-Campus' ? collegeRequests.onCampus : collegeRequests.poolCampus)
+      .slice(0, 2) // Limits to 2 jobs
+      .map((job, index) => {
+        // Data Extraction based on your shared files
+        const collegeData = job.collegePosted?.collegeUniversityDetails;
+        const collegeName = collegeData?.collegeName || "Unknown Institution";
+        const location = Array.isArray(job.location) ? job.location[0] : (job.location || "Location N/A");
+        
+        // Handling different field names between On-Campus and Pool-Campus files
+        const studentCount = job.noOfplacedStudents || 0;
+        const streams = activeTab === 'On-Campus' 
+          ? (job.degree?.join(', ') || "Multiple Streams") 
+          : (job.studentStreams?.join(', ') || "Multiple Streams");
+
+        return (
+          <div key={job._id || index} className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">{collegeName}</h3>
+                  <p className="text-xs text-gray-500">{location}</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider">
+                Active Request
+              </span>
+            </div>
+
+            <div className="space-y-1 mb-4">
+              <p className="text-sm text-gray-700">
+                <span className="font-bold">{studentCount}</span> Students available
+              </p>
+              <p className="text-xs text-gray-500 line-clamp-1">
+                <span className="font-medium">Streams:</span> {streams}
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate(activeTab === 'On-Campus' ? '/company-dashboard/On-campus' : '/company-dashboard/Pool-campus')}
+              className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
+            >
+              View Details & Apply
+            </button>
+          </div>
+        );
+      })}
+
+    {/* Fallback if no data */}
+    {(activeTab === 'On-Campus' ? collegeRequests.onCampus : collegeRequests.poolCampus).length === 0 && (
+      <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
+        <p className="text-sm text-gray-500">No {activeTab} hiring requests available</p>
+      </div>
+    )}
+  </div>
+
+  {/* Footer Button */}
+  <div className="mt-4">
+    <button
+      onClick={() => navigate(activeTab === 'On-Campus' ? '/company-dashboard/On-campus' : '/company-dashboard/Pool-campus')}
+      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+    >
+      See All {activeTab} Requests
+    </button>
+  </div>
+</div>
+
+          
+{/* My College Applications */}
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+  {/* Header matching College Hiring Requests style */}
+  <div className="flex items-center gap-3 mb-5">
+    <h2 className="text-lg font-semibold text-gray-900">My Applications</h2>
+    <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
+      {appTab === 'On-Campus' ? myApplications.onCampus.length : myApplications.poolCampus.length}
+    </span>
+  </div>
+
+  {/* Tabs matching the navigation style */}
+  <div className="flex gap-2 mb-5">
+    {['On-Campus', 'Pool-Campus'].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setAppTab(tab)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+          appTab === tab ? 'bg-blue-900 text-white' : 'text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+
+  {/* Vertical Stack Container - Now using the Card layout of Hiring Requests */}
+  <div className="grid grid-cols-1 gap-4">
+    {myApplications.loading ? (
+      <div className="flex items-center justify-center py-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900"></div>
+      </div>
+    ) : (appTab === 'On-Campus' ? myApplications.onCampus : myApplications.poolCampus)
+        .slice(0, 2) // Keeping it to 2 items to match the hiring request vertical scale
+        .map((job, index) => {
+          return (
+            <div 
+              key={job.id || index} 
+              className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate(appTab === 'On-Campus' ? '/company/application-status/oncampus' : '/company/application-status/poolcampus')}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-sm">{job.collegeName}</h3>
+                    <p className="text-xs text-gray-500">{job.location}</p>
+                  </div>
+                </div>
+                {/* Status Badge styled like "Active Request" */}
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${
+                  job.status === 'Accepted' ? 'bg-green-50 text-green-700' :
+                  job.status === 'Shortlisted' ? 'bg-amber-50 text-amber-700' :
+                  job.status === 'Rejected' ? 'bg-red-50 text-red-700' :
+                  'bg-blue-50 text-blue-700'
+                }`}>
+                  {job.status}
+                </span>
+              </div>
+
+              <div className="space-y-1 mb-4">
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-500">Degree:</span> <span className="font-bold">{job.degree}</span>
+                </p>
+              </div>
+
+              <button
+                className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
+              >
+                Track Application
+              </button>
+            </div>
+          );
+        })}
+
+    {/* Empty state */}
+    {!myApplications.loading && (appTab === 'On-Campus' ? myApplications.onCampus : myApplications.poolCampus).length === 0 && (
+      <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
+        <p className="text-sm text-gray-500">No {appTab} applications yet</p>
+      </div>
+    )}
+  </div>
+
+  {/* Footer Button matching the "See All Requests" style */}
+  <div className="mt-4">
+    <button
+      onClick={() => navigate(appTab === 'On-Campus' ? '/company/application-status/oncampus' : '/company/application-status/poolcampus')}
+      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+    >
+      See All {appTab} Applications
+    </button>
+  </div>
+</div>
+        </div>
+
+        
+        {/* Rest of the dashboard */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Service Requests Status */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">Service Requests Status</h2>
@@ -647,7 +1033,151 @@ function Home() {
           </div>
         </div>
 
+
+{/* Posted Jobs by Type */}
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+  {/* Header */}
+  <div className="flex items-center justify-between mb-5">
+    <h2 className="text-lg font-semibold text-gray-900">Posted Jobs</h2>
+    <button
+      onClick={() => navigate(
+        jobTab === 'On-campus'   ? '/job-management/On-campus'   :
+        jobTab === 'Pool-campus' ? '/job-management/Pool-campus' :
+        jobTab === 'Off-campus'  ? '/job-management/Off-campus'  :
+        '/job-management/Internship'
+      )}
+      className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium transition-colors"
+    >
+      See All →
+    </button>
+  </div>
+
+  {/* Tab Buttons */}
+  <div className="flex flex-wrap gap-2 mb-6">
+    {[
+      { label: 'On Campus',   value: 'On-campus'   },
+      { label: 'Off Campus',  value: 'Off-campus'  },
+      { label: 'Pool Campus', value: 'Pool-campus' },
+      { label: 'Internship',  value: 'Internship'  },
+    ].map(({ label, value }) => (
+      <button
+        key={value}
+        onClick={() => setJobTab(value)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+          jobTab === value
+            ? 'bg-blue-900 text-white'
+            : 'text-gray-500 hover:text-gray-700 border border-gray-200'
+        }`}
+      >
+        {label}
+        <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+          jobTab === value ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+        }`}>
+          {tabJobs[value]?.length || 0}
+        </span>
+      </button>
+    ))}
+  </div>
+
+  {/* Job Cards */}
+  {tabJobsLoading ? (
+    <div className="flex justify-center py-10">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900"></div>
+    </div>
+  ) : tabJobs[jobTab]?.length === 0 ? (
+    <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
+      <p className="text-sm text-gray-500">No {jobTab} jobs posted yet</p>
+    </div>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {tabJobs[jobTab].slice(0, 2).map((job, index) => {
+        const roles = Array.isArray(job.jobRoles)
+          ? job.jobRoles.join(', ')
+          : job.jobRoles || job.lookingFor || 'N/A';
+
+        const locationArr = Array.isArray(job.location) && job.location.length > 0
+          ? job.location
+          : Array.isArray(job.workLocation) && job.workLocation.length > 0
+            ? job.workLocation
+            : null;
+        const location = locationArr ? locationArr[0] : 'N/A';
+
+        const endDate = job.endDate
+          ? new Date(job.endDate).toLocaleDateString('en-US', {
+              month: 'short', day: 'numeric', year: 'numeric'
+            })
+          : 'N/A';
+
+        const mgmtPath =
+          jobTab === 'On-campus'   ? '/job-management/On-campus'   :
+          jobTab === 'Pool-campus' ? '/job-management/Pool-campus' :
+          jobTab === 'Off-campus'  ? '/job-management/Off-campus'  :
+          '/job-management/Internship';
+
+        return (
+          <div
+            key={job._id || index}
+            onClick={() => navigate(mgmtPath)}
+            className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md hover:border-[#667eea]/40 transition-all cursor-pointer group"
+          >
+            {/* Role + Badge */}
+            <div className="flex items-start justify-between gap-2 mb-4">
+              <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#667eea] transition-colors line-clamp-2">
+                {roles}
+              </h3>
+              <span className="text-[10px] font-bold text-[#667eea] bg-[#667eea]/10 px-2 py-1 rounded-md uppercase tracking-wider whitespace-nowrap flex-shrink-0">
+                {jobTab === 'On-campus'   ? 'On Campus'   :
+                 jobTab === 'Pool-campus' ? 'Pool Campus' :
+                 jobTab === 'Off-campus'  ? 'Off Campus'  : 'Internship'}
+              </span>
+            </div>
+
+            {/* Location + End Date */}
+            <div className="flex flex-col gap-1.5 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="capitalize truncate">{location}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Closes {endDate}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+
+  {/* Footer */}
+  <div className="mt-5">
+    <button
+      onClick={() => navigate(
+        jobTab === 'On-campus'   ? '/job-management/On-campus'   :
+        jobTab === 'Pool-campus' ? '/job-management/Pool-campus' :
+        jobTab === 'Off-campus'  ? '/job-management/Off-campus'  :
+        '/job-management/Internship'
+      )}
+      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+    >
+      See All {
+        jobTab === 'On-campus'   ? 'On Campus'   :
+        jobTab === 'Pool-campus' ? 'Pool Campus' :
+        jobTab === 'Off-campus'  ? 'Off Campus'  : 'Internship'
+      } Jobs
+    </button>
+  </div>
+</div>
+
         {/* Applications by Job Type Breakdown */}
+        
+
+
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Job Type</h2>
           <div className="overflow-x-auto">
