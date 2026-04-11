@@ -6,7 +6,7 @@ const steps = [
   {
     icon: UserPlus,
     title: "Choose Your Role",
-    desc: "Sign up as Company, College, or Student."
+    desc: "Sign up as Company, College, or Candidate(Student, Fresher, Professional)."
   },
   {
     icon: FileText,

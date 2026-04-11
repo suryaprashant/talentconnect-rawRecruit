@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 // ROLES
-const roleFilters = ["Student", "Company", "College", "Freshers"];
+const roleFilters = ["Company", "College", "Student", "Freshers"];
 
 // SUB FILTERS
 const subFiltersMap = {
@@ -16,8 +16,8 @@ const subFiltersMap = {
 };
 
 const LiveJobs = () => {
-  const [activeRole, setActiveRole] = useState("Student");
-  const [activeType, setActiveType] = useState("Off-Campus");
+  const [activeRole, setActiveRole] = useState("Company");
+  const [activeType, setActiveType] = useState("On-Campus");
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -247,6 +247,14 @@ const LiveJobs = () => {
     const extraSkills = skills.length - 2;
 
     const tag = job.tags?.[0]; // only first tag
+    const deadline = job.endDate || job.proposedSchedule?.endDate || job.interviewWindow?.end;
+
+    const daysLeft = deadline
+      ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
+      : null;
+
+    const startDate = job.startDate;
+    const duration = job.internshipDuration;
 
     return (
       <motion.div
@@ -256,11 +264,49 @@ const LiveJobs = () => {
         transition={{ delay: i * 0.08 }}
         className="relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
       >
-        {/* TAG TOP RIGHT */}
-        {tag && (
-          <span className="absolute top-3 right-3 text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-            {tag}
-          </span>
+        {/* TOP RIGHT STACK */}
+        {activeType !== "Internship" && (
+          <div className="absolute top-6 right-3 flex flex-col items-end gap-1">
+
+            {tag && (
+              <span className="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                {tag}
+              </span>
+            )}
+
+            {daysLeft !== null && (
+              <span
+                className={`text-[10px] px-2 py-1 mt-1 rounded-full font-medium ${
+                  daysLeft > 3
+                    ? "bg-blue-100 text-blue-600"
+                    : daysLeft > 0
+                    ? "bg-orange-100 text-orange-600"
+                    : "bg-gray-200 text-gray-500"
+                }`}
+              >
+                {daysLeft > 0 ? `${daysLeft} days left` : "Closed"}
+              </span>
+            )}
+
+          </div>
+        )}
+
+        {activeType === "Internship" && (
+          <div className="absolute top-6 right-3 flex flex-col items-end gap-1">
+
+            {job.startDate && (
+              <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-medium">
+                📅 Starts {new Date(job.startDate).toLocaleDateString()}
+              </span>
+            )}
+
+            {job.internshipDuration && (
+              <span className="text-[10px] bg-purple-100 text-purple-600 px-2 py-1 rounded-full font-medium">
+                ⏱ {job.internshipDuration}
+              </span>
+            )}
+
+          </div>
         )}
 
         {/* HEADER */}

@@ -1,35 +1,44 @@
 import { motion } from "framer-motion";
-import { GraduationCap, Building2, School } from "lucide-react";
+import { GraduationCap, Building2, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 const roles = [
   {
-    icon: GraduationCap,
-    title: "Student",
-    roleKey: "candidate", // IMPORTANT
-    desc: "Discover jobs, internships and build your career from day one.",
-    cta: "Apply to Jobs",
-    color: "from-blue-50 to-blue-100/50",
-    border: "hover:border-accent",
-  },
-  {
-    icon: Building2,
-    title: "Company",
     roleKey: "company",
-    desc: "Post jobs, access verified freshers, and hire faster than ever.",
+    title: "For Companies (HR & Hiring Managers)",
+    icon: Building2,
+    points: [
+      "Create a company profile to manage fresher hiring at scale",
+      "Explore college-led on-campus and pool-campus recruitment opportunities",
+      "Post on-campus, pool-campus, and off-campus hiring requirements",
+      "Access workforce solutions and employee training programs",
+    ],
     cta: "Start Hiring",
-    color: "from-indigo-50 to-indigo-100/50",
-    border: "hover:border-primary",
   },
   {
-    icon: School,
-    title: "College",
     roleKey: "college",
-    desc: "Manage campus placements and connect with top employers.",
-    cta: "Partner With Us",
-    color: "from-sky-50 to-sky-100/50",
-    border: "hover:border-sky-500",
+    title: "For Colleges (TPOs)",
+    icon: GraduationCap,
+    points: [
+      "Register your college on a centralized campus recruitment platform",
+      "Discover on-campus and pool-campus hiring requests from companies",
+      "Publish on-campus and pool-campus recruitment opportunities",
+      "Access student training, seminars, and institutional branding services",
+    ],
+    cta: "Partner as College",
+  },
+  {
+    roleKey: "employer",
+    title: "For Employers (Staffing & Hiring Partners)",
+    icon: Briefcase,
+    points: [
+      "Set up an independent employer profile",
+      "Manage end-to-end campus and off-campus recruitment activities",
+      "Coordinate hiring on behalf of multiple companies",
+      "Handle company approvals, scheduling, and recruitment operations",
+    ],
+    cta: "Apply Now",
   },
 ];
 
@@ -68,9 +77,9 @@ const RoleCards = () => {
         whileInView={{ opacity: 1, y: 0 }}
         className="text-center mb-16"
       >
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-          How do you want to use{" "}
-          <span className="text-[#143694]">RawRecruit</span>?
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          One Platform.{" "}
+          <span className="text-primaryBrand">Three Powerful Interfaces.</span>
         </h2>
 
         <p className="text-gray-500 text-lg">
@@ -91,22 +100,31 @@ const RoleCards = () => {
             className="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
           >
             {/* Icon */}
-            <div className="w-16 h-16 rounded-2xl bg-[#eef2ff] flex items-center justify-center mx-auto mb-6">
+            <div className="w-10 h-10 p-1.5 rounded-2xl bg-[#eef2ff] flex items-center justify-center mx-auto mb-6">
               <r.icon className="w-7 h-7 text-[#143694]" />
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">
               {r.title}
             </h3>
 
-            {/* Description */}
-            <p className="text-gray-500 mb-6 leading-relaxed">
-              {r.desc}
-            </p>
+            {/* Points */}
+            <div className="space-y-3 mb-6 text-left">
+              {r.points.map((point, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <span className="min-w-[24px] h-6 flex items-center justify-center text-xs rounded-md bg-gray-100 text-primaryBrand font-semibold">
+                    {idx + 1}
+                  </span>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {point}
+                  </p>
+                </div>
+              ))}
+            </div>
 
             {/* Button */}
-            <button className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition">
+            <button className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition hover:bg-white hover:text-primaryBrand border border-PrimaryBrand">
               {r.cta}
             </button>
           </motion.div>

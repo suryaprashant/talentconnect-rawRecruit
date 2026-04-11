@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, BrowserRouter } from "react-router-dom";
+import ScrollToTop from "./utils/ScrollToTop";
 import ReactGA from "react-ga4";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -284,6 +285,8 @@ function AppRoutes() {
   const [authUser] = useLegacyAuth();
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       {/* Auth Routes */}
       
@@ -813,6 +816,7 @@ function AppRoutes() {
         ))}
       </Route>
     </Routes>
+    </>
   );
 }
 

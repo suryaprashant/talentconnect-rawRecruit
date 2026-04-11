@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import DashboardMock from "@/components/home/DashboardMock";
+import image1 from "../../assets/companyDashboard.png";
+import image2 from "../../assets/collegeDashboard.png";
+import image3 from "../../assets/CandidateDashboard.png";
 const CountUp = ({ end, suffix = "" }) => {
   const [count, setCount] = useState(0);
 
@@ -30,6 +33,7 @@ const CountUp = ({ end, suffix = "" }) => {
 export default function HeroSection() {
   const navigate = useNavigate();
   const { isAuthenticated, role } = useAuth();
+  const [hoveredAction, setHoveredAction] = useState("hire");
 
   const handleRoleSelect = (selectedRole) => {
     if (!isAuthenticated) {
@@ -87,12 +91,23 @@ export default function HeroSection() {
 
             <button
               onClick={() => handleRoleSelect("company")}
+              onMouseEnter={() => setHoveredAction("hire")}
+              onMouseLeave={() => setHoveredAction("hire")}
               className="px-6 py-3 rounded-xl bg-[#143694] text-white text-lg shadow-md hover:shadow-lg transition"
             >
               Start Hiring
             </button>
-
             <button
+              onMouseEnter={() => setHoveredAction("college")}
+              onMouseLeave={() => setHoveredAction("hire")}
+              onClick={() => handleRoleSelect("college")}
+              className="px-6 py-3 rounded-xl border-2 border-[#143694] text-[#143694] text-lg hover:bg-[#143694] hover:text-white transition"
+            >
+              Partner as College
+            </button>
+            <button
+              onMouseEnter={() => setHoveredAction("apply")}
+              onMouseLeave={() => setHoveredAction("hire")}
               onClick={() => handleRoleSelect("candidate")}
               className="px-6 py-3 rounded-xl border-2 border-[#143694] text-[#143694] text-lg hover:bg-[#143694] hover:text-white transition"
             >
@@ -101,18 +116,22 @@ export default function HeroSection() {
 
           </div>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground text-base">
-                <CountUp end={3000} suffix="+" />
-              </span>
-              students placed
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#143694]" />
-              Active across colleges & companies
-            </div>
+          <div className="flex flex-wrap gap-6 text-sm text-gray-500 mt-4">
+            <button
+              onClick={() => navigate("/demo")}
+              className="flex items-center gap-1 hover:text-[#143694] transition"
+            >
+             Watch Demo
+            </button>
+
+            <span className="w-1.5 h-1.5 rounded-full mt-2 bg-[#143694]" />
+
+            <button
+              onClick={() => navigate("/onboarding")}
+              className="flex items-center gap-1 hover:text-[#143694] transition"
+            >
+              Request onboarding support
+            </button>
           </div>
         </motion.div>
 
@@ -123,7 +142,19 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative hidden lg:block"
         >
-          <DashboardMock />
+          <img
+            src={
+              hoveredAction === "hire"
+                ? image1
+                : hoveredAction === "apply"
+                ? image3
+                : hoveredAction === "college"
+                ? image2
+                : "/images/default.png"
+            }
+            alt="Preview"
+            className="w-full h-auto rounded-xl shadow-lg transition-all duration-300"
+          />
         </motion.div>
 
       </div>
