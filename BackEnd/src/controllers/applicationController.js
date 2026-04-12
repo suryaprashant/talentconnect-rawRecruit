@@ -41,7 +41,7 @@ import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
-import { fetchReferralApplicationsService,getAllProfessionalReferralsService,getCompanyReferralFeedService } from "../controllers/../services/adminService.js";
+import { fetchReferralApplicationsService,getAllProfessionalReferralsService,getCompanyReferralFeedService,fetchProfessionalReferralMetrics } from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js"
 import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
@@ -70,6 +70,34 @@ import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
 //     next(error);
 //   }
 // };
+
+export const getProfessionalReferralMetrics = async (req, res) => {
+  try {
+    const userId = req.user._id;
+ 
+    // Resolve the professional's onboarding profile ID
+    const userProfile = await getStudentService(userId);
+ 
+    if (!userProfile?.data?.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found.",
+      });
+    }
+ 
+    const professionalProfileId = userProfile.data[0]._id;
+ 
+    const metrics = await fetchProfessionalReferralMetrics(professionalProfileId);
+ 
+    return res.status(200).json({
+      success: true,
+      data: metrics,
+    });
+  } catch (error) {
+    console.error("❌ getProfessionalReferralMetrics error:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 export const getReferralsForCompany = async (req, res, next) => {
   try {
