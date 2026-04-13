@@ -6,7 +6,8 @@ getProfessionalDashboardMetrics,
  updateApplicationStatus,
  getGlobalReferralApplications,
  getReferralsForCompany,
- getProfessionalReferralMetrics
+ getProfessionalReferralMetrics,
+ getCandidateDashboardStats
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -67,7 +68,6 @@ router.get('/professional/metrics', secureRoute, getProfessionalDashboardMetrics
 
 
 
-
 // get candidates by job
 router.get('/manage', secureRoute, getApplicationsByJob);
 
@@ -106,6 +106,7 @@ router.get(
   secureRoute,
   getProfessionalReferralMetrics
 );
- 
+
+router.get('/dashboard/candidate/stats', secureRoute, getCandidateDashboardStats);
 
 export default router;

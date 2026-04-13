@@ -1721,182 +1721,70 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
     }
 }
 
-// // export async function getAcceptedOnCampusService(companyId) {
-// //     try {
+export async function getCandidateDashboardStatsService(profileId) {
+  try {
+    const objectId = new mongoose.Types.ObjectId(profileId);
 
-// //         const response = await Job.find({ companyPosted: companyId, openingFor: "Oncampus" }, { _id: 1 }).lean();
+    const stats = await Application.aggregate([
+      {
+        $match: {
+          applicant: objectId,
+          applicantType: { $in: ["student", "fresher", "professional"] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
 
-// //         let acceptedCandidates = [];
-// //         for (let i = 0; i < response.length; i++) {
-// //             const candidateData = await fetchAcceptedCandidatesService(response[i]._id);
-// //             if (candidateData.data.length > 0) acceptedCandidates.push(candidateData);
-// //         }
+          // total saved jobs
+          savedCount: {
+            $sum: { $cond: [{ $eq: ["$currentStatus", "Saved"] }, 1, 0] },
+          },
 
-// //         // const result = await Application.aggregate([
-// //         //     {
-// //         //         $match: {
-// //         //             job: mongoose.Types.ObjectId(jobId),
-// //         //             currentStatus: "Offer Extended"
-// //         //         }
-// //         //     },
-// //         // {
-// //         //     $lookup: {
-// //         //         from: "jobs",
-// //         //         localField: "job",
-// //         //         foreignField: "_id",
-// //         //         as: "jobDetails"
-// //         //     }
-// //         // },
-// //         // {
-// //         //     $unwind: "$jobDetails"
-// //         // },
-// //         // {
-// //         //     $match: {
-// //         //         "jobDetails.jobType": "Oncampus"
-// //         //     }
-// //         // },
-// //         // {
-// //         //     $lookup: {
-// //         //         from: "StudentOverview",
-// //         //         localField: "user",
-// //         //         foreignField: "_id",
-// //         //         as: "userDetails"
-// //         //     }
-// //         // },
-// //         // {
-// //         //     $unwind: "$userDetails"
-// //         // }
-// //         // ]);
+          // total applications (all jobTypes, excludes Saved)
+          totalApplications: {
+            $sum: {
+              $cond: [{ $ne: ["$currentStatus", "Saved"] }, 1, 0],
+            },
+          },
 
-// //         return { success: true, data: acceptedCandidates };
-// //     } catch (error) {
-// //         console.log("Error: ", error.message);
-// //         throw new Error("Failed to fetch");
-// //     }
-// // }
+          // referral applications specifically
+          referralApplications: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ["$jobType", "Referral"] },
+                    { $ne: ["$currentStatus", "Saved"] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          savedCount: 1,
+          totalApplications: 1,
+          referralApplications: 1,
+        },
+      },
+    ]);
 
-// // by company - same for getall, shortlisted, accepted candidates
-// export async function getOffCampusApplicantsService(query) {
-//     try {
-//         const response = await OffCampusApplication.find(query)
-//             .populate('user')
-//             .lean();
-//         return { success: true, data: response };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-// }
+    // aggregate returns [] if no documents match
+    const data = stats[0] ?? {
+      savedCount: 0,
+      totalApplications: 0,
+      referralApplications: 0,
+    };
 
-// // internship
-// export async function checkInternshipExitence(jobId, userId) {
-//     try {
-//         const response = await InternshipApplication.find({ user: userId, job: jobId });
-//         // console.log("res: ", response);
-//         if (response?.length > 0) return true;
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-//     return false;
-// }
-
-// // by company - same for getall, shortlisted, accepted candidates
-// export async function getInternshipApplicantsService(query) {
-//     try {
-//         const response = await InternshipApplication.find(query)
-//             .populate()
-//             .lean();
-//         return { success: true, data: response };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to Save");
-//     }
-// }
-
-// export async function createInternshipApplicationService(userId, jobId) {
-
-//     try {
-//         const newApplication = new InternshipApplication({
-//             user: userId,
-//             job: jobId,
-//             statusHistory: [{ status: "Applied" }],
-//             currentStatus: "Applied"
-//         });
-//         await newApplication.save();
-//         return { success: true, message: 'Application submited!' };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to Save");
-//     }
-// }
-
-// export async function checkPoolCampusApplicationExitence(collegeId, jobId) {
-//     try {
-//         const response = await PoolCampusApplication.find({ college: collegeId, drive: jobId });
-//         // console.log("res: ", response);
-//         console.log(response.length);
-//         if (response?.length > 0) return true;
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-//     return false;
-// }
-
-// export async function poolcampusApplicationService(collegeId, jobId) {
-//     try {
-//         const newApplication = new PoolCampusApplication({
-//             college: collegeId,
-//             drive: jobId,
-//             statusHistory: [{ status: "Applied" }],
-//             currentStatus: "Applied"
-//         });
-//         await newApplication.save();
-//         return { success: true, message: 'Application submited!' };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to Save");
-//     }
-// }
-
-// export async function checkOnCampusApplicationExitence(collegeId, jobId) {
-//     try {
-//         const response = await OnCampusApplication.find({ college: collegeId, drive: jobId });
-//         // console.log("res: ", response);
-//         console.log(response.length);
-//         if (response?.length > 0) return true;
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-//     return false;
-// }
-
-// export async function oncampusApplicationService(collegeId, jobId) {
-//     try {
-//         const newApplication = new OnCampusApplication({
-//             college: collegeId,
-//             drive: jobId,
-//             statusHistory: [{ status: "Applied" }],
-//             currentStatus: "Applied"
-//         });
-//         await newApplication.save();
-//         return { success: true, message: 'Application submited!' };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to Save");
-//     }
-// }
-
-// export async function getOncampusApplicantsService(query) {
-//     try {
-//         const response = await OnCampusApplication.find(query)
-//             .populate('drive')
-//             .lean();
-//         return { success: true, data: response };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to Save");
-//     }
-// }
+    return { success: true, data };
+  } catch (error) {
+    console.error("getCandidateDashboardStatsService error:", error);
+    throw new Error("Failed to fetch candidate dashboard stats");
+  }
+}
