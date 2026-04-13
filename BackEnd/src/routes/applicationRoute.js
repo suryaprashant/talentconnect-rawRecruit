@@ -5,7 +5,8 @@ submitAlternateDates,getReferralApplicationsForProfessional,
 getProfessionalDashboardMetrics,
  updateApplicationStatus,
  getGlobalReferralApplications,
- getReferralsForCompany
+ getReferralsForCompany,
+ getProfessionalReferralMetrics
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -99,4 +100,12 @@ router.get(
   secureRoute,
   getReferralsForCompany
 );
+
+router.get(
+  "/professional/referral-metrics",
+  secureRoute,
+  getProfessionalReferralMetrics
+);
+ 
+
 export default router;
