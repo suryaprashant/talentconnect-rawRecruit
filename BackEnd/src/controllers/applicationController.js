@@ -13,6 +13,7 @@ import {
   fetchCollegeSideApplicationsByJobService,
   createInternshipApplicationService,
   fetchProfessionalDashboardMetrics,
+  getCandidateDashboardStatsService,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -70,6 +71,31 @@ import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
 //     next(error);
 //   }
 // };
+
+export async function getCandidateDashboardStats(req, res) {
+  try {
+    const userId = req.user._id;
+    const userType = req.user.userType;
+
+    const allowedTypes = ["student", "fresher", "professional"];
+    if (!allowedTypes.includes(userType)) {
+      return res.status(403).json({ error: "Access denied. Candidates only." });
+    }
+
+    const user = await getStudentService(userId);
+    if (!user?.data?.length) {
+      return res.status(404).json({ error: "User profile not found" });
+    }
+
+    const profileId = user.data[0]._id;
+    const result = await getCandidateDashboardStatsService(profileId);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("getCandidateDashboardStats error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 export const getProfessionalReferralMetrics = async (req, res) => {
   try {
