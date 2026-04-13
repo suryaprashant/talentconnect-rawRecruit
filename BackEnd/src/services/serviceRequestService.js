@@ -85,3 +85,45 @@ export const createSeviceRegisterRequest = async (user , data , serviceRequestTy
     await newRequest.save();
     return newRequest;
 }
+
+// onboarding support request
+export const createOnboardingRequestService = async (data) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      message,
+      date,
+      time,
+      category,
+    } = data;
+
+    //  Basic validation (can move to Joi/Zod later)
+    if (!name || !email || !phone) {
+      throw new Error("Name, email and phone are required");
+    }
+
+    const newRequest = await ServiceRequest.create({
+      serviceRequestType: "onboarding-support",
+
+      requester: {
+        role: "guest",
+        
+      },
+      name,
+      email,
+      phone,
+      message,
+      date,
+      time,
+      category,
+
+      status: "pending",
+    });
+
+    return newRequest;
+  } catch (error) {
+    throw error;
+  }
+};
