@@ -49,9 +49,22 @@ const StudentDirectory = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8 font-sans text-slate-900">
       <div className="max-w-6xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold">Student Pool</h1>
-          <p className="text-slate-500 text-sm">{students.length} total students enrolled</p>
+        <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                Student Pool
+              </h1>
+
+              <p className="text-gray-500 text-sm mt-1">
+                {students.length} total students enrolled
+              </p>
+            </div>
+
+          </div>
+
         </header>
 
         {/* Search Bar - Strictly for Name */}

@@ -1668,7 +1668,7 @@ export const getReferralJobs = async (req, res) => {
     // 1. Check if user is logged in
     if (!req.user) {
        // Optional: Return a limited set of jobs for guests to see what's available
-       const publicData = await JobPostingTable.find({ jobType: "Referral" }).limit(10).lean();
+       const publicData = await JobPostingTable.find({ jobType: "Referral" }).populate("candidatePosted", "currentCompany").lean();
        return res.status(200).json({ 
          success: true, 
          data: publicData, 

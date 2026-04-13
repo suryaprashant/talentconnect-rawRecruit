@@ -224,9 +224,12 @@ const LiveJobs = () => {
 
     const company =
       job.companyName ||
+      job.candidatePosted?.currentCompany ||
       job.companyPosted?.companyDetails?.companyName ||
-      "Company";
-
+      job.degreeType ||
+      "Not Mentioned";
+    console.log(job);
+    console.log(job.candidatePosted?.currentCompany);
     const location =
       job.companyPosted?.hiringPreferences?.hiringLocations?.[0] ||
       (Array.isArray(job.location) && job.location.length > 0

@@ -68,18 +68,24 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <div className="relative z-10 container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="mb-10 pt-2 text-center">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-8 mt-4 text-center">
+
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-2 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg">
-                <Sparkles className="h-6 w-6 text-[#3b82f6]" />
+              
+              <div className="p-2 bg-[#143694]/10 rounded-lg">
+                <Sparkles className="h-6 w-6 text-[#143694]" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+
+              <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug">
                 Industry Seminars for Colleges
               </h1>
+
             </div>
-            <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-              Deliver expert-led seminars that broaden student perspectives and career readiness
+
+            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              Deliver expert-led seminars that broaden student perspectives and career readiness.
             </h2>
+
           </header>
 
           {/* Services Section - Square Cards with Bullet Points */}

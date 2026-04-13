@@ -9,8 +9,8 @@ const ActivationBlock = ({
 
       {/* Left */}
       <div className="flex-1">
-        <h2 className="font-bold text-xl text-slate-800">{greeting}</h2>
-        <p className="text-slate-500 text-sm mt-1 mb-4">{subtitle}</p>
+        <h2 className="font-bold text-xl text-primaryBrand">{greeting}</h2>
+        <p className="text-slate-800 text-lg mt-1 mb-4">{subtitle}</p>
 
         {/* Steps */}
         <div className="flex items-center gap-2 flex-wrap">
