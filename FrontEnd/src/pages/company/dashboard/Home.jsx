@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Briefcase, FileText, CheckCircle, Clock } from "lucide-react";
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
 import { FiSearch } from 'react-icons/fi'
@@ -8,7 +9,7 @@ import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus, getShortlis
 import ActivationBlock from '@/components/dashboard/ActivationBlock'
 // ADD this line after existing imports
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
-
+import axios from 'axios';
 import { getPoolCampusForCompany } from '@/lib/College_AxiosIntance';
 function Home() {
   const onCampusColleges = [
@@ -38,7 +39,7 @@ const [myApplications, setMyApplications] = useState({
 const [jobTab, setJobTab] = useState('On-campus');
 const [tabJobs, setTabJobs] = useState({ 'On-campus': [], 'Pool-campus': [], 'Off-campus': [], 'Internship': [] });
 const [tabJobsLoading, setTabJobsLoading] = useState(false);
-
+const [company, setCompany] = useState(null);
 useEffect(() => {
   const fetchTabJobs = async () => {
     setTabJobsLoading(true);
@@ -74,6 +75,27 @@ useEffect(() => {
   fetchTabJobs();
 }, []);
 
+useEffect(() => {
+  const fetchCompany = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_Backend_URL;
+      const userType = "company";
+      const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
+          withCredentials: true,
+          headers: userType 
+              ? { Authorization: `Bearer ${localStorage.getItem('token')}` }
+              : {}
+      });
+      const data = response.data?.data || response.data;
+
+      setCompany(data);
+      console.log('Company information:', data); 
+    }catch (error) {
+    console.error('Error fetching company information:', error);
+  }
+  } 
+  fetchCompany()
+}, [])
 useEffect(() => {
   const fetchMyApplications = async () => {
     try {
@@ -369,7 +391,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           });
         }
       }
-
+      const totalActiveJobs = metricsData.totalActiveJobs || 0;
+      const totalOffers = metricsData.totalOffers || metricsData.totalAccepted || 0;
 
       setDashboardData({
         appliedByCategory,
@@ -384,6 +407,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         serviceRequests: serviceRequestsData,
         recentShortlisted,
         recentAccepted,
+        totalActiveJobs,
+        totalOffers,
         loading: false
       })
     } else {
@@ -407,12 +432,12 @@ const [activeTab, setActiveTab] = useState('On-Campus');
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Page Header with only search box */}
-        <div className="mb-8 -mt-10">
+        <div className="mb-6 -mt-14">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
-            <div className="relative flex items-center justify-between py-6 px-6">
+            <div className="relative flex items-center justify-between py-3 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
                   Company Dashboard
                 </h1>
               </div>
@@ -427,7 +452,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
        
 <ActivationBlock
   greeting="Welcome back !"
-  subtitle="Get candidates in 24 hours"
+  subtitle= {company.profile.companyDetails.companyName}
   steps={[
     { number: 1, label: "Post Job" },
     { number: 2, label: "Get Applications" },
@@ -435,7 +460,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
   ]}
 >
   <div className="flex flex-col items-center lg:items-end gap-4">
-    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-200/50 px-2 py-1 mx-auto rounded-full">
+    <span className="text-xs font-semibold uppercase tracking-widest text-slate-600 bg-slate-300 px-2 py-1 mx-auto rounded-full">
       Start Hiring
     </span>
     
@@ -469,6 +494,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
 </ActivationBlock>
 
         {/* Key Metrics Cards */}
+        {false && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 auto-rows-fr gap-3 mb-8">
           {/* On-Campus Applications Card */}
           <div
@@ -701,6 +727,81 @@ const [activeTab, setActiveTab] = useState('On-Campus');
               </div>
             </div>
           </div>
+        </div>
+        )}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+
+          {/* Active Jobs */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-[#7765DA]/10 rounded-lg">
+                <Briefcase className="w-5 h-5 text-[#7765DA]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-gray-900">{dashboardData.totalActiveJobs || 0}</p>
+                <p className="text-xs text-gray-500">Active Jobs</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Applications */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-[#5767D0]/10 rounded-lg">
+                <FileText className="w-5 h-5 text-[#5767D0]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-gray-900">{dashboardData.totalApplied || 0}</p>
+                <p className="text-xs text-gray-500">Applications</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Shortlisted */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-[#4F0DCE]/10 rounded-lg">
+                <CheckCircle className="w-5 h-5 text-[#4F0DCE]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-gray-900">{dashboardData.totalShortlisted || 0}</p>
+                <p className="text-xs text-gray-500">Shortlisted</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Offers */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Clock className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-gray-900">{dashboardData.totalOffers || 0}</p>
+                <p className="text-xs text-gray-500">Offers</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Button */}
+          <div className="flex items-center justify-center">
+            <Button
+              variant="outline"
+              size="md"
+              className="w-full h-full flex items-center justify-center
+                border-[#143694] text-[#143694]
+                bg-[#143694]/5
+                hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8]
+                hover:text-white hover:border-transparent
+                transition-all duration-300 ease-in-out
+                rounded-xl font-semibold tracking-wide
+                shadow-sm hover:shadow-md"
+              onClick={() => navigate('/interviews')}
+            >
+              Schedule Interviews
+            </Button>
+          </div>
+
         </div>
 
         {/* Rest of the dashboard */}
@@ -1316,10 +1417,17 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center 
+           bg-gradient-to-r from-[#143694] to-[#1e4ed8] 
+           text-white 
+           rounded-xl font-semibold tracking-wide
+           shadow-md 
+           hover:shadow-lg hover:shadow-[#143694]/30
+           hover:from-[#1e4ed8] hover:to-[#143694]
+           transition-all duration-300 ease-in-out"
               onClick={() => navigate('/hiring-channels/on-campus-hiring')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-2">
                 <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
               </svg>
               Post On-Campus
@@ -1327,10 +1435,17 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center 
+           bg-gradient-to-r from-[#143694] to-[#1e4ed8] 
+           text-white 
+           rounded-xl font-semibold tracking-wide
+           shadow-md 
+           hover:shadow-lg hover:shadow-[#143694]/30
+           hover:from-[#1e4ed8] hover:to-[#143694]
+           transition-all duration-300 ease-in-out"
               onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-2">
                 <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
               </svg>
               Post Pool-Campus
@@ -1338,10 +1453,17 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center 
+           bg-gradient-to-r from-[#143694] to-[#1e4ed8] 
+           text-white 
+           rounded-xl font-semibold tracking-wide
+           shadow-md 
+           hover:shadow-lg hover:shadow-[#143694]/30
+           hover:from-[#1e4ed8] hover:to-[#143694]
+           transition-all duration-300 ease-in-out"
               onClick={() => navigate('/hiring-channels/off-campus-hiring')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-2">
                 <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
               </svg>
               Post Off-Campus
@@ -1349,7 +1471,14 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="w-full h-full flex items-center justify-center
+             border-[#143694] text-[#143694]
+             bg-[#143694]/5
+             hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8]
+             hover:text-white hover:border-transparent
+             transition-all duration-300 ease-in-out
+             rounded-xl font-semibold tracking-wide
+             shadow-sm hover:shadow-md"
               onClick={() => navigate('/job-management/On-campus')}
             >
               Manage Applications
@@ -1357,7 +1486,14 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="w-full h-full flex items-center justify-center
+             border-[#143694] text-[#143694]
+             bg-[#143694]/5
+             hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8]
+             hover:text-white hover:border-transparent
+             transition-all duration-300 ease-in-out
+             rounded-xl font-semibold tracking-wide
+             shadow-sm hover:shadow-md"
               onClick={() => navigate('/interviews')}
             >
               Schedule Interviews

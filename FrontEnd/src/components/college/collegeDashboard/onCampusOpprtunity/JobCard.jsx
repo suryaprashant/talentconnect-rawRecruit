@@ -254,186 +254,345 @@ const JobCard = ({ job, onClick, compact = false }) => {
   const visibleSkills = job.skills?.slice(0, 5) || [];
   const remainingSkillsCount = job.skills?.length > 5 ? job.skills.length - 5 : 0;
 
-  return (
-    <div 
-      onClick={handleCardClick}
-      className="
-        w-full max-w-[350px] mx-auto rounded-2xl 
-        border shadow-sm hover:shadow-lg transition overflow-hidden
-        flex flex-col cursor-pointer h-full
-      "
-    >
-      {/* TOP SECTION - Pastel background */}
-      <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
-        {/* Status + Save */}
-        <div className="flex justify-between items-start mb-2">
-          <span className={`text-xs ${jobStatus.color} px-3 py-1 rounded-full font-medium`}>
-            {jobStatus.status}
-          </span>
+return (
+  <div 
+    onClick={handleCardClick}
+    className="
+      w-full max-w-[350px] mx-auto 
+      rounded-2xl overflow-hidden
+      border border-gray-200 bg-white
+      shadow-[0_2px_8px_rgba(0,0,0,0.06)]
+      hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]
+      transition-all duration-200
+      flex flex-col cursor-pointer h-full
+    "
+  >
 
-          <button
-            onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
-          >
-            <Heart
-              className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
-              fill={isSaved ? "currentColor" : "none"}
-            />
-          </button>
-        </div>
+    {/* TOP SECTION */}
+    <div className="p-5 flex-1 flex flex-col bg-primaryBrand/15 ">
 
-        {/* Company Name + Position */}
-        <div className="flex justify-between items-start gap-2 mb-3">
-          <div className="flex-1 pr-2">
-            <h3 className="text-black font-semibold text-lg truncate mb-4">
-              {companyName}
+      {/* Status + Save */}
+      <div className="flex justify-between items-start mb-3">
+        <span className="text-xs px-3 py-1 rounded-full font-medium bg-[#143694]/10 text-[#143694]">
+          {jobStatus.status}
+        </span>
+
+        <button
+          onClick={handleSave}
+          className="p-2 rounded-full bg-white shadow-sm hover:bg-gray-100 transition z-10"
+        >
+          <Heart
+            className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-500"}`}
+            fill={isSaved ? "currentColor" : "none"}
+          />
+        </button>
+      </div>
+
+      {/* ROLE + COMPANY */}
+      <div className="flex justify-between items-start gap-1 mb-3">
+        <div className="flex-1 pr-1">
+
+          {/* ROLE (PRIMARY) */}
+          {job.jobRoles?.length > 0 && (
+            <h3 className="text-[#143694] font-semibold text-lg leading-tight truncate mb-1">
+              {job.jobRoles[0]}
             </h3>
+          )}
 
-            {/* Job Roles - With +X more format */}
-            {job.jobRoles?.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-3">
-                {visibleJobRoles.map((role, index) => {
-                  const roleColors = [
-                    "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
-                    "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
-                    "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700",
-                    "bg-gradient-to-r from-green-100 to-green-50 text-green-700",
-                    "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700",
-                  ];
-                  const colorClass = roleColors[index % roleColors.length];
-                  
-                  return (
-                    <span 
-                      key={index} 
-                      className={`text-sm font-medium px-2 py-0.5 rounded-full border ${colorClass}`}
-                    >
-                      {role}
-                    </span>
-                  );
-                })}
-                {remainingJobRolesCount > 0 && (
-                  <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border">
-                    +{remainingJobRolesCount} more
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
+          {/* COMPANY (SECONDARY) */}
+          <p className="text-sm text-gray-600 font-medium truncate mb-2">
+            {companyName}
+          </p>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            {logo && !imageError ? (
-              <img 
-                src={logo} 
-                alt={`${companyName} logo`}
-                className="w-12 h-12 object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-700">
-                  {getInitials(companyName)}
+          {/* OTHER ROLES */}
+          {job.jobRoles?.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              {job.jobRoles.slice(1, 2).map((role, index) => (
+                <span 
+                  key={index}
+                  className="px-3 py-1 text-xs bg-gray-100 text-gray-700 border border-gray-200 rounded-full"
+                >
+                  {role}
                 </span>
-              </div>
-            )}
-          </div>
-        </div>
+              ))}
 
-        {/* Employment Type Badge */}
-        {job.employmentType && (
-          <div className="mb-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-              {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
-            </span>
-          </div>
-        )}
-
-        {/* Streams */}
-        {/* {job.studentStreams?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {job.studentStreams.slice(0, 3).map((stream, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
-              >
-                {stream}
-              </span>
-            ))}
-            {job.studentStreams.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{job.studentStreams.length - 3}</span>
-            )}
-          </div>
-        )} */}
-
-        {/* Skills Required - In 2 rows with +X more format */}
-        {job.skills?.length > 0 && (
-          <div className="mb-3">
-            {/* <div className="text-xs font-semibold text-gray-600 mb-1">Skills Required:</div> */}
-            <div className="flex flex-wrap gap-1">
-              {visibleSkills.map((skill, index) => {
-                const skillColors = [
-                  "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
-                  "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
-                  "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
-                  "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
-                  "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
-                  "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
-                ];
-                const colorClass = skillColors[index % skillColors.length];
-                
-                return (
-                  <span
-                    key={index}
-                    className={colorClass}
-                  >
-                    {skill}
-                  </span>
-                );
-              })}
-              {remainingSkillsCount > 0 && (
-                <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
-                  +{remainingSkillsCount} more
+              {job.jobRoles.length > 2 && (
+                <span className="px-3 py-1 text-xs bg-gray-50 text-gray-600 border border-gray-200 rounded-full">
+                  +{job.jobRoles.length - 2} more
                 </span>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Description */}
-        {/* <div className="flex-1">
-          <p className="text-sm text-gray-700 line-clamp-2">
-            {description}
-          </p>
-        </div> */}
-      </div>
-
-      {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white border-t">
-        <div className="flex justify-between items-center">
-          <div>
-            {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm">
-              {formatPackage()}
-            </p>
-
-            {/* Location */}
-            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="line-clamp-1 max-w-[120px]">
-                {formatLocation()}
+        {/* LOGO */}
+        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+          {logo && !imageError ? (
+            <img 
+              src={logo} 
+              alt={`${companyName} logo`}
+              className="w-12 h-12 object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+              <span className="text-sm font-semibold text-gray-700">
+                {getInitials(companyName)}
               </span>
             </div>
-          </div>
-
-          <button
-            onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-          >
-            Details
-          </button>
+          )}
         </div>
       </div>
+
+      {/* EMPLOYMENT TYPE */}
+      {job.employmentType && (
+        <div className="mb-3">
+          <span className="px-3 py-1 bg-[#143694]/10 text-[#143694] border border-[#143694]/20 rounded-full text-xs font-medium">
+            {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
+          </span>
+        </div>
+      )}
+
+      {/* SKILLS */}
+      {job.skills?.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {job.skills.slice(0, 2).map((skill, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 text-xs bg-gray-100 text-gray-700 border border-gray-200 rounded-full"
+            >
+              {skill}
+            </span>
+          ))}
+
+          {job.skills.length > 2 && (
+            <span className="px-3 py-1 text-xs bg-gray-50 text-gray-600 border border-gray-200 rounded-full">
+              +{job.skills.length - 2} more
+            </span>
+          )}
+        </div>
+      )}
+
     </div>
-  );
+
+    {/* BOTTOM SECTION */}
+    <div className="px-5 py-4 bg-white border-t border-gray-100">
+
+      <div className="flex items-center justify-between">
+
+        {/* PACKAGE + LOCATION */}
+        <div>
+          <p className="font-semibold text-gray-900 text-sm">
+            {formatPackage()}
+          </p>
+
+          <div className="flex items-center gap-1 text-gray-600 text-xs mt-1">
+            <MapPin className="h-4 w-4 text-gray-400" />
+            <span className="truncate max-w-[120px]">
+              {formatLocation()}
+            </span>
+          </div>
+        </div>
+
+        {/* CTA BUTTON */}
+        <button
+          onClick={handleDetailsClick}
+          className="
+            px-5 py-2.5 
+            bg-[#143694] text-white 
+            rounded-xl text-sm font-medium
+            hover:bg-[#1e4ed8] transition
+          "
+        >
+          Details
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+);
+  // return (
+  //   <div 
+  //     onClick={handleCardClick}
+  //     className="
+  //       w-full max-w-[350px] mx-auto rounded-2xl 
+  //       border shadow-sm hover:shadow-lg transition overflow-hidden
+  //       flex flex-col cursor-pointer h-full
+  //     "
+  //   >
+  //     {/* TOP SECTION - Pastel background */}
+  //     <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
+  //       {/* Status + Save */}
+  //       <div className="flex justify-between items-start mb-2">
+  //         <span className={`text-xs ${jobStatus.color} px-3 py-1 rounded-full font-medium`}>
+  //           {jobStatus.status}
+  //         </span>
+
+  //         <button
+  //           onClick={handleSave}
+  //           className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
+  //         >
+  //           <Heart
+  //             className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
+  //             fill={isSaved ? "currentColor" : "none"}
+  //           />
+  //         </button>
+  //       </div>
+
+  //       {/* Company Name + Position */}
+  //       <div className="flex justify-between items-start gap-2 mb-3">
+  //         <div className="flex-1 pr-2">
+  //           <h3 className="text-black font-semibold text-lg truncate mb-4">
+  //             {companyName}
+  //           </h3>
+
+  //           {/* Job Roles - With +X more format */}
+  //           {job.jobRoles?.length > 0 && (
+  //             <div className="flex flex-wrap gap-1 mb-3">
+  //               {visibleJobRoles.map((role, index) => {
+  //                 const roleColors = [
+  //                   "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
+  //                   "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
+  //                   "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700",
+  //                   "bg-gradient-to-r from-green-100 to-green-50 text-green-700",
+  //                   "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700",
+  //                 ];
+  //                 const colorClass = roleColors[index % roleColors.length];
+                  
+  //                 return (
+  //                   <span 
+  //                     key={index} 
+  //                     className={`text-sm font-medium px-2 py-0.5 rounded-full border ${colorClass}`}
+  //                   >
+  //                     {role}
+  //                   </span>
+  //                 );
+  //               })}
+  //               {remainingJobRolesCount > 0 && (
+  //                 <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border">
+  //                   +{remainingJobRolesCount} more
+  //                 </span>
+  //               )}
+  //             </div>
+  //           )}
+  //         </div>
+
+  //         <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+  //           {logo && !imageError ? (
+  //             <img 
+  //               src={logo} 
+  //               alt={`${companyName} logo`}
+  //               className="w-12 h-12 object-cover"
+  //               onError={() => setImageError(true)}
+  //             />
+  //           ) : (
+  //             <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+  //               <span className="text-sm font-semibold text-gray-700">
+  //                 {getInitials(companyName)}
+  //               </span>
+  //             </div>
+  //           )}
+  //         </div>
+  //       </div>
+
+  //       {/* Employment Type Badge */}
+  //       {job.employmentType && (
+  //         <div className="mb-3">
+  //           <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+  //             {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
+  //           </span>
+  //         </div>
+  //       )}
+
+  //       {/* Streams */}
+  //       {/* {job.studentStreams?.length > 0 && (
+  //         <div className="flex flex-wrap gap-2 mb-3">
+  //           {job.studentStreams.slice(0, 3).map((stream, index) => (
+  //             <span
+  //               key={index}
+  //               className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
+  //             >
+  //               {stream}
+  //             </span>
+  //           ))}
+  //           {job.studentStreams.length > 3 && (
+  //             <span className="px-2 py-1 text-xs text-gray-600">+{job.studentStreams.length - 3}</span>
+  //           )}
+  //         </div>
+  //       )} */}
+
+  //       {/* Skills Required - In 2 rows with +X more format */}
+  //       {job.skills?.length > 0 && (
+  //         <div className="mb-3">
+  //           {/* <div className="text-xs font-semibold text-gray-600 mb-1">Skills Required:</div> */}
+  //           <div className="flex flex-wrap gap-1">
+  //             {visibleSkills.map((skill, index) => {
+  //               const skillColors = [
+  //                 "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+  //                 "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+  //                 "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+  //                 "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+  //                 "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+  //                 "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+  //               ];
+  //               const colorClass = skillColors[index % skillColors.length];
+                
+  //               return (
+  //                 <span
+  //                   key={index}
+  //                   className={colorClass}
+  //                 >
+  //                   {skill}
+  //                 </span>
+  //               );
+  //             })}
+  //             {remainingSkillsCount > 0 && (
+  //               <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+  //                 +{remainingSkillsCount} more
+  //               </span>
+  //             )}
+  //           </div>
+  //         </div>
+  //       )}
+
+  //       {/* Description */}
+  //       {/* <div className="flex-1">
+  //         <p className="text-sm text-gray-700 line-clamp-2">
+  //           {description}
+  //         </p>
+  //       </div> */}
+  //     </div>
+
+  //     {/* BOTTOM SECTION - White background */}
+  //     <div className="p-4 bg-white border-t">
+  //       <div className="flex justify-between items-center">
+  //         <div>
+  //           {/* Package */}
+  //           <p className="font-semibold text-gray-900 text-sm">
+  //             {formatPackage()}
+  //           </p>
+
+  //           {/* Location */}
+  //           <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+  //             <MapPin className="h-4 w-4 text-gray-500" />
+  //             <span className="line-clamp-1 max-w-[120px]">
+  //               {formatLocation()}
+  //             </span>
+  //           </div>
+  //         </div>
+
+  //         <button
+  //           onClick={handleDetailsClick}
+  //           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+  //         >
+  //           Details
+  //         </button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default JobCard;

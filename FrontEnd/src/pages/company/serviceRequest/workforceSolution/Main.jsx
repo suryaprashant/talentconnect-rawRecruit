@@ -77,13 +77,16 @@ export default function MainPage({
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
+
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
               Workforce Solutions for Smarter Hiring
             </h1>
-            <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-              End-to-end workforce support to streamline recruitment and build reliable talent pipelines
+
+            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              End-to-end workforce support to streamline recruitment and build reliable talent pipelines.
             </h2>
+
           </header>
 
           {/* Services Section - Square Cards */}
@@ -129,7 +132,15 @@ export default function MainPage({
           <section className="flex justify-center pt-2 pb-3">
             <button
               onClick={onRegisterClick}
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all text-base flex items-center justify-center gap-2"
+              className="
+bg-[#143694] text-white 
+px-8 py-3.5 rounded-lg font-medium 
+flex items-center justify-center gap-2 text-base
+shadow-sm hover:shadow-md 
+hover:bg-[#1e4ed8] 
+hover:-translate-y-[1px]
+transition-all duration-200
+"
             >
               <span>Request Info</span>
               {/* <span className="text-sm opacity-80">– Simplify Your Hiring Today</span> */}

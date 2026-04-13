@@ -77,15 +77,17 @@ export default function MainPage({
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
+
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
               Employee Training and Upskilling Programs
             </h1>
-            <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-              Structured training solutions to prepare candidates for real-world job performance
-            </h2>
-          </header>
 
+            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              Structured training solutions to prepare candidates for real-world job performance.
+            </h2>
+
+          </header>
           {/* Services Section - Square Cards */}
           <section className="mb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,7 +132,16 @@ export default function MainPage({
             {/* Purple button on LEFT */}
             <button
               onClick={onRequestInfoClick} // This is Register Now
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all text-base flex items-center justify-center gap-2"
+              className="
+bg-[#143694] text-white 
+px-8 py-3.5 rounded-lg font-medium 
+flex items-center justify-center gap-2
+text-base
+shadow-sm hover:shadow-md 
+hover:bg-[#1e4ed8] 
+hover:-translate-y-[1px]
+transition-all duration-200
+"
             >
               <span>Register Now</span>
               {/* <span className="text-sm opacity-80">– Start Employee Training</span> */}
@@ -138,7 +149,15 @@ export default function MainPage({
             {/* Black button on RIGHT */}
             <button
               onClick={onRegisterClick} // This is Request Info
-              className="bg-gray-800 text-white px-8 py-3.5 rounded-lg font-medium hover:bg-gray-900 hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
+              className="
+bg-[#143694] text-white 
+px-8 py-3.5 rounded-lg font-medium 
+flex items-center justify-center gap-2 text-base
+shadow-sm hover:shadow-md 
+hover:bg-[#1e4ed8] 
+hover:-translate-y-[1px]
+transition-all duration-200
+"
             >
               <span>Request Info</span>
               {/* <span className="text-sm opacity-80">– Learn About Upskilling</span> */}
