@@ -24,7 +24,8 @@ const ServiceRequestManagement = () => {
   const ITEMS_PER_PAGE = 10;
 
   const REQUEST_TYPES = [
-    "careerCounseling",
+    "Counselling",
+    "onboarding-support",
     "seminar",
     "training",
     "workshop",
@@ -550,6 +551,10 @@ const ServiceRequestManagement = () => {
                     <div>
                       <span className="text-slate-500">Email:</span>
                       <p className="font-medium">{viewRequest?.requesterEmail || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Phone:</span>
+                      <p className="font-medium">{viewRequest?.phoneNumber || 'N/A'}</p>
                     </div>
                     <div>
                       <span className="text-slate-500">Organization:</span>

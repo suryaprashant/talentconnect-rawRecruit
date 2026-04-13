@@ -6,6 +6,7 @@ import DashboardMock from "@/components/home/DashboardMock";
 import image1 from "../../assets/companyDashboard.png";
 import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
+import OnboardingForm from "./OnboardingRequestForm";
 const CountUp = ({ end, suffix = "" }) => {
   const [count, setCount] = useState(0);
 
@@ -34,7 +35,7 @@ export default function HeroSection() {
   const navigate = useNavigate();
   const { isAuthenticated, role } = useAuth();
   const [hoveredAction, setHoveredAction] = useState("hire");
-
+  const [showModal, setShowModal] = useState(false);
   const handleRoleSelect = (selectedRole) => {
     if (!isAuthenticated) {
       sessionStorage.setItem("tempSelectedRole", selectedRole);
@@ -130,7 +131,7 @@ export default function HeroSection() {
             <span className="w-1.5 h-1.5 rounded-full mt-2 bg-[#143694]" />
 
             <button
-              onClick={() => navigate("/onboarding")}
+              onClick={() => setShowModal(true)} 
               className="flex items-center gap-1 hover:text-[#143694] transition"
             >
               Request onboarding support
@@ -162,6 +163,26 @@ export default function HeroSection() {
 
       </div>
     </div>
+    {showModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl relative">
+
+          {/* Close */}
+          <button
+            onClick={() => setShowModal(false)}
+            className="absolute top-3 right-3 text-gray-500 hover:text-black"
+          >
+            ✕
+          </button>
+
+          <h2 className="text-xl font-semibold mb-4">
+            Request Onboarding Support
+          </h2>
+
+          <OnboardingForm onClose={() => setShowModal(false)} />
+        </div>
+      </div>
+    )}
   </section>
 );
 };

@@ -5,13 +5,13 @@ const serviceRequestSchema = new mongoose.Schema(
         requester:{
             id: {
                 type: mongoose.Schema.Types.ObjectId,
-                required: true,
+                required: false,
                 refPath: "requester.role",
             },
             role: {
                 type: String,
                 required: true,
-                enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer']
+                enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer', 'guest']
             },
         },
         serviceRequestType: {
@@ -37,7 +37,26 @@ const serviceRequestSchema = new mongoose.Schema(
         counsellingType: {
             type: String,
         },
+        name: {
+            type: String,
+            required: function () {
+                return this.requester.role === "guest";
+            },
+            },
 
+        email: {
+            type: String,
+            required: function () {
+                return this.requester.role === "guest";
+            },
+        },
+
+        phone: {
+            type: String,
+            required: function () {
+                return this.requester.role === "guest";
+            },
+        },
         numOfEmployees: { type: String },
         typeOfSkill: [{ type: String }],
         modeOfTraining: {

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createOnCampusPlacementRequest, PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration, getCompanyServiceRequestStatus, getCollegeServiceRequestStatus, CollegeBrandingRequest } from '../controllers/serviceRequestController.js';
+import { createOnCampusPlacementRequest, createOnboardingSupportRequest , PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration, getCompanyServiceRequestStatus, getCollegeServiceRequestStatus, CollegeBrandingRequest } from '../controllers/serviceRequestController.js';
 import  secureRoute  from '../middlewares/secureRouteMiddleware.js';
 const router = express.Router();
 
@@ -34,4 +34,7 @@ router.get('/company/status', secureRoute, getCompanyServiceRequestStatus);
 router.post('/student/counselling', secureRoute, createStudentCounsellingRequest);
 router.post('/student/mock-interview', secureRoute, createStudentMockInterviewRequest) ;
 
+
+// Onboarding support request
+router.post('/onboarding-support', createOnboardingSupportRequest);
 export default router;
