@@ -108,8 +108,15 @@ export const getServiceRequestBoardOverView = async (req, res) => {
         let requesterName = 'N/A';
         let requesterEmail = 'N/A';
         let organizationName = 'N/A';
+        let phoneNumber = 'N/A';
 
         try {
+          if (request.requester?.role === "guest") {
+            requesterName = request.name || "N/A";
+            requesterEmail = request.email || "N/A";
+            phoneNumber = request.phone || "N/A";
+            organizationName = "Individual";
+          }
           if (request.requester?.id) {
             const role = request.requester.role;
             const requesterId = request.requester.id;
@@ -186,6 +193,7 @@ export const getServiceRequestBoardOverView = async (req, res) => {
           _id: request._id,
           requesterName,
           requesterEmail,
+          phoneNumber,
           organizationName,
           serviceRequestType: request.serviceRequestType || 'other',
           status: request.status || 'pending',
@@ -256,7 +264,7 @@ export const getServiceRequestBoardOverView = async (req, res) => {
     });
   }
 };
-
+// tjidth
 // List all service request applications
 export const getAllServiceRequest = async (req, res) => {
   try {

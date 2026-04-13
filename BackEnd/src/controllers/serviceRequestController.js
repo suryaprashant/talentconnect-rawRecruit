@@ -1,6 +1,24 @@
-import { createServiceRequest, createSeviceRegisterRequest } from "../services/serviceRequestService.js";
+import { createServiceRequest, createSeviceRegisterRequest, createOnboardingRequestService } from "../services/serviceRequestService.js";
 import ServiceRequest from "../models/serviceRequestsModel.js";
 
+
+// Onboarding support request
+export const createOnboardingSupportRequest = async (req, res) => {
+  try {
+    const result = await createOnboardingRequestService(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Onboarding support request created successfully",
+      data: result,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
+  }
+};
 // Get company service requests by status
 export const getCompanyServiceRequestStatus = async (req, res) => {
     try {

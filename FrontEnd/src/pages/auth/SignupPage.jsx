@@ -27,6 +27,98 @@ const DASHBOARD_ROUTES = {
   employer: '/home'
 };
 
+const roleContent = {
+  company: {
+    title: "Hire Freshers Faster with India’s Smart Campus Hiring Platform",
+    points: [
+      {
+        title: "Access Verified College Talent",
+        desc: "Connect with verified colleges and build a fresher pipeline faster."
+      },
+      {
+        title: "Manage Campus Hiring Easily",
+        desc: "Run drives, manage internships, and track hiring in one place."
+      }
+      // {
+      //   title: "Track Applications and Hiring Progress in Real Time",
+      //   desc: "Monitor applications, shortlist candidates, schedule interviews, and manage offers using a centralized workflow."
+      // }
+    ]
+  },
+
+  college: {
+    title: "Increase Student Placements with a Digital Campus Recruitment System",
+    points: [
+      {
+        title: "Connect with Hiring Companies",
+        desc: "Get placement and internship opportunities directly."
+      },
+      {
+        title: "Manage Campus Drives",
+        desc: "Organize drives and track student participation easily."
+      }
+      // {
+      //   title: "Improve Placement Rates with Data Insights",
+      //   desc: "Track placement performance and hiring progress to boost outcomes."
+      // }
+    ]
+  },
+
+  student: {
+    title: "Find Fresher Jobs and Internships from Verified Companies",
+    points: [
+      {
+        title: "Apply to Real Jobs and Internships",
+        desc: "Discover entry-level roles posted directly by companies and colleges."
+      },
+      {
+        title: "Create One Profile and Apply Everywhere",
+        desc: "Apply instantly without repetitive forms."
+      },
+      // {
+      //   title: "Track Your Application Status",
+      //   desc: "Stay updated on interviews and job offers in real time."
+      // }
+    ]
+  },
+
+  fresher: {
+    title: "Find Fresher Jobs and Internships from Verified Companies",
+    points: [
+      {
+        title: "Apply to Real Jobs and Internships",
+        desc: "Discover entry-level roles posted directly by companies."
+      },
+      {
+        title: "One Profile, Multiple Applications",
+        desc: "Apply instantly without repetitive forms."
+      },
+      // {
+      //   title: "Track Hiring Progress",
+      //   desc: "Monitor interviews and offers easily."
+      // }
+    ]
+  },
+
+  professional: {
+    title: "Refer Talent and Support Hiring in Your Organization",
+    points: [
+      {
+        title: "Refer Candidates to Job Opportunities",
+        desc: "Share openings and recommend candidates."
+      },
+      {
+        title: "Monitor Referral Progress",
+        desc: "Track interviews and hiring decisions."
+      },
+      // {
+      //   title: "Build Your Professional Network",
+      //   desc: "Strengthen visibility through referrals."
+      // }
+    ]
+  }
+};
+
 // Helper function for GA events
 const trackGAEvent = (category, action, label) => {
   if (import.meta.env.VITE_GA_MEASUREMENT_ID && window.ReactGA) {
@@ -70,7 +162,8 @@ function SignupPage() {
   const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false); 
-  
+  const currentRole = selectedRole || "company";
+  const content = roleContent[currentRole];
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -322,7 +415,7 @@ function SignupPage() {
           <div className="relative z-10">
 
             {/* LOGO */}
-            <div className="flex items-center gap-2 mb-16">
+            <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg">
                 <span
                   className="material-symbols-outlined text-[#143694] cursor-pointer"
@@ -338,57 +431,41 @@ function SignupPage() {
                 RawRecruit
               </span>
             </div>
+            <div className="mb-6">
+              <h2 className="font-[Manrope] text-3xl font-bold text-white">
+                Join the Network
+              </h2>
+              {/* <p className="text-white/90 text-sm mt-2">
+                Select your journey to begin your intentional connection.
+              </p> */}
+            </div>
+            {/* ROLE TAG */}
+            <p className="text-xs uppercase tracking-widest text-white/70 mb-2">
+              {currentRole.toUpperCase()}
+            </p>
 
             {/* HEADING */}
-            <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-8 tracking-tight">
-              Join the RawRecruit Network
-            </h1>
+            <h2 className="text-2xl md:text-2xl font-bold leading-tight mb-4 tracking-tight">
+              {content?.title}
+            </h2>
 
             {/* FEATURES */}
-            <div className="space-y-6">
-
-              <div className="flex items-start gap-4">
-                <span className="material-symbols-outlined text-green-400 mt-1">
-                  verified
-                </span>
-                <div>
-                  <p className="font-semibold text-lg text-white/95">
-                    Verified Hiring Network
-                  </p>
-                  <p className="text-sm opacity-70 text-white">
-                    Access a pre-vetted database of global enterprise talent and opportunities.
-                  </p>
+            <div className="space-y-3">
+              {content?.points?.map((item, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <span className="material-symbols-outlined text-green-400 mt-0.5">
+                    verified
+                  </span>
+                  <div>
+                    <p className="font-semibold text-lg text-white/95">
+                      {item.title}
+                    </p>
+                    <p className="text-sm opacity-70 text-white">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <span className="material-symbols-outlined text-green-400 mt-1">
-                  security
-                </span>
-                <div>
-                  <p className="font-semibold text-lg text-white/95">
-                    Secure Platform
-                  </p>
-                  <p className="text-sm opacity-70 text-white">
-                    Enterprise-grade encryption and SOC2 compliant data infrastructure.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <span className="material-symbols-outlined text-green-400 mt-1">
-                  corporate_fare
-                </span>
-                <div>
-                  <p className="font-semibold text-lg text-white/95">
-                    Trusted by Colleges & Companies
-                  </p>
-                  <p className="text-sm opacity-70 text-white">
-                    The architectural ledger for top-tier academic and corporate institutions.
-                  </p>
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
 
@@ -403,17 +480,17 @@ function SignupPage() {
         {/* RIGHT SIDE */}
         <div className="w-full md:w-7/12 p-8 md:p-6">
 
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h2 className="font-[Manrope] text-3xl font-bold text-[#041627]">
               Join the Network
             </h2>
             <p className="text-gray-500 text-sm mt-2">
               Select your journey to begin your intentional connection.
             </p>
-          </div>
+          </div> */}
 
           {/* ROLE SELECT */}
-          <div className="grid grid-cols-5 gap-2 mb-6">
+          <div className="grid grid-cols-5 gap-2 mt-6 mb-6">
             {["company", "college", "student", "fresher", "professional"].map((role) => (
               <button
                 key={role}
@@ -440,7 +517,7 @@ function SignupPage() {
           </div>
 
           {/* SOCIAL */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 gap-4 mb-6">
             <button
               onClick={handleLinkedInClick}
               className="w-full flex items-center justify-center gap-3 py-3 border rounded-xl 
