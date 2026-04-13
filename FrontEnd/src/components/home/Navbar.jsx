@@ -55,6 +55,7 @@ const Navbar = () => {
           <button onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Candidate
           </button>
+          <button onClick={() => navigate("/blogs")} className="text-sm font-medium text-muted-foreground hover:text-foreground">Blogs</button>
           {/* <button onClick={() => navigate("/help")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Help
           </button> */}
@@ -94,6 +95,7 @@ const Navbar = () => {
           <button onClick={() => handleRoleSelect("candidate")} className="block text-sm">For Students</button>
           <button onClick={() => handleRoleSelect("company")} className="block text-sm">For Companies</button>
           <button onClick={() => handleRoleSelect("college")} className="block text-sm">For Colleges</button>
+          <button onClick={() => navigate("/blogs")} className="block text-sm">Blogs</button>
 
           <button onClick={() => navigate("/help")} className="block text-sm">Help</button>
 

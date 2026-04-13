@@ -277,7 +277,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DeleteAccount from "./pages/DeleteAccount";
 import CompanyNewJobs from "./pages/company/CompanyNewJob"
 import StudentPool from "./pages/college/StudentPool";
-
+import BlogPage from "./pages/BlogPage";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -302,7 +302,7 @@ function AppRoutes() {
 
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage/>} />
-
+      <Route path="/blogs" element={<BlogPage />} />
 
 
       <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
