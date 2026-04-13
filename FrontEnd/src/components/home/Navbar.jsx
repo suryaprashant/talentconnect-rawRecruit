@@ -76,7 +76,7 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            <button onClick={() => navigate("/home")} className="btn-primary text-sm py-2.5 px-5">
+            <button onClick={() => navigate("/home")} className="btn-primary bg-primaryBrand hover:bg-white hover:text-primaryBrand hover:font-bold hover:border-primaryBrand hover:border-2 text-sm py-2.5 px-5">
               Dashboard
             </button>
           )}
@@ -100,7 +100,7 @@ const Navbar = () => {
           <div className="pt-3 flex gap-3">
             {/* <button onClick={() => navigate("/demo")} className="text-sm">View Demo</button> */}
             <button onClick={() => navigate("/login")} className="text-sm">Log in</button>
-            <button onClick={handleGetStarted} className="btn-primary text-sm py-2 px-5">
+            <button onClick={handleGetStarted} className="btn-primary text-sm bg-primaryBrand py-2 px-5">
               Get Started
             </button>
           </div>

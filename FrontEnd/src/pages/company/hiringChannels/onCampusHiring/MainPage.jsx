@@ -55,12 +55,12 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
 
       <div className="container mx-auto px-4 pt-8 max-w-6xl">
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-2xl font-bold text-[#00153d]">Hiring Channels</h2>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
+            <div className="flex items-center gap-3 mb-3">
+              <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
             </div>
             
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-200 pb-1">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-gray-200 pb-1">
               {/* On-campus: Active Highlight */}
               <button 
                 className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"

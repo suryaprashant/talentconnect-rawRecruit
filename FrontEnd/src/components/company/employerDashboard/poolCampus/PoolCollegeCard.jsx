@@ -416,199 +416,315 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
       </div>
     );
   };
-
   return (
-    <div 
-      onClick={handleCardClick}
-      className={`
-        ${compact ? "w-full" : "w-full max-w-[350px]"} 
-        mx-auto rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
-        flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
-      `}
-    >
-      {/* TOP SECTION - Pastel background */}
-      <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
-        {/* Status + Save */}
-        <div className="flex justify-between items-start mb-2">
-          <span className={`text-xs ${collegeStatus.color} px-3 py-1 rounded-full font-medium`}>
-            {collegeStatus.status}
-          </span>
+  <div 
+    onClick={handleCardClick}
+    className={`
+      ${compact ? "w-full" : "w-full max-w-[350px]"} 
+      mx-auto mt-1 rounded-2xl overflow-hidden
+      border-2 border-gray-300 bg-white
+      shadow-[0_2px_8px_rgba(0,0,0,0.06)]
+      hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]
+      transition-all duration-200
+      flex flex-col cursor-pointer h-full
+    `}
+  >
 
-          <button
-            onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
-            aria-label={isSaved ? "Remove from saved" : "Save college"}
-          >
-            <Heart
-              className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
-              fill={isSaved ? "currentColor" : "none"}
-            />
-          </button>
-        </div>
+    {/* TOP SECTION (LIGHT GRAY) */}
+    <div className="p-5 flex-1 flex flex-col bg-primaryBrand/15">
 
-        {/* College Name + Degree Types */}
-        <div className="flex justify-between items-start gap-2 mb-3">
-          <div className="flex-1 pr-2">
-            <h3 className="text-black font-semibold text-lg truncate">
-              {collegeName}
-            </h3>
-            
-            {/* Degree Types as colored badges with +X more */}
-            {getDegreeBadges()}
-          </div>
+      {/* Status + Save */}
+      <div className="flex justify-between items-start mb-3">
+        <span className="text-xs px-3 py-1 rounded-full font-medium bg-gray-200 text-gray-600">
+          {collegeStatus.status}
+        </span>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
-            {logo && !imageError ? (
-              <img 
-                src={logo} 
-                alt={`${collegeName} logo`}
-                className="w-12 h-12 object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-700">
-                  {getInitials(collegeName)}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Employment Type Badge */}
-        {college.employmentType?.length > 0 && (
-          <div className="mb-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-              {college.employmentType.join(', ')}
-            </span>
-          </div>
-        )}
-
-        {/* Student Streams (Branches) with +X more */}
-        {getStreamBadges()}
-
-        {/* Skills with 2 rows and +X more */}
-        {getSkillsBadges()}
-
-        {/* Round Details (Branch + Skills) */}
-        {/* {getRoundDetailsBadges()} */}
-
-        {/* College Types with +X more */}
-        {/* {college.collegeTypes?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs font-semibold text-gray-600 mr-1">College Types:</span>
-            {college.collegeTypes.slice(0, 3).map((type, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
-              >
-                {type}
-              </span>
-            ))}
-            {college.collegeTypes.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
-                +{college.collegeTypes.length - 3} more
-              </span>
-            )}
-          </div>
-        )} */}
-
-        {/* Work Modes with +X more */}
-        {/* {college.workMode?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs font-semibold text-gray-600 mr-1">Work Modes:</span>
-            {college.workMode.slice(0, 3).map((mode, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
-              >
-                {mode}
-              </span>
-            ))}
-            {college.workMode.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
-                +{college.workMode.length - 3} more
-              </span>
-            )}
-          </div>
-        )} */}
-
-        {/* Company Types with +X more */}
-        {/* {college.companyType?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs font-semibold text-gray-600 mr-1">Preferred:</span>
-            {college.companyType.slice(0, 3).map((type, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
-              >
-                {type}
-              </span>
-            ))}
-            {college.companyType.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
-                +{college.companyType.length - 3} more
-              </span>
-            )}
-          </div>
-        )} */}
-
-        {/* Amenities as Skills with +X more */}
-        {/* {college.amenitiesRequired?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs font-semibold text-gray-600 mr-1">Amenities:</span>
-            {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
-              >
-                {amenity}
-              </span>
-            ))}
-            {college.amenitiesRequired.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
-                +{college.amenitiesRequired.length - 3} more
-              </span>
-            )}
-          </div>
-        )} */}
-
-        {/* Description */}
-        {/* <div className="flex-1 mt-2">
-          <p className="text-sm text-gray-700 line-clamp-2">
-            {description}
-          </p>
-        </div> */}
+        <button
+          onClick={handleSave}
+          className="p-2 rounded-full bg-white shadow-sm hover:bg-gray-100 transition z-10"
+        >
+          <Heart
+            className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-500"}`}
+            fill={isSaved ? "currentColor" : "none"}
+          />
+        </button>
       </div>
 
-      {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <div className="flex justify-between items-center">
-          <div className="min-w-0">
-            {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm truncate">
-              {formatPackage()}
-            </p>
+      {/* College Name + Logo */}
+      <div className="flex justify-between items-start gap-2 mb-3">
+        <div className="flex-1 pr-2">
+          <h3 className="text-gray-900 font-semibold text-lg truncate">
+            {collegeName}
+          </h3>
 
-            {/* Location */}
-            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-              <span className="line-clamp-1 truncate">
-                {formatLocation()}
+          {getDegreeBadges()}
+        </div>
+
+        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+          {logo && !imageError ? (
+            <img 
+              src={logo} 
+              alt={`${collegeName} logo`}
+              className="w-12 h-12 object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+              <span className="text-sm font-semibold text-gray-700">
+                {getInitials(collegeName)}
               </span>
             </div>
-          </div>
-
-          <button
-            onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2"
-          >
-            Details
-          </button>
+          )}
         </div>
       </div>
+
+      {/* Employment Type */}
+      {college.employmentType?.length > 0 && (
+        <div className="mb-3">
+          <span className="px-3 py-1 bg-gray-200 text-gray-700 border border-gray-300 rounded-full text-xs font-medium">
+            {college.employmentType.join(', ')}
+          </span>
+        </div>
+      )}
+
+      {/* Streams */}
+      {getStreamBadges()}
+
+      {/* Skills */}
+      {getSkillsBadges()}
+
     </div>
-  );
+
+    {/* BOTTOM SECTION (WHITE) */}
+    <div className="px-5 py-4 bg-white border-t border-gray-100">
+
+      <div className="flex items-center justify-between">
+
+        {/* Package + Location */}
+        <div>
+          <p className="font-semibold text-gray-900 text-sm truncate">
+            {formatPackage()}
+          </p>
+
+          <div className="flex items-center gap-1 text-gray-600 text-xs mt-1">
+            <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            <span className="truncate">
+              {formatLocation()}
+            </span>
+          </div>
+        </div>
+
+        {/* BLACK BUTTON (LIKE IMAGE) */}
+        <button
+          onClick={handleDetailsClick}
+          className="
+            px-5 py-2.5 
+            bg-primaryBrand text-white 
+            rounded-xl text-sm font-medium
+            hover:bg-[#1e4ed8] transition
+          "
+        >
+          Details
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+);
+  // return (
+  //   <div 
+  //     onClick={handleCardClick}
+  //     className={`
+  //       ${compact ? "w-full" : "w-full max-w-[350px]"} 
+  //       mx-auto rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
+  //       flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
+  //     `}
+  //   >
+  //     {/* TOP SECTION - Pastel background */}
+  //     <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
+  //       {/* Status + Save */}
+  //       <div className="flex justify-between items-start mb-2">
+  //         <span className={`text-xs ${collegeStatus.color} px-3 py-1 rounded-full font-medium`}>
+  //           {collegeStatus.status}
+  //         </span>
+
+  //         <button
+  //           onClick={handleSave}
+  //           className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
+  //           aria-label={isSaved ? "Remove from saved" : "Save college"}
+  //         >
+  //           <Heart
+  //             className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
+  //             fill={isSaved ? "currentColor" : "none"}
+  //           />
+  //         </button>
+  //       </div>
+
+  //       {/* College Name + Degree Types */}
+  //       <div className="flex justify-between items-start gap-2 mb-3">
+  //         <div className="flex-1 pr-2">
+  //           <h3 className="text-black font-semibold text-lg truncate">
+  //             {collegeName}
+  //           </h3>
+            
+  //           {/* Degree Types as colored badges with +X more */}
+  //           {getDegreeBadges()}
+  //         </div>
+
+  //         <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
+  //           {logo && !imageError ? (
+  //             <img 
+  //               src={logo} 
+  //               alt={`${collegeName} logo`}
+  //               className="w-12 h-12 object-cover"
+  //               onError={() => setImageError(true)}
+  //             />
+  //           ) : (
+  //             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+  //               <span className="text-sm font-semibold text-gray-700">
+  //                 {getInitials(collegeName)}
+  //               </span>
+  //             </div>
+  //           )}
+  //         </div>
+  //       </div>
+
+  //       {/* Employment Type Badge */}
+  //       {college.employmentType?.length > 0 && (
+  //         <div className="mb-3">
+  //           <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+  //             {college.employmentType.join(', ')}
+  //           </span>
+  //         </div>
+  //       )}
+
+  //       {/* Student Streams (Branches) with +X more */}
+  //       {getStreamBadges()}
+
+  //       {/* Skills with 2 rows and +X more */}
+  //       {getSkillsBadges()}
+
+  //       {/* Round Details (Branch + Skills) */}
+  //       {/* {getRoundDetailsBadges()} */}
+
+  //       {/* College Types with +X more */}
+  //       {/* {college.collegeTypes?.length > 0 && (
+  //         <div className="flex flex-wrap gap-2 mb-3">
+  //           <span className="text-xs font-semibold text-gray-600 mr-1">College Types:</span>
+  //           {college.collegeTypes.slice(0, 3).map((type, index) => (
+  //             <span
+  //               key={index}
+  //               className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
+  //             >
+  //               {type}
+  //             </span>
+  //           ))}
+  //           {college.collegeTypes.length > 3 && (
+  //             <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+  //               +{college.collegeTypes.length - 3} more
+  //             </span>
+  //           )}
+  //         </div>
+  //       )} */}
+
+  //       {/* Work Modes with +X more */}
+  //       {/* {college.workMode?.length > 0 && (
+  //         <div className="flex flex-wrap gap-2 mb-3">
+  //           <span className="text-xs font-semibold text-gray-600 mr-1">Work Modes:</span>
+  //           {college.workMode.slice(0, 3).map((mode, index) => (
+  //             <span
+  //               key={index}
+  //               className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
+  //             >
+  //               {mode}
+  //             </span>
+  //           ))}
+  //           {college.workMode.length > 3 && (
+  //             <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+  //               +{college.workMode.length - 3} more
+  //             </span>
+  //           )}
+  //         </div>
+  //       )} */}
+
+  //       {/* Company Types with +X more */}
+  //       {/* {college.companyType?.length > 0 && (
+  //         <div className="flex flex-wrap gap-2 mb-3">
+  //           <span className="text-xs font-semibold text-gray-600 mr-1">Preferred:</span>
+  //           {college.companyType.slice(0, 3).map((type, index) => (
+  //             <span
+  //               key={index}
+  //               className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
+  //             >
+  //               {type}
+  //             </span>
+  //           ))}
+  //           {college.companyType.length > 3 && (
+  //             <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+  //               +{college.companyType.length - 3} more
+  //             </span>
+  //           )}
+  //         </div>
+  //       )} */}
+
+  //       {/* Amenities as Skills with +X more */}
+  //       {/* {college.amenitiesRequired?.length > 0 && (
+  //         <div className="flex flex-wrap gap-2 mb-3">
+  //           <span className="text-xs font-semibold text-gray-600 mr-1">Amenities:</span>
+  //           {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
+  //             <span
+  //               key={index}
+  //               className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
+  //             >
+  //               {amenity}
+  //             </span>
+  //           ))}
+  //           {college.amenitiesRequired.length > 3 && (
+  //             <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+  //               +{college.amenitiesRequired.length - 3} more
+  //             </span>
+  //           )}
+  //         </div>
+  //       )} */}
+
+  //       {/* Description */}
+  //       {/* <div className="flex-1 mt-2">
+  //         <p className="text-sm text-gray-700 line-clamp-2">
+  //           {description}
+  //         </p>
+  //       </div> */}
+  //     </div>
+
+  //     {/* BOTTOM SECTION - White background */}
+  //     <div className="p-4 bg-white border-t border-gray-200">
+  //       <div className="flex justify-between items-center">
+  //         <div className="min-w-0">
+  //           {/* Package */}
+  //           <p className="font-semibold text-gray-900 text-sm truncate">
+  //             {formatPackage()}
+  //           </p>
+
+  //           {/* Location */}
+  //           <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+  //             <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
+  //             <span className="line-clamp-1 truncate">
+  //               {formatLocation()}
+  //             </span>
+  //           </div>
+  //         </div>
+
+  //         <button
+  //           onClick={handleDetailsClick}
+  //           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2"
+  //         >
+  //           Details
+  //         </button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default PoolCollegeCard;

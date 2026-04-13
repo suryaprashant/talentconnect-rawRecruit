@@ -6,9 +6,10 @@ import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 import DatePicker from 'react-datepicker';
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
-
+import { useNavigate } from 'react-router-dom';
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 export default function PostIntership() {
+  const navigate = useNavigate();
   const initialState = {
     jobRoles: [],
     description: '',
@@ -464,6 +465,43 @@ degree: formData.degree.map(d => d.label),
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+      <div className="container mx-auto px-4 pt-8 mb-6 max-w-4xl">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-0 border-gray-200 pb-1">
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                On-campus Hiring
+              </button>
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                Pool Campus Hiring
+              </button>
+              
+              <button 
+                onClick={() => navigate('/hiring-channels/off-campus-hiring')}
+                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+              >
+                Off-campus Hiring
+              </button>
+
+              {/* Post an Internship: Active Highlight */}
+              <button 
+                className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+              >
+                Post an Internship
+              </button>
+
+            </div>
+          </div>
+        </div>
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header Section - Compact */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
