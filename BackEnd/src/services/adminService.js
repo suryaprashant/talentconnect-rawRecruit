@@ -560,3 +560,76 @@ export const getCompanyReferralFeedService = async (professionalProfileId) => {
     throw error;
   }
 };
+
+export const fetchProfessionalReferralMetrics = async (professionalProfileId) => {
+  // 1. All referral jobs posted by this professional
+  const referralJobs = await JobPostingTable.find({
+    candidatePosted: professionalProfileId,
+    jobType: "Referral",
+  })
+    .select("_id")
+    .lean();
+ 
+  const jobIds = referralJobs.map((j) => j._id);
+  const totalReferralsPosted = jobIds.length;
+ 
+  if (totalReferralsPosted === 0) {
+    return {
+      totalReferralsPosted: 0,
+      totalApplicationsReceived: 0,
+      totalReferredToCompany: 0,
+      totalAcceptedByCompany: 0,
+      responseRate: 0,
+      referralSuccessRate: 0,
+    };
+  }
+ 
+  // 2. Run all counts in parallel
+  const [
+    totalApplicationsReceived,
+    totalReferredToCompany,
+    totalAcceptedByCompany,
+  ] = await Promise.all([
+    // All applications received for these referral jobs
+    Application.countDocuments({
+      job: { $in: jobIds },
+      jobType: "Referral",
+    }),
+ 
+    // Admin approved AND (referred or accepted)
+    Application.countDocuments({
+      job: { $in: jobIds },
+      jobType: "Referral",
+      adminApprovalStatus: "Approved",
+      currentStatus: { $in: ["Referred To Company", "Accepted"] },
+    }),
+ 
+    // Admin approved AND accepted by company
+    Application.countDocuments({
+      job: { $in: jobIds },
+      jobType: "Referral",
+      adminApprovalStatus: "Approved",
+      currentStatus: "Accepted",
+    }),
+  ]);
+ 
+  // 3. Calculate rates (rounded to 2 decimal places, 0 if denominator is 0)
+  const responseRate =
+    totalApplicationsReceived > 0
+      ? Math.round((totalReferredToCompany / totalApplicationsReceived) * 100 * 100) / 100
+      : 0;
+ 
+  const referralSuccessRate =
+    totalReferredToCompany > 0
+      ? Math.round((totalAcceptedByCompany / totalReferredToCompany) * 100 * 100) / 100
+      : 0;
+ 
+  return {
+    totalReferralsPosted,
+    totalApplicationsReceived,
+    totalReferredToCompany,
+    totalAcceptedByCompany,
+    responseRate,        // e.g. 65.50  (means 65.50%)
+    referralSuccessRate, // e.g. 40.00  (means 40.00%)
+  };
+};
