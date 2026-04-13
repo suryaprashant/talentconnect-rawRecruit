@@ -260,32 +260,42 @@ function JobManagementApplication() {
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
             {/* Pastel blur background elements */}
             {/* --- START OF MANAGE APPLICATION NAVIGATION --- */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8">
-            <div className="mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                    <h2 className="text-2xl font-bold text-[#00153d]">Manage application</h2>
-                    <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
+
+                    {/* Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
+                        Manage Applications
+                    </h2>
+
+                    <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">
                         {jobs.length}
                     </span>
-                </div>
-                
-                <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
-                    {/* On-Campus: Active Highlight */}
+                    </div>
+                    
+                    {/* Tabs */}
+                    <div className="flex items-center gap-6 border-gray-200 pb-2">
+
+                    {/* Active */}
                     <button 
-                        className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+                        className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
                     >
                         On-Campus
                     </button>
                     
+                    {/* Inactive */}
                     <button 
                         onClick={() => navigate('/manage-application/poolCampus-placement')}
-                        className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+                        className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
                     >
                         Pool-Campus
                     </button>
+
+                    </div>
+
                 </div>
             </div>
-        </div>
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
@@ -297,15 +307,24 @@ function JobManagementApplication() {
             <div className="relative z-10 max-w-7xl mx-auto p-6">
                 {/* Header Section */}
                 <div className="mb-12">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+                   <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+
                         <div className="text-center md:text-left">
-                            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">
-                                Manage On-Campus Applications
-                            </h1>
-                            <p className="text-gray-600 text-lg md:text-xl max-w-2xl">
-                                Track Your On Campus Drives and Streamline Applications
-                            </p>
+                        
+                        <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-2">
+                            Manage On-Campus Applications
+                        </h1>
+
+                        <p className="text-gray-600 text-base md:text-lg max-w-2xl">
+                            Track your on-campus drives and streamline applications efficiently.
+                        </p>
+
                         </div>
+
+                    </div>
+
                     </div>
 
                     {/* Main Content Card */}

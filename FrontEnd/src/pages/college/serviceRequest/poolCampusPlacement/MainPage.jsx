@@ -68,15 +68,17 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <div className="relative z-10 container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-4">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-8 mt-4 text-center">
+
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
               Pool-Campus Placement Solutions for Colleges
             </h1>
-            <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-              Collaborative multi-college hiring to expand opportunities and improve placement outcomes
-            </h2>
-          </header>
 
+            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              Collaborative multi-college hiring to expand opportunities and improve placement outcomes.
+            </h2>
+
+          </header>
           {/* Services Section - Square Cards with Bullet Points */}
           <section className="mb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

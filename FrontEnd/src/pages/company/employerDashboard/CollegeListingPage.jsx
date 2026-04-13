@@ -405,31 +405,39 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
-        <div className="mb-8">
-  <div className="flex items-center gap-3 mb-6">
-    <h2 className="text-2xl font-bold text-[#00153d]">College Hiring Requests</h2>
-    <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
-      {colleges.length}
-    </span>
-  </div>
-  
-  <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
-    {/* ON-CAMPUS: Currently Active */}
-    <button 
-      className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
-    >
-      On-Campus
-    </button>
-    
-    {/* POOL-CAMPUS: Navigates away */}
-    <button 
-      onClick={() => navigate('/company-dashboard/Pool-campus')}
-      className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-    >
-      Pool-Campus
-    </button>
-  </div>
-</div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-2xl font-bold text-[#00153d]">
+              College Hiring Requests
+            </h2>
+
+            <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">
+              {colleges.length}
+            </span>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex items-center gap-6 border-gray-200 pb-2">
+
+            {/* Active Tab */}
+            <button 
+              className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+            >
+              On-Campus
+            </button>
+
+            {/* Inactive Tab */}
+            <button 
+              onClick={() => navigate('/company-dashboard/Pool-campus')}
+              className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+            >
+              Pool-Campus
+            </button>
+
+          </div>
+
+        </div>
 {/* --- END OF NEW SECTION --- */}
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">

@@ -1194,7 +1194,7 @@ export async function fetchCompanyDashboardMetrics(user) {
 
         // Fetch all jobs posted by this company/college
         const companyJobs = await JobPostingTable.find(query).select('_id jobType');
-
+        const totalActiveJobs = companyJobs.length;
         const allJobIds = companyJobs.map(job => job._id);
 
         if (allJobIds.length === 0) {
@@ -1208,7 +1208,9 @@ export async function fetchCompanyDashboardMetrics(user) {
                 // Add these for dashboard display
                 shortlistedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
                 acceptedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
-                rejectedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 }
+                rejectedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                totalActiveJobs,
+                totalOffers: 0
             };
         }
 
@@ -1351,7 +1353,9 @@ export async function fetchCompanyDashboardMetrics(user) {
             totalApplied: totalApplied,
             totalShortlisted: formattedStatusCounts.Shortlisted,
             totalAccepted: formattedStatusCounts.Accepted,
-            totalRejected: formattedStatusCounts.Rejected
+            totalRejected: formattedStatusCounts.Rejected,
+            totalActiveJobs,
+            totalOffers: formattedStatusCounts.Accepted
         };
 
     } catch (error) {

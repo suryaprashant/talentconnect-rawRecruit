@@ -578,11 +578,16 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
       <div className="container mx-auto px-4 py-8 pt-22">
 
         {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+
+          <h1 className="text-3xl font-semibold text-[#143694] tracking-tight">
             Saved Opportunities
           </h1>
-          <p className="text-gray-600 mt-2">Browse your saved opportunities</p>
+
+          <p className="text-gray-600 mt-1 text-md">
+            Browse your saved opportunities
+          </p>
+
         </div>
 
         {/* Cards */}
