@@ -427,7 +427,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
       </div>
     )
   }
-
+  const companyName = company?.profile?.companyDetails?.companyName || "Company";
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
@@ -452,7 +452,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
        
 <ActivationBlock
   greeting="Welcome back !"
-  subtitle= {company.profile.companyDetails.companyName}
+  subtitle={companyName}
   steps={[
     { number: 1, label: "Post Job" },
     { number: 2, label: "Get Applications" },
