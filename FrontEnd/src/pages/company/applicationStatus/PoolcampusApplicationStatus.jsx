@@ -647,7 +647,7 @@ const extractDegree = (job) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 pt-8">
-      <div className="mb-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
         <div className="flex items-center gap-3 mb-6">
           <h2 className="text-2xl font-bold text-[#00153d]">Your Application Status</h2>
           <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
@@ -655,7 +655,7 @@ const extractDegree = (job) => {
           </span>
         </div>
         
-        <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
+        <div className="flex items-center gap-6 border-gray-200 pb-1">
           {/* Navigation Button */}
           <button 
             onClick={() => navigate('/company/application-status/oncampus')}

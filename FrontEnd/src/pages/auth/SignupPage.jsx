@@ -29,92 +29,92 @@ const DASHBOARD_ROUTES = {
 
 const roleContent = {
   company: {
-    title: "Hire Freshers Faster with India’s Smart Campus Hiring Platform",
+    title: "Hire Freshers Faster with Smart Campus Hiring",
     points: [
       {
         title: "Access Verified College Talent",
-        desc: "Connect with verified colleges and build a fresher pipeline faster."
+        desc: "Connect with verified colleges and final-year students across India. Build a reliable fresher pipeline faster."
       },
       {
-        title: "Manage Campus Hiring Easily",
-        desc: "Run drives, manage internships, and track hiring in one place."
+        title: "Manage All Hiring in One Dashboard",
+        desc: "Run on-campus, pool-campus, and off-campus drives from a single system designed for HR teams."
+      },
+      {
+        title: "Track Hiring Progress in Real Time",
+        desc: "Monitor applications, shortlist candidates, schedule interviews, and manage offers in one workflow."
       }
-      // {
-      //   title: "Track Applications and Hiring Progress in Real Time",
-      //   desc: "Monitor applications, shortlist candidates, schedule interviews, and manage offers using a centralized workflow."
-      // }
     ]
   },
 
   college: {
-    title: "Increase Student Placements with a Digital Campus Recruitment System",
+    title: "Increase Student Placements with Smart Hiring Tools",
     points: [
       {
         title: "Connect with Hiring Companies",
-        desc: "Get placement and internship opportunities directly."
+        desc: "Receive direct placement and internship requests from companies actively hiring freshers."
       },
       {
-        title: "Manage Campus Drives",
-        desc: "Organize drives and track student participation easily."
+        title: "Manage Placement Drives Easily",
+        desc: "Organize on-campus and pool-campus drives with structured communication and student tracking."
+      },
+      {
+        title: "Improve Placement Performance",
+        desc: "Track placement data, company engagement, and student progress to increase placement success."
       }
-      // {
-      //   title: "Improve Placement Rates with Data Insights",
-      //   desc: "Track placement performance and hiring progress to boost outcomes."
-      // }
     ]
   },
 
   student: {
-    title: "Find Fresher Jobs and Internships from Verified Companies",
+    title: "Find Fresher Jobs and Internships Faster",
     points: [
       {
-        title: "Apply to Real Jobs and Internships",
-        desc: "Discover entry-level roles posted directly by companies and colleges."
+        title: "Apply to Verified Opportunities",
+        desc: "Discover real fresher jobs and internships posted directly by companies and colleges."
       },
       {
-        title: "Create One Profile and Apply Everywhere",
-        desc: "Apply instantly without repetitive forms."
+        title: "One Profile, Multiple Applications",
+        desc: "Create your profile once and apply to multiple jobs without filling forms again."
       },
-      // {
-      //   title: "Track Your Application Status",
-      //   desc: "Stay updated on interviews and job offers in real time."
-      // }
+      {
+        title: "Track Your Hiring Status",
+        desc: "Stay updated on shortlisting, interviews, and job offers in one dashboard."
+      }
     ]
   },
 
   fresher: {
-    title: "Find Fresher Jobs and Internships from Verified Companies",
+    title: "Find Fresher Jobs and Internships Faster",
     points: [
       {
-        title: "Apply to Real Jobs and Internships",
-        desc: "Discover entry-level roles posted directly by companies."
+        title: "Apply to Verified Opportunities",
+        desc: "Discover real fresher jobs and internships posted directly by companies."
       },
       {
         title: "One Profile, Multiple Applications",
-        desc: "Apply instantly without repetitive forms."
+        desc: "Create your profile once and apply to multiple jobs without filling forms again."
       },
-      // {
-      //   title: "Track Hiring Progress",
-      //   desc: "Monitor interviews and offers easily."
-      // }
+      {
+        title: "Track Your Hiring Status",
+        desc: "Stay updated on shortlisting, interviews, and job offers in one dashboard."
+      }
     ]
   },
 
   professional: {
-    title: "Refer Talent and Support Hiring in Your Organization",
+    title: "Refer Talent and Support Hiring",
     points: [
       {
-        title: "Refer Candidates to Job Opportunities",
-        desc: "Share openings and recommend candidates."
+        title: "Refer Candidates Easily",
+        desc: "Recommend candidates from your network to verified job opportunities."
       },
       {
-        title: "Monitor Referral Progress",
-        desc: "Track interviews and hiring decisions."
+        title: "Track Referral Progress",
+        desc: "Monitor applications, interviews, and hiring decisions in one place."
       },
-      // {
-      //   title: "Build Your Professional Network",
-      //   desc: "Strengthen visibility through referrals."
-      // }
+      {
+        title: "Build Your Professional Reputation",
+        desc: "Strengthen your credibility by connecting talent with hiring opportunities."
+      }
     ]
   }
 };

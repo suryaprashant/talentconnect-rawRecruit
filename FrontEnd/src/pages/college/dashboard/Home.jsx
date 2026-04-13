@@ -185,7 +185,7 @@ useEffect(() => {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
                   College Dashboard
                 </h1>
               </div>
@@ -241,196 +241,266 @@ useEffect(() => {
 </ActivationBlock>
 {/* --- END OF ACTIVATION BLOCK --- */}
         {/* Key Metrics Cards */}
-<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
-  
-  {/* Card 1 - On-Campus */}
-  <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/manage-application/campus-placement')}
-  >
-    {/* Bottom accent border */}
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    
-    {/* Glow effect on hover */}
-    <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/10 via-transparent to-[#5b21b6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-    
-    {/* Additional glow border */}
-    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#4c1d95]/20 rounded-2xl transition-all duration-300"></div>
+        {false && <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+          
+          {/* Card 1 - On-Campus */}
+          <div
+            className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
+            onClick={() => navigate('/manage-application/campus-placement')}
+          >
+            {/* Bottom accent border */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/10 via-transparent to-[#5b21b6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            
+            {/* Additional glow border */}
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#4c1d95]/20 rounded-2xl transition-all duration-300"></div>
 
-    <div className="relative z-10 flex flex-col flex-grow">
-      {/* Top row: Icon + Title + Button */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-start space-x-2">
-          <div className="p-1.5 bg-gradient-to-br from-[#4c1d95]/10 to-[#5b21b6]/10 rounded-lg border border-[#4c1d95]/20 mt-0.5">
-            <FiBriefcase className="w-4 h-4 text-[#4c1d95]" />
+            <div className="relative z-10 flex flex-col flex-grow">
+              {/* Top row: Icon + Title + Button */}
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start space-x-2">
+                  <div className="p-1.5 bg-gradient-to-br from-[#4c1d95]/10 to-[#5b21b6]/10 rounded-lg border border-[#4c1d95]/20 mt-0.5">
+                    <FiBriefcase className="w-4 h-4 text-[#4c1d95]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">On-Campus</h3>
+                  </div>
+                </div>
+                <div className="p-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Number section */}
+              <div className="flex items-baseline space-x-1 mt-auto">
+                <p className="text-xl font-bold text-[#4c1d95]">{dashboardData.appliedByCategory['On-campus']}</p>
+                <span className="text-xs text-gray-500">Companies</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 leading-tight">On-Campus</h3>
+
+          {/* Card 2 - Pool-Campus */}
+          <div
+            className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
+            onClick={() => navigate('/manage-application/poolCampus-placement')}
+          >
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/10 via-transparent to-[#6d28d9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#5b21b6]/20 rounded-2xl transition-all duration-300"></div>
+
+            <div className="relative z-10 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start space-x-2">
+                  <div className="p-1.5 bg-gradient-to-br from-[#5b21b6]/10 to-[#6d28d9]/10 rounded-lg border border-[#5b21b6]/20 mt-0.5">
+                    <FiTarget className="w-4 h-4 text-[#5b21b6]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Pool-Campus</h3>
+                  </div>
+                </div>
+                <div className="p-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex items-baseline space-x-1 mt-auto">
+                <p className="text-xl font-bold text-[#5b21b6]">{dashboardData.appliedByCategory['Pool-campus']}</p>
+                <span className="text-xs text-gray-500">Companies</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="p-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
-            <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
 
-      {/* Number section */}
-      <div className="flex items-baseline space-x-1 mt-auto">
-        <p className="text-xl font-bold text-[#4c1d95]">{dashboardData.appliedByCategory['On-campus']}</p>
-        <span className="text-xs text-gray-500">Companies</span>
-      </div>
-    </div>
-  </div>
+          {/* Card 3 - Status */}
+          <div
+            className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
+            onClick={() => navigate('/application-status/oncampus')}
+          >
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/10 via-transparent to-[#7c3aed]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#6d28d9]/20 rounded-2xl transition-all duration-300"></div>
 
-  {/* Card 2 - Pool-Campus */}
-  <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/manage-application/poolCampus-placement')}
-  >
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/10 via-transparent to-[#6d28d9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#5b21b6]/20 rounded-2xl transition-all duration-300"></div>
+            <div className="relative z-10 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start space-x-2">
+                  <div className="p-1.5 bg-gradient-to-br from-[#6d28d9]/10 to-[#7c3aed]/10 rounded-lg border border-[#6d28d9]/20 mt-0.5">
+                    <FiBarChart2 className="w-4 h-4 text-[#6d28d9]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Status</h3>
+                  </div>
+                </div>
+                <div className="p-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
 
-    <div className="relative z-10 flex flex-col flex-grow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-start space-x-2">
-          <div className="p-1.5 bg-gradient-to-br from-[#5b21b6]/10 to-[#6d28d9]/10 rounded-lg border border-[#5b21b6]/20 mt-0.5">
-            <FiTarget className="w-4 h-4 text-[#5b21b6]" />
+              {/* Status grid */}
+              <div className="grid grid-cols-2 gap-1.5 mt-auto">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-[#4c1d95]">{dashboardData.totalApplied}</div>
+                  <div className="text-[10px] text-gray-500 truncate">Applied</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-[#8b5cf6]">{dashboardData.totalRejected}</div>
+                  <div className="text-[10px] text-gray-500 truncate">Rejected</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 leading-tight">Pool-Campus</h3>
+
+          {/* Card 4 - Shortlisted */}
+          <div
+            className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
+            onClick={() => navigate('/shortlisted/on-campus-listings')}
+          >
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#8b5cf6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7c3aed]/20 rounded-2xl transition-all duration-300"></div>
+
+            <div className="relative z-10 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start space-x-2">
+                  <div className="p-1.5 bg-gradient-to-br from-[#7c3aed]/10 to-[#8b5cf6]/10 rounded-lg border border-[#7c3aed]/20 mt-0.5">
+                    <FiClock className="w-4 h-4 text-[#7c3aed]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Shortlisted</h3>
+                  </div>
+                </div>
+                <div className="p-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex items-baseline space-x-1 mt-auto">
+                <p className="text-xl font-bold text-[#7c3aed]">{dashboardData.totalShortlisted}</p>
+                <span className="text-xs text-gray-500">Companies</span>
+              </div>
+              
+              <div className="text-[10px] text-gray-500 mt-0.5">
+                {dashboardData.totalShortlisted > 0 ? 'In Progress' : 'No Companies'}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="p-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
-            <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
 
-      <div className="flex items-baseline space-x-1 mt-auto">
-        <p className="text-xl font-bold text-[#5b21b6]">{dashboardData.appliedByCategory['Pool-campus']}</p>
-        <span className="text-xs text-gray-500">Companies</span>
-      </div>
-    </div>
-  </div>
+          {/* Card 5 - Service Requests */}
+          <div
+            className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
+            onClick={() => navigate('/service-request/workforce-solution')}
+          >
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/10 via-transparent to-[#a78bfa]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#8b5cf6]/20 rounded-2xl transition-all duration-300"></div>
 
-  {/* Card 3 - Status */}
-  <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/application-status/oncampus')}
-  >
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/10 via-transparent to-[#7c3aed]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#6d28d9]/20 rounded-2xl transition-all duration-300"></div>
+            <div className="relative z-10 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start space-x-2">
+                  <div className="p-1.5 bg-gradient-to-br from-[#8b5cf6]/10 to-[#a78bfa]/10 rounded-lg border border-[#8b5cf6]/20 mt-0.5">
+                    <FiFileText className="w-4 h-4 text-[#8b5cf6]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Requests</h3>
+                  </div>
+                </div>
+                <div className="p-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
 
-    <div className="relative z-10 flex flex-col flex-grow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-start space-x-2">
-          <div className="p-1.5 bg-gradient-to-br from-[#6d28d9]/10 to-[#7c3aed]/10 rounded-lg border border-[#6d28d9]/20 mt-0.5">
-            <FiBarChart2 className="w-4 h-4 text-[#6d28d9]" />
+              <div className="flex items-baseline space-x-1 mt-auto">
+                <p className="text-xl font-bold text-[#8b5cf6]">{dashboardData.serviceRequests.pending}</p>
+                <span className="text-xs text-gray-500">Pending</span>
+              </div>
+              
+              <div className="text-[10px] text-gray-500 mt-0.5">
+                Service Requests
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 leading-tight">Status</h3>
+        </div> }
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+
+          {/* Applications */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+            <div className="p-2 bg-[#143694]/10 rounded-lg">
+              <FiFileText className="w-5 h-5 text-[#143694]" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900">
+                {dashboardData.totalApplied || 0}
+              </p>
+              <p className="text-xs text-gray-500">Applications</p>
+            </div>
           </div>
-        </div>
-        <div className="p-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
-            <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
 
-      {/* Status grid */}
-      <div className="grid grid-cols-2 gap-1.5 mt-auto">
-        <div className="text-center">
-          <div className="text-sm font-bold text-[#4c1d95]">{dashboardData.totalApplied}</div>
-          <div className="text-[10px] text-gray-500 truncate">Applied</div>
-        </div>
-        <div className="text-center">
-          <div className="text-sm font-bold text-[#8b5cf6]">{dashboardData.totalRejected}</div>
-          <div className="text-[10px] text-gray-500 truncate">Rejected</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Card 4 - Shortlisted */}
-  <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/shortlisted/on-campus-listings')}
-  >
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#8b5cf6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7c3aed]/20 rounded-2xl transition-all duration-300"></div>
-
-    <div className="relative z-10 flex flex-col flex-grow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-start space-x-2">
-          <div className="p-1.5 bg-gradient-to-br from-[#7c3aed]/10 to-[#8b5cf6]/10 rounded-lg border border-[#7c3aed]/20 mt-0.5">
-            <FiClock className="w-4 h-4 text-[#7c3aed]" />
+          {/* Shortlisted */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+            <div className="p-2 bg-[#143694]/10 rounded-lg">
+              <FiCheckCircle className="w-5 h-5 text-[#143694]" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900">
+                {dashboardData.totalShortlisted || 0}
+              </p>
+              <p className="text-xs text-gray-500">Shortlisted</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 leading-tight">Shortlisted</h3>
+
+          {/* Offers (Accepted) */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <FiClock className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900">
+                {dashboardData.totalAccepted || 0}
+              </p>
+              <p className="text-xs text-gray-500">Offers</p>
+            </div>
           </div>
-        </div>
-        <div className="p-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
-            <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
 
-      <div className="flex items-baseline space-x-1 mt-auto">
-        <p className="text-xl font-bold text-[#7c3aed]">{dashboardData.totalShortlisted}</p>
-        <span className="text-xs text-gray-500">Companies</span>
-      </div>
-      
-      <div className="text-[10px] text-gray-500 mt-0.5">
-        {dashboardData.totalShortlisted > 0 ? 'In Progress' : 'No Companies'}
-      </div>
-    </div>
-  </div>
-
-  {/* Card 5 - Service Requests */}
-  <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/service-request/workforce-solution')}
-  >
-    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/10 via-transparent to-[#a78bfa]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#8b5cf6]/20 rounded-2xl transition-all duration-300"></div>
-
-    <div className="relative z-10 flex flex-col flex-grow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-start space-x-2">
-          <div className="p-1.5 bg-gradient-to-br from-[#8b5cf6]/10 to-[#a78bfa]/10 rounded-lg border border-[#8b5cf6]/20 mt-0.5">
-            <FiFileText className="w-4 h-4 text-[#8b5cf6]" />
+          {/* Rejected Jobs */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+            <div className="p-2 bg-[#143694]/10 rounded-lg">
+              <FiBriefcase className="w-5 h-5 text-[#143694]" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900">
+                {dashboardData.totalRejected || 0}
+              </p>
+              <p className="text-xs text-gray-500">Rejected </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 leading-tight">Requests</h3>
-          </div>
-        </div>
-        <div className="p-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
-            <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
 
-      <div className="flex items-baseline space-x-1 mt-auto">
-        <p className="text-xl font-bold text-[#8b5cf6]">{dashboardData.serviceRequests.pending}</p>
-        <span className="text-xs text-gray-500">Pending</span>
-      </div>
-      
-      <div className="text-[10px] text-gray-500 mt-0.5">
-        Service Requests
-      </div>
-    </div>
-  </div>
-</div>
+          {/* CTA BUTTON */}
+          <button
+            onClick={() => navigate('/college-interviews')}
+            className="
+              flex flex-col items-center justify-center
+              bg-[#143694] text-white rounded-xl
+              hover:bg-[#1e4ed8]
+              shadow-sm hover:shadow-md
+              transition-all duration-200
+              p-4
+            "
+          >
+            <span className="text-sm font-medium">Schedule</span>
+            <span className="text-base font-semibold">Interviews</span>
+          </button>
 
+        </div>
         {/* Service Requests Status & Application Funnel */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Campus Opportunities */}
@@ -897,10 +967,17 @@ useEffect(() => {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 backdrop-blur-sm"
+              className="
+                flex items-center justify-center 
+                bg-primaryBrand text-white 
+                hover:bg-[#1e4ed8] 
+                hover:shadow-md 
+                transition-all duration-200
+                rounded-xl px-4 py-2
+                "
               onClick={() => navigate('/hiring-channels/post-a-job')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-2">
                 <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
               </svg>
               Post New Opportunity
@@ -919,7 +996,13 @@ useEffect(() => {
             <Button
               variant="outline"
               size="md"
-              className="border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+              className="
+                border border-[#143694] 
+                text-[#143694] 
+                hover:bg-[#143694] hover:text-white 
+                transition-all duration-200
+                rounded-xl px-4 py-2
+                "
               onClick={() => navigate('/job-management/On-campus')}
             >
               Manage Applications
@@ -927,7 +1010,13 @@ useEffect(() => {
             <Button
               variant="outline"
               size="md"
-              className="border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+              className="
+                border border-[#143694] 
+                text-[#143694] 
+                hover:bg-[#143694] hover:text-white 
+                transition-all duration-200
+                rounded-xl px-4 py-2
+                "
               onClick={() => navigate('/college-interviews')}
             >
               Schedule Interviews
@@ -935,7 +1024,13 @@ useEffect(() => {
             <Button
               variant="outline"
               size="md"
-              className="border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+              className="
+                border border-[#143694] 
+                text-[#143694] 
+                hover:bg-[#143694] hover:text-white 
+                transition-all duration-200
+                rounded-xl px-4 py-2
+                "
               onClick={() => navigate('/service-request/workforce-solution')}
             >
               Service Requests

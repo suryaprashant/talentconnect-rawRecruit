@@ -217,46 +217,72 @@ const handleViewAll = (jobId, e) => {
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Header Section */}
         {/* --- START OF SHORTLISTED NAVIGATION --- */}
-    <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-bold text-[#00153d]">Shortlisted Companies</h2>
-          <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
-            {jobs.length}
-          </span>
+        <div className="relative z-10 max-w-7xl mx-auto px-1 pt-8">
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
+                Shortlisted Companies
+              </h2>
+
+              <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">
+                {jobs.length}
+              </span>
+            </div>
+            
+            {/* Tabs */}
+            <div className="flex items-center gap-6 border-gray-200 pb-2">
+
+              {/* Inactive */}
+              <button 
+                onClick={() => navigate('/registered/on-campus-opportunities')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                On-Campus
+              </button>
+              
+              {/* Active */}
+              <button 
+                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+              >
+                Pool-Campus
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
-        
-        <div className="flex items-center gap-6 border-b border-gray-200 pb-1">
-          <button 
-            onClick={() => navigate('/registered/on-campus-opportunities')}
-            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-          >
-            On-Campus
-          </button>
-          
-          {/* Pool-Campus: Active Highlight */}
-          <button 
-            className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
-          >
-            Pool-Campus
-          </button>
-        </div>
-      </div>
-    </div>
         <div className="mb-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">
-                Pool Campus Opportunities
-              </h1>
-              <p className="text-gray-600 text-lg md:text-xl max-w-2xl">
-                View and manage your shortlisted pool campus applications
-              </p>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+
+              {/* LEFT */}
+              <div className="text-center md:text-left">
+                
+                <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-2">
+                  Pool Campus Opportunities
+                </h1>
+
+                <p className="text-gray-600 text-base md:text-lg max-w-2xl">
+                  View and manage your shortlisted pool campus applications.
+                </p>
+
+              </div>
+
+              {/* RIGHT BADGE */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#143694]/10 border border-[#143694]/20 rounded-xl">
+                <Building2 className="w-5 h-5 text-[#143694]" />
+                <span className="text-sm font-medium text-[#143694]">
+                  Pool Campus
+                </span>
+              </div>
+
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 border border-[#a7f3d0]/30 rounded-xl">
-              <Building2 className="w-5 h-5 text-[#059669]" />
-              <span className="text-sm font-medium text-[#059669]">Pool Campus</span>
-            </div>
+
           </div>
 
           {/* Main Content Card */}

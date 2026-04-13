@@ -394,31 +394,40 @@ if (compact) {
         {/* Header Section */}
         <div className="mb-8 -mt-10">
           {/* --- START OF NEW NAVIGATION SECTION --- */}
-<div className="mb-8 -mt-10">
-  <div className="flex items-center gap-3 mb-6">
-    <h2 className="text-2xl font-bold text-[#00153d]">Campus Opportunities</h2>
-    <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
-      {jobPosted.length}
-    </span>
-  </div>
-  
-  <div className="flex items-center gap-6 border-b border-gray-200 pb-1 mb-8">
-    {/* ON-CAMPUS: Currently Active */}
-    <button 
-      className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
-    >
-      On-Campus
-    </button>
-    
-    {/* POOL-CAMPUS: Navigates away */}
-    <button 
-      onClick={() => navigate('/college-dashboard/Pool-campus')}
-      className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-    >
-      Pool-Campus
-    </button>
-  </div>
-</div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8 -mt-10">
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
+                Campus Opportunities
+              </h2>
+
+              <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">
+                {jobPosted.length}
+              </span>
+            </div>
+            
+            {/* Tabs */}
+            <div className="flex items-center gap-6 border-gray-200 pb-2">
+
+              {/* Active */}
+              <button 
+                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+              >
+                On-Campus
+              </button>
+              
+              {/* Inactive */}
+              <button 
+                onClick={() => navigate('/college-dashboard/Pool-campus')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                Pool-Campus
+              </button>
+
+            </div>
+
+          </div>
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">
@@ -968,7 +977,7 @@ if (compact) {
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
           {filteredjobPosted.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredjobPosted.map(jobPosted => (
                   <div
                     key={jobPosted._id || jobPosted.id}
