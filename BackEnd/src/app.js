@@ -65,7 +65,7 @@ import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
 import Jobs from "./routes/jobsRoute.js"
 import Internship from "./routes/internshipRoute.js";
-
+import LiveTicker from "./routes/liveTickerRoute.js";
 // RawRecruit APIs
 import serviceRequestRouter from "./routes/servicerequestRoute.js";
 import servicerequestinterview from "./routes/servicerequestInterviewRoute.js";
@@ -145,7 +145,7 @@ app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement)
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 app.use("/api/candidate", CandidateRoute);
-
+app.use("/api/ticker", LiveTicker);
 
 app.use("/api/meta", CustomDropDown);
 // admin relatd auth ends
