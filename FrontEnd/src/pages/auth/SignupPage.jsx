@@ -431,14 +431,14 @@ function SignupPage() {
                 RawRecruit
               </span>
             </div>
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h2 className="font-[Manrope] text-3xl font-bold text-white">
                 Join the Network
               </h2>
               {/* <p className="text-white/90 text-sm mt-2">
                 Select your journey to begin your intentional connection.
-              </p> */}
-            </div>
+              </p> 
+            </div> */}
             {/* ROLE TAG */}
             <p className="text-xs uppercase tracking-widest text-white/70 mb-2">
               {currentRole.toUpperCase()}

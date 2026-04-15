@@ -93,13 +93,16 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-              Off-Campus Recruitment for Companiess
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
+
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
+              Off-Campus Recruitment for Companies
             </h1>
-            <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-              Flexible fresher hiring beyond campuses through open recruitment channels
+
+            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              Flexible fresher hiring beyond campuses through open recruitment channels.
             </h2>
+
           </header>
 
           {/* Services - Square Cards with Bullet Points */}

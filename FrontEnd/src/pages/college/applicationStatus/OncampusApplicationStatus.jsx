@@ -292,10 +292,10 @@ export default function OncampusApplicationStatus() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       <div className="container mx-auto px-4 pt-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-1">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
 
           {/* Header */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-2">
             <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
               Your Application Status
             </h2>

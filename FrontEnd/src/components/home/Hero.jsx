@@ -7,6 +7,7 @@ import image1 from "../../assets/companyDashboard.png";
 import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
+import { CirclePlay, HelpCircle } from "lucide-react";
 const CountUp = ({ end, suffix = "" }) => {
   const [count, setCount] = useState(0);
 
@@ -81,11 +82,11 @@ export default function HeroSection() {
 
           <h1 className="font-display text-4xl md:text-5xl lg:text-[56px] font-bold leading-[1.1] text-foreground mb-6">
             The Fastest Way to{" "}
-            <span className="text-[#143694]">Hire Freshers</span> in India
+            <span className="text-[#143694] text-[54px]">Hire Freshers</span> in India
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
-            Post jobs, connect with colleges, and access candidates instantly across campus and off-campus channels.
+            Run On-Campus, Pool-Campus, and Off-Campus hiring from one unified platform — connect with colleges, manage drives, and hire freshers faster.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-10">
@@ -125,15 +126,17 @@ export default function HeroSection() {
               onClick={() => navigate("/demo")}
               className="flex items-center gap-1 hover:text-[#143694] transition"
             >
+            <CirclePlay size={16} />
              Watch Demo
             </button>
 
-            <span className="w-1.5 h-1.5 rounded-full mt-2 bg-[#143694]" />
+            <span className="w-1.5 h-1.5 rounded-full mt-2 ml-1 bg-[#143694]" />
 
             <button
               onClick={() => setShowModal(true)} 
               className="flex items-center gap-1 hover:text-[#143694] transition"
             >
+              <HelpCircle size={16} />
               Request onboarding support
             </button>
           </div>
@@ -156,7 +159,7 @@ export default function HeroSection() {
                 ? image2
                 : "/images/default.png"
             }
-            alt="Preview"
+            alt="Campus hiring dashboard for companies managing on-campus and off-campus recruitment"
             className="w-full h-auto rounded-xl shadow-lg transition-all duration-300"
           />
         </motion.div>

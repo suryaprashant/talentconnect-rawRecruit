@@ -165,7 +165,7 @@ export default function OffCampusJobManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 pt-8">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
@@ -215,23 +215,33 @@ export default function OffCampusJobManagement() {
     </div>
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Header Section */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div className="mb-4 md:mb-0">
-              <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-5 w-5 text-[#667eea]" />
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  Manage Off-Campus Applications
-                </h1>
-              </div>
-              <p className="text-gray-600">
-                Track Your Job Listings and Streamline Candidate Applications
-              </p>
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+    
+    <div className="mb-4 md:mb-0">
+
+      <div className="flex items-center mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg mr-3">
+          <Briefcase className="h-5 w-5 text-[#143694]" />
         </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+          Manage Off-Campus Applications
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Track your job listings and streamline candidate applications.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
 
         {/* Jobs Table */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">

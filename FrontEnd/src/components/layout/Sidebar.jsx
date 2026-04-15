@@ -72,7 +72,7 @@ const loading = false;
           </div>
           
 
-          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-1 py-4 space-y-1 overflow-y-hidden">
     
             {/* Role-specific Sidebars */}
             {/* {selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}

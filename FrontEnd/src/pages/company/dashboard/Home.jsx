@@ -732,7 +732,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
 
           {/* Active Jobs */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div  onClick ={() => navigate('/job-management/On-campus')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#7765DA]/10 rounded-lg">
                 <Briefcase className="w-5 h-5 text-[#7765DA]" />
@@ -745,7 +746,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Applications */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/job-management/On-campus')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#5767D0]/10 rounded-lg">
                 <FileText className="w-5 h-5 text-[#5767D0]" />
@@ -758,7 +760,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Shortlisted */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/shortlisted/on-campus-listings')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#4F0DCE]/10 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-[#4F0DCE]" />
@@ -771,7 +774,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Offers */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/accepted/on-campus-listings')} 
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-green-100 rounded-lg">
                 <Clock className="w-5 h-5 text-green-600" />

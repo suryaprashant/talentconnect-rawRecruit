@@ -283,7 +283,7 @@ export default function PoolCampusJobManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 pt-8">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
                     <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
@@ -335,37 +335,56 @@ export default function PoolCampusJobManagement() {
             </div>
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Header Section */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div className="mb-4 md:mb-0">
-              <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-5 w-5 text-[#667eea]" />
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  Shortlisted Pool-Campus Drives
-                </h1>
-              </div>
-              <p className="text-gray-600">
-                Track Your Shortlisted Pool-Campus Drives and College Applications
-              </p>
-            </div>
-            
-            {/* Search Bar */}
-            {/* <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                placeholder="Search by job role or work location"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div> */}
-          </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3 mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg">
+          <Building2 className="h-5 w-5 text-[#143694]" />
         </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+          Shortlisted Pool-Campus Drives
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Track your shortlisted pool-campus drives and college applications.
+      </p>
+
+    </div>
+
+    {/* RIGHT (optional search) */}
+    {/*
+    <div className="relative w-full md:w-80">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <Search className="h-4 w-4 text-gray-400" />
+      </div>
+      <input
+        type="text"
+        className="
+          w-full pl-10 pr-4 py-2.5 
+          bg-gray-50 border border-gray-200 rounded-xl
+          focus:ring-2 focus:ring-[#143694]/30 
+          focus:border-[#143694] focus:outline-none
+          transition-all duration-200
+        "
+        placeholder="Search by job role or work location"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+    </div>
+    */}
+
+  </div>
+
+</div>
 
         {/* Error Display */}
         {error && (

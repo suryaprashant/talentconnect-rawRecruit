@@ -504,21 +504,27 @@ degree: formData.degree.map(d => d.label),
         </div>
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header Section - Compact */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Briefcase className="h-5 w-5 text-[#667eea]" />
+        
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6 text-center">
+
+            <div className="flex items-center justify-center mb-3">
+              
+              <div className="p-2 bg-[#143694]/10 rounded-lg mr-3">
+                <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+
+              <h1 className="text-2xl md:text-3xl font-semibold text-[#143694] tracking-tight">
                 Create Internship Opportunity
               </h1>
+
             </div>
-            <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+
+            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
               Post a new internship opportunity and connect with talented students. Fill in the details below to create your internship listing.
             </p>
+
           </div>
-        </div>
+        
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">

@@ -17,7 +17,7 @@ function CollegeSidebar({ activePath }) {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <div className="flex-1 overflow-y-auto py-4 px-23 space-y-1">
           {/* Home */}
           <SidebarNavItem 
             to="/home" 

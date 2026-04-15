@@ -433,7 +433,8 @@ useEffect(() => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
 
           {/* Applications */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/manage-application/campus-placement')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
               <FiFileText className="w-5 h-5 text-[#143694]" />
             </div>
@@ -446,7 +447,8 @@ useEffect(() => {
           </div>
 
           {/* Shortlisted */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/registered/on-campus-opportunities')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
               <FiCheckCircle className="w-5 h-5 text-[#143694]" />
             </div>
@@ -459,7 +461,8 @@ useEffect(() => {
           </div>
 
           {/* Offers (Accepted) */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/accepted/on-campus-request')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <FiClock className="w-5 h-5 text-green-600" />
             </div>
@@ -472,7 +475,8 @@ useEffect(() => {
           </div>
 
           {/* Rejected Jobs */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/accepted/on-campus-request')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
               <FiBriefcase className="w-5 h-5 text-[#143694]" />
             </div>
