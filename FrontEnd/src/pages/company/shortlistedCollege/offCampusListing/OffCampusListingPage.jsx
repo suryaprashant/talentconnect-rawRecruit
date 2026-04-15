@@ -199,7 +199,7 @@ export default function OffCampusJobManagement() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
             <div className="container mx-auto px-4 pt-8">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
                     <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
@@ -251,48 +251,65 @@ export default function OffCampusJobManagement() {
             </div>
             <div className="container mx-auto px-4 py-8 pt-22">
                 {/* Header Section */}
-                <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                        <div className="mb-4 md:mb-0">
-                            <div className="flex items-center mb-2">
-                                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                                    <Building2 className="h-5 w-5 text-[#667eea]" />
-                                </div>
-                                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                    Shortlisted Off-Campus Drives
-                                </h1>
-                            </div>
-                            <p className="text-gray-600">
-                                Track Your Shortlisted Off-Campus Drives and Candidate Applications
-                            </p>
-                        </div>
-                    </div>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
 
-                    {/* Tabs */}
-                    {/* <div className="flex border-b border-gray-200 mt-6">
-                        {['All Jobs', 'Published', 'Drafts'].map((tab) => (
-                            <button
-                                key={tab}
-                                className={`px-6 py-3 font-medium text-sm transition-all duration-200 relative ${
-                                    activeTab === tab 
-                                        ? 'text-[#667eea]' 
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                                onClick={() => setActiveTab(tab)}
-                            >
-                                {tab}
-                                {tab === 'All Jobs' && jobs && (
-                                    <span className="ml-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] text-xs px-2 py-0.5 rounded-full">
-                                        {jobs.length}
-                                    </span>
-                                )}
-                                {activeTab === tab && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2]"></div>
-                                )}
-                            </button>
-                        ))}
-                    </div> */}
-                </div>
+  {/* HEADER */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+    <div>
+
+      <div className="flex items-center gap-3 mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg">
+          <Building2 className="h-5 w-5 text-[#143694]" />
+        </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+          Shortlisted Off-Campus Drives
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Track your shortlisted off-campus drives and candidate applications.
+      </p>
+
+    </div>
+
+  </div>
+
+  {/* TABS (clean version - optional) */}
+  {/*
+  <div className="flex border-b border-gray-200 mt-6 gap-6">
+
+    {['All Jobs', 'Published', 'Drafts'].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        className={`relative pb-3 text-sm font-medium transition-all ${
+          activeTab === tab
+            ? 'text-[#143694]'
+            : 'text-gray-500 hover:text-gray-900'
+        }`}
+      >
+        {tab}
+
+        {tab === 'All Jobs' && jobs && (
+          <span className="ml-2 bg-[#143694]/10 text-[#143694] text-xs px-2 py-0.5 rounded-full">
+            {jobs.length}
+          </span>
+        )}
+
+        {activeTab === tab && (
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#143694] rounded-full"></div>
+        )}
+      </button>
+    ))}
+
+  </div>
+  */}
+
+</div>
 
                 {/* Drives Table */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">

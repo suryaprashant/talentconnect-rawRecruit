@@ -217,9 +217,23 @@ const LiveJobs = () => {
           <p className="text-center col-span-3">No jobs found</p>
         ) : (
           [...jobs]
-  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-  .slice(0, 3)
-  .map((job, i) => {
+            .filter((job) => {
+              const deadline =
+                job.endDate ||
+                job.proposedSchedule?.endDate ||
+                job.interviewWindow?.end;
+
+              if (!deadline) return true; // keep if no deadline
+
+              const daysLeft = Math.ceil(
+                (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+              );
+
+              return daysLeft > 0; //  remove closed jobs
+            })
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3)
+            .map((job, i) => {
     const title = job.jobRoles?.[0] || job.jobTitle || job.collegePosted.collegeUniversityDetails.collegeName ||"Role not specified";
 
     const company =

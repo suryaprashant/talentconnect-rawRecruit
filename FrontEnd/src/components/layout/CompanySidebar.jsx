@@ -22,7 +22,7 @@ const [authUser] = useLegacyAuth();
       
       <div className="flex-1 flex flex-col min-h-0">
       
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <div className="flex-1 overflow-y-auto py-4 px-13 space-y-1">
           {/* Home */}
           <SidebarNavItem 
             to="/home" 

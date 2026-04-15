@@ -10,9 +10,9 @@ import { useAuth } from "@/context/AuthContext";
 
 // ---------------- DATA ----------------
 const companySteps = [
-  { icon: Briefcase, title: "Post Hiring Requirement", desc: "Create on-campus, pool-campus, or off-campus hiring requests." },
-  { icon: Users, title: "Get Matched Candidates", desc: "Access verified candidates from partner colleges instantly." },
-  { icon: Rocket, title: "Hire Efficiently", desc: "Manage applications, interviews, and offers in one place." },
+  { icon: Briefcase, title: "Post Hiring Request", desc: "Create on-campus, pool-campus, off-campus, or internship hiring needs." },
+  { icon: Users, title: "Receive Applications", desc: "Colleges apply for on-campus, pool-campus drives. Candidates apply for off-campus/internship roles." },
+  { icon: Rocket, title: "Hire & Track Progress", desc: "Manage applications, interviews, and offers in one dashboard." },
 ];
 
 const candidateSteps = [
