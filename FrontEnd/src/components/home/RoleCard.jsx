@@ -109,36 +109,43 @@ const RoleCards = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.12 }}
             onClick={() => handleRoleSelect(r.roleKey)}
-            className="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-full"
           >
-            {/* Icon */}
-            <div className="w-10 h-10 p-1.5 rounded-2xl bg-[#eef2ff] flex items-center justify-center mx-auto mb-6">
-              <r.icon className="w-7 h-7 text-[#143694]" />
+
+            {/* TOP CONTENT */}
+            <div>
+
+              {/* Icon */}
+              <div className="w-10 h-10 p-1.5 rounded-2xl bg-[#eef2ff] flex items-center justify-center mx-auto mb-6">
+                <r.icon className="w-7 h-7 text-[#143694]" />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">
+                {r.title}
+              </h3>
+
+              {/* Points */}
+              <div className="space-y-3 mb-6 text-left">
+                {r.points.map((point, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <span className="min-w-[24px] h-6 flex items-center justify-center text-xs rounded-md bg-gray-100 text-primaryBrand font-semibold">
+                      {idx + 1}
+                    </span>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {point}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
             </div>
 
-            {/* Title */}
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">
-              {r.title}
-            </h3>
-
-            {/* Points */}
-            <div className="space-y-3 mb-6 text-left">
-              {r.points.map((point, idx) => (
-                <div key={idx} className="flex items-start gap-3">
-                  <span className="min-w-[24px] h-6 flex items-center justify-center text-xs rounded-md bg-gray-100 text-primaryBrand font-semibold">
-                    {idx + 1}
-                  </span>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {point}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Button */}
-            <button className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition hover:bg-white hover:text-primaryBrand border border-PrimaryBrand">
+            {/* BUTTON (ALWAYS BOTTOM) */}
+            <button className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition hover:bg-white hover:text-primaryBrand border border-primaryBrand mt-4">
               {r.cta}
             </button>
+
           </motion.div>
         ))}
 
