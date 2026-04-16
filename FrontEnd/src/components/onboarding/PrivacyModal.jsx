@@ -19,7 +19,7 @@ export const PrivacyModal = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[65vh] flex flex-col animate-slideUp">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-[#143694] to-pink-600 bg-clip-text text-transparent">
             Privacy Policy
           </h2>
           <button
@@ -209,7 +209,7 @@ export const PrivacyModal = ({ isOpen, onClose }) => {
         <div className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
           <button
             onClick={onClose}
-            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="w-full bg-gradient-to-r from-blue-600 via-[#143694] to-pink-600 text-white font-semibold py-2.5 px-6 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             Close
           </button>

@@ -226,7 +226,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                                 e.target.style.display = 'none';
                                                 const parent = e.target.parentElement;
                                                 parent.innerHTML = `
-                                                    <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                                    <div class="w-full h-full bg-gradient-to-br from-[#1e4ed8] to-[#143694] rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                                         ${getUserInitial()}
                                                     </div>
                                                 `;
@@ -234,7 +234,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e4ed8] to-[#143694] flex items-center justify-center text-white text-sm font-semibold shadow-sm">
                                         {getUserInitial()}
                                     </div>
                                 )}

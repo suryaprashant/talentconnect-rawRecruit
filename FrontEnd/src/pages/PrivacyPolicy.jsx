@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
       {/* Hero Section */}
       <div className="pt-28 pb-16 text-center px-6">
         <div className="flex justify-center mb-6">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-2xl shadow-lg">
+          <div className="bg-gradient-to-r from-[#143694] to-pink-600 p-4 rounded-2xl shadow-lg">
             <ShieldCheck className="text-white w-8 h-8" />
           </div>
         </div>

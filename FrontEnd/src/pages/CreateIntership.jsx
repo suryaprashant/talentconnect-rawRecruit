@@ -162,7 +162,7 @@ const CreateIntership = () => {
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
                         onClick={handleAddLocation}
                       >
-                        <span className="text-blue-500 mr-2">+</span> Add "{locationInput}"
+                        <span className="text-[#1e4ed8] mr-2">+</span> Add "{locationInput}"
                       </div>
                     )}
 

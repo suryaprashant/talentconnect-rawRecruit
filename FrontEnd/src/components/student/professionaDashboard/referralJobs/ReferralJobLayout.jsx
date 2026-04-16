@@ -75,7 +75,7 @@ const ReferralLayout = () => {
 
   // Normal view
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="h-full overflow-y-auto p-4 md:p-6">
         <ReferralJobs onJobSelect={handleJobSelect} />
       </div>

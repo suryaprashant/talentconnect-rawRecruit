@@ -32,14 +32,14 @@ export default function StudentDetailModal({ application, onClose, onStatusUpdat
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body, html { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+            .header { background: linear-gradient(135deg, #143694 0%, #1e4ed8 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
             .header h1 { font-size: 18px; font-weight: 600; margin: 0; }
             .controls { display: flex; gap: 10px; }
-            .controls button { background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+            .controls button { background: white; color: #143694; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
             .controls button:hover { background: #f8fafc; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
             .pdf-container { width: 100%; height: calc(100vh - 60px); }
             iframe { width: 100%; height: 100%; border: none; }
-            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #143694; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
             @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
           </style>
         </head>
@@ -202,7 +202,7 @@ const handleStatusUpdate = async (statusAction) => {
               <div className="space-y-6">
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 uppercase">Skills</label>
-                  {renderTags(applicant?.skills, "bg-blue-100 text-blue-700")}
+                  {renderTags(applicant?.skills, "bg-blue-100 text-[#143694]")}
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 uppercase">Tools & Platforms</label>

@@ -706,16 +706,16 @@ const HostHackathon = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Trophy className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Trophy className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 {isEditMode ? 'Edit Hackathon Event' : 'Host a Hackathon Event'}
               </h1>
             </div>
@@ -734,7 +734,7 @@ const HostHackathon = () => {
               {/* Basic Information */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Briefcase className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Briefcase className="h-5 w-5 mr-2 text-[#143694]" />
                   Basic Information
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Provide the essential details about your hackathon event.</p>
@@ -751,7 +751,7 @@ const HostHackathon = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.title ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="Enter hackathon title"
@@ -769,7 +769,7 @@ const HostHackathon = () => {
                       name="subTitle"
                       value={formData.subTitle}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.subTitle ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="Enter hackathon sub-title"
@@ -788,7 +788,7 @@ const HostHackathon = () => {
                       name="contactEmail"
                       value={formData.contactEmail}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.contactEmail ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="contact@company.com"
@@ -804,7 +804,7 @@ const HostHackathon = () => {
                       value={formData.description}
                       onChange={handleInputChange}
                       rows={4}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.description ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="Describe your hackathon, themes, and what participants can expect..."
@@ -817,7 +817,7 @@ const HostHackathon = () => {
               {/* Logo Upload */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <FileText className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <FileText className="h-5 w-5 mr-2 text-[#143694]" />
                   Event Logo
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Upload a logo for your hackathon event.</p>
@@ -889,13 +889,13 @@ const HostHackathon = () => {
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <Target className="h-5 w-5 mr-2 text-[#667eea]" />
+                    <Target className="h-5 w-5 mr-2 text-[#143694]" />
                     Problem Statements
                   </h2>
                   <button
                     type="button"
                     onClick={addProblemStatement}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                   >
                     <Plus className="h-4 w-4" />
                     Add Problem
@@ -910,7 +910,7 @@ const HostHackathon = () => {
                             type="text"
                             value={problem.title}
                             onChange={(e) => updateProblemStatement(index, 'title', e.target.value)}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`problemTitle${index}`] ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="Problem Title"
@@ -935,7 +935,7 @@ const HostHackathon = () => {
                           <textarea
                             value={problem.description}
                             onChange={(e) => updateProblemStatement(index, 'description', e.target.value)}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`problemDescription${index}`] ? 'border-red-300' : 'border-gray-200'
                             }`}
                             rows={3}
@@ -951,7 +951,7 @@ const HostHackathon = () => {
                             type="text"
                             value={problem.technology.join(', ')}
                             onChange={(e) => updateProblemStatement(index, 'technology', e.target.value.split(',').map(t => t.trim()))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`problemTechnology${index}`] ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="Required Technologies (comma-separated e.g. Python, React, Node.js)"
@@ -969,7 +969,7 @@ const HostHackathon = () => {
               {/* Eligibility */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <GraduationCap className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <GraduationCap className="h-5 w-5 mr-2 text-[#143694]" />
                   Eligibility
                 </h2>
                 <p className="text-sm text-gray-600 mb-4">Specify who can participate in this hackathon.</p>
@@ -978,7 +978,7 @@ const HostHackathon = () => {
                   value={formData.eligibility}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                   placeholder="Specify who can participate in this hackathon..."
                 />
               </div>
@@ -987,13 +987,13 @@ const HostHackathon = () => {
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <BookOpen className="h-5 w-5 mr-2 text-[#667eea]" />
+                    <BookOpen className="h-5 w-5 mr-2 text-[#143694]" />
                     Domains
                   </h2>
                   <button
                     type="button"
                     onClick={addDomain}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                   >
                     <Plus className="h-4 w-4" />
                     Add Domain
@@ -1006,7 +1006,7 @@ const HostHackathon = () => {
                         type="text"
                         value={domain}
                         onChange={(e) => updateDomain(index, e.target.value)}
-                        className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         placeholder="Enter domain (e.g., AI/ML, Web Development)"
                       />
                       {formData.domains.length > 1 && (
@@ -1026,7 +1026,7 @@ const HostHackathon = () => {
               {/* Visibility Settings */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Globe className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Globe className="h-5 w-5 mr-2 text-[#143694]" />
                   Visibility & Mode
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Configure how your hackathon will be accessed and conducted.</p>
@@ -1041,7 +1041,7 @@ const HostHackathon = () => {
                       name="visibility"
                       value={formData.visibility}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.visibility ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
@@ -1064,7 +1064,7 @@ const HostHackathon = () => {
                       name="mode"
                       value={formData.mode}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.mode ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
@@ -1087,7 +1087,7 @@ const HostHackathon = () => {
                       name="participationType"
                       value={formData.participationType}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.participationType ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
@@ -1106,7 +1106,7 @@ const HostHackathon = () => {
               {/* Event Details */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Calendar className="h-5 w-5 mr-2 text-[#143694]" />
                   Event Details
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Set the timeline and location for your hackathon.</p>
@@ -1122,7 +1122,7 @@ const HostHackathon = () => {
                       name="startDate"
                       value={formData.startDate}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.startDate ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
@@ -1139,7 +1139,7 @@ const HostHackathon = () => {
                       name="endDate"
                       value={formData.endDate}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.endDate ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
@@ -1156,7 +1156,7 @@ const HostHackathon = () => {
                       name="registrationDeadline"
                       value={formData.registrationDeadline}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.registrationDeadline ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
@@ -1174,7 +1174,7 @@ const HostHackathon = () => {
                       name="location"
                       value={formData.location}
                       onChange={handleInputChange}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                         errors.location ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="City, State or Virtual"
@@ -1187,7 +1187,7 @@ const HostHackathon = () => {
               {/* Hackathon Rounds */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Clock className="h-5 w-5 mr-2 text-[#143694]" />
                   Hackathon Rounds
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Configure the stages of your hackathon competition.</p>
@@ -1201,7 +1201,7 @@ const HostHackathon = () => {
                     <select
                       value={formData.numberOfRounds}
                       onChange={(e) => updateNumberOfRounds(parseInt(e.target.value))}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     >
                       {[1, 2, 3, 4, 5].map(num => (
                         <option key={num} value={num}>{num} Round{num > 1 ? 's' : ''}</option>
@@ -1224,7 +1224,7 @@ const HostHackathon = () => {
                             type="text"
                             value={round.roundName}
                             onChange={(e) => updateRoundData(index, 'roundName', e.target.value)}
-                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                             placeholder={`Round ${index + 1}`}
                           />
                         </div>
@@ -1237,7 +1237,7 @@ const HostHackathon = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                             placeholder="Brief about this round"
                           />
                         </div>
@@ -1250,7 +1250,7 @@ const HostHackathon = () => {
                             type="datetime-local"
                             value={round.startDate}
                             onChange={(e) => updateRoundData(index, 'startDate', e.target.value)}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`round${index}StartDate`] ? 'border-red-300' : 'border-gray-200'
                             }`}
                           />
@@ -1267,7 +1267,7 @@ const HostHackathon = () => {
                             type="datetime-local"
                             value={round.endDate}
                             onChange={(e) => updateRoundData(index, 'endDate', e.target.value)}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`round${index}EndDate`] ? 'border-red-300' : 'border-gray-200'
                             }`}
                           />
@@ -1285,7 +1285,7 @@ const HostHackathon = () => {
                             name="inputType"
                             value={round.inputType}
                             onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
                               errors[`round${index}InputType`] ? 'border-red-300' : 'border-gray-200' 
                             }`}
                           >
@@ -1310,7 +1310,7 @@ const HostHackathon = () => {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                  className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                 >
                   Next
                 </button>
@@ -1323,7 +1323,7 @@ const HostHackathon = () => {
               {/* Participation */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Users className="h-5 w-5 mr-2 text-[#143694]" />
                   Participation Limits
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Configure participation limits based on the selected type.</p>
@@ -1341,7 +1341,7 @@ const HostHackathon = () => {
                         name="maxParticipants"
                         value={formData.maxParticipants}
                         onChange={handleInputChange}
-                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                           errors.maxParticipants ? 'border-red-300' : 'border-gray-200'
                         }`}
                         placeholder="e.g., 100"
@@ -1364,7 +1364,7 @@ const HostHackathon = () => {
                           name="maxTeams"
                           value={formData.maxTeams}
                           onChange={handleInputChange}
-                          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                             errors.maxTeams ? 'border-red-300' : 'border-gray-200'
                           }`}
                           placeholder="e.g., 25"
@@ -1383,7 +1383,7 @@ const HostHackathon = () => {
                             name="minTeamMembers"
                             value={formData.minTeamMembers}
                             onChange={handleInputChange}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.minTeamMembers ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., 2"
@@ -1401,7 +1401,7 @@ const HostHackathon = () => {
                             name="maxTeamMembers"
                             value={formData.maxTeamMembers}
                             onChange={handleInputChange}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.maxTeamMembers ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., 5"
@@ -1425,7 +1425,7 @@ const HostHackathon = () => {
               {/* Rewards & Prizes */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Trophy className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Trophy className="h-5 w-5 mr-2 text-[#143694]" />
                   Rewards & Prizes
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Set up rewards and prizes for the winners.</p>
@@ -1440,7 +1440,7 @@ const HostHackathon = () => {
                         ...prev,
                         rewards: { ...prev.rewards, rewardType: e.target.value }
                       }))}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     >
                       <option value="Amount">Amount</option>
                       <option value="Perks">Perks/Gifts</option>
@@ -1464,7 +1464,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, firstPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.firstPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., 50000"
@@ -1478,7 +1478,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, firstPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.firstPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., MacBook, Gift Hamper"
@@ -1500,7 +1500,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, secondPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.secondPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., 30000"
@@ -1514,7 +1514,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, secondPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.secondPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., Headphones, Swag Kit"
@@ -1536,7 +1536,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, thirdPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.thirdPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., 20000"
@@ -1550,7 +1550,7 @@ const HostHackathon = () => {
                               ...prev,
                               rewards: { ...prev.rewards, thirdPlace: e.target.value }
                             }))}
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                               errors.thirdPlace ? 'border-red-300' : 'border-gray-200'
                             }`}
                             placeholder="e.g., Gift Vouchers"
@@ -1568,7 +1568,7 @@ const HostHackathon = () => {
                       <button
                         type="button"
                         onClick={addSpecialAward}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                       >
                         <Plus className="h-4 w-4" />
                         Add Award
@@ -1586,7 +1586,7 @@ const HostHackathon = () => {
                                 type="text"
                                 value={award.name}
                                 onChange={(e) => updateSpecialAward(index, 'name', e.target.value)}
-                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                                 placeholder="Award name (e.g., Best Innovation, Most Creative)"
                               />
                             </div>
@@ -1597,7 +1597,7 @@ const HostHackathon = () => {
                               <select
                                 value={award.rewardType || 'Perks'}
                                 onChange={(e) => updateSpecialAward(index, 'rewardType', e.target.value)}
-                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                               >
                                 <option value="Amount">Amount</option>
                                 <option value="Perks">Perks/Gifts</option>
@@ -1611,7 +1611,7 @@ const HostHackathon = () => {
                                   type="number"
                                   value={award.amount || ''}
                                   onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
-                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                                   placeholder="Amount"
                                   min="0"
                                 />
@@ -1623,7 +1623,7 @@ const HostHackathon = () => {
                                   type="text"
                                   value={award.perk || ''}
                                   onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
-                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                                   placeholder="Perk/Gift description"
                                 />
                               </div>
@@ -1647,7 +1647,7 @@ const HostHackathon = () => {
               {/* FAQ Section */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <FileText className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <FileText className="h-5 w-5 mr-2 text-[#143694]" />
                   FAQs
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Add frequently asked questions for participants.</p>
@@ -1660,13 +1660,13 @@ const HostHackathon = () => {
                         placeholder="Question"
                         value={faq.question}
                         onChange={e => handleFaqChange(idx, 'question', e.target.value)}
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       />
                       <textarea
                         placeholder="Answer"
                         value={faq.answer}
                         onChange={e => handleFaqChange(idx, 'answer', e.target.value)}
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         rows={2}
                       />
                     </div>
@@ -1684,7 +1684,7 @@ const HostHackathon = () => {
                 <button
                   type="button"
                   onClick={addFaq}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                 >
                   <Plus className="h-4 w-4" />
                   Add FAQ
@@ -1694,7 +1694,7 @@ const HostHackathon = () => {
               {/* Panel Members Section */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Users className="h-5 w-5 mr-2 text-[#143694]" />
                   Panel Members
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Add links to panel members' profiles (LinkedIn, Portfolio, etc.)</p>
@@ -1705,7 +1705,7 @@ const HostHackathon = () => {
                     placeholder="Enter Panel Member Link (LinkedIn, Portfolio, etc.)"
                     value={panelInput}
                     onChange={handlePanelInputChange}
-                    className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                   />
                   <button
                     type="button"
@@ -1713,7 +1713,7 @@ const HostHackathon = () => {
                       e.preventDefault();
                       addPanelMember();
                     }}
-                    className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                    className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
                   >
                     Add
                   </button>
@@ -1746,7 +1746,7 @@ const HostHackathon = () => {
               {/* Additional Information */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                  <Globe className="h-5 w-5 mr-2 text-[#667eea]" />
+                  <Globe className="h-5 w-5 mr-2 text-[#143694]" />
                   Additional Information
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">Provide additional details, requirements, and rules for participants.</p>
@@ -1759,7 +1759,7 @@ const HostHackathon = () => {
                       value={formData.requirements}
                       onChange={handleInputChange}
                       rows={3}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       placeholder="Technical requirements, skills needed, etc."
                     />
                   </div>
@@ -1771,7 +1771,7 @@ const HostHackathon = () => {
                       value={formData.rules}
                       onChange={handleInputChange}
                       rows={3}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       placeholder="Hackathon rules, submission guidelines, etc."
                     />
                   </div>
@@ -1783,7 +1783,7 @@ const HostHackathon = () => {
                       name="tags"
                       value={formData.tags}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       placeholder="AI, Web Development, Mobile App, etc. (comma separated)"
                     />
                   </div>
@@ -1810,7 +1810,7 @@ const HostHackathon = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {loading ? (
                       <>

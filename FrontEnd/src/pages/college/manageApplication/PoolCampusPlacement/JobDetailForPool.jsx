@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
-    <div className="w-12 h-12 border-4 border-[#93c5fd] border-t-[#3b82f6] rounded-full animate-spin"></div>
+    <div className="w-12 h-12 border-4 border-[#143694] border-t-[#1e4ed8] rounded-full animate-spin"></div>
   </div>
 );
 
@@ -158,11 +158,11 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
     
     switch (status) {
       case 'Shortlisted':
-        return `${baseClass} ${currentStatus === 'Shortlisted' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`;
+        return `${baseClass} ${currentStatus === 'Shortlisted' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-[#143694]'}`;
       case 'Rejected':
         return `${baseClass} ${currentStatus === 'Rejected' ? 'bg-red-700 hover:bg-red-800' : 'bg-red-500 hover:bg-red-600'}`;
       case 'Accepted':
-        return `${baseClass} ${currentStatus === 'Accepted' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'}`;
+        return `${baseClass} ${currentStatus === 'Accepted' ? 'bg-[#143694] hover:bg-purple-700' : 'bg-purple-500 hover:bg-[#143694]'}`;
       default:
         return baseClass;
     }
@@ -350,13 +350,13 @@ function JobDetailForPool(props) {
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-6 flex items-center gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-2">
             {currentStatus} Applicants ({applicants.length})
           </h1>
         </div>

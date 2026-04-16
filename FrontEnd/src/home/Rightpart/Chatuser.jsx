@@ -176,7 +176,7 @@ function Chatuser() {
     }
     
     const colors = [
-      'from-[#667eea] to-[#764ba2]',    // Purple gradient
+      'from-[#143694] to-[#1e4ed8]',    // Purple gradient
       'from-[#f093fb] to-[#f5576c]',    // Pink gradient
       'from-[#4facfe] to-[#00f2fe]',    // Blue gradient
       'from-[#43e97b] to-[#38f9d7]',    // Green gradient
@@ -191,7 +191,7 @@ function Chatuser() {
   const avatarColor = getAvatarColor();
 
   return (
-    <div className="flex items-center space-x-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-6 border-b border-gray-100/30">
+    <div className="flex items-center space-x-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white p-6 border-b border-gray-100/30">
       <div>
         <div className={`relative flex-shrink-0 w-16 h-16 rounded-full overflow-hidden ${isOnline ? 'ring-2 ring-green-400 shadow-lg shadow-green-400/30' : 'ring-2 ring-white/30 shadow-lg'}`}>
           {loadingLogo ? (

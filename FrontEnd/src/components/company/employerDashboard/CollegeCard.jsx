@@ -128,7 +128,7 @@ const CollegeCard = ({ college, onClick }) => {
     }
 
     if (now < startDate) {
-      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+      return { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' };
     } else if (now >= startDate && now <= endDate) {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
@@ -216,7 +216,7 @@ const CollegeCard = ({ college, onClick }) => {
     if (!college.degreeType?.length) return null;
     
     const roleColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
       "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
       "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
@@ -250,11 +250,7 @@ const CollegeCard = ({ college, onClick }) => {
     if (!college.studentStreams?.length) return null;
     
     const streamColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
-      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
-      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
-      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
-      "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
     ];
     
     const visibleStreams = college.studentStreams.slice(0, 4);
@@ -266,7 +262,7 @@ const CollegeCard = ({ college, onClick }) => {
         {visibleStreams.map((stream, index) => (
           <span 
             key={index} 
-            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors[index % streamColors.length]}`}
+            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors}`}
           >
             {stream}
           </span>
@@ -362,7 +358,7 @@ const CollegeCard = ({ college, onClick }) => {
         <div className="space-y-1">
           {visibleRounds.map((round, index) => (
             <div key={index} className="flex flex-wrap items-center gap-1">
-              <span className="text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+              <span className="text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] px-2 py-0.5 rounded-full border border-blue-200">
                 {round.branch || 'Branch'}
               </span>
               <span className="text-xs text-gray-400">→</span>
@@ -566,7 +562,7 @@ return (
   //       {/* Employment Type Badge */}
   //       {college.employmentType?.length > 0 && (
   //         <div className="mb-3">
-  //           <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+  //           <span className="px-3 py-1 bg-blue-100 text-[#143694] border border-blue-300 rounded-full text-xs font-semibold">
   //             {college.employmentType.join(', ')}
   //           </span>
   //         </div>

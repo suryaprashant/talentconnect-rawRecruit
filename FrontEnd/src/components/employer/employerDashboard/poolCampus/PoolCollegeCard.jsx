@@ -142,7 +142,7 @@ const PoolCollegeCard = ({ college, onClick }) => {
     }
 
     if (now < startDate) {
-      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+      return { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' };
     } else if (now >= startDate && now <= endDate) {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
@@ -265,7 +265,7 @@ const PoolCollegeCard = ({ college, onClick }) => {
     if (degrees.length === 0) return null;
     
     const roleColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
       "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
       "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
@@ -339,7 +339,7 @@ const PoolCollegeCard = ({ college, onClick }) => {
     
     return (
       <div className="mb-3">
-        <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+        <span className="px-3 py-1 bg-blue-100 text-[#143694] border border-blue-300 rounded-full text-xs font-semibold">
           {Array.isArray(college.employmentType) ? college.employmentType.join(', ') : college.employmentType}
         </span>
       </div>

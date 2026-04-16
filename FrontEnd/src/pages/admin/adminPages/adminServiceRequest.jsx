@@ -73,7 +73,7 @@ const ServiceRequestManagement = () => {
         return "bg-yellow-100 text-yellow-700";
       case "approved":
       case "in progress":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-[#143694]";
       case "completed":
         return "bg-green-100 text-green-700";
       case "rejected":
@@ -119,7 +119,7 @@ const ServiceRequestManagement = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
-            { count: statistics?.total || 0, label: "Total", color: "text-blue-700" },
+            { count: statistics?.total || 0, label: "Total", color: "text-[#143694]" },
             { count: statistics?.pending || 0, label: "Pending", color: "text-yellow-700" },
             { count: statistics?.inProgress || 0, label: "In Progress", color: "text-slate-700" },
             { count: statistics?.completed || 0, label: "Completed", color: "text-green-700" },

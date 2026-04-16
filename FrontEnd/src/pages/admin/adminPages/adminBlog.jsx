@@ -164,7 +164,7 @@ const AdminBlogs = () => {
         <div className="flex gap-4">
           <button
             type="submit"
-            className="bg-purple-600 text-white px-6 py-2 rounded"
+            className="bg-[#143694] text-white px-6 py-2 rounded"
           >
             {editingBlog ? "Update Blog" : "Create Blog"}
           </button>

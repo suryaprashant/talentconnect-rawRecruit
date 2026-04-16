@@ -108,17 +108,17 @@ export default function OffCampusJobManagement() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
             <div className="max-w-7xl mx-auto p-4 py-8">
                 {/* Header Section */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                         <div className="mb-4 md:mb-0">
                             <div className="flex items-center mb-2">
-                                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                                    <Building2 className="h-5 w-5 text-[#667eea]" />
+                                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                                    <Building2 className="h-5 w-5 text-[#143694]" />
                                 </div>
-                                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                                     Accepted Job-listing Applications
                                 </h1>
                             </div>
@@ -134,7 +134,7 @@ export default function OffCampusJobManagement() {
                             </div>
                             <input
                                 type="text"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                                 placeholder="Search by job title, work mode, or venue"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -150,7 +150,7 @@ export default function OffCampusJobManagement() {
                         <button
                             className={`inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg font-medium`}
                         >
-                            All Jobs <span className="inline-flex items-center justify-center w-6 h-6 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full text-xs ml-1">{jobs?.length || 0}</span>
+                            All Jobs <span className="inline-flex items-center justify-center w-6 h-6 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full text-xs ml-1">{jobs?.length || 0}</span>
                         </button>
                     </div>
 
@@ -168,7 +168,7 @@ export default function OffCampusJobManagement() {
                     <div className="divide-y divide-gray-100">
                         {loading ? (
                             <div className="p-12 text-center">
-                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                                 <p className="mt-4 text-gray-600">Loading jobs...</p>
                             </div>
                         ) : currentJobs?.length === 0 ? (
@@ -190,7 +190,7 @@ export default function OffCampusJobManagement() {
                                         {/* Job Title */}
                                         <div className="col-span-5">
                                             <div className="group">
-                                                <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+                                                <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors line-clamp-1">
                                                     {job?.jobTitle}
                                                 </h3>
                                                 <div className="flex items-center gap-3 mt-1">
@@ -231,7 +231,7 @@ export default function OffCampusJobManagement() {
                                             <div className="flex items-center justify-center gap-2">
                                                 <button 
                                                     onClick={() => handleView(job._id)}
-                                                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                                                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                                                     title="View Job"
                                                 >
                                                     <Eye size={16} />
@@ -265,7 +265,7 @@ export default function OffCampusJobManagement() {
                                 </button>
                                 
                                 <div className="text-sm text-gray-600">
-                                    Showing <span className="font-semibold text-[#667eea]">{startIndex + 1}</span>-<span className="font-semibold">{Math.min(endIndex, filteredJobs?.length)}</span> of <span className="font-semibold">{filteredJobs?.length}</span>
+                                    Showing <span className="font-semibold text-[#143694]">{startIndex + 1}</span>-<span className="font-semibold">{Math.min(endIndex, filteredJobs?.length)}</span> of <span className="font-semibold">{filteredJobs?.length}</span>
                                 </div>
                             </div>
 
@@ -300,7 +300,7 @@ export default function OffCampusJobManagement() {
                                             onClick={() => handlePageClick(pageNum)}
                                             className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                                                 currentPage === pageNum 
-                                                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                                                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                                                     : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                                             }`}
                                         >

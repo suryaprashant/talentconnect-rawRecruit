@@ -65,7 +65,7 @@ const ApplicationManagement = () => {
         return "bg-yellow-100 text-yellow-700";
       case "shortlisted":
       case "interview scheduled":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-[#143694]";
       case "offer extended":
       case "accepted":
         return "bg-green-100 text-green-700";
@@ -108,9 +108,9 @@ const ApplicationManagement = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
-            { count: statistics?.total || 0, label: "Total", color: "text-blue-700" },
+            { count: statistics?.total || 0, label: "Total", color: "text-[#143694]" },
             { count: statistics?.applied || 0, label: "Applied", color: "text-yellow-700" },
-            { count: statistics?.shortlisted || 0, label: "Shortlisted", color: "text-blue-700" },
+            { count: statistics?.shortlisted || 0, label: "Shortlisted", color: "text-[#143694]" },
             { count: statistics?.accepted || 0, label: "Accepted", color: "text-green-700" },
             { count: statistics?.rejected || 0, label: "Rejected", color: "text-red-700" },
           ].map((item, i) => (

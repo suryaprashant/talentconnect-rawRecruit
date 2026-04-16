@@ -191,18 +191,18 @@
 //         {/* Card with blur border effect */}
 //         <div className="relative w-full max-w-4xl">
 //           {/* Blur border - positioned around the card */}
-//           <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#93c5fd]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
+//           <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#143694]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
           
 //           {/* Optional corner accent blurs */}
 //           <div className="absolute -top-8 -left-8 w-32 h-32 bg-[#fbcfe8]/30 rounded-full blur-3xl -z-10"></div>
-//           <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#93c5fd]/30 rounded-full blur-3xl -z-10"></div>
+//           <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#143694]/30 rounded-full blur-3xl -z-10"></div>
 //           <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#c7d2fe]/30 rounded-full blur-3xl -z-10"></div>
 //           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#a7f3d0]/30 rounded-full blur-3xl -z-10"></div>
           
 //           {/* Main Card */}
 //           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
 
-//             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
+//             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-6">
 //               College Profile & Achievements
 //             </h1>
 //             <p className="text-gray-600 text-lg mb-8">
@@ -221,7 +221,7 @@
 //                   value={formData.collegeWebsite || ""}
 //                   onChange={handleChange}
 //                   placeholder="http://www.nature.io"
-//                   className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                   className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                   required
 //                 />
 //               </div>
@@ -237,7 +237,7 @@
 //                   value={formData.unicefinProfile || ""}
 //                   onChange={handleChange}
 //                   placeholder="http://www.linkedin.com/your-college"
-//                   className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                   className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                   required
 //                 />
 //               </div>
@@ -255,7 +255,7 @@
 //                     <ul className="space-y-2">
 //                       {formData.workshops.map((item, index) => (
 //                         <li key={index} className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50">
-//                           <div className="w-2 h-2 mt-2 rounded-full bg-[#3b82f6] flex-shrink-0"></div>
+//                           <div className="w-2 h-2 mt-2 rounded-full bg-[#1e4ed8] flex-shrink-0"></div>
 //                           <div>
 //                             <strong className="text-gray-800">{item.name}</strong> 
 //                             <div className="text-sm text-gray-600 mt-1">
@@ -281,7 +281,7 @@
 //                       value={workshop.name}
 //                       onChange={handleWorkshopChange}
 //                       placeholder="Enter workshop name"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
@@ -293,7 +293,7 @@
 //                         name="startDate"
 //                         value={workshop.startDate}
 //                         onChange={handleWorkshopChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                     <div>
@@ -303,7 +303,7 @@
 //                         name="endDate"
 //                         value={workshop.endDate}
 //                         onChange={handleWorkshopChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                   </div>
@@ -316,13 +316,13 @@
 //                       value={workshop.executor}
 //                       onChange={handleWorkshopChange}
 //                       placeholder="e.g., Google, Microsoft"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
 //                   <button
 //                     onClick={addWorkshop}
-//                     className="px-8 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300 font-medium text-lg"
+//                     className="px-8 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 font-medium text-lg"
 //                   >
 //                     Add Workshop
 //                   </button>
@@ -370,7 +370,7 @@
 //                       value={volunteering.name}
 //                       onChange={handleVolunteeringChange}
 //                       placeholder="Enter event name"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
@@ -382,7 +382,7 @@
 //                         name="startDate"
 //                         value={volunteering.startDate}
 //                         onChange={handleVolunteeringChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                     <div>
@@ -392,7 +392,7 @@
 //                         name="endDate"
 //                         value={volunteering.endDate}
 //                         onChange={handleVolunteeringChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                   </div>
@@ -405,7 +405,7 @@
 //                       value={volunteering.executor}
 //                       onChange={handleVolunteeringChange}
 //                       placeholder="e.g., Local Community Group"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
@@ -429,7 +429,7 @@
 //                     <ul className="space-y-2">
 //                       {formData.awards.map((item, index) => (
 //                         <li key={index} className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50">
-//                           <div className="w-2 h-2 mt-2 rounded-full bg-[#8b5cf6] flex-shrink-0"></div>
+//                           <div className="w-2 h-2 mt-2 rounded-full bg-[#1e40af] flex-shrink-0"></div>
 //                           <div>
 //                             <strong className="text-gray-800">{item.name}</strong>
 //                             <div className="text-sm text-gray-600 mt-1">
@@ -455,7 +455,7 @@
 //                       value={award.name}
 //                       onChange={handleAwardChange}
 //                       placeholder="Enter award name"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
@@ -467,7 +467,7 @@
 //                         name="startDate"
 //                         value={award.startDate}
 //                         onChange={handleAwardChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                     <div>
@@ -477,7 +477,7 @@
 //                         name="endDate"
 //                         value={award.endDate}
 //                         onChange={handleAwardChange}
-//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+//                         className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
 //                       />
 //                     </div>
 //                   </div>
@@ -492,13 +492,13 @@
 //                       value={award.organization}
 //                       onChange={handleAwardChange}
 //                       placeholder="e.g., National Science Foundation"
-//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+//                       className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
 //                     />
 //                   </div>
 
 //                   <button
 //                     onClick={addAward}
-//                     className="px-8 py-4 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white rounded-xl hover:shadow-lg hover:shadow-[#8b5cf6]/40 transition-all duration-300 font-medium text-lg"
+//                     className="px-8 py-4 bg-gradient-to-r from-[#1e40af] to-[#7c3aed] text-white rounded-xl hover:shadow-lg hover:shadow-[#1e40af]/40 transition-all duration-300 font-medium text-lg"
 //                   >
 //                     Add Award
 //                   </button>
@@ -516,7 +516,7 @@
 //               </button>
 //               <button
 //                 onClick={handleNext}
-//                 className="px-10 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 font-medium text-lg"
+//                 className="px-10 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium text-lg"
 //               >
 //                 Next
 //               </button>
@@ -724,17 +724,17 @@ export default function ProfileAchievements({
         {/* Card with blur border effect */}
         <div className="relative w-full max-w-4xl">
           {/* Blur border - positioned around the card */}
-          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#93c5fd]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
+          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#143694]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
 
           {/* Optional corner accent blurs */}
           <div className="absolute -top-8 -left-8 w-32 h-32 bg-[#fbcfe8]/30 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#93c5fd]/30 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#143694]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#c7d2fe]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#a7f3d0]/30 rounded-full blur-3xl -z-10"></div>
 
           {/* Main Card */}
           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-6">
               College Profile
             </h1>
             <p className="text-gray-600 text-lg mb-8">
@@ -753,7 +753,7 @@ export default function ProfileAchievements({
                   value={formData.collegeWebsite || ""}
                   onChange={handleChange}
                   placeholder="http://www.nature.io"
-                  className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                  className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                   required
                 />
               </div>
@@ -769,7 +769,7 @@ export default function ProfileAchievements({
                   value={formData.unicefinProfile || ""}
                   onChange={handleChange}
                   placeholder="http://www.linkedin.com/your-college"
-                  className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                  className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                   required
                 />
               </div>
@@ -792,7 +792,7 @@ export default function ProfileAchievements({
                           key={index}
                           className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50"
                         >
-                          <div className="w-2 h-2 mt-2 rounded-full bg-[#3b82f6] flex-shrink-0"></div>
+                          <div className="w-2 h-2 mt-2 rounded-full bg-[#1e4ed8] flex-shrink-0"></div>
                           <div>
                             <strong className="text-gray-800">{item.name}</strong>
                             <div className="text-sm text-gray-600 mt-1">
@@ -820,7 +820,7 @@ export default function ProfileAchievements({
                         setWorkshop({ ...workshop, name: e.target.value })
                       }
                       placeholder="Enter workshop name"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
@@ -838,7 +838,7 @@ export default function ProfileAchievements({
                         }
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select start date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -855,7 +855,7 @@ export default function ProfileAchievements({
                         }
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select end date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -873,13 +873,13 @@ export default function ProfileAchievements({
                         setWorkshop({ ...workshop, executor: e.target.value })
                       }
                       placeholder="e.g., Google, Microsoft"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
                   <button
                     onClick={addWorkshop}
-                    className="px-8 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300 font-medium text-lg"
+                    className="px-8 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 font-medium text-lg"
                   >
                     Add Workshop
                   </button>
@@ -932,7 +932,7 @@ export default function ProfileAchievements({
                         setVolunteering({ ...volunteering, name: e.target.value })
                       }
                       placeholder="Enter event name"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
@@ -952,7 +952,7 @@ export default function ProfileAchievements({
                         }
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select start date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -971,7 +971,7 @@ export default function ProfileAchievements({
                         }
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select end date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -992,7 +992,7 @@ export default function ProfileAchievements({
                         })
                       }
                       placeholder="e.g., Local Community Group"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
@@ -1023,7 +1023,7 @@ export default function ProfileAchievements({
                           key={index}
                           className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50"
                         >
-                          <div className="w-2 h-2 mt-2 rounded-full bg-[#8b5cf6] flex-shrink-0"></div>
+                          <div className="w-2 h-2 mt-2 rounded-full bg-[#1e40af] flex-shrink-0"></div>
                           <div>
                             <strong className="text-gray-800">{item.name}</strong>
                             <div className="text-sm text-gray-600 mt-1">
@@ -1051,7 +1051,7 @@ export default function ProfileAchievements({
                         setAward({ ...award, name: e.target.value })
                       }
                       placeholder="Enter award name"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
@@ -1069,7 +1069,7 @@ export default function ProfileAchievements({
                         }
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select start date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -1082,7 +1082,7 @@ export default function ProfileAchievements({
                         onChange={(date) => handleAwardDateChange(date, "endDate")}
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select end date"
-                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                        className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200"
                         wrapperClassName="w-full"
                       />
                     </div>
@@ -1100,13 +1100,13 @@ export default function ProfileAchievements({
                         setAward({ ...award, organization: e.target.value })
                       }
                       placeholder="e.g., National Science Foundation"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
+                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg"
                     />
                   </div>
 
                   <button
                     onClick={addAward}
-                    className="px-8 py-4 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white rounded-xl hover:shadow-lg hover:shadow-[#8b5cf6]/40 transition-all duration-300 font-medium text-lg"
+                    className="px-8 py-4 bg-gradient-to-r from-[#1e40af] to-[#7c3aed] text-white rounded-xl hover:shadow-lg hover:shadow-[#1e40af]/40 transition-all duration-300 font-medium text-lg"
                   >
                     Add Award
                   </button>
@@ -1124,7 +1124,7 @@ export default function ProfileAchievements({
               </button>
               <button
                 onClick={handleNext}
-                className="px-10 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 font-medium text-lg"
+                className="px-10 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium text-lg"
               >
                 Next
               </button>

@@ -482,7 +482,7 @@ function Fresher_Profile() {
         <p className="text-red-600 mb-4">{error}</p>
         <Button
           variant="primary"
-          className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+          className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
           onClick={() => {
             setActiveTab('profile');
             setError(null);
@@ -534,7 +534,7 @@ function Fresher_Profile() {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="Enter company name"
                         value={exp.company}
                         onChange={(e) => handleWorkExperienceChange(index, 'company', e.target.value)}
@@ -547,7 +547,7 @@ function Fresher_Profile() {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="Enter job role"
                         value={exp.role}
                         onChange={(e) => handleWorkExperienceChange(index, 'role', e.target.value)}
@@ -561,7 +561,7 @@ function Fresher_Profile() {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                           value={exp.startDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'startDate', e.target.value)}
                         />
@@ -572,7 +572,7 @@ function Fresher_Profile() {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                           value={exp.endDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'endDate', e.target.value)}
                         />
@@ -584,7 +584,7 @@ function Fresher_Profile() {
                         Description
                       </label>
                       <textarea
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         rows="3"
                         placeholder="Enter job description"
                         value={exp.description}
@@ -602,7 +602,7 @@ function Fresher_Profile() {
                           <div className="flex text-sm text-gray-600">
                             <label
                               htmlFor={`experience-certificate-upload-${index}`}
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-[#143694] hover:text-[#1e4ed8] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#143694]"
                             >
                               <span>Upload a file</span>
                               <input
@@ -652,7 +652,7 @@ function Fresher_Profile() {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.currentSalaryAmount}
                       onChange={(e) => handleProfileDataChange('currentSalaryAmount', e.target.value)}
@@ -676,7 +676,7 @@ function Fresher_Profile() {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.expectedSalaryAmount}
                       onChange={(e) => handleProfileDataChange('expectedSalaryAmount', e.target.value)}
@@ -694,7 +694,7 @@ function Fresher_Profile() {
                   </Button>
                   <Button
                     variant="primary"
-                    className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                    className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                     onClick={handleProfessionalSwitch}
                     disabled={loading}
                   >
@@ -756,14 +756,14 @@ function Fresher_Profile() {
 
                       <div className="space-y-6">
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             About
                           </h5>
                           <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Contact Information
                           </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -779,7 +779,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Personal Information
                           </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -807,7 +807,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Academic Background
                           </h5>
                           <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
@@ -835,7 +835,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Skills
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -852,7 +852,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Tools & platforms
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -869,7 +869,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Interested Industry Type
                           </h5>
                           <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
@@ -878,7 +878,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Interested Job Roles
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -895,7 +895,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Preferred Job Locations
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -912,7 +912,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Looking for
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -931,7 +931,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Employment Type
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -953,7 +953,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Shift Preference
                           </h5>
                           <div className="flex gap-2">
@@ -972,7 +972,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Expected Salary
                           </h5>
                           <div className="text-xl font-bold bg-gradient-to-r from-[#10b981] to-[#059669] bg-clip-text text-transparent">
@@ -982,7 +982,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">Work Experience</h5>
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">Work Experience</h5>
                           {profileData.experiences && profileData.experiences.length > 0 ? (
                             profileData.experiences.map((exp, idx) => (
                               <div key={idx} className="mb-4 border-b border-gray-100 pb-2 last:border-b-0">
@@ -990,7 +990,7 @@ function Fresher_Profile() {
                                 <p className="text-sm text-gray-600">{exp.startDate || ''} - {exp.endDate || 'Present'}</p>
                                 <p className="text-sm text-gray-700">{exp.description || 'No description provided.'}</p>
                                 {exp.experienceCertificateUrl && (
-                                  <p className="text-sm text-[#667eea] mt-1">
+                                  <p className="text-sm text-[#143694] mt-1">
                                     <a href={exp.experienceCertificateUrl} target="_blank" rel="noopener noreferrer" className="underline">View Certificate</a>
                                   </p>
                                 )}
@@ -1002,7 +1002,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Certifications
                           </h5>
                           {profileData.certifications && profileData.certifications.length > 0 ? (
@@ -1011,7 +1011,7 @@ function Fresher_Profile() {
                                 <li key={idx}>
                                   {cert.name || 'N/A'}
                                   {cert.url && (
-                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-[#667eea] hover:underline">
+                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-[#143694] hover:underline">
                                       (Link)
                                     </a>
                                   )}
@@ -1024,7 +1024,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Awards & Recognition
                           </h5>
                           {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
@@ -1056,7 +1056,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Published Articles/Blogs
                           </h5>
                           {profileData.publications && profileData.publications.length > 0 ? (
@@ -1064,7 +1064,7 @@ function Fresher_Profile() {
                               {profileData.publications.map((pub, idx) => (
                                 <li key={idx}>
                                   {pub.url ? (
-                                    <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">{pub.title}</a>
+                                    <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">{pub.title}</a>
                                   ) : pub.title}
                                 </li>
                               ))}
@@ -1073,7 +1073,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Achievement
                           </h5>
                           {profileData.achievements && profileData.achievements.length > 0 ? (
@@ -1087,7 +1087,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Known Languages
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -1104,7 +1104,7 @@ function Fresher_Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Referral Sources
                           </h5>
                           <p className="text-gray-900">{profileData.referralSource || 'N/A'}</p>
@@ -1136,7 +1136,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter your name"
                       value={profileData.fullName}
                       onChange={(e) => handleProfileDataChange('fullName', e.target.value)}
@@ -1165,7 +1165,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="email"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="hello@xyz.com"
                         value={profileData.email}
                         onChange={(e) => handleProfileDataChange('email', e.target.value)}
@@ -1201,7 +1201,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="tel"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="1234567890"
                         value={profileData.phone}
                         onChange={(e) => handleProfileDataChange('phone', e.target.value)}
@@ -1227,7 +1227,7 @@ function Fresher_Profile() {
                   </label>
                   {isProfileEditing ? (
                     <textarea
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       rows="4"
                       placeholder="Tell us a little about yourself"
                       value={profileData.about}
@@ -1264,7 +1264,7 @@ function Fresher_Profile() {
                               dateFormat="MMMM d, yyyy"
                               maxDate={new Date()}
                               placeholderText="Select date"
-                              className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                              className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                             />
                           </div>
                   ) : (<div className={displayFieldStyle}>{profileData.dob || "N/A"}</div>)}
@@ -1272,7 +1272,7 @@ function Fresher_Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                   {isProfileEditing ? (
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
                       <option value="">Select Gender</option>
                       {predefinedGenders.map(gender => <option key={gender} value={gender}>{gender}</option>)}
                     </select>
@@ -1281,7 +1281,7 @@ function Fresher_Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
                   {isProfileEditing ? (
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
                       <option value="">Select Status</option>
                       {predefinedMaritalStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                     </select>
@@ -1290,7 +1290,7 @@ function Fresher_Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Ethnicity</label>
                   {isProfileEditing ? (
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
                       <option value="">Select Ethnicity</option>
                       {predefinedEthnicities.map(ethnicity => <option key={ethnicity} value={ethnicity}>{ethnicity}</option>)}
                     </select>
@@ -1299,7 +1299,7 @@ function Fresher_Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status / Work Authorization</label>
                   {isProfileEditing ? (
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
                       <option value="">Select Status</option>
                       {predefinedVisaStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                     </select>
@@ -1323,7 +1323,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.college}
                       onChange={(e) => handleProfileDataChange('college', e.target.value)}
@@ -1341,7 +1341,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.degree}
                       onChange={(e) => handleProfileDataChange('degree', e.target.value)}
@@ -1359,7 +1359,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.yearOfGraduation}
                       onChange={(e) => handleProfileDataChange('yearOfGraduation', e.target.value)}
@@ -1377,7 +1377,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.cgpa}
                       onChange={(e) => handleProfileDataChange('cgpa', e.target.value)}
@@ -1399,7 +1399,7 @@ function Fresher_Profile() {
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="degree-certificate-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-[#143694] hover:text-[#1e4ed8] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#143694]"
                           >
                             <span>Upload a file</span>
                             <input
@@ -1424,7 +1424,7 @@ function Fresher_Profile() {
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.degreeCertificateUrl ? (
-                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                           View Certificate
                         </a>
                       ) : (
@@ -1450,7 +1450,7 @@ function Fresher_Profile() {
                   </label>
                   {isProfileEditing ? (
                     <select
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       value={profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : ''}
                       onChange={(e) => handleProfileDataChange('industry', [e.target.value])}
                     >
@@ -1473,7 +1473,7 @@ function Fresher_Profile() {
                   {isProfileEditing ? (
                     <div className="relative" ref={jobRolesDropdownRef}>
                       <div
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white/50 flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white/50 flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
                         onClick={() => setIsJobRolesDropdownOpen(!isJobRolesDropdownOpen)}
                       >
                         <div className="flex flex-wrap gap-2 pr-6">
@@ -1550,7 +1550,7 @@ function Fresher_Profile() {
                                     borderColor: '#d1d5db'
                                 },
                                 '&:focus-within': {
-                                    borderColor: '#667eea',
+                                    borderColor: '#143694',
                                     boxShadow: '0 0 0 2px rgba(102, 126, 234, 0.1)'
                                 }
                             }),
@@ -1614,7 +1614,7 @@ function Fresher_Profile() {
                         <Button
                           key={option}
                           variant={isLookingForActive(option) ? 'primary' : 'outline'}
-                          className={`rounded-xl ${isLookingForActive(option) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                          className={`rounded-xl ${isLookingForActive(option) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleLookingForChange(option)}
                         >
                           {option}
@@ -1641,7 +1641,7 @@ function Fresher_Profile() {
                         <Button
                           key={type}
                           variant={profileData.employmentType === type ? 'primary' : 'outline'}
-                          className={`rounded-xl ${profileData.employmentType === type ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                          className={`rounded-xl ${profileData.employmentType === type ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleProfileDataChange('employmentType', type)}
                         >
                           {type}
@@ -1660,7 +1660,7 @@ function Fresher_Profile() {
                   </label>
                   {isProfileEditing ? (
                       <select
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         value={profileData.openToShift}
                         onChange={(e) => handleProfileDataChange('openToShift', e.target.value)}
                       >
@@ -1691,7 +1691,7 @@ function Fresher_Profile() {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                     rows="3"
                     placeholder="Enter your skills (comma separated)"
                     value={profileData.skills.join(', ')}
@@ -1727,7 +1727,7 @@ function Fresher_Profile() {
                   </label>
                   {isProfileEditing ? (
                     <textarea
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       rows="2"
                       placeholder="e.g., English, Hindi, Spanish (comma separated)"
                       value={profileData.languagesKnown.join(', ')}
@@ -1753,7 +1753,7 @@ function Fresher_Profile() {
                   </label>
                   {isProfileEditing ? (
                     <textarea
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       rows="2"
                       placeholder="e.g., Jira, Trello, Figma, VS Code (comma separated)"
                       value={profileData.toolsAndPlatforms.join(', ')}
@@ -1795,7 +1795,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.linkedin.com/in/yourprofile"
                         value={profileData.linkedin.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('linkedin', `http://${e.target.value}`)}
@@ -1803,7 +1803,7 @@ function Fresher_Profile() {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.linkedin ? (
-                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.linkedin}
                           </a>
                         ) : "N/A"}
@@ -1822,7 +1822,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="github.com/yourprofile"
                         value={profileData.github.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('github', `http://${e.target.value}`)}
@@ -1830,7 +1830,7 @@ function Fresher_Profile() {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.github ? (
-                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.github}
                           </a>
                         ) : "N/A"}
@@ -1849,7 +1849,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.yourwebsite.com"
                         value={profileData.portfolio.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('portfolio', `http://${e.target.value}`)}
@@ -1857,7 +1857,7 @@ function Fresher_Profile() {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.portfolio ? (
-                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.portfolio}
                           </a>
                         ) : "N/A"}
@@ -1884,7 +1884,7 @@ function Fresher_Profile() {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         value={cert.name}
                         onChange={(e) => {
                           const newCerts = [...profileData.certifications];
@@ -1909,7 +1909,7 @@ function Fresher_Profile() {
                       {isProfileEditing ? (
                         <input
                           type="text"
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                           placeholder="www.example.com"
                           value={cert.url.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                           onChange={(e) => {
@@ -1921,7 +1921,7 @@ function Fresher_Profile() {
                       ) : (
                         <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                               {cert.url}
                             </a>
                           ) : "N/A"}
@@ -1968,7 +1968,7 @@ function Fresher_Profile() {
                                 {isProfileEditing ? (
                                     <input 
                                         type="text" 
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                                         value={award.title} 
                                         onChange={(e) => handleAwardChange(index, 'title', e.target.value)} 
                                         placeholder="e.g., Dean's List, Best Capstone Project"
@@ -1983,7 +1983,7 @@ function Fresher_Profile() {
                                 {isProfileEditing ? (
                                     <input 
                                         type="text" 
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                                         value={award.organization} 
                                         onChange={(e) => handleAwardChange(index, 'organization', e.target.value)} 
                                         placeholder="e.g., Google, IEEE, University Name"
@@ -2009,7 +2009,7 @@ function Fresher_Profile() {
                                       }
                                       dateFormat="MMMM d, yyyy"
                                       placeholderText="Select date"
-                                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                                     />
                                 ) : (
                                     <div className={displayFieldStyle}>{award.startDate || "N/A"}</div>
@@ -2031,7 +2031,7 @@ function Fresher_Profile() {
                                        dateFormat="MMMM d, yyyy"
                                        placeholderText="Select date"
                                        minDate={award.startDate ? new Date(award.startDate) : null}
-                                       className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                       className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                                      />
                                 ) : (
                                     <div className={displayFieldStyle}>{award.endDate || "N/A"}</div>
@@ -2044,7 +2044,7 @@ function Fresher_Profile() {
                             {isProfileEditing ? (
                                 <textarea 
                                     rows="3"
-                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                                     value={award.description} 
                                     onChange={(e) => handleAwardChange(index, 'description', e.target.value)} 
                                     placeholder="Briefly describe the award and your role or contribution."
@@ -2077,11 +2077,11 @@ function Fresher_Profile() {
                         {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removePublication(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg">Remove</Button>)}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-[#667eea] hover:underline">{pub.url}</a> : "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-[#143694] hover:underline">{pub.url}</a> : "N/A"}</div>)}
                         </div>
                     </div>
                 ))}
@@ -2103,11 +2103,11 @@ function Fresher_Profile() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Event (e.g., Hackathon Name)</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
                             </div>
                         </div>
                         <div>
@@ -2125,7 +2125,7 @@ function Fresher_Profile() {
                                     dateFormat="MMMM d, yyyy"
                                     placeholderText="Select date"
                                     popperClassName="achievement-datepicker-popper"
-                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                                   />) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
                         </div>
                     </div>
@@ -2151,7 +2151,7 @@ function Fresher_Profile() {
                 {isProfileEditing ? (
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                     placeholder="How did you hear about us?"
                     value={profileData.referralSource}
                     onChange={(e) => handleProfileDataChange('referralSource', e.target.value)}
@@ -2167,7 +2167,7 @@ function Fresher_Profile() {
             <div className="flex justify-end p-6 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 mt-6">
               <Button
                 variant="primary"
-                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                 onClick={isProfileEditing ? handleSaveChanges : () => setIsProfileEditing(true)}
                 disabled={loading}
               >
@@ -2205,7 +2205,7 @@ function Fresher_Profile() {
                         href={`/fresher-resume-preview?url=${encodeURIComponent(profileData.resumeUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-[#667eea] hover:underline"
+                        className="text-sm text-[#143694] hover:underline"
                       >
                         View Resume
                       </a>
@@ -2249,7 +2249,7 @@ function Fresher_Profile() {
                     variant="primary"
                     onClick={handleSaveChanges}
                     disabled={loading}
-                    className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                    className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                   >
                     {loading ? 'Saving...' : 'Save Changes'}
                   </Button>
@@ -2264,23 +2264,23 @@ function Fresher_Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10">
         <div
-          className="w-full h-32 bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 relative bg-cover bg-center cursor-pointer rounded-b-2xl"
+          className="w-full h-32 bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 relative bg-cover bg-center cursor-pointer rounded-b-2xl"
           style={{ backgroundImage: `url(${profileData.backgroundImageUrl})` }}
           onClick={handleBackgroundImageClick}
         >
           <input id="backgroundImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'backgroundImage')} />
           {!profileData.backgroundImageUrl && (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 bg-opacity-50 rounded-b-2xl">
+            <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 bg-opacity-50 rounded-b-2xl">
               <FiUploadCloud className="w-8 h-8 mr-2" />
               <span>Upload Background Image</span>
             </div>
@@ -2289,7 +2289,7 @@ function Fresher_Profile() {
         <div className="bg-white/90 backdrop-blur-sm border-b border-white/50 pb-4 shadow-lg shadow-purple-50/50 rounded-b-2xl">
           <div className="relative px-4">
             <div className="absolute -top-16 left-4 cursor-pointer" onClick={handleProfileImageClick}>
-              <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border-4 border-white/90 overflow-hidden shadow-lg">
+              <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center border-4 border-white/90 overflow-hidden shadow-lg">
                 {profileData.profileImageUrl ? (
                   <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -2304,7 +2304,7 @@ function Fresher_Profile() {
           </div>
           <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 {profileData.fullName || 'Name Surname'}
               </h2>
               <p className="text-gray-600">{profileData.email || 'hello@gmail.com'}</p>
@@ -2312,7 +2312,7 @@ function Fresher_Profile() {
             <div className="flex items-center justify-between w-full">
               {/* LEFT: Name + Email */}
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   {profileData.fullName || 'Name Surname'}
                 </h2>
                 <p className="text-gray-600">
@@ -2324,7 +2324,7 @@ function Fresher_Profile() {
               <div className="flex gap-6">
                 {/* Hiring Score */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.hiringScore ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Hiring Score</p>
@@ -2332,7 +2332,7 @@ function Fresher_Profile() {
 
                 {/* Rank */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.rank ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Rank</p>
@@ -2340,7 +2340,7 @@ function Fresher_Profile() {
 
                 {/* Resume Score */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.resumeScore ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Resume Score</p>
@@ -2349,7 +2349,7 @@ function Fresher_Profile() {
             </div>
             {/*<div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Switch to Professional</span>
-              <button className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2]' : 'bg-gray-200'}`} role="switch" aria-checked={switchToPro} onClick={() => setSwitchToPro(!switchToPro)}>
+              <button className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8]' : 'bg-gray-200'}`} role="switch" aria-checked={switchToPro} onClick={() => setSwitchToPro(!switchToPro)}>
                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${switchToPro ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>*/}
@@ -2359,7 +2359,7 @@ function Fresher_Profile() {
               <button 
                 key={tab} 
                 className={`px-6 py-3 font-medium transition-all duration-200 ${activeTab === tab 
-                  ? 'border-b-2 border-[#667eea] text-[#667eea]' 
+                  ? 'border-b-2 border-[#143694] text-[#143694]' 
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/50 rounded-t-lg'}`} 
                 onClick={() => setActiveTab(tab)}
               >

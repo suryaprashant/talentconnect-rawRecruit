@@ -75,7 +75,7 @@ const StudentDirectory = () => {
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
             placeholder="Search by student name..." 
-            className="w-full max-w-md pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm transition-all" 
+            className="w-full max-w-md pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]/20 focus:border-[#1e4ed8] bg-white shadow-sm transition-all" 
           />
         </div>
 

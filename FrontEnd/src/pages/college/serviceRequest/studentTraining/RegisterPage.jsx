@@ -63,7 +63,7 @@ export default function RequestInfo({ onBackClick }) {
       {/* Background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl" />
       </div>
 
@@ -71,7 +71,7 @@ export default function RequestInfo({ onBackClick }) {
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 p-4 mb-6">
           <header className="text-center">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
               Student Training Programs
             </h1>
             <p className="text-gray-600 text-sm max-w-2xl mx-auto mt-2">
@@ -82,7 +82,7 @@ export default function RequestInfo({ onBackClick }) {
 
         {/* Form Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent text-center mb-1">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent text-center mb-1">
             Register for Student Training Programs
           </h2>
           <p className="text-gray-600 text-center text-sm mb-6">
@@ -95,33 +95,33 @@ export default function RequestInfo({ onBackClick }) {
               {/* Number of Employees */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-[#3b82f6]" />
+                  <Users className="w-4 h-4 text-[#1e4ed8]" />
                   Number of Students
                 </label>
                 <div className="relative">
                   <button
                     type="button"
-                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#93c5fd] outline-none transition-all duration-200 min-h-[42px] text-sm"
+                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#143694] outline-none transition-all duration-200 min-h-[42px] text-sm"
                     onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
                   >
                     <span className={numberOfEmployees ? 'text-gray-900' : 'text-gray-500'}>
                       {numberOfEmployees || 'Select an option'}
                     </span>
-                    <ChevronDown size={16} className={`text-[#3b82f6] transition-transform ${isEmployeeDropdownOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown size={16} className={`text-[#1e4ed8] transition-transform ${isEmployeeDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
                   {isEmployeeDropdownOpen && (
                     <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
                       {employeeOptions.map((option) => (
                         <div
                           key={option}
-                          className="px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
+                          className="px-3 py-2 hover:bg-[#143694]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
                           onClick={() => {
                             setNumberOfEmployees(option);
                             setIsEmployeeDropdownOpen(false);
                           }}
                         >
                           <div className="flex items-center">
-                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${numberOfEmployees === option ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${numberOfEmployees === option ? 'bg-[#1e4ed8] border-[#1e4ed8]' : 'border-gray-300'}`}>
                               {numberOfEmployees === option && <CheckSquare size={10} className="text-white" />}
                             </div>
                             {option}
@@ -136,33 +136,33 @@ export default function RequestInfo({ onBackClick }) {
               {/* Types of Skills */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <Target className="w-4 h-4 text-[#3b82f6]" />
+                  <Target className="w-4 h-4 text-[#1e4ed8]" />
                   Types of Skills
                 </label>
                 <div className="relative">
                   <button
                     type="button"
-                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#93c5fd] outline-none transition-all duration-200 min-h-[42px] text-sm"
+                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#143694] outline-none transition-all duration-200 min-h-[42px] text-sm"
                     onClick={() => setIsSkillsDropdownOpen(!isSkillsDropdownOpen)}
                   >
                     <span className={skillTypes.length > 0 ? 'text-gray-900' : 'text-gray-500'}>
                       {skillTypes.length > 0 ? skillTypes.join(', ') : 'Select skills'}
                     </span>
-                    <ChevronDown size={16} className={`text-[#3b82f6] transition-transform ${isSkillsDropdownOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown size={16} className={`text-[#1e4ed8] transition-transform ${isSkillsDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
                   {isSkillsDropdownOpen && (
                     <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
                       {skillOptions.map((option) => (
                         <div
                           key={option}
-                          className="px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
+                          className="px-3 py-2 hover:bg-[#143694]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
                           onClick={() => toggleSkill(option)}
                         >
                           <div className="flex items-center">
-                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${skillTypes.includes(option) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${skillTypes.includes(option) ? 'bg-[#1e4ed8] border-[#1e4ed8]' : 'border-gray-300'}`}>
                               {skillTypes.includes(option) && <CheckSquare size={10} className="text-white" />}
                             </div>
-                            <span className={skillTypes.includes(option) ? "text-[#3b82f6] font-medium" : "text-gray-700"}>{option}</span>
+                            <span className={skillTypes.includes(option) ? "text-[#1e4ed8] font-medium" : "text-gray-700"}>{option}</span>
                           </div>
                         </div>
                       ))}
@@ -177,7 +177,7 @@ export default function RequestInfo({ onBackClick }) {
               {/* Mode of Training */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <Monitor className="w-4 h-4 text-[#3b82f6]" />
+                  <Monitor className="w-4 h-4 text-[#1e4ed8]" />
                   Mode of Training
                 </label>
                 <div className="flex gap-2">
@@ -187,7 +187,7 @@ export default function RequestInfo({ onBackClick }) {
                       type="button"
                       className={`flex-1 px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium ${
                         trainingMode === mode 
-                          ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                           : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
                       }`}
                       onClick={() => setTrainingMode(mode)}
@@ -201,7 +201,7 @@ export default function RequestInfo({ onBackClick }) {
               {/* Evaluation based on */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <BarChart className="w-4 h-4 text-[#3b82f6]" />
+                  <BarChart className="w-4 h-4 text-[#1e4ed8]" />
                   Evaluation based on
                 </label>
                 <div className="flex gap-2">
@@ -211,7 +211,7 @@ export default function RequestInfo({ onBackClick }) {
                       type="button"
                       className={`flex-1 px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium ${
                         evaluationType === type 
-                          ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                           : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
                       }`}
                       onClick={() => setEvaluationType(type)}
@@ -228,33 +228,33 @@ export default function RequestInfo({ onBackClick }) {
               {/* Number of Hours/Days */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-[#3b82f6]" />
+                  <Clock className="w-4 h-4 text-[#1e4ed8]" />
                   Number of Hours/Days
                 </label>
                 <div className="relative">
                   <button
                     type="button"
-                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#93c5fd] outline-none transition-all duration-200 min-h-[42px] text-sm"
+                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 text-left flex justify-between items-center focus:ring-1 focus:ring-[#143694] outline-none transition-all duration-200 min-h-[42px] text-sm"
                     onClick={() => setIsHoursDropdownOpen(!isHoursDropdownOpen)}
                   >
                     <span className={hoursOrDays ? 'text-gray-900' : 'text-gray-500'}>
                       {hoursOrDays || 'Select duration'}
                     </span>
-                    <ChevronDown size={16} className={`text-[#3b82f6] transition-transform ${isHoursDropdownOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown size={16} className={`text-[#1e4ed8] transition-transform ${isHoursDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
                   {isHoursDropdownOpen && (
                     <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
                       {hoursOptions.map((option) => (
                         <div
                           key={option}
-                          className="px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
+                          className="px-3 py-2 hover:bg-[#143694]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm"
                           onClick={() => {
                             setHoursOrDays(option);
                             setIsHoursDropdownOpen(false);
                           }}
                         >
                           <div className="flex items-center">
-                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${hoursOrDays === option ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${hoursOrDays === option ? 'bg-[#1e4ed8] border-[#1e4ed8]' : 'border-gray-300'}`}>
                               {hoursOrDays === option && <CheckSquare size={10} className="text-white" />}
                             </div>
                             {option}
@@ -269,11 +269,11 @@ export default function RequestInfo({ onBackClick }) {
               {/* Description */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                  <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
+                  <MessageSquare className="w-4 h-4 text-[#1e4ed8]" />
                   Description / Additional Requirements
                 </label>
                 <textarea 
-                  className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none" 
+                  className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent resize-none" 
                   placeholder="Additional information about training requirements..." 
                   value={description} 
                   onChange={(e) => {
@@ -309,7 +309,7 @@ export default function RequestInfo({ onBackClick }) {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium"
+                className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-sm font-medium"
               >
                 <Send className="w-4 h-4" />
                 Register

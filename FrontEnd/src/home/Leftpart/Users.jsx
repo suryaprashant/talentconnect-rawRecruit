@@ -31,8 +31,8 @@ function Users() {
       {/* Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-white to-white/95 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-            <UsersIcon className="h-5 w-5 text-[#667eea]" />
+          <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+            <UsersIcon className="h-5 w-5 text-[#143694]" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Contacts</h1>
@@ -43,7 +43,7 @@ function Users() {
               </span>
               {totalUnread > 0 && (
                 <span className="flex items-center">
-                  <div className="w-2 h-2 rounded-full bg-[#667eea] mr-1"></div>
+                  <div className="w-2 h-2 rounded-full bg-[#143694] mr-1"></div>
                   {totalUnread} unread
                 </span>
               )}
@@ -53,7 +53,7 @@ function Users() {
         
         <button 
           onClick={refreshUsers}
-          className="p-2 text-gray-500 hover:text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/10 hover:to-[#764ba2]/10 rounded-lg transition-all duration-200"
+          className="p-2 text-gray-500 hover:text-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 rounded-lg transition-all duration-200"
           title="Refresh contacts"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ function Users() {
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#667eea]"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#143694]"></div>
               <p className="mt-3 text-sm text-gray-500">Loading contacts...</p>
             </div>
           </div>
@@ -76,11 +76,11 @@ function Users() {
             {/* Recent Chats Section */}
             {usersWithConversations.length > 0 && (
               <div className="mb-6">
-                <div className="sticky top-0 z-10 px-4 py-3 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 border-b border-gray-200">
+                <div className="sticky top-0 z-10 px-4 py-3 bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 border-b border-gray-200">
                   <div className="flex items-center">
-                    <MessageSquare className="h-4 w-4 text-[#667eea] mr-2" />
+                    <MessageSquare className="h-4 w-4 text-[#143694] mr-2" />
                     <h3 className="text-sm font-semibold text-gray-800">Recent Chats</h3>
-                    <span className="ml-2 px-2 py-0.5 text-xs bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
+                    <span className="ml-2 px-2 py-0.5 text-xs bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full">
                       {usersWithConversations.length}
                     </span>
                   </div>
@@ -116,8 +116,8 @@ function Users() {
             {/* Empty State */}
             {allUsers.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center h-64 p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 flex items-center justify-center mb-4">
-                  <UsersIcon className="h-8 w-8 text-[#667eea]" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 flex items-center justify-center mb-4">
+                  <UsersIcon className="h-8 w-8 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">No Contacts Found</h3>
                 <p className="text-gray-600 text-sm max-w-sm">

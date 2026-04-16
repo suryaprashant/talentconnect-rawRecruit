@@ -2,13 +2,13 @@ export default function CompanyOverview({ profileData }) {
   if (!profileData) return <div className="text-center py-8">No profile data available for overview.</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-3">
             Company Description
           </h2>
-          <p className="text-gray-700 leading-relaxed p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
+          <p className="text-gray-700 leading-relaxed p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl">
             {profileData.companyDetails.description || 'No description provided'}
           </p>
         </div>
@@ -17,8 +17,8 @@ export default function CompanyOverview({ profileData }) {
           <div className="grid md:grid-cols-2 border-b border-gray-100">
             <div className="p-6 border-r border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" className="w-5 h-5">
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#143694" className="w-5 h-5">
                     <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
                   </svg>
                 </div>
@@ -33,7 +33,7 @@ export default function CompanyOverview({ profileData }) {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Company Information</h3>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="font-medium text-gray-600">Company Type:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.companyDetails.companyType || '-'}
                 </div>
 
@@ -48,7 +48,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">Established:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.companyDetails.establishedYear || '-'}
                 </div>
 
@@ -71,7 +71,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">Email:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.employerDetails?.workEmail || '-'}
                 </div>
 
@@ -86,7 +86,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">Country:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.companyDetails.country || '-'}
                 </div>
 
@@ -101,7 +101,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">Pincode:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.companyDetails.pincode || '-'}
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function CompanyOverview({ profileData }) {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Hiring Information</h3>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="font-medium text-gray-600">Job Roles:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.hiringPreferences.jobRoles?.join(', ') || '-'}
                 </div>
 
@@ -149,7 +149,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">Employment type:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.hiringPreferences.employmentType?.join(', ') || '-'}
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default function CompanyOverview({ profileData }) {
               <h3 className="text-lg font-bold text-gray-900 mb-4">KYC Information</h3>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="font-medium text-gray-600">KYC Status:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   <span className={`px-2 py-1 rounded-full text-xs ${profileData.kycDetails.kycStatus === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                     {profileData.kycDetails.kycStatus || '-'}
                   </span>
@@ -194,7 +194,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">GST Number:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.kycDetails.GSTNumber || '-'}
                 </div>
 
@@ -209,7 +209,7 @@ export default function CompanyOverview({ profileData }) {
                 </div>
 
                 <div className="font-medium text-gray-600">KYC Documents:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {profileData.kycDetails.kycDocuments && profileData.kycDetails.kycDocuments.length > 0 ? (
                     <div className="space-y-1">
                       {profileData.kycDetails.kycDocuments.map((docUrl, index) => (

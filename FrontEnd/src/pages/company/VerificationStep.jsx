@@ -36,7 +36,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
             <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
                 {label}
             </label>
-            <div className="flex rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:border-[#667eea]/50 transition-all duration-300">
+            <div className="flex rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:border-[#143694]/50 transition-all duration-300">
                 <input
                     type="text"
                     className="flex-1 block w-full px-4 py-3 border-0 focus:outline-none sm:text-sm cursor-not-allowed bg-gray-50/50"
@@ -46,7 +46,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                 />
                 <label
                     htmlFor={name}
-                    className="cursor-pointer bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-4 py-3 text-sm font-semibold hover:shadow-md transition-all duration-300 flex items-center justify-center"
+                    className="cursor-pointer bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-4 py-3 text-sm font-semibold hover:shadow-md transition-all duration-300 flex items-center justify-center"
                 >
                     Choose File{multiple ? '(s)' : ''}
                     <input
@@ -67,16 +67,16 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 p-4">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 p-4">
             {/* Background decorative elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative max-w-2xl mx-auto">
                 {/* Blur background behind card */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
 
                 <motion.div
                     className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -85,11 +85,11 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                     transition={{ duration: 0.3 }}
                 >
                     {/* Decorative top bar */}
-                    <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+                    <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
                     {/* Header */}
                     <div className="mb-8">
-                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                                 <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                             </svg>
@@ -104,7 +104,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* KYC Documents Upload */}
-                        <div className="bg-gradient-to-r from-[#667eea]/5 to-transparent p-5 rounded-xl border border-gray-100">
+                        <div className="bg-gradient-to-r from-[#143694]/5 to-transparent p-5 rounded-xl border border-gray-100">
                             <label className="block text-sm font-medium text-gray-700 mb-3">
                                 Upload Verification Documents (Choose any one for verification)
                             </label>
@@ -114,7 +114,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                                         name="documentType"
                                         value={selectedDocumentType}
                                         onChange={(e) => setSelectedDocumentType(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 appearance-none"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80 appearance-none"
                                     >
                                         {documentTypeOptions.map((option) => (
                                             <option key={option.value} value={option.value}>
@@ -162,7 +162,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                                 />
                             </div>
 
-                            <div className="bg-gradient-to-r from-[#667eea]/5 to-transparent p-5 rounded-xl border border-gray-100">
+                            <div className="bg-gradient-to-r from-[#143694]/5 to-transparent p-5 rounded-xl border border-gray-100">
                                 <FormField
                                     label="Company Registration Number (CIN/LLPIN - Optional)"
                                     name="companyRegistrationNumber"
@@ -184,7 +184,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
                             >
                                 Complete Setup
                             </button>

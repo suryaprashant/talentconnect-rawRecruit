@@ -114,7 +114,7 @@ function User({ user, unreadCount }) {
     <div
       className={`cursor-pointer border-b border-gray-200 last:border-b-0 duration-300 p-4 relative 
         ${isSelected 
-          ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border-l-4 border-[#667eea]" 
+          ? "bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border-l-4 border-[#143694]" 
           : "hover:bg-gradient-to-r from-gray-50/50 to-white/50"
         }`}
       onClick={() => setSelectedConversation(user)}
@@ -129,7 +129,7 @@ function User({ user, unreadCount }) {
             }`}>
             
             {loadingLogo ? (
-              <div className="w-full h-full bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 animate-pulse rounded-full"></div>
+              <div className="w-full h-full bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 animate-pulse rounded-full"></div>
             ) : userLogo ? (
               <img 
                 src={userLogo} 
@@ -141,14 +141,14 @@ function User({ user, unreadCount }) {
                   const parent = e.target.parentElement;
                   const initials = getUserInitials();
                   parent.innerHTML = `
-                    <div class="w-full h-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-2xl font-bold text-[#667eea]">
+                    <div class="w-full h-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center text-2xl font-bold text-[#143694]">
                       ${initials}
                     </div>
                   `;
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-2xl font-bold text-[#667eea]">
+              <div className="w-full h-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center text-2xl font-bold text-[#143694]">
                 {getUserInitials()}
               </div>
             )}
@@ -172,7 +172,7 @@ function User({ user, unreadCount }) {
               )}
             </div>
             {hasUnread && (
-              <span className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center ml-2 flex-shrink-0">
+              <span className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center ml-2 flex-shrink-0">
                 {unreadCount}
               </span>
             )}
@@ -184,7 +184,7 @@ function User({ user, unreadCount }) {
           
           <div className="flex items-center justify-between mt-2">
             {user.userType && (
-              <span className="text-xs px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] font-medium rounded-full capitalize">
+              <span className="text-xs px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] font-medium rounded-full capitalize">
                 {user.userType}
               </span>
             )}
@@ -202,8 +202,8 @@ function User({ user, unreadCount }) {
       {/* Hover Effect Indicator */}
       <div className={`absolute inset-0 rounded-xl -z-10 transition-all duration-300 ${
         isSelected 
-          ? "bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5" 
-          : "group-hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5"
+          ? "bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5" 
+          : "group-hover:bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5"
       }`}></div>
     </div>
   );

@@ -271,7 +271,7 @@ export default function HostingManagement() {
   const getEventTypeColor = (type) => {
     switch (type) {
       case 'hackathon': return 'from-blue-400 to-blue-600';
-      case 'casestudy': return 'from-purple-400 to-purple-600';
+      case 'casestudy': return 'from-purple-400 to-[#143694]';
       case 'workshop': return 'from-green-400 to-green-600';
       default: return 'from-gray-400 to-gray-600';
     }
@@ -321,16 +321,16 @@ export default function HostingManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-4">
-                <Trophy className="h-8 w-8 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-4">
+                <Trophy className="h-8 w-8 text-[#143694]" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Hosting Management
               </h1>
             </div>
@@ -349,7 +349,7 @@ export default function HostingManagement() {
                 onClick={() => setEventType('all')}
                 className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
                   eventType === 'all' 
-                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
                 }`}
               >
@@ -360,7 +360,7 @@ export default function HostingManagement() {
                 onClick={() => setEventType('hackathon')}
                 className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
                   eventType === 'hackathon' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                    ? 'bg-gradient-to-r from-[#1e4ed8] to-blue-600 text-white shadow-lg shadow-[#1e4ed8]/30' 
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
                 }`}
               >
@@ -370,7 +370,7 @@ export default function HostingManagement() {
                 onClick={() => setEventType('casestudy')}
                 className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
                   eventType === 'casestudy' 
-                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/30' 
+                    ? 'bg-gradient-to-r from-purple-500 to-[#143694] text-white shadow-lg shadow-purple-500/30' 
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
                 }`}
               >
@@ -397,7 +397,7 @@ export default function HostingManagement() {
                   placeholder="Search events by title, location, or type..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent w-80 bg-white/80 backdrop-blur-sm"
+                  className="pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent w-80 bg-white/80 backdrop-blur-sm"
                 />
               </div>
             </div>
@@ -408,7 +408,7 @@ export default function HostingManagement() {
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg">
           {loading ? (
             <div className="flex flex-col justify-center items-center h-96">
-              <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-[#667eea]"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-[#143694]"></div>
               <p className="mt-4 text-gray-600">Loading events...</p>
             </div>
           ) : error ? (
@@ -420,7 +420,7 @@ export default function HostingManagement() {
               <p className="text-gray-400 mb-6">{error}</p>
               <button 
                 onClick={fetchEvents}
-                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
               >
                 Retry
               </button>
@@ -531,7 +531,7 @@ export default function HostingManagement() {
                     <div className="col-span-2 flex items-center justify-center space-x-2">
                       <button
                         onClick={() => handleViewRegistrations(event)}
-                        className="p-2.5 text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200"
+                        className="p-2.5 text-white bg-gradient-to-r from-[#1e4ed8] to-blue-600 rounded-xl hover:shadow-lg hover:shadow-[#1e4ed8]/30 transition-all duration-200"
                         title="View Registrations"
                       >
                         <Eye className="w-4 h-4" />
@@ -645,7 +645,7 @@ export default function HostingManagement() {
                       setSelectedCandidates([]);
                     }
                   }}
-                  className="w-5 h-5 text-blue-600 rounded-lg focus:ring-blue-500"
+                  className="w-5 h-5 text-blue-600 rounded-lg focus:ring-[#1e4ed8]"
                 />
                 <div>
                   <span className="text-sm font-medium text-gray-700">
@@ -683,7 +683,7 @@ export default function HostingManagement() {
                               setSelectedCandidates(selectedCandidates.filter(id => id !== candidate._id));
                             }
                           }}
-                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-[#1e4ed8]"
                         />
                         <div className="flex-1">
                           <span className="text-sm font-medium text-gray-700">
@@ -705,7 +705,7 @@ export default function HostingManagement() {
                 onClick={() => setUploadMethod('upload')}
                 className={`p-4 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                   uploadMethod === 'upload' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                    ? 'bg-gradient-to-r from-[#1e4ed8] to-blue-600 text-white shadow-lg shadow-[#1e4ed8]/30' 
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
                 }`}
               >
@@ -716,7 +716,7 @@ export default function HostingManagement() {
                 onClick={() => setUploadMethod('url')}
                 className={`p-4 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                   uploadMethod === 'url' 
-                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/30' 
+                    ? 'bg-gradient-to-r from-purple-500 to-[#143694] text-white shadow-lg shadow-purple-500/30' 
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
                 }`}
               >
@@ -731,7 +731,7 @@ export default function HostingManagement() {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Select File <span className="text-red-500">*</span>
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#1e4ed8] transition-colors">
                     <input
                       type="file"
                       onChange={(e) => setSelectedFile(e.target.files[0])}
@@ -777,7 +777,7 @@ export default function HostingManagement() {
                       type="url"
                       value={fileData.fileUrl}
                       onChange={(e) => setFileData({ ...fileData, fileUrl: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent transition-all duration-200"
                       placeholder="https://example.com/file.pdf"
                     />
                   </div>
@@ -790,7 +790,7 @@ export default function HostingManagement() {
                       type="text"
                       value={fileData.fileName}
                       onChange={(e) => setFileData({ ...fileData, fileName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent transition-all duration-200"
                       placeholder="Event Schedule.pdf"
                     />
                   </div>
@@ -805,7 +805,7 @@ export default function HostingManagement() {
                   value={fileData.message}
                   onChange={(e) => setFileData({ ...fileData, message: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent transition-all duration-200"
                   placeholder="Add a personal message to include with the file..."
                 />
               </div>
@@ -831,7 +831,7 @@ export default function HostingManagement() {
               <button
                 onClick={handleSendFileSubmit}
                 disabled={uploading}
-                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 {uploading ? (
                   <>

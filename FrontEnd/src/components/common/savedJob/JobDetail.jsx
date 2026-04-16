@@ -327,7 +327,7 @@ const renderTags = (items) => {
       {items.map((item, index) => (
         <span
           key={index}
-          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+          className="px-3 py-1.5 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] border border-[#143694]/20 rounded-full text-sm font-medium"
         >
           {item}
         </span>
@@ -680,9 +680,9 @@ const UnifiedJobDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#143694] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading opportunity details...</p>
         </div>
       </div>
@@ -691,11 +691,11 @@ const UnifiedJobDetail = () => {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl font-semibold text-red-500">{error || "Opportunity not found"}</p>
           <button
-            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
             onClick={() => fetchJobById(id)}
           >
             Try Again
@@ -715,10 +715,10 @@ const UnifiedJobDetail = () => {
   const displayLocations = [...new Set([...job.location, ...job.workLocation])].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <main className="px-6 py-6">
         {/* Top Back Button */}
-        <button onClick={handleBackToList} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
+        <button onClick={handleBackToList} className="inline-flex items-center text-[#143694] hover:text-[#1e4ed8] mb-6 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
           </svg>
@@ -727,11 +727,11 @@ const UnifiedJobDetail = () => {
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
           {/* Header Section - Using exact same logic as JobList */}
-<div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
+<div className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 px-6 py-4">
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
     <div className="flex items-center">
       {/* Logo with initials fallback - EXACT same as JobList */}
-      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-4 relative bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-4 relative bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center">
         {/* Background Layer: Initials are always here */}
         <span className="text-white font-bold text-sm absolute z-0">
           {job.organizationName ? 
@@ -762,7 +762,7 @@ const UnifiedJobDetail = () => {
       
       <div>
         {/* Company Name - Highlighted and bold */}
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
           {job.organizationName || 'Not Specified'}
         </h1>
         {/* Job Role - Slightly less bold */}
@@ -775,13 +775,13 @@ const UnifiedJobDetail = () => {
 
   {/* Location below the date */}
   <div className="flex items-center text-sm text-gray-600 mt-4">
-    <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
+    <Calendar className="h-5 w-5 mr-1 text-[#143694]" />
     <span className="mr-4">
       {hasValue(job.startDate) ? `${formatDate(job.startDate)} - ${formatDate(job.endDate)}` : 'Not Specified'}
     </span>
     {displayLocations.length > 0 && (
       <>
-        <MapPin className="h-5 w-5 mr-1 text-[#667eea]" />
+        <MapPin className="h-5 w-5 mr-1 text-[#143694]" />
         <span>{displayLocations.join(', ')}</span>
       </>
     )}
@@ -793,7 +793,7 @@ const UnifiedJobDetail = () => {
       <button
         onClick={handleApply}
         disabled={isApplying}
-        className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+        className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
       >
         <Briefcase className="h-4 w-4 mr-2" />
         {isApplying ? 'Applying...' : 'Apply Now'}
@@ -804,7 +804,7 @@ const UnifiedJobDetail = () => {
       disabled={isSaving}
       className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1 ${isSaving ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaving ? 'currentColor' : 'none'} stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1 ${isSaving ? 'text-[#143694]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaving ? 'currentColor' : 'none'} stroke="currentColor">
         <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
       </svg>
       {isSaving ? 'Removing...' : 'Unsave'}
@@ -823,7 +823,7 @@ const UnifiedJobDetail = () => {
 
           {/* Job Type Badge */}
           <div className="px-6 py-4">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-sm font-semibold border border-[#667eea]/20">
+            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full text-sm font-semibold border border-[#143694]/20">
               {job.jobType} • {job.lookingFor}
             </span>
           </div>
@@ -831,7 +831,7 @@ const UnifiedJobDetail = () => {
           {/* About the Role */}
           {hasValue(job.description) && job.description !== 'No description provided' && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 About the Role
               </h2>
               <p className="text-gray-700 whitespace-pre-wrap">
@@ -842,25 +842,25 @@ const UnifiedJobDetail = () => {
 
           {/* Quick Overview */}
           <div className="px-6 py-6">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
               Quick Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
               {hasValidData(job.degree) && (
                 <div>
-                  <div className="text-sm font-medium text-[#667eea]">Degree</div>
+                  <div className="text-sm font-medium text-[#143694]">Degree</div>
                   <div className="mt-1 text-base text-gray-900">{job.degree.join(' / ') || 'Not Specified'}</div>
                 </div>
               )}
               {hasValidData(job.employmentType) && (
                 <div>
-                  <div className="text-sm font-medium text-[#667eea]">Employment Type</div>
+                  <div className="text-sm font-medium text-[#143694]">Employment Type</div>
                   <div className="mt-1 text-base text-gray-900">{job.employmentType.join(', ') || 'Not Specified'}</div>
                 </div>
               )}
               {hasValidData(job.workMode) && (
                 <div>
-                  <div className="text-sm font-medium text-[#667eea]">Work Mode</div>
+                  <div className="text-sm font-medium text-[#143694]">Work Mode</div>
                   <div className="mt-1 text-base text-gray-900">{job.workMode.join(', ') || 'Not Specified'}</div>
                 </div>
               )}
@@ -870,20 +870,20 @@ const UnifiedJobDetail = () => {
           {/* Required Skills & Eligible Streams - Combined Section */}
           {(hasValidData(job.skills) || hasValidData(job.studentStreams)) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Required Skills & Eligible Streams
               </h2>
               
               {hasValidData(job.skills) && (
                 <div className="mb-4">
-                  <div className="text-sm font-medium text-[#667eea] mb-2">Skills</div>
+                  <div className="text-sm font-medium text-[#143694] mb-2">Skills</div>
                   {renderTags(job.skills)}
                 </div>
               )}
               
               {hasValidData(job.studentStreams) && (
                 <div>
-                  <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
+                  <div className="text-sm font-medium text-[#143694] mb-2">Eligible Streams</div>
                   {renderTags(job.studentStreams)}
                 </div>
               )}
@@ -892,30 +892,30 @@ const UnifiedJobDetail = () => {
 
           {/* Compensation & Benefits */}
           <div className="px-6 py-6">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
               Compensation & Benefits
             </h2>
             {(hasValue(job.packageDetails?.totalCTC) || hasValue(job.packageDetails?.fixedPay) || hasValue(job.packageDetails?.joiningBonus)) && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {hasValue(job.packageDetails?.totalCTC) && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#143694]">Total CTC</div>
                     <div className="text-xl font-bold text-gray-900">
                       {job.packageDetails.currency || 'INR'} {job.packageDetails.totalCTC?.toLocaleString() || 'Not Specified'}
                     </div>
                   </div>
                 )}
                 {hasValue(job.packageDetails?.fixedPay) && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#143694]">Fixed Pay</div>
                     <div className="text-xl font-bold text-gray-900">
                       {job.packageDetails.currency || 'INR'} {job.packageDetails.fixedPay?.toLocaleString() || 'N/A'}
                     </div>
                   </div>
                 )}
                 {hasValue(job.packageDetails?.joiningBonus) && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Variable Pay</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#143694]">Variable Pay</div>
                     <div className="text-xl font-bold text-gray-900">
                       {job.packageDetails.currency || 'INR'} {job.packageDetails.joiningBonus?.toLocaleString() || 'N/A'}
                     </div>
@@ -925,19 +925,19 @@ const UnifiedJobDetail = () => {
             )}
             {hasValue(job.internshipDuration) && (
               <div className="mb-4">
-                <div className="text-sm font-medium text-[#667eea]">Internship Duration</div>
+                <div className="text-sm font-medium text-[#143694]">Internship Duration</div>
                 <div className="text-base text-gray-900">{job.internshipDuration}</div>
               </div>
             )}
             {hasValue(job.numberOfOpenings) && (
               <div className="mb-4">
-                <div className="text-sm font-medium text-[#667eea]">Number of Openings</div>
+                <div className="text-sm font-medium text-[#143694]">Number of Openings</div>
                 <div className="text-base text-gray-900">{job.numberOfOpenings}</div>
               </div>
             )}
             {hasValidData(job.benefits) && (
               <div>
-                <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
+                <h3 className="font-medium text-[#143694] mt-6 mb-3">Benefits Offered</h3>
                 {renderTags(job.benefits)}
               </div>
             )}
@@ -946,7 +946,7 @@ const UnifiedJobDetail = () => {
           {/* Eligibility Criteria */}
 {(hasValue(job.eligibilityCriteria) || (job.cgpa && job.cgpa > 0) || hasValue(job.minEducation) || hasValue(job.workAuthorization)) && (
   <div className="px-6 py-6">
-    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
       Eligibility Criteria
     </h2>
     
@@ -955,7 +955,7 @@ const UnifiedJobDetail = () => {
       {/* CGPA */}
       {/* {job.cgpa && job.cgpa > 0 && (
         <li className="text-gray-700 flex items-start">
-          <span className="mr-2 text-[#667eea]">•</span>
+          <span className="mr-2 text-[#143694]">•</span>
           <span><span className="font-medium">Minimum CGPA:</span> {job.cgpa}</span>
         </li>
       )} */}
@@ -963,7 +963,7 @@ const UnifiedJobDetail = () => {
       {/* Minimum Education */}
       {/* {hasValue(job.minEducation) && (
         <li className="text-gray-700 flex items-start">
-          <span className="mr-2 text-[#667eea]">•</span>
+          <span className="mr-2 text-[#143694]">•</span>
           <span><span className="font-medium">Minimum Education:</span> {job.minEducation}</span>
         </li>
       )} */}
@@ -971,7 +971,7 @@ const UnifiedJobDetail = () => {
       {/* Work Authorization */}
       {/* {hasValue(job.workAuthorization) && (
         <li className="text-gray-700 flex items-start">
-          <span className="mr-2 text-[#667eea]">•</span>
+          <span className="mr-2 text-[#143694]">•</span>
           <span><span className="font-medium">Work Authorization:</span> {job.workAuthorization}</span>
         </li>
       )} */}
@@ -982,7 +982,7 @@ const UnifiedJobDetail = () => {
           {job.eligibilityCriteria.split('\n').map((point, index) => 
             point.trim() && (
               <li key={`criteria-${index}`} className="text-gray-700 flex items-start">
-                <span className="mr-2 text-[#667eea]">•</span>
+                <span className="mr-2 text-[#143694]">•</span>
                 <span>{point.trim()}</span>
               </li>
             )
@@ -996,11 +996,11 @@ const UnifiedJobDetail = () => {
 {/* Additional Requirements */}
 {hasValidData(job.certifications) && (
   <div className="px-6 py-6">
-    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
       Additional Requirements
     </h2>
     <div>
-      <div className="text-sm font-medium text-[#667eea] mb-2">Certifications</div>
+      <div className="text-sm font-medium text-[#143694] mb-2">Certifications</div>
       {renderTags(job.certifications)}
     </div>
   </div>
@@ -1010,7 +1010,7 @@ const UnifiedJobDetail = () => {
           {(normalizeSelectionProcess(job.selectionProcess)?.length > 0 || hasValidData(job.rounds)) && (
             <div className="px-6 py-6">
               <div className="mb-4">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-1">
                   Selection Process
                 </h2>
                 <div className="text-md text-gray-500">
@@ -1023,10 +1023,10 @@ const UnifiedJobDetail = () => {
                   {normalizeSelectionProcess(job.selectionProcess).map((step, index) => (
                     <div 
                       key={index}
-                      className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                      className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#143694]/30 hover:shadow-sm transition-all duration-200"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] flex items-center justify-center">
                           <span className="text-xs font-bold text-white">{index + 1}</span>
                         </div>
                         <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
@@ -1036,7 +1036,7 @@ const UnifiedJobDetail = () => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 rounded-lg p-4">
                   <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
                 </div>
               )}
@@ -1046,27 +1046,27 @@ const UnifiedJobDetail = () => {
           {/* Important Dates */}
           {(hasValue(job.endDate) || hasValue(job.onlineTestDate) || hasValue(job.interviewWindow?.start) || hasValue(job.offerRolloutDate)) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Important Dates
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {hasValue(job.endDate) && formatDate(job.endDate) !== 'Not Specified' && (
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Registration Deadline</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Registration Deadline</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.endDate)}</div>
                   </div>
                 )}
                 
                 {hasValue(job.onlineTestDate) && formatDate(job.onlineTestDate) !== 'Not Specified' && (
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Online Test Date</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Online Test Date</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.onlineTestDate)}</div>
                   </div>
                 )}
                 
                 {hasValue(job.interviewWindow?.start) && (
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Interview Window</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Interview Window</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">
                       {formatDate(job.interviewWindow.start) === 'Not Specified' ? 'N/A' : `${formatDate(job.interviewWindow.start)} - ${formatDate(job.interviewWindow.end)}`}
                     </div>
@@ -1074,8 +1074,8 @@ const UnifiedJobDetail = () => {
                 )}
                 
                 {hasValue(job.offerRolloutDate) && formatDate(job.offerRolloutDate) !== 'Not Specified' && (
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Offer Rollout</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Offer Rollout</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.offerRolloutDate)}</div>
                   </div>
                 )}
@@ -1086,7 +1086,7 @@ const UnifiedJobDetail = () => {
           {/* Tags */}
           {hasValidData(job.tags) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Tags
               </h2>
               {renderTags(job.tags)}
@@ -1096,7 +1096,7 @@ const UnifiedJobDetail = () => {
           {/* Amenities Required */}
           {hasValidData(job.amenitiesRequired) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Amenities Required
               </h2>
               <div className="text-base text-gray-900">{job.amenitiesRequired.join(', ') || 'None'}</div>
@@ -1106,13 +1106,13 @@ const UnifiedJobDetail = () => {
           {/* Contact Person */}
           {hasValidObject(job.contactPerson, ['name', 'email', 'mobile', 'designation']) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Contact Person
               </h2>
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+              <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
                 <div className="flex items-start">
                   <div className="mr-3 flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-[#667eea]">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center text-[#143694]">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -1125,18 +1125,18 @@ const UnifiedJobDetail = () => {
                     </div>
                     {job.contactPerson.email && (
                       <div className="flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#667eea] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#143694] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <a href={`mailto:${job.contactPerson.email}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{job.contactPerson.email}</a>
+                        <a href={`mailto:${job.contactPerson.email}`} className="text-[#143694] hover:text-[#1e4ed8] text-sm transition-colors">{job.contactPerson.email}</a>
                       </div>
                     )}
                     {job.contactPerson.mobile && (
                       <div className="flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#667eea] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#143694] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        <a href={`tel:${job.contactPerson.mobile}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{job.contactPerson.mobile}</a>
+                        <a href={`tel:${job.contactPerson.mobile}`} className="text-[#143694] hover:text-[#1e4ed8] text-sm transition-colors">{job.contactPerson.mobile}</a>
                       </div>
                     )}
                   </div>
@@ -1147,10 +1147,10 @@ const UnifiedJobDetail = () => {
 
           {/* Apply Now Button at Bottom */}
           {job.currentStatus !== 'Applied' && job.jobStatus === 'Open' && (
-            <div className="px-6 py-6 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+            <div className="px-6 py-6 bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
               <div className="flex justify-center">
                 <button 
-                  className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
                   onClick={handleApply}
                   disabled={isApplying}
                 >
@@ -1165,7 +1165,7 @@ const UnifiedJobDetail = () => {
             <div className="flex justify-left">
               <button 
                 onClick={handleBackToList} 
-                className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+                className="inline-flex items-center px-6 py-3 bg-white text-[#143694] border border-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white rounded-xl transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />

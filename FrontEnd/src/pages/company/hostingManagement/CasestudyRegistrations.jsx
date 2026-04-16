@@ -54,7 +54,7 @@ const CasestudyRegistrations = () => {
         
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#1e4ed8]"></div>
           </div>
         ) : casestudies.length === 0 ? (
           <div className="text-center py-12">
@@ -118,7 +118,7 @@ const CasestudyRegistrations = () => {
 
                   <button
                     onClick={() => handleViewRegistrations(casestudy)}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-[#143694] transition-colors font-medium"
                   >
                     View Registrations
                   </button>

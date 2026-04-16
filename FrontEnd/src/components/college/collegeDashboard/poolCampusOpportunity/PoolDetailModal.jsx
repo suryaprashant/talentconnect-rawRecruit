@@ -49,7 +49,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
       {/* Card */}
       <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
         <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
-          <Briefcase className="h-10 w-10 text-[#667eea]" />
+          <Briefcase className="h-10 w-10 text-[#143694]" />
         </div>
         
         <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
@@ -67,7 +67,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
               console.log("🔥 Redirecting to login...");
               onLogin();
             }}
-            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
           >
             Login to Continue
           </button>
@@ -149,7 +149,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
         </button>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] p-5">
+        <div className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] p-5">
           <div className="flex items-center gap-3">
             {/* Company Logo with first letter fallback */}
             {company.logo ? (
@@ -160,7 +160,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
               />
             ) : (
               <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center border-2 border-white shadow-md">
-                <span className="text-xl font-bold text-[#667eea]">
+                <span className="text-xl font-bold text-[#143694]">
                   {company.name?.charAt(0)?.toUpperCase() || 'C'}
                 </span>
               </div>
@@ -185,7 +185,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
               {/* Row 1 */}
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <Building className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <Building className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Company</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -195,7 +195,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <Hash className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <Hash className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Industry</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -206,7 +206,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
               {/* Row 2 */}
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <Users className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <Users className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Employees</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900">
@@ -216,7 +216,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <GlobeIcon className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <GlobeIcon className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Country</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -227,7 +227,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
               {/* Row 3 - City & State */}
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <Map className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <Map className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>City</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -237,7 +237,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <MapPin className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <MapPin className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>State</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -248,7 +248,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
               {/* Row 4 - Pincode & Website */}
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <Home className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <Home className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Pincode</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900">
@@ -258,7 +258,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <ExternalLink className="h-4 w-4 mr-2 text-[#667eea]" />
+                  <ExternalLink className="h-4 w-4 mr-2 text-[#143694]" />
                   <span>Website</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -267,7 +267,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                       href={company.website} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-[#667eea] hover:text-[#764ba2] hover:underline"
+                      className="text-[#143694] hover:text-[#1e4ed8] hover:underline"
                     >
                       {company.website.replace(/^https?:\/\//, '')}
                     </a>
@@ -283,10 +283,10 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                 <div className="space-y-2">
                   {company.email && (
                     <div className="flex items-center text-sm">
-                      <MailIcon className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <MailIcon className="h-4 w-4 mr-2 text-[#143694]" />
                       <a 
                         href={`mailto:${company.email}`}
-                        className="text-gray-700 hover:text-[#667eea] hover:underline truncate"
+                        className="text-gray-700 hover:text-[#143694] hover:underline truncate"
                       >
                         {company.email}
                       </a>
@@ -294,10 +294,10 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                   )}
                   {company.phone && (
                     <div className="flex items-center text-sm">
-                      <PhoneIcon className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <PhoneIcon className="h-4 w-4 mr-2 text-[#143694]" />
                       <a 
                         href={`tel:${company.phone}`}
-                        className="text-gray-700 hover:text-[#667eea] hover:underline"
+                        className="text-gray-700 hover:text-[#143694] hover:underline"
                       >
                         {company.phone}
                       </a>
@@ -462,7 +462,7 @@ useEffect(() => {
     const endDate = new Date(jobDetails.endDate);
 
     if (now < startDate) {
-      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+      return { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' };
     } else if (now >= startDate && now <= endDate) {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
@@ -501,7 +501,7 @@ useEffect(() => {
   if (isloading) {
     return (
       <div className="relative w-full h-full bg-white flex items-center justify-center rounded-l-2xl">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
@@ -517,7 +517,7 @@ useEffect(() => {
             <p className="text-lg font-medium text-gray-900 mb-4">{error || 'Job not found'}</p>
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300"
             >
               Close
             </button>
@@ -579,10 +579,10 @@ useEffect(() => {
         </button>
 
         {/* Main Content Area - Single scroll container */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
           <div className="p-6">
             {/* Header Section */}
-<div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
+<div className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 px-6 py-5 rounded-xl mb-6">
   <div className="flex justify-between items-start">
     <div className="flex-1">
       {/* Company Logo, Name, and Action Buttons in one row */}
@@ -605,15 +605,15 @@ useEffect(() => {
                     e.target.nextElementSibling.style.display = 'flex';
                   }}
                 />
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
-                  <span className="text-lg font-bold text-[#667eea]">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
+                  <span className="text-lg font-bold text-[#143694]">
                     {companyName?.charAt(0)?.toUpperCase() || 'C'}
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
-                <span className="text-lg font-bold text-[#667eea]">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
+                <span className="text-lg font-bold text-[#143694]">
                   {companyName?.charAt(0)?.toUpperCase() || 'C'}
                 </span>
               </div>
@@ -622,13 +622,13 @@ useEffect(() => {
             {/* Company Name and Location */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent truncate">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent truncate">
                   {companyName}
                 </h1>
-                <ExternalLink className="h-5 w-5 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                <ExternalLink className="h-5 w-5 text-[#143694] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
               </div>
               <div className="flex items-center text-sm text-gray-600 mt-1">
-                <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
+                <MapPin className="h-4 w-4 mr-2 text-[#143694] flex-shrink-0" />
                 <span className="truncate">{companyLocation}</span>
               </div>
             </div>
@@ -643,7 +643,7 @@ useEffect(() => {
               disabled={saved}
               className={`inline-flex items-center justify-center px-3 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
             >
-              <Save className={`h-4 w-4 mr-1.5 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
+              <Save className={`h-4 w-4 mr-1.5 ${saved ? 'text-[#143694]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
               <span>{saved ? 'Saved' : 'Save'}</span>
             </button>
           )}
@@ -660,7 +660,7 @@ useEffect(() => {
       {/* Date information below */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
         <div className="flex items-center text-sm text-gray-600">
-          <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
+          <Calendar className="h-4 w-4 mr-2 text-[#143694]" />
           <span>{formatDate(jobDetails?.startDate)} - {formatDate(jobDetails?.endDate)}</span>
         </div>
       </div>
@@ -672,7 +672,7 @@ useEffect(() => {
             <div className="space-y-6">
               {/* Job Description Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                   Job Description
                 </h2>
                 <div className="text-gray-700 whitespace-pre-wrap">
@@ -682,35 +682,35 @@ useEffect(() => {
 
               {/* Job Details Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                   Job Details
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Employment Type</div>
                       <div className="text-base text-gray-900">{jobDetails?.employmentType?.join(', ') || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Roles</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Job Roles</div>
                       <div className="text-base text-gray-900">{jobDetails?.jobRoles?.join(', ') || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Work Mode</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Work Mode</div>
                       <div className="text-base text-gray-900">{jobDetails?.workMode?.join(', ') || 'Not Specified'}</div>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Number of Rounds</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Number of Rounds</div>
                       <div className="text-base text-gray-900">{jobDetails?.rounds?.join(', ') || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Location</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Job Location</div>
                       <div className="text-base text-gray-900">{workLocation}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Preferred Hiring Mode</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Preferred Hiring Mode</div>
                       <div className="text-base text-gray-900">{jobDetails?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
                     </div>
                   </div>
@@ -720,12 +720,12 @@ useEffect(() => {
               {/* Required Skills Box */}
               {jobDetails?.skills?.length > 0 && (
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                     Required Skills
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {jobDetails.skills.map((skill, index) => (
-                      <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200">
+                      <span key={index} className="bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200">
                         {skill}
                       </span>
                     ))}
@@ -736,12 +736,12 @@ useEffect(() => {
               {/* Amenity/Facility Required Box */}
               {jobDetails?.amenitiesRequired?.length > 0 && (
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                     Amenities Required
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {jobDetails.amenitiesRequired.map((amenity, index) => (
-                      <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200">
+                      <span key={index} className="bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200">
                         {amenity}
                       </span>
                     ))}
@@ -751,34 +751,34 @@ useEffect(() => {
 
               {/* Eligibility Criteria Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                   Eligibility Criteria
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Drive Open To (College Type)</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Drive Open To (College Type)</div>
                       <div className="text-base text-gray-900">{jobDetails?.collegeTypes?.join(', ') || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible College Categories</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Eligible College Categories</div>
                       <div className="text-base text-gray-900">{jobDetails?.collegeCategories?.join(', ') || 'Not Specified'}</div>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Degrees / Streams</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Eligible Degrees / Streams</div>
                       <div className="text-base text-gray-900">{jobDetails?.studentStreams?.join(', ') || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Minimum Students Required</div>
+                      <div className="text-sm font-medium text-[#143694] mb-1">Minimum Students Required</div>
                       <div className="text-base text-gray-900">{jobDetails?.minimumStudents || 'Not Specified'}</div>
                     </div>
                   </div>
                 </div>
                 {(jobDetails?.eligibilityCriteria || jobDetails?.additionalEligibilityCriteria || jobDetails?.additionalCriteria) && (
                   <div className="mt-6">
-                    <div className="text-sm font-medium text-[#667eea] mb-3">Additional Criteria</div>
+                    <div className="text-sm font-medium text-[#143694] mb-3">Additional Criteria</div>
                     <div className="space-y-2">
                       {splitIntoBullets(
                         jobDetails.eligibilityCriteria || 
@@ -789,35 +789,35 @@ useEffect(() => {
                         if (point.toLowerCase().includes('minimum') && point.toLowerCase().includes('60%')) {
                           return (
                             <div key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#143694] mt-2 mr-3 flex-shrink-0"></div>
                               <span className="text-base text-gray-700">Minimum 60% marks required</span>
                             </div>
                           );
                         } else if (point.toLowerCase().includes('fresher')) {
                           return (
                             <div key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#143694] mt-2 mr-3 flex-shrink-0"></div>
                               <span className="text-base text-gray-700">Freshers preferred</span>
                             </div>
                           );
                         } else if (point.toLowerCase().includes('urgent')) {
                           return (
                             <div key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#143694] mt-2 mr-3 flex-shrink-0"></div>
                               <span className="text-base text-gray-700">Urgent hiring</span>
                             </div>
                           );
                         } else if (point.toLowerCase().includes('remote')) {
                           return (
                             <div key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#143694] mt-2 mr-3 flex-shrink-0"></div>
                               <span className="text-base text-gray-700">Remote work location available</span>
                             </div>
                           );
                         }
                         return (
                           <div key={idx} className="flex items-start">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#143694] mt-2 mr-3 flex-shrink-0"></div>
                             <span className="text-base text-gray-700">{point}</span>
                           </div>
                         );
@@ -829,28 +829,28 @@ useEffect(() => {
 
               {/* Compensation & Benefits Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                   Compensation & Benefits
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-sm font-medium text-[#667eea] mb-2">Total CTC</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#143694] mb-2">Total CTC</div>
                     <div className="text-2xl font-bold text-gray-900">
                       {jobDetails?.packageDetails?.totalCTC
                         ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
                         : 'Not Specified'}
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-sm font-medium text-[#667eea] mb-2">Fixed Pay</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#143694] mb-2">Fixed Pay</div>
                     <div className="text-2xl font-bold text-gray-900">
                       {jobDetails?.packageDetails?.fixedPay
                         ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
                         : 'N/A'}
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-sm font-medium text-[#667eea] mb-2">Variable Pay</div>
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#143694] mb-2">Variable Pay</div>
                     <div className="text-2xl font-bold text-gray-900">
                       {jobDetails?.packageDetails?.joiningBonus
                         ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
@@ -858,13 +858,13 @@ useEffect(() => {
                     </div>
                   </div>
                 </div>
-                <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
+                <h3 className="font-medium text-[#143694] mt-6 mb-3">Benefits Offered</h3>
                 <div className="flex flex-wrap gap-2">
                   {jobDetails?.benefits?.length > 0 ? (
                     jobDetails.benefits.map((benefit, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+                        className="px-3 py-1.5 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] border border-[#143694]/20 rounded-full text-sm font-medium"
                       >
                         {benefit}
                       </span>
@@ -880,7 +880,7 @@ useEffect(() => {
               {/* Selection Process Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <div className="mb-4">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-1">
                     Selection Process
                   </h2>
                   <div className="text-md text-gray-500">
@@ -893,10 +893,10 @@ useEffect(() => {
                     {normalizeSelectionProcess(jobDetails.selectionProcess).map((step, index) => (
                       <div 
                         key={index}
-                        className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                        className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#143694]/30 hover:shadow-sm transition-all duration-200"
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] flex items-center justify-center">
                             <span className="text-xs font-bold text-white">{index + 1}</span>
                           </div>
                           <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
@@ -907,7 +907,7 @@ useEffect(() => {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 rounded-lg p-4">
                     <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
                   </div>
                 )}
@@ -915,26 +915,26 @@ useEffect(() => {
 
               {/* Important Dates Box */}
               <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                   Important Dates
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Registration Deadline</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Registration Deadline</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails?.endDate)}</div>
                   </div>
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Online Test Date</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Online Test Date</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails.onlineTestDate)}</div>
                   </div>
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Interview Window</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Interview Window</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">
                       {formatDate(jobDetails.interviewWindow?.start) === 'Not Specified' ? 'N/A' : `${formatDate(jobDetails.interviewWindow?.start)} - ${formatDate(jobDetails.interviewWindow?.end)}`}
                     </div>
                   </div>
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Offer Rollout</div>
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5">
+                    <div className="text-sm font-medium text-[#143694]">Offer Rollout</div>
                     <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails.offerRolloutDate)}</div>
                   </div>
                 </div>
@@ -943,14 +943,14 @@ useEffect(() => {
               {/* Contact Person Box */}
               {jobDetails?.contactPerson && (
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                     Company Placement Officer Contact
                   </h2>
 
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                  <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
                     <div className="flex items-start">
                       <div className="mr-3 flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-[#667eea]">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center text-[#143694]">
                           <Users className="h-6 w-6" />
                         </div>
                       </div>
@@ -961,22 +961,22 @@ useEffect(() => {
                         </div>
                         {jobDetails.contactPerson.email && (
                           <div className="flex items-center mt-1">
-                            <Mail className="h-4 w-4 text-[#667eea] mr-1.5" />
-                            <a href={`mailto:${jobDetails.contactPerson.email}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">
+                            <Mail className="h-4 w-4 text-[#143694] mr-1.5" />
+                            <a href={`mailto:${jobDetails.contactPerson.email}`} className="text-[#143694] hover:text-[#1e4ed8] text-sm transition-colors">
                               {jobDetails.contactPerson.email}
                             </a>
                           </div>
                         )}
                         {jobDetails.contactPerson.mobile && (
                           <div className="flex items-center mt-1">
-                            <Phone className="h-4 w-4 text-[#667eea] mr-1.5" />
-                            <a href={`tel:${jobDetails.contactPerson.mobile}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">
+                            <Phone className="h-4 w-4 text-[#143694] mr-1.5" />
+                            <a href={`tel:${jobDetails.contactPerson.mobile}`} className="text-[#143694] hover:text-[#1e4ed8] text-sm transition-colors">
                               {jobDetails.contactPerson.mobile}
                             </a>
                           </div>
                         )}
                         {jobDetails.contactPerson.linkedin && (
-                          <a href={jobDetails.contactPerson.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center mt-1 text-[#667eea] hover:text-[#764ba2] transition-colors">
+                          <a href={jobDetails.contactPerson.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center mt-1 text-[#143694] hover:text-[#1e4ed8] transition-colors">
                             <Linkedin className="h-4 w-4 mr-1.5" />
                             <span className="text-sm">LinkedIn Profile</span>
                           </a>
@@ -996,7 +996,7 @@ useEffect(() => {
             <div className="max-w-4xl mx-auto">
               <div className="flex justify-center">
                 <button 
-                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleApply}
                   disabled={isSubmitting}
                 >

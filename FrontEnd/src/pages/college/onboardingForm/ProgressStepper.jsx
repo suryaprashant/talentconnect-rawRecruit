@@ -16,9 +16,9 @@ export default function ProgressStepper({ currentStep, totalSteps }) {
               <div
                 className={`relative flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-300
                   ${isCompleted 
-                    ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white shadow-md' 
+                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-md' 
                     : isActive 
-                    ? 'bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white shadow-lg ring-3 ring-[#93c5fd]/20' 
+                    ? 'bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] text-white shadow-lg ring-3 ring-[#143694]/20' 
                     : 'bg-white/80 backdrop-blur-sm text-gray-500 border border-gray-200'}`}
               >
                 {isCompleted ? (
@@ -38,9 +38,9 @@ export default function ProgressStepper({ currentStep, totalSteps }) {
                   <div 
                     className={`absolute inset-0 rounded-full transition-all duration-500 ${
                       isCompleted 
-                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] w-full' 
+                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] w-full' 
                         : isActive 
-                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] w-1/2' 
+                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] w-1/2' 
                         : 'w-0'
                     }`}
                   />

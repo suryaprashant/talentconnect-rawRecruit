@@ -33,13 +33,13 @@ function Search() {
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <SearchIcon className="h-5 w-5 text-[#667eea]" />
+            <SearchIcon className="h-5 w-5 text-[#143694]" />
           </div>
           <input
             type="text"
             className="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl 
                        bg-gradient-to-r from-gray-50 to-white 
-                       focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent
+                       focus:outline-none focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent
                        placeholder-gray-400 text-gray-800 text-sm
                        transition-all duration-200"
             placeholder="Search by name or email..."
@@ -50,7 +50,7 @@ function Search() {
             type="submit"
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
           >
-            <div className="p-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200">
+            <div className="p-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200">
               <SearchIcon className="h-4 w-4 text-white" />
             </div>
           </button>
@@ -74,7 +74,7 @@ function Search() {
         user.email?.toLowerCase().includes(search.toLowerCase()) ||
         user.fullname?.toLowerCase().includes(search.toLowerCase())
       ) && (
-        <div className="mt-4 p-3 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 rounded-xl border border-gray-200">
+        <div className="mt-4 p-3 bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 rounded-xl border border-gray-200">
           <p className="text-xs font-medium text-gray-700 mb-2">Quick results for "{search}"</p>
           <div className="space-y-2">
             {allUsers
@@ -93,8 +93,8 @@ function Search() {
                   }}
                   className="w-full text-left p-2 rounded-lg hover:bg-white/50 transition-colors duration-150 flex items-center"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mr-3">
-                    <span className="text-sm font-medium text-[#667eea]">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mr-3">
+                    <span className="text-sm font-medium text-[#143694]">
                       {user.name?.charAt(0) || user.fullname?.charAt(0) || 'U'}
                     </span>
                   </div>

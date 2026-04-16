@@ -16,7 +16,7 @@ const BackButton = ({ fallback = "/" }) => {
         px-6 py-3
         rounded-2xl
 
-        bg-gradient-to-r from-indigo-500 via-blue-500 to-purple-500
+        bg-gradient-to-r from-indigo-500 via-[#1e4ed8] to-purple-500
         text-white text-base font-semibold
 
         shadow-md shadow-indigo-500/25

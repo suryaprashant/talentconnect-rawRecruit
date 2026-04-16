@@ -158,7 +158,7 @@ const ApplicationDetailPage = () => {
                 </button>
               )}
               {application.status === 'Shortlisted' && (
-                <button className="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                <button className="btn bg-blue-600 hover:bg-[#143694] text-white px-6 py-3 rounded-lg transition-colors">
                   Schedule Interview
                 </button>
               )}

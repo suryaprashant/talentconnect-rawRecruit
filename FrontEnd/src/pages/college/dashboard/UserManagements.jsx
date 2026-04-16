@@ -86,7 +86,7 @@ export default function UserManagements() {
             <div className="flex items-center">
               <input 
                 type="checkbox" 
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded"
                 checked={selectedGroup === 'all'}
                 onChange={() => handleGroupChange('all')} 
               />
@@ -95,7 +95,7 @@ export default function UserManagements() {
             <div className="flex items-center">
               <input 
                 type="checkbox" 
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded"
                 checked={selectedGroup === 'owner'}
                 onChange={() => handleGroupChange('owner')} 
               />
@@ -104,7 +104,7 @@ export default function UserManagements() {
             <div className="flex items-center">
               <input 
                 type="checkbox" 
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded"
                 checked={selectedGroup === 'admin'}
                 onChange={() => handleGroupChange('admin')} 
               />
@@ -113,7 +113,7 @@ export default function UserManagements() {
             <div className="flex items-center">
               <input 
                 type="checkbox" 
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded"
                 checked={selectedGroup === 'regular'}
                 onChange={() => handleGroupChange('regular')} 
               />
@@ -142,7 +142,7 @@ export default function UserManagements() {
                 <input
                   type="text"
                   placeholder="Search by name or email"
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
@@ -159,7 +159,7 @@ export default function UserManagements() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-4 py-3 w-8">
-                      <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                      <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded" />
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8"></th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
@@ -182,7 +182,7 @@ export default function UserManagements() {
                   {filteredUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-4 py-4">
-                        <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded" />
                       </td>
                       <td className="px-4 py-4">
                         <button className="flex items-center justify-center">

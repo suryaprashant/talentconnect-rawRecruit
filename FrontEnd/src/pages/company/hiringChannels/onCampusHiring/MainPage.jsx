@@ -52,7 +52,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         />
       </head>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
 
       <div className="container mx-auto px-4 pt-8 max-w-6xl">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
@@ -117,14 +117,14 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                     className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col min-h-[320px]"
                   >
                     {/* Purple hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/0 to-[#764ba2]/0 group-hover:from-[#667eea]/5 group-hover:to-[#764ba2]/5 rounded-lg transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
                     
                     {/* Purple border on hover */}
-                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#667eea]/20 rounded-lg transition-all duration-300"></div>
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#143694]/20 rounded-lg transition-all duration-300"></div>
                     
                     <div className="relative z-10 h-full flex flex-col">
-                      <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-4">
-                        <IconComponent className="h-5 w-5 text-[#667eea]" />
+                      <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mb-4">
+                        <IconComponent className="h-5 w-5 text-[#143694]" />
                       </div>
                       
                       <h3 className="text-lg font-bold text-gray-900 mb-4">
@@ -134,7 +134,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                       <ul className="space-y-3 flex-grow">
                         {service.bullets.map((bullet, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#667eea] rounded-full mt-2 mr-3"></div>
+                            <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#143694] rounded-full mt-2 mr-3"></div>
                             <span className="text-gray-600 text-sm">{bullet}</span>
                           </li>
                         ))}
@@ -150,14 +150,14 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
           <section className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
             <button
               onClick={onRequestInfoClick}
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all text-base flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all text-base flex items-center justify-center gap-2"
             >
               <span>Register Now</span>
               {/* <span className="text-sm opacity-80">– Start On-Campus Hiring</span> */}
             </button>
             <button
               onClick={onRegisterClick}
-              className="bg-gray-800 text-white px-8 py-3.5 rounded-lg font-medium hover:bg-gray-900 hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
+              className="bg-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:bg-primaryBrand hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
             >
               <span>Request Info</span>
               {/* <span className="text-sm opacity-80">– Learn How Campus Hiring Works</span> */}

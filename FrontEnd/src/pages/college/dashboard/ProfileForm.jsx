@@ -298,7 +298,7 @@ export default function ProfileForm({
             <div ref={designationRef} className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">{label} *</label>
                 <div
-                    className={`flex items-center justify-between p-3 w-full border border-white/50 bg-white/90 backdrop-blur-sm rounded-xl ${isEditing ? 'cursor-pointer hover:border-[#93c5fd]/50 transition-all duration-200' : 'bg-gray-50/50'}`}
+                    className={`flex items-center justify-between p-3 w-full border border-white/50 bg-white/90 backdrop-blur-sm rounded-xl ${isEditing ? 'cursor-pointer hover:border-[#143694]/50 transition-all duration-200' : 'bg-gray-50/50'}`}
                     onClick={() => toggleDropdown(dropdownType)}
                 >
                     <span className={`${!currentValue ? 'text-gray-400' : 'text-gray-900'}`}>
@@ -319,7 +319,7 @@ export default function ProfileForm({
                                     onChange={(e) => setCustomInput(prev => ({ ...prev, [dropdownType]: e.target.value }))}
                                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomSingleItem(section, field, dropdownType))}
                                     placeholder="Add custom..."
-                                    className="flex-1 px-3 py-2 border border-gray-300/50 rounded-lg bg-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent"
+                                    className="flex-1 px-3 py-2 border border-gray-300/50 rounded-lg bg-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent"
                                     autoFocus
                                     onClick={(e) => e.stopPropagation()}
                                 />
@@ -327,7 +327,7 @@ export default function ProfileForm({
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); handleAddCustomSingleItem(section, field, dropdownType); }}
                                     disabled={!customInput[dropdownType].trim()}
-                                    className="bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-all duration-200 hover:shadow-md"
+                                    className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-all duration-200 hover:shadow-md"
                                 >
                                     Add
                                 </button>
@@ -339,10 +339,10 @@ export default function ProfileForm({
                                 <div
                                     key={option}
                                     onClick={() => handleSingleSelect(section, field, option)}
-                                    className={`px-4 py-3 hover:bg-gradient-to-r hover:from-[#93c5fd]/10 hover:to-transparent cursor-pointer flex items-center justify-between rounded-lg mx-1 my-1 transition-all duration-200 ${currentValue === option ? 'bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/10 text-[#3b82f6]' : ''}`}
+                                    className={`px-4 py-3 hover:bg-gradient-to-r hover:from-[#143694]/10 hover:to-transparent cursor-pointer flex items-center justify-between rounded-lg mx-1 my-1 transition-all duration-200 ${currentValue === option ? 'bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/10 text-[#1e4ed8]' : ''}`}
                                 >
                                     {option}
-                                    {currentValue === option && <Check className="w-4 h-4 text-[#3b82f6]" />}
+                                    {currentValue === option && <Check className="w-4 h-4 text-[#1e4ed8]" />}
                                 </div>
                             ))}
                         </div>
@@ -392,7 +392,7 @@ export default function ProfileForm({
                                         onChange={(e) => setCustomInput(prev => ({ ...prev, [dropdownType]: e.target.value }))}
                                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomMultiItem(field, dropdownType))}
                                         placeholder="Add custom..."
-                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
                                         autoFocus
                                         onClick={(e) => e.stopPropagation()}
                                     />
@@ -400,7 +400,7 @@ export default function ProfileForm({
                                         type="button"
                                         onClick={(e) => { e.stopPropagation(); handleAddCustomMultiItem(field, dropdownType); }}
                                         disabled={!customInput[dropdownType].trim()}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-200"
+                                        className="bg-[#1e4ed8] text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-200"
                                     >
                                         Add
                                     </button>
@@ -411,10 +411,10 @@ export default function ProfileForm({
                                     <div
                                         key={option}
                                         onClick={() => handleMultiSelect(field, option)}
-                                        className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(option) ? "bg-blue-50 text-blue-700" : ""}`}
+                                        className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(option) ? "bg-blue-50 text-[#143694]" : ""}`}
                                     >
                                         <span>{option}</span>
-                                        {currentValues.includes(option) && <span className="text-blue-500 font-bold">✓</span>}
+                                        {currentValues.includes(option) && <span className="text-[#1e4ed8] font-bold">✓</span>}
                                     </div>
                                 ))}
                             </div>
@@ -424,14 +424,14 @@ export default function ProfileForm({
                                 <div
                                     key={customItem}
                                     onClick={() => handleMultiSelect(field, customItem)}
-                                    className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(customItem) ? "bg-blue-50 text-blue-700" : ""}`}
+                                    className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(customItem) ? "bg-blue-50 text-[#143694]" : ""}`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <span className="text-black">•</span>
                                         <span>{customItem}</span>
                                         <span className="text-xs text-gray-500 italic">(custom)</span>
                                     </div>
-                                    {currentValues.includes(customItem) && <span className="text-blue-500 font-bold">✓</span>}
+                                    {currentValues.includes(customItem) && <span className="text-[#1e4ed8] font-bold">✓</span>}
                                 </div>
                             ))}
                         </div>
@@ -489,7 +489,7 @@ export default function ProfileForm({
                         {!isEditing && (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition-colors duration-200"
+                                className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-[#143694] transition-colors duration-200"
                             >
                                 Edit Profile
                             </button>
@@ -513,7 +513,7 @@ export default function ProfileForm({
                                     value={collegeUniversityDetails.collegeName || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'collegeName', e.target.value)}
                                     placeholder="e.g., Indian Institute of Technology Bombay"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -533,7 +533,7 @@ export default function ProfileForm({
                             )
                             }
                             placeholder="e.g., Guru Gobind Singh Indraprastha University (GGSIPU)"
-                            className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${
+                            className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${
                             !isEditing ? 'text-gray-900' : ''
                             }`}
                             readOnly={!isEditing}
@@ -547,7 +547,7 @@ export default function ProfileForm({
                                     <select
                                         value={collegeUniversityDetails.establishedYear || ''}
                                         onChange={(e) => handleDetailChange('collegeUniversityDetails', 'establishedYear', e.target.value)}
-                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200"
                                     >
                                         <option value="">Select Year</option>
                                         {years.map((year) => (<option key={year} value={year}>{year}</option>))}
@@ -572,7 +572,7 @@ export default function ProfileForm({
                                     value={collegeUniversityDetails.phoneNumber || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'phoneNumber', e.target.value)}
                                     placeholder="+91 XXXXXXXXXX"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -587,7 +587,7 @@ export default function ProfileForm({
                                     value={collegeUniversityDetails.alternatePhoneNumber || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'alternatePhoneNumber', e.target.value)}
                                     placeholder="+91 XXXXXXXXXX"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -650,7 +650,7 @@ export default function ProfileForm({
                                     <select 
                                         value={selectedCountryISO} 
                                         onChange={handleCountryChange} 
-                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200"
                                     >
                                         <option value="">Select Country</option>
                                         {Country.getAllCountries().map((item) => (
@@ -669,7 +669,7 @@ export default function ProfileForm({
                                         value={selectedStateISO} 
                                         onChange={handleStateChange} 
                                         disabled={!selectedCountryISO} 
-                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
                                     >
                                         <option value="">Select State</option>
                                         {selectedCountryISO && State.getStatesOfCountry(selectedCountryISO).map((item) => (
@@ -688,7 +688,7 @@ export default function ProfileForm({
                                         value={collegeUniversityDetails.city || ''} 
                                         onChange={handleCityChange} 
                                         disabled={!selectedStateISO} 
-                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
                                     >
                                         <option value="">Select City</option>
                                         {selectedStateISO && City.getCitiesOfState(selectedCountryISO, selectedStateISO).map((item) => (
@@ -707,7 +707,7 @@ export default function ProfileForm({
                                     value={collegeUniversityDetails.pincode || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'pincode', e.target.value)}
                                     placeholder="e.g., 400076"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -793,7 +793,7 @@ export default function ProfileForm({
                                     value={placementCoordinatorDetails.officialEmail || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'officialEmail', e.target.value)}
                                     placeholder="hello@xyz.com"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -808,7 +808,7 @@ export default function ProfileForm({
                                     value={placementCoordinatorDetails.officialMobile || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'officialMobile', e.target.value)}
                                     placeholder="1234567890"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -823,7 +823,7 @@ export default function ProfileForm({
                                     value={placementCoordinatorDetails.linkedinUrl || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'linkedinUrl', e.target.value)}
                                     placeholder="www.linkedin.com/in/yourprofile"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -876,7 +876,7 @@ export default function ProfileForm({
                                     ) : (
                                         <div className="p-4 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl flex justify-between items-center text-gray-700">
                                             {placementRecruitmentDetails.collegeBrochureUrl ? (
-                                                <a href={placementRecruitmentDetails.collegeBrochureUrl} target="_blank" rel="noopener noreferrer" className="text-[#3b82f6] hover:underline flex items-center gap-2">
+                                                <a href={placementRecruitmentDetails.collegeBrochureUrl} target="_blank" rel="noopener noreferrer" className="text-[#1e4ed8] hover:underline flex items-center gap-2">
                                                     <ExternalLink className="w-4 h-4" />
                                                     View Current Brochure
                                                 </a>
@@ -910,7 +910,7 @@ export default function ProfileForm({
                                     value={profileAchievements.collegeWebsite || ''}
                                     onChange={(e) => handleDetailChange('profileAchievements', 'collegeWebsite', e.target.value)}
                                     placeholder="www.institute.io"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -924,7 +924,7 @@ export default function ProfileForm({
                                     value={profileAchievements.linkedinProfile || ''}
                                     onChange={(e) => handleDetailChange('profileAchievements', 'linkedinProfile', e.target.value)}
                                     placeholder="www.linkedin.com/company/yourcollege"
-                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
@@ -951,7 +951,7 @@ export default function ProfileForm({
                                             value={workshop.workshopName || ''} 
                                             onChange={(e) => handleArrayItemChange(setWorkshops, index, 'workshopName', e.target.value)} 
                                             placeholder="e.g., Python for Data Science" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -965,7 +965,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={workshop.startDate ? new Date(workshop.startDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setWorkshops, index, 'startDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -978,7 +978,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={workshop.endDate ? new Date(workshop.endDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setWorkshops, index, 'endDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -990,7 +990,7 @@ export default function ProfileForm({
                                             value={workshop.description || ''} 
                                             onChange={(e) => handleArrayItemChange(setWorkshops, index, 'description', e.target.value)} 
                                             placeholder="Brief description of the workshop" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -1000,7 +1000,7 @@ export default function ProfileForm({
                                 <button 
                                     type="button" 
                                     onClick={() => addArrayItem(setWorkshops, { workshopName: '', startDate: '', endDate: '', description: '' })} 
-                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                    className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#1d4ed8] transition-colors duration-200"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add workshop
@@ -1034,7 +1034,7 @@ export default function ProfileForm({
                                             value={event.eventName || ''} 
                                             onChange={(e) => handleArrayItemChange(setVolunteering, index, 'eventName', e.target.value)} 
                                             placeholder="e.g., Clean-up Drive" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -1048,7 +1048,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={event.startDate ? new Date(event.startDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setVolunteering, index, 'startDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -1061,7 +1061,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={event.endDate ? new Date(event.endDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setVolunteering, index, 'endDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -1073,7 +1073,7 @@ export default function ProfileForm({
                                             value={event.description || ''} 
                                             onChange={(e) => handleArrayItemChange(setVolunteering, index, 'description', e.target.value)} 
                                             placeholder="Brief description of the event" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -1083,7 +1083,7 @@ export default function ProfileForm({
                                 <button 
                                     type="button" 
                                     onClick={() => addArrayItem(setVolunteering, { eventName: '', startDate: '', endDate: '', description: '' })} 
-                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                    className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#1d4ed8] transition-colors duration-200"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add volunteering experience
@@ -1117,7 +1117,7 @@ export default function ProfileForm({
                                             value={award.awardTitle || ''} 
                                             onChange={(e) => handleArrayItemChange(setAwards, index, 'awardTitle', e.target.value)} 
                                             placeholder="e.g., Best Engineering College" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -1131,7 +1131,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={award.startDate ? new Date(award.startDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setAwards, index, 'startDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -1144,7 +1144,7 @@ export default function ProfileForm({
                                                 type="date" 
                                                 value={award.endDate ? new Date(award.endDate).toISOString().split('T')[0] : ''} 
                                                 onChange={(e) => handleArrayItemChange(setAwards, index, 'endDate', e.target.value)} 
-                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                                 readOnly={!isEditing} 
                                             />
                                         </div>
@@ -1156,7 +1156,7 @@ export default function ProfileForm({
                                             value={award.awardingOrganization || ''} 
                                             onChange={(e) => handleArrayItemChange(setAwards, index, 'awardingOrganization', e.target.value)} 
                                             placeholder="e.g., Ministry of Education" 
-                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
                                             readOnly={!isEditing} 
                                         />
                                     </div>
@@ -1166,7 +1166,7 @@ export default function ProfileForm({
                                 <button 
                                     type="button" 
                                     onClick={() => addArrayItem(setAwards, { awardTitle: '', startDate: '', endDate: '', awardingOrganization: '' })} 
-                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                    className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#1d4ed8] transition-colors duration-200"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add award

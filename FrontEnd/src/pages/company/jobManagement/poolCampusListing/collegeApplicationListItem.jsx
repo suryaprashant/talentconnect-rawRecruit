@@ -207,7 +207,7 @@ const CollegeApplicationDetailView = ({ collegeApplication, onClose, onAccept, o
                     <span>{doc.name}</span>
                   </div>
                   {doc.url !== 'Not Specified' && (
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-500">
+                    <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#1e4ed8]">
                       <ArrowUpRight size={16} />
                     </a>
                   )}

@@ -88,7 +88,7 @@ const InterviewSchedulerPopupAdmin = ({
                 type="date"
                 name="date"
                 required
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#1e4ed8] focus:border-[#1e4ed8] outline-none"
                 value={form.date}
                 onChange={handleChange}
               />
@@ -102,7 +102,7 @@ const InterviewSchedulerPopupAdmin = ({
                 type="time"
                 name="time"
                 required
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#1e4ed8] focus:border-[#1e4ed8] outline-none"
                 value={form.time}
                 onChange={handleChange}
               />
@@ -117,7 +117,7 @@ const InterviewSchedulerPopupAdmin = ({
               type="url"
               name="meetLink"
               required
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#1e4ed8] focus:border-[#1e4ed8] outline-none"
               value={form.meetLink}
               onChange={handleChange}
               placeholder="https://meet.google.com/..."
@@ -131,7 +131,7 @@ const InterviewSchedulerPopupAdmin = ({
             <textarea
               name="message"
               rows="3"
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#1e4ed8] focus:border-[#1e4ed8] outline-none"
               value={form.message}
               onChange={handleChange}
               placeholder="Add notes or agenda"
@@ -140,7 +140,7 @@ const InterviewSchedulerPopupAdmin = ({
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 mt-2 rounded-lg font-medium hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 mt-2 rounded-lg font-medium hover:bg-[#143694] transition"
           >
             Submit
           </button>

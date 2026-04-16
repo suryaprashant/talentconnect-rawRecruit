@@ -14,7 +14,7 @@ const UrgencyBanner = () => {
         className="relative overflow-hidden rounded-3xl px-6 md:px-12 py-12 md:py-16 text-center text-white"
         style={{
           background:
-            "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)",
+            "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1e4ed8 100%)",
         }}
       >
 

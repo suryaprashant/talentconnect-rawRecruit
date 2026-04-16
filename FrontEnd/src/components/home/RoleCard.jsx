@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { GraduationCap, Building2, Briefcase } from "lucide-react";
+import { GraduationCap, Building2, Briefcase, BriefcaseBusiness } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
@@ -19,7 +19,7 @@ const roles = [
   {
     roleKey: "college",
     title: "For Colleges (TPOs)",
-    icon: GraduationCap,
+    icon: BriefcaseBusiness,
     points: [
       "Register your college on a centralized campus recruitment platform",
       "Discover on-campus and pool-campus hiring requests from companies",
@@ -29,17 +29,29 @@ const roles = [
     cta: "Partner as College",
   },
   {
-    roleKey: "employer",
-    title: "For Employers (Staffing & Hiring Partners)",
-    icon: Briefcase,
+    roleKey: "candidate",
+    title: "For Candidates (Job Seekers)",
+    icon: GraduationCap,
     points: [
-      "Set up an independent employer profile",
-      "Manage end-to-end campus and off-campus recruitment activities",
-      "Coordinate hiring on behalf of multiple companies",
-      "Handle company approvals, scheduling, and recruitment operations",
+      "Create your profile and get discovered by companies",
+      "Explore internships and fresher job opportunities",
+      "Apply to  off-campus drives, internship and Referral Job",
+      "Access training and placement support"
     ],
     cta: "Apply Now",
-  },
+  }
+  // {
+  //   roleKey: "employer",
+  //   title: "For Employers (Staffing & Hiring Partners)",
+  //   icon: Briefcase,
+  //   points: [
+  //     "Set up an independent employer profile",
+  //     "Manage end-to-end campus and off-campus recruitment activities",
+  //     "Coordinate hiring on behalf of multiple companies",
+  //     "Handle company approvals, scheduling, and recruitment operations",
+  //   ],
+  //   cta: "Apply Now",
+  // },
 ];
 
 const RoleCards = () => {

@@ -673,7 +673,7 @@ export default function RecruitmentDetails({
           className={`flex items-center justify-between p-4 w-full bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl transition-all duration-200 ${
             isDisabled
               ? 'opacity-50 cursor-not-allowed'
-              : 'cursor-pointer hover:border-[#93c5fd]'
+              : 'cursor-pointer hover:border-[#143694]'
           }`}
           onClick={() => !isDisabled && toggleDropdown(dropdownType)}
         >
@@ -694,7 +694,7 @@ export default function RecruitmentDetails({
                   onChange={(e) => handleCustomInputChange(dropdownType, e.target.value)}
                   onKeyPress={(e) => handleKeyPress(e, field, dropdownType)}
                   placeholder={`Add custom ${customLabel}`}
-                  className="flex-1 px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent text-lg transition-all duration-200"
+                  className="flex-1 px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent text-lg transition-all duration-200"
                   onClick={(e) => e.stopPropagation()}
                   autoFocus
                 />
@@ -704,7 +704,7 @@ export default function RecruitmentDetails({
                   disabled={!customInput[dropdownType].trim()}
                   className={`px-6 py-3 rounded-xl font-medium text-lg transition-all duration-300 ${
                     customInput[dropdownType].trim() 
-                      ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white hover:shadow-lg hover:shadow-[#93c5fd]/40' 
+                      ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/40' 
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
@@ -732,7 +732,7 @@ export default function RecruitmentDetails({
                 >
                   <span className="text-lg">{option}</span>
                   {currentValues.includes(option) && (
-                    <span className="text-[#3b82f6] font-bold text-lg">✓</span>
+                    <span className="text-[#1e4ed8] font-bold text-lg">✓</span>
                   )}
                 </div>
               ))}
@@ -755,12 +755,12 @@ export default function RecruitmentDetails({
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-[#3b82f6] text-lg">•</span>
+                    <span className="text-[#1e4ed8] text-lg">•</span>
                     <span className="text-lg">{customItem}</span>
                     <span className="text-sm text-gray-500 italic">(custom)</span>
                   </div>
                   {currentValues.includes(customItem) && (
-                    <span className="text-[#3b82f6] font-bold text-lg">✓</span>
+                    <span className="text-[#1e4ed8] font-bold text-lg">✓</span>
                   )}
                 </div>
               ))}
@@ -776,18 +776,18 @@ export default function RecruitmentDetails({
         {/* Card with blur border effect - Same large size */}
         <div className="relative w-full max-w-4xl">
           {/* Blur border - positioned around the card */}
-          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#93c5fd]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
+          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#143694]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
           
           {/* Optional corner accent blurs */}
           <div className="absolute -top-8 -left-8 w-32 h-32 bg-[#fbcfe8]/30 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#93c5fd]/30 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#143694]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#c7d2fe]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#a7f3d0]/30 rounded-full blur-3xl -z-10"></div>
           
           {/* Main Card - Same large size */}
           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
 
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-6">
               Placement & Recruitment Details
             </h1>
             <p className="text-gray-600 text-lg mb-8">
@@ -882,8 +882,8 @@ export default function RecruitmentDetails({
                       onClick={() => handleServiceToggle(service)}
                       className={`px-8 py-4 rounded-xl border transition-all duration-300 text-lg font-medium ${
                         selectedServices.includes(service) 
-                          ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent shadow-lg shadow-[#93c5fd]/30 hover:shadow-[#93c5fd]/50' 
-                          : 'bg-white/70 backdrop-blur-sm border-gray-200/80 text-gray-700 hover:bg-white/90 hover:border-[#93c5fd] hover:shadow-md'
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-lg shadow-[#143694]/30 hover:shadow-[#143694]/50' 
+                          : 'bg-white/70 backdrop-blur-sm border-gray-200/80 text-gray-700 hover:bg-white/90 hover:border-[#143694] hover:shadow-md'
                       }`}
                     >
                       {service}
@@ -925,7 +925,7 @@ export default function RecruitmentDetails({
               <button
                 type="button"
                 onClick={nextStep}
-                className="px-10 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 font-medium text-lg"
+                className="px-10 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium text-lg"
               >
                 Next
               </button>

@@ -74,11 +74,11 @@ function CareerCraft() {
         />
       </head>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-8">
           {/* Header */}
           <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
               Craft Your Career Path with Confidence
             </h1>
             <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto mb-6">
@@ -98,14 +98,14 @@ function CareerCraft() {
                   className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col min-h-[320px]"
                 >
                   {/* Purple hover overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/0 to-[#764ba2]/0 group-hover:from-[#667eea]/5 group-hover:to-[#764ba2]/5 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
                   
                   {/* Purple border on hover */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#667eea]/20 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#143694]/20 rounded-lg transition-all duration-300"></div>
                   
                   <div className="relative z-10 h-full flex flex-col">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-4">
-                      <div className="text-[#667eea]">
+                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mb-4">
+                      <div className="text-[#143694]">
                         {feature.icon}
                       </div>
                     </div>
@@ -117,14 +117,14 @@ function CareerCraft() {
                     <ul className="space-y-3 flex-grow">
                       {feature.bullets.map((bullet, index) => (
                         <li key={index} className="flex items-start">
-                          <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#667eea] rounded-full mt-2 mr-3"></div>
+                          <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#143694] rounded-full mt-2 mr-3"></div>
                           <span className="text-gray-600 text-sm">{bullet}</span>
                         </li>
                       ))}
                     </ul>
 
                     <div className="mt-6">
-                      <button className="text-[#667eea] font-medium hover:text-[#764ba2] transition-colors duration-200 text-sm">
+                      <button className="text-[#143694] font-medium hover:text-[#1e4ed8] transition-colors duration-200 text-sm">
                         Learn More →
                       </button>
                     </div>
@@ -139,7 +139,7 @@ function CareerCraft() {
           <div className="text-center mb-10">
             <button
               onClick={addFeature}
-              className="inline-flex items-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 px-6 py-3 rounded-lg font-medium"
+              className="inline-flex items-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 px-6 py-3 rounded-lg font-medium"
             >
               <Rocket className="w-5 h-5 mr-2" />
               Discover More Features

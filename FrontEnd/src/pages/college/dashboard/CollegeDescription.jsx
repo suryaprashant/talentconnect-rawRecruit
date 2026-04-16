@@ -26,7 +26,7 @@ export default function CollegeDescription({ onboardingData }) {
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
@@ -39,7 +39,7 @@ export default function CollegeDescription({ onboardingData }) {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
                   College Description
                 </h1>
               </div>
@@ -51,7 +51,7 @@ export default function CollegeDescription({ onboardingData }) {
                   <input
                     type="text"
                     placeholder="Search college details..."
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
               </div> */}
@@ -62,12 +62,12 @@ export default function CollegeDescription({ onboardingData }) {
         {/* Main Content Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden mb-8">
           {/* Section 1: College/University Details */}
-          <div className="flex flex-wrap border-b border-gray-200/50 p-6 hover:bg-gradient-to-r from-[#93c5fd]/5 to-transparent transition-all duration-300">
+          <div className="flex flex-wrap border-b border-gray-200/50 p-6 hover:bg-gradient-to-r from-[#143694]/5 to-transparent transition-all duration-300">
             {/* Left Column - Title and Description */}
             <div className="w-full md:w-1/2 pr-4 mb-4 md:mb-0">
               <h2 className="text-lg font-semibold mb-2 text-gray-900 flex items-center">
-                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#3b82f6]">
+                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#1e4ed8]">
                     <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
                     <path fillRule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clipRule="evenodd" />
                     <path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" />
@@ -111,7 +111,7 @@ export default function CollegeDescription({ onboardingData }) {
                   <div className="text-sm">
                     {profileAchievements.collegeWebsite ?
                       <a href={profileAchievements.collegeWebsite} target="_blank" rel="noopener noreferrer" 
-                         className="text-[#3b82f6] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
+                         className="text-[#1e4ed8] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
                         {profileAchievements.collegeWebsite}
                       </a>
                       : 'Not Set'}
@@ -188,7 +188,7 @@ export default function CollegeDescription({ onboardingData }) {
                   <div className="text-sm">
                     {placementCoordinatorDetails.officialEmail ?
                       <a href={`mailto:${placementCoordinatorDetails.officialEmail}`} 
-                         className="text-[#3b82f6] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
+                         className="text-[#1e4ed8] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
                         {placementCoordinatorDetails.officialEmail}
                       </a>
                       : 'Not Set'}
@@ -205,7 +205,7 @@ export default function CollegeDescription({ onboardingData }) {
                   <div className="text-sm">
                     {placementCoordinatorDetails.linkedinUrl ?
                       <a href={placementCoordinatorDetails.linkedinUrl} target="_blank" rel="noopener noreferrer" 
-                         className="text-[#3b82f6] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
+                         className="text-[#1e4ed8] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
                         {placementCoordinatorDetails.linkedinUrl}
                       </a>
                       : 'Not Set'}
@@ -256,7 +256,7 @@ export default function CollegeDescription({ onboardingData }) {
                   <div className="text-sm">
                     {placementRecruitmentDetails.collegeBrochureUrl ?
                       <a href={placementRecruitmentDetails.collegeBrochureUrl} target="_blank" rel="noopener noreferrer" 
-                         className="text-[#3b82f6] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
+                         className="text-[#1e4ed8] hover:text-[#1d4ed8] hover:underline transition-colors duration-200">
                         View Brochure
                       </a>
                       : 'No Brochure Uploaded'}

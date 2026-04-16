@@ -5,8 +5,9 @@ import { useLegacyAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
 import ReactGA from "react-ga4";
-import heroImage from "../../assets/RR-Tagline.png";
-
+import heroImage from "../../assets/rawrecruit_transparent.png";
+import logo from "../../assets/logo1.png";
+import { Briefcase, CheckCircle, ShieldCheck } from 'lucide-react';
 // --- Reusable Onboarding/Dashboard Routes ---
 const ONBOARDING_ROUTES = {
   candidate: '/student-form',
@@ -315,40 +316,88 @@ function LoginPage() {
       <div className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row bg-white/80 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(27,28,29,0.08)] overflow-hidden">
 
         {/* LEFT SIDE (SAME AS SIGNUP) */}
-        <div className="hidden md:flex md:w-5/12 bg-primaryBrand p-10 flex-col justify-between text-white relative overflow-hidden">
+        <div className="hidden md:flex md:w-5/12 bg-primaryBrand p-12 flex-col justify-between text-white relative overflow-hidden">
 
+          {/* Background Glow */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl"></div>
           </div>
 
           <div className="relative z-10">
-            {/* Logo */}
-            <div className="flex items-center gap-2 mb-16 cursor-pointer" onClick={handleLogoClick}>
-              <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg">
-                <span className="material-symbols-outlined text-[#143694]">
-                  account_tree
-                </span>
-              </div>
-              <span className="text-xl font-extrabold tracking-tight">
-                RawRecruit
+
+            {/* Logo (unchanged) */}
+            <div
+              className="flex items-center gap-3 mb-6 px-3 py-2 rounded-xl bg-white backdrop-blur-sm cursor-pointer"
+              onClick={() => navigate("/")}
+            >
+              <img src={logo} className="w-9 h-9" />
+        
+              <span className="text-xl font-bold tracking-tight text-primaryBrand">
+                Raw<span className="text-[#1e4ed8]">Recruit</span>
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-3xl font-bold mb-6">
-              Welcome Back
-            </h1>
+            <div className="mb-10">
+              <h1 className="text-4xl font-bold leading-tight mb-4">
+                Welcome Back 
+              </h1>
+              <p className="text-base text-white/80 max-w-sm">
+                Continue your hiring or application journey seamlessly.
+              </p>
+            </div>
 
-            {/* Points */}
-            <div className="space-y-5 text-sm ">
-              <p className="text-base opacity-90 text-white">Access your dashboard and manage your journey</p>
-              <p className="text-base opacity-90 text-white">Continue hiring, applying, or managing placements</p>
-              <p className="text-base opacity-90 text-white">Secure and seamless login experience</p>
+            {/* Features (MATCHING SIGNUP STYLE) */}
+            <div className="space-y-6">
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg ">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white">
+                    Access Your Dashboard
+                  </p>
+                  <p className="text-sm text-white/70">
+                    Manage jobs, applications, and interviews in one place.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg ">
+                  <Briefcase className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white">
+                    Continue Your Journey
+                  </p>
+                  <p className="text-sm text-white/70">
+                    Pick up right where you left off — hiring or applying.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg">
+                  <ShieldCheck className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white">
+                    Secure & Reliable
+                  </p>
+                  <p className="text-sm text-white/70">
+                    Your data is protected with enterprise-grade security.
+                  </p>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div className="text-xs opacity-60 border-t border-white/10 pt-6">
+          {/* Footer */}
+          <div className="text-xs text-white/50 border-t border-white/10 pt-6">
             Global Hiring Network
           </div>
         </div>
@@ -358,10 +407,10 @@ function LoginPage() {
 
           {/* Header */}
           <div className="mb-6">
-            <h2 className="text-3xl font-bold text-[#041627]">
+            <h2 className="text-3xl font-bold text-primaryBrand">
               Login to RawRecruit
             </h2>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-primary text-sm mt-2">
               Continue your journey seamlessly
             </p>
           </div>

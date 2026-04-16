@@ -297,14 +297,14 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     ];
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 p-4">
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative w-full max-w-3xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4"></div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -313,7 +313,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                     transition={{ duration: 0.3 }}
                     className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
                 >
-                    <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+                    <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
                     <h1 className="text-2xl font-bold mb-1 text-gray-800 text-center">Connect to Your Company!</h1>
                     <p className="text-gray-600 mb-6 text-center">Select the company you represent or register a new one.</p>
@@ -338,7 +338,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                                 {isLoadingCompanies && (
                                     <p className="text-sm text-gray-500 text-center mt-1">Loading companies...</p>
                                 )}
-                                <p className="text-[#667eea] text-sm font-medium cursor-pointer hover:text-[#764ba2] hover:underline mt-2 text-center transition-colors"
+                                <p className="text-[#143694] text-sm font-medium cursor-pointer hover:text-[#1e4ed8] hover:underline mt-2 text-center transition-colors"
                                     onClick={() => {
                                         setIsRegisteringNewCompany(true);
                                         handleChange('companyName', '');
@@ -362,7 +362,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                                     required
                                     error={errors.companyName}
                                 />
-                                <p className="text-[#667eea] text-sm font-medium cursor-pointer hover:text-[#764ba2] hover:underline mt-2 text-center transition-colors"
+                                <p className="text-[#143694] text-sm font-medium cursor-pointer hover:text-[#1e4ed8] hover:underline mt-2 text-center transition-colors"
                                     onClick={() => {
                                         setIsRegisteringNewCompany(false);
                                         handleChange('companyName', '');
@@ -655,7 +655,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                             >
                                 {isSubmitting ? 'Processing...' : 'Next'}
                             </button>

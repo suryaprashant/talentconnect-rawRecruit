@@ -192,17 +192,17 @@ export default function UserManagement() {
   
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="container mx-auto px-4 py-8 pt-22">
           {/* Header Section */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div className="flex items-center mb-4 md:mb-0">
-                <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-4">
-                  <Users className="h-6 w-6 text-[#667eea]" />
+                <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-4">
+                  <Users className="h-6 w-6 text-[#143694]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                     Manage Users
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -212,7 +212,7 @@ export default function UserManagement() {
               </div>
               <button 
                 onClick={() => setShowAddEmployerModal(true)}
-                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
               >
                 <UserPlus className="h-4 w-4" /> Add Existing Employer
               </button>
@@ -235,7 +235,7 @@ export default function UserManagement() {
                   </div>
                   <button 
                     onClick={clearAllFilters}
-                    className="w-full px-4 py-2 text-sm text-gray-600 hover:text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5 rounded-xl transition-all duration-200"
+                    className="w-full px-4 py-2 text-sm text-gray-600 hover:text-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5 rounded-xl transition-all duration-200"
                   >
                     Clear all filters
                   </button>
@@ -252,7 +252,7 @@ export default function UserManagement() {
                             <div className="relative flex items-center">
                               <input 
                                 type="checkbox" 
-                                className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                                 checked={selectedRoles.includes(role.toLowerCase()) || (role === 'all' && selectedRoles.includes('all'))}
                                 onChange={() => handleRoleChange(role.toLowerCase())} 
                               />
@@ -279,7 +279,7 @@ export default function UserManagement() {
                         <div className="relative flex items-center">
                           <input 
                             type="checkbox" 
-                            className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                            className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                             checked={selectedStatuses.includes(status.toLowerCase())}
                             onChange={() => handleStatusChange(status.toLowerCase())} 
                           />
@@ -317,7 +317,7 @@ export default function UserManagement() {
           <input 
             type="text" 
             placeholder="Search by name or email" 
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
             value={searchTerm} 
             onChange={handleSearchChange} 
           />
@@ -329,7 +329,7 @@ export default function UserManagement() {
     <div className="overflow-x-auto flex-1">
       {loading && (
         <div className="p-8 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#667eea]"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#143694]"></div>
           <p className="mt-2 text-gray-600">Loading users...</p>
         </div>
       )}
@@ -347,7 +347,7 @@ export default function UserManagement() {
           <thead className="bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3 w-8">
-                <input type="checkbox" className="h-4 w-4 text-[#667eea] border-gray-300 rounded" />
+                <input type="checkbox" className="h-4 w-4 text-[#143694] border-gray-300 rounded" />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Members</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -362,13 +362,13 @@ export default function UserManagement() {
               filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/50 transition-all duration-200">
                   <td className="px-6 py-4">
-                    <input type="checkbox" className="h-4 w-4 text-[#667eea] border-gray-300 rounded" />
+                    <input type="checkbox" className="h-4 w-4 text-[#143694] border-gray-300 rounded" />
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-sm font-medium text-[#667eea]">{user.name.charAt(0)}</span>
+                      <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-sm font-medium text-[#143694]">{user.name.charAt(0)}</span>
                       </div>
                       <div className="text-sm font-medium text-gray-900">{user.name}</div>
                     </div>
@@ -438,8 +438,8 @@ export default function UserManagement() {
           <div className="bg-white/95 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <div className="flex items-center">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <UserPlus className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <UserPlus className="h-5 w-5 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">Add Existing Employer</h3>
               </div>
@@ -455,13 +455,13 @@ export default function UserManagement() {
               <input
                 type="email"
                 placeholder="Start typing to search by email..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                 value={inviteEmail}
                 onChange={(e) => handleSearchEmployer(e.target.value)}
               />
               {isSearching && (
                 <div className="mt-3 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#667eea]"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#143694]"></div>
                   <span className="ml-2 text-sm text-gray-500">Searching...</span>
                 </div>
               )}
@@ -471,7 +471,7 @@ export default function UserManagement() {
                     <li 
                       key={user._id} 
                       onClick={() => handleSelectUserToInvite(user)}
-                      className="p-4 hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5 cursor-pointer border-b last:border-b-0 transition-all duration-200"
+                      className="p-4 hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5 cursor-pointer border-b last:border-b-0 transition-all duration-200"
                     >
                       <p className="font-medium text-gray-900">{user.name}</p>
                       <p className="text-sm text-gray-500">{user.email}</p>
@@ -504,8 +504,8 @@ export default function UserManagement() {
           <div className="bg-white/95 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <div className="flex items-center">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Users className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Users className="h-5 w-5 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">Assign Role</h3>
               </div>
@@ -527,7 +527,7 @@ export default function UserManagement() {
                 <select 
                   value={selectedRole} 
                   onChange={(e) => setSelectedRole(e.target.value)} 
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
                 >
                   <option value="">Choose a role...</option>
                   <option value="Admin">Admin</option>
@@ -558,7 +558,7 @@ export default function UserManagement() {
               <button 
                 onClick={handleSendInvitation} 
                 disabled={!selectedRole}
-                className="px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Confirm and Assign
               </button>

@@ -583,9 +583,9 @@ useEffect(() => {
             fontSize: '14px',
             backgroundColor: 'rgba(255, 255, 255, 0.5)',
             backdropFilter: 'blur(8px)',
-            borderColor: state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
-            boxShadow: state.isFocused ? '0 0 0 1px #93c5fd' : 'none',
-            '&:hover': { borderColor: '#93c5fd' },
+            borderColor: state.isFocused ? '#143694' : 'rgba(255, 255, 255, 0.5)',
+            boxShadow: state.isFocused ? '0 0 0 1px #143694' : 'none',
+            '&:hover': { borderColor: '#143694' },
         }),
         menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30 }),
         multiValue: (base) => ({
@@ -595,16 +595,16 @@ useEffect(() => {
         }),
         multiValueLabel: (base) => ({
             ...base,
-            color: '#3b82f6',
+            color: '#1e4ed8',
             fontWeight: 600,
             fontSize: '12px',
             paddingLeft: '8px',
         }),
         multiValueRemove: (base) => ({
             ...base,
-            color: '#3b82f6',
+            color: '#1e4ed8',
             borderRadius: '9999px',
-            ':hover': { backgroundColor: 'rgba(59,130,246,0.2)', color: '#3b82f6' },
+            ':hover': { backgroundColor: 'rgba(59,130,246,0.2)', color: '#1e4ed8' },
         }),
         placeholder: (base) => ({ ...base, color: '#6b7280', fontSize: '14px' }),
     };
@@ -625,7 +625,7 @@ useEffect(() => {
             {/* Pastel blur background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
             </div>
 
@@ -633,7 +633,7 @@ useEffect(() => {
                 {/* Header */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 p-4 mb-6">
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-1">
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-1">
                             Pool Campus Connect: Hire Bigger
                         </h1>
                         <p className="text-gray-600 text-sm max-w-2xl mx-auto">
@@ -651,7 +651,7 @@ useEffect(() => {
 
                 {/* Form */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6 text-center">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-6 text-center">
                         Register for Pool Campus Hiring 
                     </h2>
                     <p className="text-gray-600 mb-8 text-center text-sm">
@@ -663,7 +663,7 @@ useEffect(() => {
                         {/* ============ SECTION 1: HIRING DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <MapPin className="w-5 h-5 text-[#3b82f6]" />
+                                <MapPin className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Hiring Details</h3>
                             </div>
 
@@ -671,7 +671,7 @@ useEffect(() => {
                                 {/* Hiring Venue */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <MapPin className="w-4 h-4 text-[#3b82f6]" />
+                                        <MapPin className="w-4 h-4 text-[#1e4ed8]" />
                                         Hiring Venue <span className="text-red-500">*</span>
                                     </label>
                                     <CreatableSelect
@@ -686,11 +686,11 @@ useEffect(() => {
                                                 ...base,
                                                 backgroundColor: 'rgba(255, 255, 255, 0.5)',
                                                 backdropFilter: 'blur(8px)',
-                                                borderColor: errors.venue ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
+                                                borderColor: errors.venue ? '#fca5a5' : state.isFocused ? '#143694' : 'rgba(255, 255, 255, 0.5)',
                                                 minHeight: '42px',
                                                 borderRadius: '8px',
                                                 fontSize: '14px',
-                                                '&:hover': { borderColor: errors.venue ? '#fca5a5' : '#93c5fd' },
+                                                '&:hover': { borderColor: errors.venue ? '#fca5a5' : '#143694' },
                                             }),
                                             menu: (base) => ({ ...base, fontSize: '14px' }),
                                         }}
@@ -701,17 +701,17 @@ useEffect(() => {
                                 {/* College Type */}
                                 <div ref={collegeTypesRef} className="relative">
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <School className="w-4 h-4 text-[#3b82f6]" />
+                                        <School className="w-4 h-4 text-[#1e4ed8]" />
                                         Type of College
                                     </label>
                                     <div
                                         onClick={() => toggleDropdown('collegeTypes')}
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 flex items-center justify-between text-sm"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#143694] transition-all duration-200 flex items-center justify-between text-sm"
                                     >
                                         <span className={formData.collegeTypes ? "text-gray-900" : "text-gray-500"}>
                                             {formData.collegeTypes || 'Select college type'}
                                         </span>
-                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""}`} />
+                                        <ChevronDown className={`w-4 h-4 text-[#1e4ed8] transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""}`} />
                                     </div>
                                     {dropdownOpen.collegeTypes && (
                                         <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
@@ -726,7 +726,7 @@ useEffect(() => {
                                                 />
                                                 <button
                                                     type="button"
-                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
+                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded text-xs font-medium"
                                                     onClick={() => handleCustomSingleAdd('collegeTypes', customCollegeType, setCustomCollegeType)}
                                                 >
                                                     Add
@@ -737,7 +737,7 @@ useEffect(() => {
                                                     <div
                                                         key={option}
                                                         onClick={() => handleOptionSelect('collegeTypes', option)}
-                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm ${formData.collegeTypes === option ? 'bg-[#93c5fd]/10' : ''}`}
+                                                        className={`px-3 py-2 hover:bg-[#143694]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm ${formData.collegeTypes === option ? 'bg-[#143694]/10' : ''}`}
                                                     >
                                                         {option}
                                                     </div>
@@ -752,7 +752,7 @@ useEffect(() => {
                         {/* ============ SECTION 2: ACADEMIC DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <BookOpen className="w-5 h-5 text-[#3b82f6]" />
+                                <BookOpen className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Academic Details</h3>
                             </div>
 
@@ -761,7 +761,7 @@ useEffect(() => {
                                 {/* ── Degree (dynamic, multi, creatable) ── */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
+                                        <GraduationCap className="w-4 h-4 text-[#1e4ed8]" />
                                         Degree(s) <span className="text-red-500">*</span>
                                     </label>
                                     <CreatableSelect
@@ -801,7 +801,7 @@ useEffect(() => {
                                 {/* ── Stream (dynamic, multi, creatable, disabled until degree picked) ── */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
+                                        <GraduationCap className="w-4 h-4 text-[#1e4ed8]" />
                                         Stream
                                     </label>
                                     <CreatableSelect
@@ -834,7 +834,7 @@ useEffect(() => {
                                 {/* Employment Type */}
                                 <div className="lg:col-span-2">
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Briefcase className="w-4 h-4 text-[#3b82f6]" />
+                                        <Briefcase className="w-4 h-4 text-[#1e4ed8]" />
                                         Employment type <span className="text-red-500">*</span>
                                     </label>
                                     <div className="flex gap-2">
@@ -844,7 +844,7 @@ useEffect(() => {
                                                 type="button"
                                                 className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
                                                     formData.employmentType.includes(type)
-                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent'
+                                                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
                                                         : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
                                                 }`}
                                                 onClick={() => handleMultiToggle('employmentType', type)}
@@ -861,27 +861,27 @@ useEffect(() => {
                         {/* ============ SECTION 3: CONTACT DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <UsersIcon className="w-5 h-5 text-[#3b82f6]" />
+                                <UsersIcon className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Contact Details</h3>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        <User className="w-4 h-4 text-[#1e4ed8]" />
                                         Contact Person Name <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text" name="name" value={formData.contactPerson.name}
                                         onChange={handleContactChange} placeholder="Enter full name"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonName ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonName ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                     />
                                     {errors.contactPersonName && <p className="mt-1 text-xs text-red-600">{errors.contactPersonName}</p>}
                                 </div>
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        <User className="w-4 h-4 text-[#1e4ed8]" />
                                         Designation <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
@@ -980,39 +980,39 @@ useEffect(() => {
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Mail className="w-4 h-4 text-[#3b82f6]" />
+                                        <Mail className="w-4 h-4 text-[#1e4ed8]" />
                                         Email <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="email" name="email" value={formData.contactPerson.email}
                                         onChange={handleContactChange} placeholder="example@company.com"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonEmail ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonEmail ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                     />
                                     {errors.contactPersonEmail && <p className="mt-1 text-xs text-red-600">{errors.contactPersonEmail}</p>}
                                 </div>
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Phone className="w-4 h-4 text-[#3b82f6]" />
+                                        <Phone className="w-4 h-4 text-[#1e4ed8]" />
                                         Mobile No <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="tel" name="mobile" value={formData.contactPerson.mobile}
                                         onChange={handleContactChange} placeholder="10-digit mobile number"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonMobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonMobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                     />
                                     {errors.contactPersonMobile && <p className="mt-1 text-xs text-red-600">{errors.contactPersonMobile}</p>}
                                 </div>
 
                                 <div className="lg:col-span-2">
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Linkedin className="w-4 h-4 text-[#3b82f6]" />
+                                        <Linkedin className="w-4 h-4 text-[#1e4ed8]" />
                                         LinkedIn Profile
                                     </label>
                                     <input
                                         type="url" name="linkedin" value={formData.contactPerson.linkedin}
                                         onChange={handleContactChange} placeholder="linkedin.com/in/username"
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -1021,20 +1021,20 @@ useEffect(() => {
                         {/* ============ SECTION 4: PLACEMENT DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Briefcase className="w-5 h-5 text-[#3b82f6]" />
+                                <Briefcase className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Placement Details</h3>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Users className="w-4 h-4 text-[#3b82f6]" />
+                                        <Users className="w-4 h-4 text-[#1e4ed8]" />
                                         Min Students to Place <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <select
                                             name="minStudentsToBePlaced"
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                             value={formData.minStudentsToBePlaced}
                                             onChange={handleChange}
                                         >
@@ -1048,7 +1048,7 @@ useEffect(() => {
                                 {/* Company Type */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        <Building className="w-4 h-4 text-[#1e4ed8]" />
                                         Company Type
                                     </label>
                                     <CreatableSelect
@@ -1086,7 +1086,7 @@ useEffect(() => {
                         {/* ============ SECTION 5: COMPENSATION DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <IndianRupee className="w-5 h-5 text-[#3b82f6]" />
+                                <IndianRupee className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Compensation Details</h3>
                             </div>
 
@@ -1094,10 +1094,10 @@ useEffect(() => {
                                 {/* Salary */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <IndianRupee className="w-4 h-4 text-[#3b82f6]" />
+                                        <IndianRupee className="w-4 h-4 text-[#1e4ed8]" />
                                         Minimum Cut-off Salary
                                     </label>
-                                    <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
+                                    <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#143694] focus-within:border-transparent transition-all duration-200">
                                         <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
                                             <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
                                                 {formData.salaryRange === 'INR' ? (
@@ -1147,7 +1147,7 @@ useEffect(() => {
                                 {/* Application Dates */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                                        <Calendar className="w-4 h-4 text-[#1e4ed8]" />
                                         Application Dates
                                     </label>
                                     <div className="grid grid-cols-2 gap-2">
@@ -1156,7 +1156,7 @@ useEffect(() => {
                                                 selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
                                                 onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
                                                 dateFormat="dd-MM-yyyy" placeholderText="Start"
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent pl-8"
                                             />
                                             <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                         </div>
@@ -1165,7 +1165,7 @@ useEffect(() => {
                                                 selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
                                                 onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
                                                 dateFormat="dd-MM-yyyy" placeholderText="End"
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent pl-8"
                                             />
                                             <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                         </div>
@@ -1177,20 +1177,20 @@ useEffect(() => {
                         {/* ============ SECTION 6: STUDENT DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Users className="w-5 h-5 text-[#3b82f6]" />
+                                <Users className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Student Details</h3>
                             </div>
 
                             <div>
                                 <div className="flex justify-between items-center mb-2">
                                     <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
-                                        <List className="w-4 h-4 text-[#3b82f6]" />
+                                        <List className="w-4 h-4 text-[#1e4ed8]" />
                                         Student Information
                                     </label>
                                     <button
                                         type="button"
                                         onClick={handleAddRound}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6] text-white text-xs rounded-lg hover:bg-[#2563eb] transition-colors duration-200"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1e4ed8] text-white text-xs rounded-lg hover:bg-[#2563eb] transition-colors duration-200"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
                                         Add Student
@@ -1216,7 +1216,7 @@ useEffect(() => {
                                                         <td className="px-2 py-1.5 text-center">{index + 1}</td>
                                                         <td className="px-2 py-1.5">
                                                             <select
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
                                                                 value={round.branch}
                                                                 onChange={(e) => {
                                                                     const newBranch = e.target.value;
@@ -1233,7 +1233,7 @@ useEffect(() => {
                                                         <td className="px-2 py-1.5">
                                                             <input
                                                                 type="number"
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
                                                                 value={round.students}
                                                                 onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)}
                                                                 min="0" placeholder="0"
@@ -1242,7 +1242,7 @@ useEffect(() => {
                                                         <td className="px-2 py-1.5">
                                                             <input
                                                                 type="text"
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
                                                                 value={round.skills}
                                                                 onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)}
                                                                 placeholder="e.g., React, Node.js, MongoDB"
@@ -1270,10 +1270,10 @@ useEffect(() => {
                                     </div>
                                 )}
 
-                                <div className="mt-2 p-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#93c5fd]/20 rounded text-xs">
+                                <div className="mt-2 p-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20 rounded text-xs">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-medium text-[#3b82f6]">Total Students:</span>
-                                        <span className="font-bold text-[#3b82f6]">{totalStudents}</span>
+                                        <span className="font-medium text-[#1e4ed8]">Total Students:</span>
+                                        <span className="font-bold text-[#1e4ed8]">{totalStudents}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1282,13 +1282,13 @@ useEffect(() => {
                         {/* ============ SECTION 7: SCHEDULE DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Clock className="w-5 h-5 text-[#3b82f6]" />
+                                <Clock className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Schedule Details</h3>
                             </div>
 
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Clock className="w-4 h-4 text-[#3b82f6]" />
+                                    <Clock className="w-4 h-4 text-[#1e4ed8]" />
                                     Proposed Schedule <span className="text-red-500">*</span>
                                 </label>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1297,7 +1297,7 @@ useEffect(() => {
                                             selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
                                             onChange={(date) => handleProposedDateChange(date, 'startDate')}
                                             dateFormat="dd-MM-yyyy" placeholderText="Start Date"
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                         />
                                         <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                                         {errors.proposedStartDate && <p className="mt-1 text-xs text-red-600">{errors.proposedStartDate}</p>}
@@ -1307,7 +1307,7 @@ useEffect(() => {
                                             selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
                                             onChange={(date) => handleProposedDateChange(date, 'endDate')}
                                             dateFormat="dd-MM-yyyy" placeholderText="End Date"
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                         />
                                         <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                                         {errors.proposedEndDate && <p className="mt-1 text-xs text-red-600">{errors.proposedEndDate}</p>}
@@ -1315,7 +1315,7 @@ useEffect(() => {
                                     <div className="relative">
                                         <select
                                             name="preferredMode"
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent`}
                                             value={formData.proposedSchedule.preferredMode}
                                             onChange={handleProposedScheduleChange}
                                         >
@@ -1331,7 +1331,7 @@ useEffect(() => {
                         {/* ============ SECTION 8: ADDITIONAL INFORMATION ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <FileText className="w-5 h-5 text-[#3b82f6]" />
+                                <FileText className="w-5 h-5 text-[#1e4ed8]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Additional Information</h3>
                             </div>
 
@@ -1339,18 +1339,18 @@ useEffect(() => {
                                 {/* Amenities */}
                                 <div ref={amenitiesRef} className="relative">
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        <Building className="w-4 h-4 text-[#1e4ed8]" />
                                         Campus Facilities
                                     </label>
                                     <div className="relative">
                                         <div
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#143694] transition-all duration-200 text-sm"
                                             onClick={() => toggleDropdown('amenities')}
                                         >
                                             {formData.amenities.length > 0 ? (
                                                 <div className="flex flex-wrap gap-1">
                                                     {formData.amenities.slice(0, 3).map(item => (
-                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 text-[#1e4ed8] text-xs font-semibold px-2 py-0.5 rounded-full">
                                                             {item}
                                                         </span>
                                                     ))}
@@ -1366,16 +1366,16 @@ useEffect(() => {
                                                     {amenitiesOptions.map(opt => (
                                                         <div
                                                             key={opt}
-                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`}
+                                                            className={`px-3 py-2 hover:bg-[#143694]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#143694]/10" : ""}`}
                                                             onClick={() => handleMultiToggle('amenities', opt)}
                                                         >
                                                             <div className="flex items-center">
-                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#1e4ed8] border-[#1e4ed8]' : 'border-gray-300'}`}>
                                                                     {formData.amenities.includes(opt) && <CheckSquare size={10} className="text-white" />}
                                                                 </div>
                                                                 <span className="text-sm">{opt}</span>
                                                             </div>
-                                                            {formData.amenities.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                            {formData.amenities.includes(opt) && <span className="text-[#1e4ed8] text-xs">✓</span>}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1396,12 +1396,12 @@ useEffect(() => {
                                 {/* Description */}
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
+                                        <MessageSquare className="w-4 h-4 text-[#1e4ed8]" />
                                         Description
                                     </label>
                                     <textarea
                                         name="description"
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent resize-none"
                                         placeholder="Additional information about the pool campus drive, specific requirements, or any other details..."
                                         value={formData.description}
                                         onChange={(e) => {
@@ -1436,7 +1436,7 @@ useEffect(() => {
                             )}
                             <button
                                 type="submit" disabled={isSubmitting}
-                                className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 <Send className="w-4 h-4" />
                                 {isSubmitting ? 'Submitting...' : 'Register PoolCampus'}

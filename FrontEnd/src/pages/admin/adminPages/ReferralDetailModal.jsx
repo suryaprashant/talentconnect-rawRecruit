@@ -123,7 +123,7 @@ const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
                 <p className="text-sm text-slate-600 mb-3">{job?.eligibilityCriteria}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {job?.studentStreams?.map(s => (
-                    <span key={s} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-[11px] font-semibold">{s}</span>
+                    <span key={s} className="px-2 py-0.5 bg-blue-50 text-[#143694] border border-blue-100 rounded text-[11px] font-semibold">{s}</span>
                   ))}
                 </div>
               </section>

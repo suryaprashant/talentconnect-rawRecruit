@@ -138,17 +138,17 @@ export default function EmployerJobListing() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="mb-4 md:mb-0">
               <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Building2 className="h-5 w-5 text-[#143694]" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Manage Job-listing Applications
                 </h1>
               </div>
@@ -176,7 +176,7 @@ export default function EmployerJobListing() {
           <div className="divide-y divide-gray-100">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading jobs...</p>
               </div>
             ) : currentJobs?.length === 0 ? (
@@ -201,7 +201,7 @@ export default function EmployerJobListing() {
     to={`/company-dashboard/preview/Internship/${job._id}?isApplied=true`}
     className="group cursor-pointer block"
   >
-    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors break-words whitespace-normal">
       {job?.jobTitle}
     </h3>
     <div className="flex items-center gap-2 mt-1">
@@ -236,7 +236,7 @@ export default function EmployerJobListing() {
 
                     {/* Applications Count */}
                     <div className="col-span-2 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                         {job?.applicationCount || 0}
                       </span>
                     </div>
@@ -246,7 +246,7 @@ export default function EmployerJobListing() {
                       <div className="flex items-center justify-center gap-2">
                         <button 
                           onClick={() => handleView(job._id)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                           title="View Job"
                         >
                           <Eye size={16} />
@@ -285,7 +285,7 @@ export default function EmployerJobListing() {
                     onClick={() => handlePageClick(page)}
                     className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                       currentPage === page 
-                        ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                         : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                     }`}
                   >

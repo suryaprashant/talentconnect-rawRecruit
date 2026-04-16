@@ -423,15 +423,15 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+//     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
 //       <div className="container mx-auto px-4 py-8 max-w-4xl">
 //         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
 //           <div className="text-center mb-6">
 //             <div className="flex items-center justify-center mb-3">
-//               <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-//                 <Building2 className="h-5 w-5 text-[#667eea]" />
+//               <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+//                 <Building2 className="h-5 w-5 text-[#143694]" />
 //               </div>
-//               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+//               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
 //                 OnCampus Connect: Hire Smarter
 //               </h1>
 //             </div>
@@ -443,7 +443,7 @@
 
 //         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
 //           <div className="text-center mb-8">
-//             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for On-Campus Hiring</h2>
+//             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Register for On-Campus Hiring</h2>
 //             <p className="text-gray-500 mt-2">Fill in your requirements to find the best talent from campuses across the nation.</p>
 //           </div>
 
@@ -499,7 +499,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('degree', customDegree, setCustomDegree, degrees);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -508,8 +508,8 @@
 //                     {degrees.map(degree => (
 //                       <div key={degree} onClick={() => handleMultiSelect('degree', degree)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.degree.includes(degree) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.degree.includes(degree) ? "text-[#667eea] font-medium" : "text-gray-700"}>{degree}</span>
-//                           {formData.degree.includes(degree) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.degree.includes(degree) ? "text-[#143694] font-medium" : "text-gray-700"}>{degree}</span>
+//                           {formData.degree.includes(degree) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -560,7 +560,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -570,8 +570,8 @@
 //                       availableStreams.map(stream => (
 //                         <div key={stream} onClick={() => handleMultiSelect('studentStreams', stream)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.studentStreams.includes(stream) ? "bg-blue-50" : ""}`}>
 //                           <div className="flex items-center justify-between">
-//                             <span className={formData.studentStreams.includes(stream) ? "text-[#667eea] font-medium" : "text-gray-700"}>{stream}</span>
-//                             {formData.studentStreams.includes(stream) && <span className="text-[#667eea]">✓</span>}
+//                             <span className={formData.studentStreams.includes(stream) ? "text-[#143694] font-medium" : "text-gray-700"}>{stream}</span>
+//                             {formData.studentStreams.includes(stream) && <span className="text-[#143694]">✓</span>}
 //                           </div>
 //                         </div>
 //                       ))
@@ -602,8 +602,8 @@
 //                   {collegeCategoryOptions.map(type => (
 //                     <div key={type} onClick={() => handleMultiSelect('collegeCategories', type)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.collegeCategories.includes(type) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.collegeCategories.includes(type) ? "text-[#667eea] font-medium" : "text-gray-700"}>{type}</span>
-//                         {formData.collegeCategories.includes(type) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.collegeCategories.includes(type) ? "text-[#143694] font-medium" : "text-gray-700"}>{type}</span>
+//                         {formData.collegeCategories.includes(type) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -633,7 +633,7 @@
 //                     value="Everyone"
 //                     checked={formData.broadcastType === 'Everyone'}
 //                     onChange={handleChange}
-//                     className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+//                     className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
 //                   />
 //                   <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
 //                 </label>
@@ -644,7 +644,7 @@
 //                     value="Location"
 //                     checked={formData.broadcastType === 'Location'}
 //                     onChange={handleChange}
-//                     className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+//                     className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
 //                   />
 //                   <span className="ml-2 text-gray-700">Broadcast by Location</span>
 //                 </label>
@@ -657,9 +657,9 @@
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Looking for <span className="text-red-500">*</span></label>
 //               <div className="flex flex-wrap gap-2">
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Job' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Job')}>Job</button>
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Internship' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Internship')}>Internship</button>
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Both' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Both')}>Both</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Job' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Job')}>Job</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Internship' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Internship')}>Internship</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.lookingFor === 'Both' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('lookingFor', 'Both')}>Both</button>
 //               </div>
 //             </div>
 
@@ -667,7 +667,7 @@
 //               <label className="block mb-2 font-medium text-gray-700">Employment type <span className="text-red-500">*</span></label>
 //               <div className="flex flex-wrap gap-2">
 //                 {['Part-time', 'Full-time', 'Contract'].map(type => (
-//                   <button key={type} type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleMultiSelect('employmentType', type)}>
+//                   <button key={type} type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleMultiSelect('employmentType', type)}>
 //                     {type}
 //                   </button>
 //                 ))}
@@ -677,9 +677,9 @@
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Work Mode <span className="text-red-500">*</span></label>
 //               <div className="flex space-x-2">
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'Hybrid' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'Hybrid')}>Hybrid</button>
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'On-site' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'On-site')}>On-site</button>
-//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'Remote' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'Remote')}>Remote</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'Hybrid' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'Hybrid')}>Hybrid</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'On-site' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'On-site')}>On-site</button>
+//                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'Remote' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'Remote')}>Remote</button>
 //               </div>
 //             </div>
             
@@ -690,7 +690,7 @@
 //                   <button 
 //                     key={mode} 
 //                     type="button" 
-//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
 //                     onClick={() => handleHiringPreferenceChange(mode)}
 //                   >
 //                     {mode}
@@ -736,7 +736,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -745,8 +745,8 @@
 //                     {jobRoles.map(role => (
 //                       <div key={role} onClick={() => handleMultiSelect('jobRoles', role)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.jobRoles.includes(role) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.jobRoles.includes(role) ? "text-[#667eea] font-medium" : "text-gray-700"}>{role}</span>
-//                           {formData.jobRoles.includes(role) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.jobRoles.includes(role) ? "text-[#143694] font-medium" : "text-gray-700"}>{role}</span>
+//                           {formData.jobRoles.includes(role) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -804,7 +804,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -813,8 +813,8 @@
 //                     {skillsOptions.map(skill => (
 //                       <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.skills.includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}>{skill}</span>
-//                           {formData.skills.includes(skill) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.skills.includes(skill) ? "text-[#143694] font-medium" : "text-gray-700"}>{skill}</span>
+//                           {formData.skills.includes(skill) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -825,7 +825,7 @@
 
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Eligibility Criteria <span className="text-red-500">*</span></label>
-//               <textarea name="eligibilityCriteria" value={formData.eligibilityCriteria} onChange={handleChange} placeholder="Example: Minimum 60% aggregate, No active backlogs..." className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" required></textarea>
+//               <textarea name="eligibilityCriteria" value={formData.eligibilityCriteria} onChange={handleChange} placeholder="Example: Minimum 60% aggregate, No active backlogs..." className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" required></textarea>
 //             </div>
 
 //             <div>
@@ -835,7 +835,7 @@
 //                 value={formData.description}
 //                 onChange={handleChange}
 //                 placeholder="Provide a detailed job description..."
-//                 className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-500' : ''}`}
+//                 className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-500' : ''}`}
 //                 maxLength={600}
 //                 required
 //               ></textarea>
@@ -865,8 +865,8 @@
 //                   {amenitiesOptions.map(amenity => (
 //                     <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.amenitiesRequired.includes(amenity) ? "text-[#667eea] font-medium" : "text-gray-700"}>{amenity}</span>
-//                         {formData.amenitiesRequired.includes(amenity) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.amenitiesRequired.includes(amenity) ? "text-[#143694] font-medium" : "text-gray-700"}>{amenity}</span>
+//                         {formData.amenitiesRequired.includes(amenity) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -893,8 +893,8 @@
 //                   {benefitsOptions.map(benefit => (
 //                     <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}>{benefit}</span>
-//                         {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.benefits.includes(benefit) ? "text-[#143694] font-medium" : "text-gray-700"}>{benefit}</span>
+//                         {formData.benefits.includes(benefit) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -910,7 +910,7 @@
 //                     name="currency"
 //                     value={formData.packageDetails.currency}
 //                     onChange={handlePackageDetailsChange}
-//                     className="w-full h-full p-2 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+//                     className="w-full h-full p-2 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
 //                   >
 //                     <option value="INR">INR</option>
 //                     <option value="USD">USD</option>
@@ -924,7 +924,7 @@
 //                   value={formData.packageDetails.totalCTC}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Total CTC (e.g. 1000000)"
-//                   className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                   required
 //                 />
 //               </div>
@@ -935,7 +935,7 @@
 //                   value={formData.packageDetails.fixedPay}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Fixed Pay (e.g. 800000)"
-//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                 />
 //                 <input
 //                   type="number"
@@ -943,7 +943,7 @@
 //                   value={formData.packageDetails.joiningBonus}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Variable Pay (e.g. 50000)"
-//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                 />
 //               </div>
 //             </div>
@@ -961,7 +961,7 @@
 //                       value={formData.startDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       required 
 //                     />
 //                   </div>
@@ -976,7 +976,7 @@
 //                       value={formData.endDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       required 
 //                     />
 //                   </div>
@@ -994,7 +994,7 @@
 //                     <input 
 //                       type="date" 
 //                       name="onlineTestDate" 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       value={formData.onlineTestDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
@@ -1010,7 +1010,7 @@
 //                       <input 
 //                         type="date" 
 //                         name="start" 
-//                         className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                         className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                         value={formData.interviewWindow.start} 
 //                         onChange={handleInterviewWindowChange} 
 //                         onClick={(e) => e.target.showPicker && e.target.showPicker()} 
@@ -1024,7 +1024,7 @@
 //                       <input 
 //                         type="date" 
 //                         name="end" 
-//                         className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                         className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                         value={formData.interviewWindow.end} 
 //                         onChange={handleInterviewWindowChange} 
 //                         onClick={(e) => e.target.showPicker && e.target.showPicker()} 
@@ -1040,7 +1040,7 @@
 //                     <input 
 //                       type="date" 
 //                       name="offerRolloutDate" 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       value={formData.offerRolloutDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
@@ -1053,7 +1053,7 @@
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
 //               <div className="relative">
-//                 <select name="numberOfRounds" value={formData.numberOfRounds} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+//                 <select name="numberOfRounds" value={formData.numberOfRounds} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
 //                   <option value="" disabled>Select number of rounds</option>
 //                   {numberOfRoundsOptions.map((round) => (<option key={round} value={round}>{round}</option>))}
 //                 </select>
@@ -1083,8 +1083,8 @@
 //                       className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.selectionProcess.includes(process) ? "bg-blue-50" : ""}`}
 //                     >
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.selectionProcess.includes(process) ? "text-[#667eea] font-medium" : "text-gray-700"}>{process}</span>
-//                         {formData.selectionProcess.includes(process) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.selectionProcess.includes(process) ? "text-[#143694] font-medium" : "text-gray-700"}>{process}</span>
+//                         {formData.selectionProcess.includes(process) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -1111,8 +1111,8 @@
 //                   {tagsOptions.map(tag => (
 //                     <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}>{tag}</span>
-//                         {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}>{tag}</span>
+//                         {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -1122,13 +1122,13 @@
 
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Contact Person <span className="text-red-500">*</span></label>
-//               <input type="text" name="name" value={formData.contactPerson.name} onChange={handleContactChange} placeholder="Enter full name" className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+//               <input type="text" name="name" value={formData.contactPerson.name} onChange={handleContactChange} placeholder="Enter full name" className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
 //             </div>
 
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Contact person designation <span className="text-red-500">*</span></label>
 //               <div className="relative">
-//                 <select name="designation" value={formData.contactPerson.designation} onChange={handleContactChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+//                 <select name="designation" value={formData.contactPerson.designation} onChange={handleContactChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
 //                   <option value="" disabled>Select designation</option>
 //                   {designationOptions.map((designation) => (<option key={designation} value={designation}>{designation}</option>))}
 //                 </select>
@@ -1140,7 +1140,7 @@
 //               <label className="block mb-2 font-medium text-gray-700">Contact person email <span className="text-red-500">*</span></label>
 //               <div className="relative">
 //                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-//                 <input type="email" name="email" value={formData.contactPerson.email} onChange={handleContactChange} placeholder="example@company.com" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+//                 <input type="email" name="email" value={formData.contactPerson.email} onChange={handleContactChange} placeholder="example@company.com" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
 //               </div>
 //             </div>
 
@@ -1148,7 +1148,7 @@
 //               <label className="block mb-2 font-medium text-gray-700">Contact person mobile no <span className="text-red-500">*</span></label>
 //               <div className="relative">
 //                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-//                 <input type="tel" name="mobile" value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+//                 <input type="tel" name="mobile" value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
 //               </div>
 //             </div>
 
@@ -1156,14 +1156,14 @@
 //               <label className="block mb-2 font-medium text-gray-700">Contact person LinkedIn Profile</label>
 //               <div className="relative">
 //                 <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-//                 <input type="url" name="linkedin" value={formData.contactPerson.linkedin} onChange={handleContactChange} placeholder="https://www.linkedin.com/in/username" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" />
+//                 <input type="url" name="linkedin" value={formData.contactPerson.linkedin} onChange={handleContactChange} placeholder="https://www.linkedin.com/in/username" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" />
 //               </div>
 //             </div>
 
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Minimum Students to be Hired <span className="text-red-500">*</span></label>
 //               <div className="relative">
-//                 <select name="minStudents" value={formData.minStudents} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+//                 <select name="minStudents" value={formData.minStudents} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
 //                   <option value="" disabled>Select minimum students</option>
 //                   {minStudentsOptions.map((option) => (<option key={option} value={option}>{option}</option>))}
 //                 </select>
@@ -1175,11 +1175,11 @@
 //               <button
 //                 type="button"
 //                 onClick={() => window.history.back()}
-//                 className="px-6 py-2 text-[#667eea] hover:text-[#764ba2] font-medium transition-colors"
+//                 className="px-6 py-2 text-[#143694] hover:text-[#1e4ed8] font-medium transition-colors"
 //               >
 //                 ← Back
 //               </button>
-//               <button type="submit" disabled={isSubmitting} className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50">
+//               <button type="submit" disabled={isSubmitting} className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50">
 //                 {isSubmitting ? 'Submitting...' : 'Register'}
 //               </button>
 //             </div>
@@ -1742,29 +1742,29 @@ const handleSelectOrAdd = async (skillName) => {
       minHeight: '42px',
       borderRadius: '8px',
       fontSize: '14px',
-      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      borderColor: state.isFocused ? '#143694' : '#e5e7eb',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
       backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-      '&:hover': { borderColor: '#667eea' },
+      '&:hover': { borderColor: '#143694' },
     }),
     menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
     multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
     multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
-    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    multiValueRemove: (base) => ({ ...base, color: '#143694', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
     placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Building2 className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Building2 className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 OnCampus Connect: Hire Smarter 
               </h1>
             </div>
@@ -1777,7 +1777,7 @@ const handleSelectOrAdd = async (skillName) => {
         {/* Main Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for On-Campus Hiring</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Register for On-Campus Hiring</h2>
             <p className="text-gray-500 text-sm mt-1">Fill in your requirements to find the best talent from campuses across the nation.</p>
           </div>
 
@@ -1785,8 +1785,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 1: Student & College Information */}
             <div>
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Users className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Users className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Student & College Information</h3>
               </div>
@@ -1878,8 +1878,8 @@ const handleSelectOrAdd = async (skillName) => {
                       {collegeCategoryOptions.map(type => (
                         <div key={type} onClick={() => handleMultiSelect('collegeCategories', type)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.collegeCategories.includes(type) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.collegeCategories.includes(type) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{type}</span>
-                            {formData.collegeCategories.includes(type) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${formData.collegeCategories.includes(type) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{type}</span>
+                            {formData.collegeCategories.includes(type) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -1952,8 +1952,8 @@ const handleSelectOrAdd = async (skillName) => {
                         {amenitiesOptions.map(amenity => (
                           <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{amenity}</span>
-                              {formData.amenitiesRequired.includes(amenity) && <span className="text-[#667eea]">✓</span>}
+                              <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{amenity}</span>
+                              {formData.amenitiesRequired.includes(amenity) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -1965,8 +1965,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 2: Job Position Details */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Briefcase className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Position Details</h3>
               </div>
@@ -1985,7 +1985,7 @@ const handleSelectOrAdd = async (skillName) => {
                           value="Everyone"
                           checked={formData.broadcastType === 'Everyone'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast to Everyone</span>
                       </label>
@@ -1996,7 +1996,7 @@ const handleSelectOrAdd = async (skillName) => {
                           value="Location"
                           checked={formData.broadcastType === 'Location'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast by Location</span>
                       </label>
@@ -2014,7 +2014,7 @@ const handleSelectOrAdd = async (skillName) => {
                         <button 
                           key={type} 
                           type="button" 
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.lookingFor === type ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.lookingFor === type ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                           onClick={() => handleOptionSelect('lookingFor', type)}
                         >
                           {type}
@@ -2034,7 +2034,7 @@ const handleSelectOrAdd = async (skillName) => {
                         <button 
                           key={type} 
                           type="button" 
-                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                           onClick={() => handleMultiSelect('employmentType', type)}
                         >
                           {type}
@@ -2051,7 +2051,7 @@ const handleSelectOrAdd = async (skillName) => {
                         <button 
                           key={mode} 
                           type="button" 
-                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                           onClick={() => handleOptionSelect('workMode', mode)}
                         >
                           {mode}
@@ -2069,7 +2069,7 @@ const handleSelectOrAdd = async (skillName) => {
                       <button 
                         key={mode} 
                         type="button" 
-                        className={`px-3 py-2 text-sm border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                        className={`px-3 py-2 text-sm border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                         onClick={() => handleHiringPreferenceChange(mode)}
                       >
                         {mode}
@@ -2121,7 +2121,7 @@ const handleSelectOrAdd = async (skillName) => {
                       styles={{
                         control: (base, state) => ({
                           ...base,
-                          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+                          borderColor: state.isFocused ? '#143694' : '#e5e7eb',
                           minHeight: '44px',
                           height: '44px',
                           fontSize: '14px',
@@ -2191,7 +2191,7 @@ const handleSelectOrAdd = async (skillName) => {
                {/* --- INTEGRATED DYNAMIC SKILLS SECTION --- */}
 <div ref={skillsRef} className="relative pt-2">
   <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
-    <Award className="w-4 h-4 text-[#667eea]" />
+    <Award className="w-4 h-4 text-[#143694]" />
     Required Skills <span className="text-red-500">*</span>
   </label>
 
@@ -2200,13 +2200,13 @@ const handleSelectOrAdd = async (skillName) => {
     group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
     bg-gradient-to-r from-gray-50 to-white 
     border rounded-xl transition-all duration-300
-    ${isDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+    ${isDropdownOpen ? 'border-[#143694] ring-2 ring-[#143694]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
   `}>
     {/* Selected Skill Tags */}
     {formData.skills.map((skill) => (
       <div 
         key={skill} 
-        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm"
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm"
       >
         {skill}
         <button 
@@ -2245,11 +2245,11 @@ const handleSelectOrAdd = async (skillName) => {
             <button
               key={index}
               type="button"
-              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
               onClick={() => handleSelectOrAdd(skill)}
             >
               <span>{skill}</span>
-              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
             </button>
           ))}
 
@@ -2257,12 +2257,12 @@ const handleSelectOrAdd = async (skillName) => {
         {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
           <button
             type="button"
-            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
             onClick={() => handleSelectOrAdd(customSkillSearch)}
           >
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                <Target size={16} className="text-[#764ba2]" />
+                <Target size={16} className="text-[#1e4ed8]" />
               </div>
               <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
             </div>
@@ -2285,8 +2285,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 3: Job Description & Requirements */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Target className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Target className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Description & Requirements</h3>
               </div>
@@ -2300,7 +2300,7 @@ const handleSelectOrAdd = async (skillName) => {
                     name="eligibilityCriteria" 
                     rows="3" 
                     placeholder="e.g., Minimum 60%, no backlogs..." 
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
+                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
                     value={formData.eligibilityCriteria} 
                     onChange={handleInputChange} 
                   />
@@ -2315,7 +2315,7 @@ const handleSelectOrAdd = async (skillName) => {
                     value={formData.description}
                     onChange={handleInputChange}
                     placeholder="Provide job description..."
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
+                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
                     maxLength={500}
                     required
                   />
@@ -2331,8 +2331,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 4: Compensation & Benefits */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <IndianRupee className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Compensation & Benefits</h3>
               </div>
@@ -2346,7 +2346,7 @@ const handleSelectOrAdd = async (skillName) => {
                       <div className="relative w-20">
                         <select
                           name="currency"
-                          className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none min-h-[40px]"
+                          className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none min-h-[40px]"
                           value={formData.packageDetails.currency}
                           onChange={handlePackageDetailsChange}
                         >
@@ -2363,7 +2363,7 @@ const handleSelectOrAdd = async (skillName) => {
                         value={formData.packageDetails.totalCTC}
                         onChange={handlePackageDetailsChange}
                         placeholder="Total CTC (e.g., 1000000)"
-                        className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+                        className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
                         required
                       />
                     </div>
@@ -2374,7 +2374,7 @@ const handleSelectOrAdd = async (skillName) => {
                         value={formData.packageDetails.fixedPay}
                         onChange={handlePackageDetailsChange}
                         placeholder="Fixed Pay (₹)"
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
                       />
                       <input
                         type="number"
@@ -2382,7 +2382,7 @@ const handleSelectOrAdd = async (skillName) => {
                         value={formData.packageDetails.joiningBonus}
                         onChange={handlePackageDetailsChange}
                         placeholder="Variable Pay (₹)"
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
                       />
                     </div>
                   </div>
@@ -2412,8 +2412,8 @@ const handleSelectOrAdd = async (skillName) => {
                         {benefitsOptions.map(benefit => (
                           <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
-                              {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+                              <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{benefit}</span>
+                              {formData.benefits.includes(benefit) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -2442,8 +2442,8 @@ const handleSelectOrAdd = async (skillName) => {
                         {tagsOptions.map(tag => (
                           <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
-                              {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{tag}</span>
+                              {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -2460,8 +2460,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 5: Hiring Timeline */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Clock className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Clock className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Hiring Timeline</h3>
               </div>
@@ -2479,7 +2479,7 @@ const handleSelectOrAdd = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'startDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Start date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2493,7 +2493,7 @@ const handleSelectOrAdd = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'endDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="End date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2514,7 +2514,7 @@ const handleSelectOrAdd = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'onlineTestDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Online test date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2530,7 +2530,7 @@ const handleSelectOrAdd = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'start')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="Interview start"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2544,7 +2544,7 @@ const handleSelectOrAdd = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'end')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="Interview end"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2560,7 +2560,7 @@ const handleSelectOrAdd = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Offer rollout"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2578,7 +2578,7 @@ const handleSelectOrAdd = async (skillName) => {
                       <select 
                         id="rounds" 
                         name="rounds" 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
                         value={formData.rounds} 
                         onChange={handleInputChange}
                       >
@@ -2617,7 +2617,7 @@ const handleSelectOrAdd = async (skillName) => {
                                   onClick={() => handleMultiSelect('selectionProcess', process)}
                                   className={`text-sm cursor-pointer ${
                                     isSelected
-                                      ? "text-[#667eea] font-medium"
+                                      ? "text-[#143694] font-medium"
                                       : "text-gray-700"
                                   }`}
                                 >
@@ -2650,8 +2650,8 @@ const handleSelectOrAdd = async (skillName) => {
             {/* SECTION 6: Contact Information */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <MessageSquare className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <MessageSquare className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Contact Information</h3>
               </div>
@@ -2667,7 +2667,7 @@ const handleSelectOrAdd = async (skillName) => {
                       id="contactPersonName" 
                       name="contactPersonName" 
                       placeholder="Name" 
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                       value={formData.contactPersonName} 
                       onChange={handleInputChange} 
                     />
@@ -2723,7 +2723,7 @@ const handleSelectOrAdd = async (skillName) => {
                         id="email" 
                         name="email" 
                         placeholder="hello@xyz.com" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         value={formData.email} 
                         onChange={handleInputChange} 
                       />
@@ -2740,7 +2740,7 @@ const handleSelectOrAdd = async (skillName) => {
                         id="mobile" 
                         name="mobile" 
                         placeholder="1234567890" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         value={formData.mobile} 
                         onChange={handleInputChange} 
                       />
@@ -2760,7 +2760,7 @@ const handleSelectOrAdd = async (skillName) => {
                         id="linkedin" 
                         name="linkedin" 
                         placeholder="linkedin.com/in/profile" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         value={formData.linkedin} 
                         onChange={handleInputChange} 
                       />
@@ -2774,7 +2774,7 @@ const handleSelectOrAdd = async (skillName) => {
                       <select 
                         id="minimumStudents" 
                         name="minimumStudents" 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
                         value={formData.minimumStudents} 
                         onChange={handleInputChange}
                       >
@@ -2794,7 +2794,7 @@ const handleSelectOrAdd = async (skillName) => {
               <button 
                 type="button" 
                 onClick={handleSubmit} 
-                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
               >
                 Register
               </button>

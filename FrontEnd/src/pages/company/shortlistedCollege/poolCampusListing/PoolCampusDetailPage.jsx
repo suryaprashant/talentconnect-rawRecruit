@@ -83,15 +83,15 @@ const PoolCampusDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="container mx-auto px-4 py-8 pt-22">
           <button 
             onClick={handleBack} 
@@ -116,7 +116,7 @@ const PoolCampusDetailPage = () => {
 
   if (!drive) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="container mx-auto px-4 py-8 pt-22">
           <button 
             onClick={handleBack} 
@@ -140,7 +140,7 @@ const PoolCampusDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Main Container */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
@@ -156,11 +156,11 @@ const PoolCampusDetailPage = () => {
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
-                <Building2 className="h-6 w-6 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl">
+                <Building2 className="h-6 w-6 text-[#143694]" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   {drive.institute}
                 </h2>
                 <div className="flex flex-wrap items-center gap-3 mt-2">
@@ -177,7 +177,7 @@ const PoolCampusDetailPage = () => {
                       ? 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
                       : drive.status === 'On-Going'
                       ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
-                      : 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200'
+                      : 'bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border border-blue-200'
                   }`}>
                     {drive.status}
                   </span>
@@ -228,10 +228,10 @@ const PoolCampusDetailPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Offers Made</p>
-                  <p className="text-2xl font-bold text-purple-600">{drive.offered}</p>
+                  <p className="text-2xl font-bold text-[#143694]">{drive.offered}</p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                  <Briefcase className="h-5 w-5 text-purple-600" />
+                  <Briefcase className="h-5 w-5 text-[#143694]" />
                 </div>
               </div>
             </div>
@@ -244,7 +244,7 @@ const PoolCampusDetailPage = () => {
               {/* Drive Description */}
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-[#667eea]" />
+                  <FileText className="h-5 w-5 text-[#143694]" />
                   Drive Overview
                 </h3>
                 <p className="text-gray-700 leading-relaxed">{drive.description}</p>
@@ -253,7 +253,7 @@ const PoolCampusDetailPage = () => {
               {/* Positions */}
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-[#667eea]" />
+                  <Briefcase className="h-5 w-5 text-[#143694]" />
                   Open Positions
                 </h3>
                 <div className="overflow-hidden rounded-lg border border-gray-200">
@@ -276,7 +276,7 @@ const PoolCampusDetailPage = () => {
                             <div className="text-sm font-medium text-gray-900">{position.title}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                               {position.openings}
                             </span>
                           </td>
@@ -296,16 +296,16 @@ const PoolCampusDetailPage = () => {
               {/* Timeline */}
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-[#667eea]" />
+                  <Clock className="h-5 w-5 text-[#143694]" />
                   Drive Timeline
                 </h3>
                 <div className="relative">
                   {drive.timeline.map((item, index) => (
                     <div key={index} className="mb-8 flex">
                       <div className="flex flex-col items-center mr-4">
-                        <div className="rounded-full bg-[#667eea] w-3 h-3"></div>
+                        <div className="rounded-full bg-[#143694] w-3 h-3"></div>
                         {index < drive.timeline.length - 1 && (
-                          <div className="h-full w-0.5 bg-[#667eea]/20"></div>
+                          <div className="h-full w-0.5 bg-[#143694]/20"></div>
                         )}
                       </div>
                       <div className="flex-1">
@@ -346,7 +346,7 @@ const PoolCampusDetailPage = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                      <Phone className="h-4 w-4 text-purple-600" />
+                      <Phone className="h-4 w-4 text-[#143694]" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Phone</p>
@@ -366,7 +366,7 @@ const PoolCampusDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Scheduled Dates</p>
-                      <p className="font-medium text-blue-700">{drive.proposedDates}</p>
+                      <p className="font-medium text-[#143694]">{drive.proposedDates}</p>
                     </div>
                   </div>
                 </div>

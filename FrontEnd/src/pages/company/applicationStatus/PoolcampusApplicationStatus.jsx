@@ -65,7 +65,7 @@
 //               <input
 //                 type="text"
 //                 placeholder="Search"
-//                 className="pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
 //                 value={searchTerm}
 //                 onChange={(e) => setSearchTerm(e.target.value)}
 //               />
@@ -73,7 +73,7 @@
 //             </div>
 //             <div className="relative">
 //               <select
-//                 className="pl-3 pr-8 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="pl-3 pr-8 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
 //                 value={sortBy}
 //                 onChange={(e) => setSortBy(e.target.value)}
 //               >
@@ -129,8 +129,8 @@
 //                     const isActive = idx <= currentIdx;
 //                     return (
 //                       <div key={idx} className="flex flex-col items-center text-xs" style={{ width: `${100 / statusSteps.length}%` }}>
-//                         <div className={`w-4 h-4 rounded-full mb-1 ${isActive ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
-//                         <span className={`text-center ${isActive ? 'text-blue-500 font-medium' : 'text-gray-500'}`}>
+//                         <div className={`w-4 h-4 rounded-full mb-1 ${isActive ? 'bg-[#1e4ed8]' : 'bg-gray-300'}`}></div>
+//                         <span className={`text-center ${isActive ? 'text-[#1e4ed8] font-medium' : 'text-gray-500'}`}>
 //                           {step}
 //                         </span>
 //                         <span className="text-gray-400 text-xs">{idx === 0 ? selectedJob.date : ''}</span>
@@ -140,7 +140,7 @@
 //                 </div>
 //                 <div className="h-1 bg-gray-200 absolute left-0 right-0 top-2">
 //                   <div
-//                     className="h-1 bg-blue-500"
+//                     className="h-1 bg-[#1e4ed8]"
 //                     style={{
 //                       width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
 //                     }}
@@ -198,7 +198,7 @@
 //                 </div> */}
 
 //                 <div className="mt-4">
-//                   <Link to={`/company-dashboard/Pool-campus/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
+//                   <Link to={`/company-dashboard/Pool-campus/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-[#1e4ed8] text-sm font-medium">View full description</Link>
 //                 </div>
 //               </div>
 //             </>
@@ -612,9 +612,9 @@ const extractDegree = (job) => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading pool campus applications...</p>
         </div>
       </div>
@@ -624,7 +624,7 @@ const extractDegree = (job) => {
   // Error state
   if (error && poolJobs.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md">
           <div className="text-red-500 mb-4 text-center">
             <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -635,7 +635,7 @@ const extractDegree = (job) => {
           <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
           <button
             onClick={fetchApplication}
-            className="w-full px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+            className="w-full px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300"
           >
             Try Again
           </button>
@@ -645,7 +645,7 @@ const extractDegree = (job) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 pt-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
         <div className="flex items-center gap-3 mb-6">
@@ -677,11 +677,11 @@ const extractDegree = (job) => {
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
-              <Users className="h-5 w-5 text-[#667eea]" />
+            <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+              <Users className="h-5 w-5 text-[#143694]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Pool Campus College Applications
               </h1>
               <p className="text-sm text-gray-600">
@@ -698,7 +698,7 @@ const extractDegree = (job) => {
             <input
               type="text"
               placeholder="Search by college name, degree, or location..."
-              className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none text-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -712,7 +712,7 @@ const extractDegree = (job) => {
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base font-semibold text-gray-900">College Applications</h2>
-                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
+                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full">
                     {filteredJobs.length}
                   </span>
                 </div>
@@ -727,7 +727,7 @@ const extractDegree = (job) => {
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
                           selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20' 
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
                             : 'hover:bg-gray-50/50 border border-transparent'
                         }`}
                       >
@@ -751,7 +751,7 @@ const extractDegree = (job) => {
                               <div 
                                 className={`initials-fallback absolute inset-0 rounded-lg flex items-center justify-center ${
                                   selectedJob?.id === job.id 
-                                    ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                    ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
                                     : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
                                 }`}
                                 style={{ display: 'none' }}
@@ -762,7 +762,7 @@ const extractDegree = (job) => {
                           ) : (
                             <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
                               selectedJob?.id === job.id 
-                                ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
                                 : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
                             }`}>
                               <span className="text-xs font-bold">{getCollegeInitials(job.collegeName)}</span>
@@ -787,7 +787,7 @@ const extractDegree = (job) => {
                                 job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
                                 job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
                                 job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-blue-100 text-blue-700 border border-blue-200'
+                                'bg-blue-100 text-[#143694] border border-blue-200'
                               }`}>
                                 {job.status}
                               </span>
@@ -833,7 +833,7 @@ const extractDegree = (job) => {
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.collegeName}</h2>
                       {/* Show Degree with GraduationCap icon */}
                       <div className="flex items-center gap-2 mt-1">
-                        <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                        <GraduationCap className="h-4 w-4 text-[#143694]" />
                         <p className="text-sm text-gray-600">{selectedJob.degree}</p>
                       </div>
                     </div>
@@ -854,17 +854,17 @@ const extractDegree = (job) => {
                         />
                         {/* Fallback initials */}
                         <div 
-                          className="initials-fallback absolute inset-0 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center"
+                          className="initials-fallback absolute inset-0 rounded-xl bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center"
                           style={{ display: 'none' }}
                         >
-                          <span className="text-lg font-bold text-[#667eea]">
+                          <span className="text-lg font-bold text-[#143694]">
                             {getCollegeInitials(selectedJob.collegeName)}
                           </span>
                         </div>
                       </div>
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
-                        <span className="text-lg font-bold text-[#667eea]">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center">
+                        <span className="text-lg font-bold text-[#143694]">
                           {getCollegeInitials(selectedJob.collegeName)}
                         </span>
                       </div>
@@ -908,12 +908,12 @@ const extractDegree = (job) => {
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
                               <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
                                 isActive 
-                                  ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-[#667eea] text-white'
+                                  ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-[#143694] text-white'
                                   : 'bg-white border-gray-300 text-gray-400'
                               }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
-                              <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
+                              <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
                                 {step}
                               </span>
                             </div>
@@ -922,7 +922,7 @@ const extractDegree = (job) => {
                       </div>
                       <div className="h-1.5 bg-gray-200 absolute left-[16.5%] right-[16.5%] top-4 -z-10 rounded-full">
                         <div
-                          className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
+                          className="h-1.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] transition-all duration-300 rounded-full"
                           style={{
                             width: `${(getStatusIndex(selectedJob.status) / (poolCampusStatusSteps.length - 1)) * 100}%`
                           }}
@@ -937,7 +937,7 @@ const extractDegree = (job) => {
                   <div className="grid grid-cols-2 gap-4 mb-5">
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Briefcase className="h-4 w-4 text-[#667eea]" />
+                        <Briefcase className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Employment Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
@@ -945,7 +945,7 @@ const extractDegree = (job) => {
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                        <GraduationCap className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Streams/Degree</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.degree}</p>
@@ -953,7 +953,7 @@ const extractDegree = (job) => {
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <MapPin className="h-4 w-4 text-[#667eea]" />
+                        <MapPin className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Location</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.location}</p>
@@ -961,7 +961,7 @@ const extractDegree = (job) => {
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-[#667eea]" />
+                        <Calendar className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Applied On</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
@@ -1001,7 +1001,7 @@ const extractDegree = (job) => {
                   <div className="mt-auto">
                     <button 
                       onClick={() => handleViewFullDetails(selectedJob)}
-                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300"
                     >
                       View College Details
                       <ArrowRight className="h-3.5 w-3.5 ml-2" />

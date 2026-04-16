@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import heroImage from "../../assets/RR-Tagline.png";
+import heroImage from "../../assets/rawrecruit_transparent.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);

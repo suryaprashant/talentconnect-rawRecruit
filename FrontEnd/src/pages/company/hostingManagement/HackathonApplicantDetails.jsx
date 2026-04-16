@@ -174,7 +174,7 @@ const HackathonApplicantDetails = ({ hackathon, onClose }) => {
         <div className="flex-1 p-8">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#1e4ed8]"></div>
             </div>
           ) : filteredRegistrations.length === 0 ? (
             <div className="text-center py-12">

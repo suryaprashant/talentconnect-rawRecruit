@@ -6,7 +6,7 @@ import { getCollegeService } from './collegeService.js';
 import { getCompanyService } from './companyService.js';
 import { getEmployerService } from './companyService.js';
 import OnboardingModel from "../models/studentonboardingModel.js";
-
+import InterviewSchedule from "../models/InterviewSchedule.Model.js";
 
 class AppError extends Error {
     constructor(message, statusCode) {
@@ -1210,7 +1210,9 @@ export async function fetchCompanyDashboardMetrics(user) {
                 acceptedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
                 rejectedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
                 totalActiveJobs,
-                totalOffers: 0
+                totalOffers: 0,
+                totalScheduledInterviews: 0,
+                interviewsToday: 0
             };
         }
 
@@ -1329,7 +1331,31 @@ export async function fetchCompanyDashboardMetrics(user) {
         // Calculate total applied (sum of all applications)
         const totalApplied = Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0);
 
-        // For debugging
+        /* ----------------------------------------------------
+           INTERVIEW METRICS
+        ---------------------------------------------------- */
+        const today = new Date().toISOString().split("T")[0];
+
+        let interviewMatch = {
+          status: "Scheduled"
+        };
+
+        if (userType === "college") {
+          // ✅ College → filter by applicant
+          interviewMatch.applicantProfileId = collegeProfileId;
+          interviewMatch.applicantType = "college";
+        } else {
+          // ✅ Company / Employer → filter by job
+          interviewMatch.jobId = { $in: allJobIds };
+        }
+
+        const [totalScheduledInterviews, interviewsToday] = await Promise.all([
+          InterviewSchedule.countDocuments(interviewMatch),
+          InterviewSchedule.countDocuments({
+            ...interviewMatch,
+            date: today
+          })
+        ]);
         
 
         return {
@@ -1355,7 +1381,9 @@ export async function fetchCompanyDashboardMetrics(user) {
             totalAccepted: formattedStatusCounts.Accepted,
             totalRejected: formattedStatusCounts.Rejected,
             totalActiveJobs,
-            totalOffers: formattedStatusCounts.Accepted
+            totalOffers: formattedStatusCounts.Accepted,
+            totalScheduledInterviews,
+            interviewsToday
         };
 
     } catch (error) {

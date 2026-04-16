@@ -346,7 +346,7 @@ export default function OnCampusJobManagement() {
         case 'Accepted':
           return 'bg-gradient-to-r from-[#c7d2fe]/20 to-[#818cf8]/20 text-[#4f46e5] border border-[#c7d2fe]/30';
         default:
-          return 'bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#1d4ed8] border border-[#93c5fd]/30';
+          return 'bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 text-[#1d4ed8] border border-[#143694]/30';
       }
     };
 
@@ -373,22 +373,22 @@ export default function OnCampusJobManagement() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Briefcase className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Industry:</span>
                   <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Company Type:</span>
                   <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Users className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Users className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Employees:</span>
                   <span className="ml-2">{companyDetails?.numberOfEmployees || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Established:</span>
                   <span className="ml-2">{companyDetails?.establishedYear || 'N/A'}</span>
                 </div>
@@ -396,7 +396,7 @@ export default function OnCampusJobManagement() {
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Location:</span>
                   <span className="ml-2">
                     {[companyDetails?.city, companyDetails?.state, companyDetails?.country]
@@ -405,17 +405,17 @@ export default function OnCampusJobManagement() {
                   </span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Phone:</span>
                   <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Alt Phone:</span>
                   <span className="ml-2">{companyDetails?.alternatePhoneNumber || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Email:</span>
                   <span className="ml-2">{employerDetails?.workEmail || 'Not provided'}</span>
                 </div>
@@ -445,7 +445,7 @@ export default function OnCampusJobManagement() {
                       e.stopPropagation();
                       setShowModal(true);
                     }}
-                    className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent hover:underline cursor-pointer"
+                    className="text-2xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent hover:underline cursor-pointer"
                   >
                     {companyDetails?.companyName}
                   </h3>
@@ -464,17 +464,17 @@ export default function OnCampusJobManagement() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
-                    <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Briefcase className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Industry:</span>
                     <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Company Type:</span>
                     <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Location:</span>
                     <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
                   </div>
@@ -482,23 +482,23 @@ export default function OnCampusJobManagement() {
                 
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
-                    <Globe className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Website:</span>
                     <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#3b82f6] hover:underline truncate">
+                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.websiteUrl || 'Not provided'}
                     </a>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Phone:</span>
                     <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Linkedin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Linkedin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">LinkedIn:</span>
                     <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#3b82f6] hover:underline truncate">
+                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
                     </a>
                   </div>
@@ -508,36 +508,36 @@ export default function OnCampusJobManagement() {
               {/* Contact Person Details */}
               <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <User className="w-5 h-5 text-[#3b82f6]" />
+                  <User className="w-5 h-5 text-[#1e4ed8]" />
                   Contact Person Details 
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center text-gray-700">
-                    <User className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <User className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Name:</span>
                       <span className="ml-2">{employerDetails?.name || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Briefcase className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Designation:</span>
                       <span className="ml-2">{employerDetails?.designation || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Email:</span>
                       <a href={`mailto:${employerDetails?.workEmail}`} 
-                         className="ml-2 text-[#3b82f6] hover:underline">
+                         className="ml-2 text-[#1e4ed8] hover:underline">
                         {employerDetails?.workEmail || 'N/A'}
                       </a>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Mobile:</span>
                       <span className="ml-2">{employerDetails?.mobile || 'N/A'}</span>
@@ -599,14 +599,14 @@ export default function OnCampusJobManagement() {
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto p-6">
           <button
             onClick={handleBackToList}
-            className="group flex items-center gap-2 text-gray-600 hover:text-[#3b82f6] mb-8 transition-all duration-200 font-medium"
+            className="group flex items-center gap-2 text-gray-600 hover:text-[#1e4ed8] mb-8 transition-all duration-200 font-medium"
           >
             <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-200" />
             Back to drives
@@ -614,7 +614,7 @@ export default function OnCampusJobManagement() {
 
           {companiesLoading ? (
             <div className="p-12 text-center bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg">
-              <div className="inline-block h-12 w-12 animate-spin rounded-full border-3 border-solid border-[#3b82f6] border-r-transparent"></div>
+              <div className="inline-block h-12 w-12 animate-spin rounded-full border-3 border-solid border-[#1e4ed8] border-r-transparent"></div>
               <p className="mt-6 text-gray-600 text-lg font-medium">Loading company applications...</p>
             </div>
           ) : error ? (
@@ -637,7 +637,7 @@ export default function OnCampusJobManagement() {
             <div className="space-y-6">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Company Applications</h2>
-                <p className="text-gray-600">Total applications: <span className="font-semibold text-[#3b82f6]">{companies.length}</span></p>
+                <p className="text-gray-600">Total applications: <span className="font-semibold text-[#1e4ed8]">{companies.length}</span></p>
               </div>
               {companies.map(company => (
                 <CompanyCard
@@ -659,7 +659,7 @@ export default function OnCampusJobManagement() {
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
@@ -734,32 +734,32 @@ export default function OnCampusJobManagement() {
             {/* <div className="flex border-b border-white/50">
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'All Drives' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('All Drives')}
               >
                 All Drives ({jobs.length || 0})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Open' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Open')}
               >
                 Open ({openJobsCount})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Pending' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Pending')}
               >
                 Pending ({pendingJobsCount})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Closed' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Closed')}
               >
                 Closed ({closedJobsCount})
@@ -783,7 +783,7 @@ export default function OnCampusJobManagement() {
   <div className="divide-y divide-gray-100">
     {loading ? (
       <div className="p-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b82f6]"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
         <p className="mt-4 text-gray-600">Loading drives...</p>
       </div>
     ) : currentJobs.length === 0 ? (
@@ -847,7 +847,7 @@ export default function OnCampusJobManagement() {
                   }}
                   className="group cursor-pointer"
                 >
-                  <h3 className="font-semibold text-gray-900 group-hover:text-[#3b82f6] transition-colors line-clamp-2">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
                     {degree}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -870,7 +870,7 @@ export default function OnCampusJobManagement() {
               {/* Views Column - col-span-2 */}
               <div className="col-span-2 text-center">
                 <div className="flex items-center justify-center">
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                     {views}
                   </span>
                 </div>
@@ -900,7 +900,7 @@ export default function OnCampusJobManagement() {
                       e.stopPropagation(); 
                       handleViewCompanies(job); 
                     }}
-                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#3b82f6] hover:bg-gray-50 hover:border-[#3b82f6]/50 transition-all duration-200"
+                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
                     title="View Company Applications"
                   >
                     <Eye size={16} />
@@ -943,7 +943,7 @@ export default function OnCampusJobManagement() {
                       key={page}
                       onClick={() => handlePageClick(page)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 font-medium ${currentPage === page
-                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white shadow-md shadow-[#93c5fd]/30'
+                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-md shadow-[#143694]/30'
                         : 'bg-white/50 backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/70'
                         }`}
                     >

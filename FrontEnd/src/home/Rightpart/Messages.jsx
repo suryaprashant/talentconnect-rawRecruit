@@ -43,7 +43,7 @@ function Messages() {
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading messages...</p>
               </div>
             </div>
@@ -57,7 +57,7 @@ function Messages() {
                 >
                   <div className={`p-5 rounded-2xl ${
                     message.sender === "you" 
-                      ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20 ml-auto max-w-md" 
+                      ? "bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20 ml-auto max-w-md" 
                       : "bg-gradient-to-r from-gray-50 to-white border border-gray-200 mr-auto max-w-md"
                   }`}>
                     <Message message={message} />
@@ -67,8 +67,8 @@ function Messages() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full py-16">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 flex items-center justify-center mb-6">
-                <MessageSquare className="h-10 w-10 text-[#667eea]" />
+              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 flex items-center justify-center mb-6">
+                <MessageSquare className="h-10 w-10 text-[#143694]" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mb-3">
                 Start a Conversation
@@ -78,8 +78,8 @@ function Messages() {
               </p>
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-2xl p-6 max-w-md">
                 <div className="flex items-start space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
-                    <span className="text-[#667eea] font-bold">H</span>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center">
+                    <span className="text-[#143694] font-bold">H</span>
                   </div>
                   <div>
                     <div className="font-semibold text-gray-800">Hello!</div>
@@ -98,7 +98,7 @@ function Messages() {
           <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
             <div className="flex items-center">
               <div className="p-2 bg-white rounded-lg mr-3">
-                <MessageSquare className="h-5 w-5 text-[#667eea]" />
+                <MessageSquare className="h-5 w-5 text-[#143694]" />
               </div>
               <div>
                 <p className="text-sm text-gray-700">

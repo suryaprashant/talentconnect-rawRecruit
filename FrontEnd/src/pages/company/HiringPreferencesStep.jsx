@@ -119,9 +119,9 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
     }, [])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 p-4">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 p-4">
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
@@ -129,7 +129,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
                 
 
                 <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
 
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -138,7 +138,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
                         transition={{ duration: 0.3 }}
                         className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
                     >
-                        <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+                        <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
                         <div className="mb-8">
                             <h1 className="text-2xl font-bold text-gray-800 mb-2">Define Your Hiring Preferences!</h1>
@@ -211,8 +211,8 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
                                                 key={option}
                                                 type="button"
                                                 className={`px-4 py-2.5 rounded-xl border transition-all duration-300 ${lookingFor === option
-                                                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md'
-                                                    : 'bg-white/80 text-gray-700 border-gray-200 hover:border-[#667eea]/50 hover:shadow-sm'
+                                                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-md'
+                                                    : 'bg-white/80 text-gray-700 border-gray-200 hover:border-[#143694]/50 hover:shadow-sm'
                                                     }`}
                                                 onClick={() => handleLookingForClick(option)}
                                             >
@@ -301,7 +301,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                                    className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
                                 >
                                     Next
                                 </button>

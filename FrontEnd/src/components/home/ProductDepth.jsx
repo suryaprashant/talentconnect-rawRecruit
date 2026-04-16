@@ -99,9 +99,9 @@ const ProductDepth = () => {
 
           <div className="mt-5 space-y-3">
             {[
-              "College-wise performance data",
-              "Placement analytics",
-              "Hiring trends & insights",
+              "Student Talent Data",
+              "Training & Placement Programs",
+              "Institution Branding"
             ].map((item) => (
               <div
                 key={item}

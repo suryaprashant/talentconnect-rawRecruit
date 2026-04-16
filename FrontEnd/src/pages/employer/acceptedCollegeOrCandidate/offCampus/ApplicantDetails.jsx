@@ -109,7 +109,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
     
     return (
       <div className={`flex items-start ${className}`}>
-        {Icon && <Icon className="w-5 h-5 mr-3 mt-0.5 text-blue-500 flex-shrink-0" />}
+        {Icon && <Icon className="w-5 h-5 mr-3 mt-0.5 text-[#1e4ed8] flex-shrink-0" />}
         <div className="flex-1">
           <p className="font-semibold text-gray-700 text-sm mb-1">{label}</p>
           <p className="text-gray-900">{displayValue || 'Not specified'}</p>
@@ -162,7 +162,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
                       ? 'bg-red-500 text-white'
                       : applicationData.currentStatus === 'Shortlisted'
                       ? 'bg-yellow-500 text-white'
-                      : 'bg-blue-500 text-white'
+                      : 'bg-[#1e4ed8] text-white'
                   }`}>
                     {applicationData.currentStatus || 'Accepted'}
                   </span>
@@ -220,7 +220,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
               </h3>
               <div className="space-y-3 bg-gray-50 rounded-lg p-4">
                 <div className="flex items-start">
-                  <Calendar className="w-5 h-5 mr-3 mt-0.5 text-blue-500 flex-shrink-0" />
+                  <Calendar className="w-5 h-5 mr-3 mt-0.5 text-[#1e4ed8] flex-shrink-0" />
                   <div className="flex-1">
                     <p className="font-semibold text-gray-700 text-sm mb-1">Accepted On</p>
                     <p className="text-gray-900">{safeFormatDate(applicationData?.updatedAt || applicationData?.createdAt)}</p>
@@ -236,7 +236,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium text-sm"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-[#143694] hover:to-indigo-700 transition-colors font-medium text-sm"
             >
               Close
             </button>
@@ -349,15 +349,15 @@ const ApplicantDetails = ({ job, onClose }) => {
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body, html { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+            .header { background: linear-gradient(135deg, #143694 0%, #1e4ed8 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
             .header h1 { font-size: 18px; font-weight: 600; margin: 0; }
             .controls { display: flex; gap: 10px; }
-            .controls button { background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+            .controls button { background: white; color: #143694; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
             .controls button:hover { background: #f8fafc; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
             .pdf-container { width: 100%; height: calc(100vh - 60px); }
             iframe { width: 100%; height: 100%; border: none; }
             .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #666; }
-            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #143694; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
             @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
           </style>
         </head>
@@ -767,7 +767,7 @@ const ApplicantDetails = ({ job, onClose }) => {
                             href={applicantData.linkedIn} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 border border-blue-200 text-[#143694] rounded-lg hover:bg-blue-200 transition-colors duration-200"
                           >
                             <Globe size={14} />
                             <span className="text-sm">LinkedIn</span>
