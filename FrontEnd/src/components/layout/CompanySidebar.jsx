@@ -478,6 +478,7 @@ const [authUser] = useLegacyAuth();
       <SidebarHelpModal 
         open={openHelp} 
         onClose={() => setOpenHelp(false)} 
+        icon={helpContent?.icon}
         title={helpContent?.title} 
         description={helpContent?.description}
       />

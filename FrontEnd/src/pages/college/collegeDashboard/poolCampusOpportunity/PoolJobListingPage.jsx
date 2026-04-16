@@ -513,7 +513,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
-                Campus Opportunities
+                Campus Opportunities 
               </h2>
 
               <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">

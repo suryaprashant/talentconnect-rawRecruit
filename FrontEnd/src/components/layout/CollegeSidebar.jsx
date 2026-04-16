@@ -381,7 +381,8 @@ function CollegeSidebar({ activePath }) {
       </div>
       <SidebarHelpModal 
         open={openHelp} 
-        onClose={() => setOpenHelp(false)} 
+        onClose={() => setOpenHelp(false)}
+        icon={helpContent?.icon} 
         title={helpContent?.title} 
         description={helpContent?.description}
       />
