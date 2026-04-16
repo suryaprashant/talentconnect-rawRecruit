@@ -24,7 +24,8 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
-        rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '' })),
+     //   rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '' })),
+     rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '', _auto: false })),
         contactPerson: {
             name: '',
             designation: '',
@@ -40,6 +41,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
     };
 const [designationOptions, setDesignationOptions] = useState([]);
 const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
+//const [selectedStreams, setSelectedStreams] = useState([]);
 
     const [formData, setFormData] = useState(() => {
         const savedData = localStorage.getItem('pendingPoolCampusRegistration');
@@ -217,6 +219,46 @@ useEffect(() => {
         fetchStreams();
     }, [selectedDegreeIds]);
 
+useEffect(() => {
+    setFormData(prev => {
+        const selectedStreams = prev.stream.map(s => s.label);
+
+        let rows = [...prev.rounds];
+
+        rows = rows.map(r => {
+            if (!r._auto) return r;
+            const stillExists = selectedStreams.includes(r.branch);
+            if (!stillExists) return { ...r, branch: '', _auto: false };
+            return r;
+        });
+
+        selectedStreams.forEach((stream) => {
+            const alreadyExists = rows.some(r => r.branch === stream);
+            if (alreadyExists) return;
+
+            const emptyIndex = rows.findIndex(r => !r.branch);
+
+            if (emptyIndex !== -1) {
+                rows[emptyIndex] = {
+                    ...rows[emptyIndex],
+                    branch: stream,
+                    _auto: true,
+                };
+            } else {
+                const newId = Math.max(...rows.map(r => r.id)) + 1;
+                rows.push({
+                    id: newId,
+                    branch: stream,
+                    students: '',
+                    skills: '',
+                    _auto: true,
+                });
+            }
+        });
+
+        return { ...prev, rounds: rows };
+    });
+}, [formData.stream]);
     // ─── Per-row stream fetch for Section 6 table ─────────────────────────────
     const fetchStreamsForRow = async (degreeLabel) => {
         if (!degreeLabel) return;
@@ -244,7 +286,8 @@ useEffect(() => {
     const handleAddRound = () => {
         setFormData(prev => ({
             ...prev,
-            rounds: [...prev.rounds, { id: Date.now(), branch: '', students: '', skills: '' }]
+            //rounds: [...prev.rounds, { id: Date.now(), branch: '', students: '', skills: '' }]
+            rounds: [...prev.rounds, { id: Date.now(), branch: '', students: '', skills: '', _auto: false }]
         }));
     };
 
