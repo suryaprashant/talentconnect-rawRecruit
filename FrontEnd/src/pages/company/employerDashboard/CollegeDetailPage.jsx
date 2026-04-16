@@ -479,7 +479,7 @@ const CollegeDetailPage = () => {
                     type="date"
                     value={selectedStartDate}
                     onChange={(e) => setSelectedStartDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={formatDateForInput(new Date())}
                   />
                 </div>
@@ -495,7 +495,7 @@ const CollegeDetailPage = () => {
                     type="date"
                     value={selectedEndDate}
                     onChange={(e) => setSelectedEndDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={selectedStartDate || formatDateForInput(new Date())}
                   />
                 </div>
@@ -564,22 +564,22 @@ const CollegeDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">College Type:</span>
                   <span className="ml-2">{collegeType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-3 text-blue-500" />
+                  <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Established:</span>
                   <span className="ml-2">{establishedYear || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">University:</span>
                   <span className="ml-2">{universityName || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">City:</span>
                   <span className="ml-2">{city || 'N/A'}</span>
                 </div>
@@ -587,22 +587,22 @@ const CollegeDetailPage = () => {
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">State:</span>
                   <span className="ml-2">{state || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Country:</span>
                   <span className="ml-2">{country || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Pincode:</span>
                   <span className="ml-2">{pincode || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Globe className="w-4 h-4 mr-3 text-blue-500" />
+                  <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Website:</span>
                   {collegeWebsite ? (
                     <a 
@@ -628,8 +628,8 @@ const CollegeDetailPage = () => {
   // Render loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
@@ -638,7 +638,7 @@ const CollegeDetailPage = () => {
   if (error || !posting) {
     console.log("❌ Rendering error state:", { error, posting });
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="container mx-auto px-4 py-8 pt-22">
           <button 
             onClick={handleBack}
@@ -679,7 +679,7 @@ const CollegeDetailPage = () => {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10"
+      className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10"
     >
       <div className="px-4 md:px-6 py-6 max-w-7xl mx-auto">
         {/* Main Container */}
@@ -699,7 +699,7 @@ const CollegeDetailPage = () => {
               {!isSaved && !isApplied && (
                 <button
                   onClick={() => handleSave(jobId)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 transition-all duration-200 text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 transition-all duration-200 text-sm"
                 >
                   <Save size={14} className="md:size-4" />
                   <span className="hidden md:inline">Save</span>
@@ -714,14 +714,14 @@ const CollegeDetailPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6 mb-4 md:mb-6">
               <div className="flex items-start gap-3 md:gap-4 w-full">
                 <div 
-                  className="p-2 md:p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
+                  className="p-2 md:p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                   onClick={() => setShowCollegeModal(true)}
                 >
-                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#667eea]" />
+                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#143694]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 
-                    className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors truncate"
+                    className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors truncate"
                     onClick={() => setShowCollegeModal(true)}
                   >
                     {collegeName}
@@ -757,7 +757,7 @@ const CollegeDetailPage = () => {
                   {!isSaved && !isApplied && (
                     <button
                       onClick={() => handleSave(jobId)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 transition-all duration-200 text-xs md:text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 transition-all duration-200 text-xs md:text-sm"
                       title="Save"
                     >
                       <Save size={12} className="md:size-3" />
@@ -768,7 +768,7 @@ const CollegeDetailPage = () => {
                 
                 {/* Smaller Logo/Image */}
                 {/* <div 
-                  className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
+                  className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                   onClick={() => setShowCollegeModal(true)}
                 >
                   {collegeDetails?.profileImage ? (
@@ -778,7 +778,7 @@ const CollegeDetailPage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#667eea]" />
+                    <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#143694]" />
                   )}
                 </div> */}
               </div>
@@ -792,7 +792,7 @@ const CollegeDetailPage = () => {
               <div className="flex items-center justify-between h-full">
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 mb-1">Min Package</p>
-                  <p className="text-sm md:text-base lg:text-lg font-bold text-[#667eea] leading-snug">
+                  <p className="text-sm md:text-base lg:text-lg font-bold text-[#143694] leading-snug">
                     {posting.packageDetails?.totalCTC 
                       ? `${posting.packageDetails.currency || ''} ${posting.packageDetails.totalCTC.toLocaleString()}`
                       : posting.packageDetails || 'N/A'
@@ -825,7 +825,7 @@ const CollegeDetailPage = () => {
               <div className="flex items-center justify-between h-full">
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 mb-1">Employment Type</p>
-                  <p className="text-xs md:text-sm font-medium text-purple-600 line-clamp-2 leading-tight">
+                  <p className="text-xs md:text-sm font-medium text-[#143694] line-clamp-2 leading-tight">
                     {(() => {
                       const employmentType = posting.employmentType;
                       if (!employmentType) return 'N/A';
@@ -835,7 +835,7 @@ const CollegeDetailPage = () => {
                   </p>
                 </div>
                 <div className="p-2 md:p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0 ml-2">
-                  <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
+                  <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-[#143694]" />
                 </div>
               </div>
             </div>
@@ -937,7 +937,7 @@ const CollegeDetailPage = () => {
 
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0">
-                        <Phone className="h-4 w-4 text-purple-600" />
+                        <Phone className="h-4 w-4 text-[#143694]" />
                       </div>
                       <div>
                         <p className="text-xs md:text-sm text-gray-600">Phone</p>
@@ -1006,7 +1006,7 @@ const CollegeDetailPage = () => {
                   {posting.companyType.map((type, index) => (
                     <span 
                       key={index} 
-                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
+                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 hover:border-[#143694]/30 transition-all duration-200"
                     >
                       {type}
                     </span>
@@ -1088,7 +1088,7 @@ const CollegeDetailPage = () => {
                   {posting.amenitiesRequired.map((amenity, index) => (
                     <span 
                       key={index} 
-                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
+                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 hover:border-[#143694]/30 transition-all duration-200"
                     >
                       {amenity}
                     </span>
@@ -1104,7 +1104,7 @@ const CollegeDetailPage = () => {
               <button
                 onClick={handleMessageClick}
                 disabled={isSubmitting || !posting?.collegePosted?.userId}
-                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#143694] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
               >
                 <Send size={14} className="md:size-4" />
                 <span className="hidden sm:inline">{isSubmitting ? 'Connecting...' : 'Message Officer'}</span>
@@ -1113,7 +1113,7 @@ const CollegeDetailPage = () => {
 
               <button 
                 onClick={handleAlternateDateClick}
-                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base"
+                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base"
               >
                 <Calendar size={14} className="md:size-4" />
                 <span className="hidden sm:inline">Alternate Date</span>

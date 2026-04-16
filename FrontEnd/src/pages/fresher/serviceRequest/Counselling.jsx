@@ -125,11 +125,11 @@ function FresherCounselling() {
         />
       </head>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-8">
           {/* Header Section with H1 and H2 */}
           <header className="mb-10 pt-2 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
               Professional Career Counselling
             </h1>
             <h2 className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
@@ -146,14 +146,14 @@ function FresherCounselling() {
                   className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col min-h-[320px]"
                 >
                   {/* Purple hover overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/0 to-[#764ba2]/0 group-hover:from-[#667eea]/5 group-hover:to-[#764ba2]/5 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
                   
                   {/* Purple border on hover */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#667eea]/20 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#143694]/20 rounded-lg transition-all duration-300"></div>
                   
                   <div className="relative z-10 h-full flex flex-col">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-4">
-                      <div className="text-[#667eea]">
+                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mb-4">
+                      <div className="text-[#143694]">
                         {feature.icon}
                       </div>
                     </div>
@@ -165,14 +165,14 @@ function FresherCounselling() {
                     <ul className="space-y-3 flex-grow">
                       {feature.bullets.map((bullet, index) => (
                         <li key={index} className="flex items-start">
-                          <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#667eea] rounded-full mt-2 mr-3"></div>
+                          <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#143694] rounded-full mt-2 mr-3"></div>
                           <span className="text-gray-600 text-sm">{bullet}</span>
                         </li>
                       ))}
                     </ul>
 
                     <div className="mt-6">
-                      <button className="text-[#667eea] font-medium hover:text-[#764ba2] transition-colors duration-200 text-sm">
+                      <button className="text-[#143694] font-medium hover:text-[#1e4ed8] transition-colors duration-200 text-sm">
                         Learn More →
                       </button>
                     </div>
@@ -209,7 +209,7 @@ function FresherCounselling() {
                       name="counsellingType"
                       value={formData.counsellingType}
                       onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] appearance-none"
+                      className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] appearance-none"
                       required
                     >
                       <option value="">Select type</option>
@@ -238,7 +238,7 @@ function FresherCounselling() {
                       onChange={handleDateChange}
                       dateFormat="MMMM d, yyyy"
                       minDate={new Date()}
-                      className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
+                      className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
                       placeholderText="Select a date"
                       required
                     />
@@ -257,7 +257,7 @@ function FresherCounselling() {
                     name="time"
                     value={formData.time}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] appearance-none"
+                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 bg-white focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] appearance-none"
                     required
                   >
                     <option value="">Select Time</option>
@@ -283,7 +283,7 @@ function FresherCounselling() {
                   value={formData.message}
                   onChange={handleInputChange}
                   placeholder="Tell us about your specific needs or concerns..."
-                  className="w-full border border-gray-300 rounded-lg p-4 bg-white focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] h-32 resize-none"
+                  className="w-full border border-gray-300 rounded-lg p-4 bg-white focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] h-32 resize-none"
                 ></textarea>
               </div>
 
@@ -297,13 +297,13 @@ function FresherCounselling() {
                       name="agreeToTerms"
                       checked={formData.agreeToTerms}
                       onChange={handleInputChange}
-                      className="w-4 h-4 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea] focus:ring-2"
+                      className="w-4 h-4 text-[#143694] border-gray-300 rounded focus:ring-[#143694] focus:ring-2"
                       required
                     />
                   </div>
                   <div className="ml-3">
                     <label htmlFor="terms" className="text-sm text-gray-600">
-                      I accept the <span className="text-[#667eea] font-medium hover:underline cursor-pointer">Terms of Service</span> and <span className="text-[#667eea] font-medium hover:underline cursor-pointer">Privacy Policy</span>. I understand that this counselling session is confidential and will be conducted professionally.
+                      I accept the <span className="text-[#143694] font-medium hover:underline cursor-pointer">Terms of Service</span> and <span className="text-[#143694] font-medium hover:underline cursor-pointer">Privacy Policy</span>. I understand that this counselling session is confidential and will be conducted professionally.
                     </label>
                   </div>
                 </div>
@@ -314,7 +314,7 @@ function FresherCounselling() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

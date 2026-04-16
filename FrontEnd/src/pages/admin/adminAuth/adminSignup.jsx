@@ -101,14 +101,14 @@ const Signup = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition"
+            className="w-full bg-[#1e4ed8] text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition"
           >
             Sign Up
           </button>
         </form>
         <div className="mt-6 text-sm text-gray-600 text-center">
           Already have an account?{" "}
-          <Link to="/admin/login" className="text-blue-500 hover:underline">
+          <Link to="/admin/login" className="text-[#1e4ed8] hover:underline">
             Login
           </Link>
         </div>

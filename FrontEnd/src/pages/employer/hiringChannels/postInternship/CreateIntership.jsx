@@ -325,29 +325,29 @@ export default function EmployerPostIntership() {
       minHeight: '42px',
       borderRadius: '8px',
       fontSize: '14px',
-      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      borderColor: state.isFocused ? '#143694' : '#e5e7eb',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
       backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-      '&:hover': { borderColor: '#667eea' },
+      '&:hover': { borderColor: '#143694' },
     }),
     menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
     multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
     multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
-    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    multiValueRemove: (base) => ({ ...base, color: '#143694', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
     placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Briefcase className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Create Internship Opportunity
               </h1>
             </div>
@@ -359,7 +359,7 @@ export default function EmployerPostIntership() {
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Internship Details</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Internship Details</h2>
             <p className="text-gray-500 text-sm mt-1">Fill in the details to create your internship posting</p>
           </div>
 
@@ -369,8 +369,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 1: Basic Internship Details */}
               <div className="pt-2">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Briefcase className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Briefcase className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Basic Internship Details</h3>
                 </div>
@@ -415,7 +415,7 @@ export default function EmployerPostIntership() {
                         <button
                           key={mode}
                           type="button"
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                           onClick={() => handleOptionSelect('workMode', mode)}
                         >
                           {mode}
@@ -429,8 +429,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 2: Location & Broadcast */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <MapPin className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <MapPin className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Location & Broadcast</h3>
                 </div>
@@ -495,7 +495,7 @@ export default function EmployerPostIntership() {
                           value="Everyone"
                           checked={formData.broadcastType === 'Everyone'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast to Everyone</span>
                       </label>
@@ -506,7 +506,7 @@ export default function EmployerPostIntership() {
                           value="Location"
                           checked={formData.broadcastType === 'Location'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast by Location</span>
                       </label>
@@ -521,8 +521,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 3: Compensation & Details */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <IndianRupee className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Compensation & Details</h3>
                 </div>
@@ -541,7 +541,7 @@ export default function EmployerPostIntership() {
                             name="currency"
                             value={formData.minPackage.currency}
                             onChange={handleSalaryChange}
-                            className="w-full h-full p-3 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                            className="w-full h-full p-3 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
                           >
                             <option value="INR">₹ INR</option>
                             <option value="USD">$ USD</option>
@@ -553,7 +553,7 @@ export default function EmployerPostIntership() {
                           type="number"
                           name="amount"
                           placeholder="Enter amount"
-                          className="flex-1 p-3 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="flex-1 p-3 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           value={formData.minPackage.amount}
                           onChange={handleSalaryChange}
                           min="0"
@@ -571,7 +571,7 @@ export default function EmployerPostIntership() {
                         id="numberOfOpenings"
                         name="numberOfOpenings"
                         placeholder="e.g., 5"
-                        className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         value={formData.numberOfOpenings}
                         onChange={handleInputChange}
                         min="1"
@@ -590,7 +590,7 @@ export default function EmployerPostIntership() {
                         <select
                           id="internshipDuration"
                           name="internshipDuration"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.internshipDuration}
                           onChange={handleInputChange}
                         >
@@ -612,7 +612,7 @@ export default function EmployerPostIntership() {
                         <select
                           id="minEducation"
                           name="minEducation"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.minEducation}
                           onChange={handleInputChange}
                         >
@@ -631,8 +631,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 4: Description & Requirements */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Target className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Target className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Description & Requirements</h3>
                 </div>
@@ -647,7 +647,7 @@ export default function EmployerPostIntership() {
                       id="description"
                       name="description"
                       placeholder="Describe the job responsibilities, day-to-day tasks, and requirements..."
-                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
                       value={formData.description}
                       onChange={handleInputChange}
                       maxLength={500}
@@ -669,7 +669,7 @@ export default function EmployerPostIntership() {
                       id="eligibilityCriteria"
                       name="eligibilityCriteria"
                       placeholder="e.g., Must be currently enrolled in a degree program, Minimum GPA of 3.0..."
-                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
+                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
                       value={formData.eligibilityCriteria}
                       onChange={handleInputChange}
                     />
@@ -680,8 +680,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 5: Timeline */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Clock className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Clock className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Internship Timeline</h3>
                 </div>
@@ -702,7 +702,7 @@ export default function EmployerPostIntership() {
                           onChange={(date) => handleDateChange(date, 'startDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Start date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar
@@ -723,7 +723,7 @@ export default function EmployerPostIntership() {
                           onChange={(date) => handleDateChange(date, 'onlineTestDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Test date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar
@@ -739,8 +739,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 6: Education & Skills */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <GraduationCap className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Education & Skills</h3>
                 </div>
@@ -788,7 +788,7 @@ export default function EmployerPostIntership() {
                                   handleCustomAdd('studentStreams', customStream, setCustomStream);
                                 }
                               }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                             />
                             <button
                               type="button"
@@ -796,7 +796,7 @@ export default function EmployerPostIntership() {
                                 e.stopPropagation();
                                 handleCustomAdd('studentStreams', customStream, setCustomStream);
                               }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
                               Add
                             </button>
@@ -812,10 +812,10 @@ export default function EmployerPostIntership() {
                                 formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
                               }`}
                             >
-                              <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                              <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                 {stream}
                               </span>
-                              {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+                              {formData.studentStreams.includes(stream) && <span className="text-[#143694] font-bold">✓</span>}
                             </div>
                           ))}
                         </div>
@@ -866,7 +866,7 @@ export default function EmployerPostIntership() {
                                     addNewSkill()
                                   }
                                 }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                               />
                               <button
                                 type="button"
@@ -875,7 +875,7 @@ export default function EmployerPostIntership() {
                                   // handleCustomAdd('skills', customSkill, setCustomSkill);
                                   addNewSkill()
                                 }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                                className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
                                 Add
                               </button>
@@ -891,10 +891,10 @@ export default function EmployerPostIntership() {
                                   formData.skills.includes(skill) ? "bg-blue-50/50" : ""
                                 }`}
                               >
-                                <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                   {skill}
                                 </span>
-                                {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
+                                {formData.skills.includes(skill) && <span className="text-[#143694] font-bold">✓</span>}
                               </div>
                             ))}
                           </div>
@@ -942,7 +942,7 @@ export default function EmployerPostIntership() {
                                     handleCustomAdd('benefits', customBenefit, setCustomBenefit);
                                   }
                                 }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                               />
                               <button
                                 type="button"
@@ -950,7 +950,7 @@ export default function EmployerPostIntership() {
                                   e.stopPropagation();
                                   handleCustomAdd('benefits', customBenefit, setCustomBenefit);
                                 }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                                className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
                                 Add
                               </button>
@@ -966,10 +966,10 @@ export default function EmployerPostIntership() {
                                   formData.benefits.includes(benefit) ? "bg-blue-50/50" : ""
                                 }`}
                               >
-                                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                   {benefit}
                                 </span>
-                                {formData.benefits.includes(benefit) && <span className="text-[#667eea] font-bold">✓</span>}
+                                {formData.benefits.includes(benefit) && <span className="text-[#143694] font-bold">✓</span>}
                               </div>
                             ))}
                           </div>
@@ -983,8 +983,8 @@ export default function EmployerPostIntership() {
               {/* SECTION 7: Additional Requirements */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Shield className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Shield className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Additional Requirements</h3>
                 </div>
@@ -999,7 +999,7 @@ export default function EmployerPostIntership() {
                       <select
                         id="certifications"
                         name="certifications"
-                        className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                        className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                         value={formData.certifications[0] || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value ? [e.target.value] : [] }))}
                       >
@@ -1021,7 +1021,7 @@ export default function EmployerPostIntership() {
                       <select
                         id="workAuthorization"
                         name="workAuthorization"
-                        className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                        className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                         value={formData.workAuthorization}
                         onChange={handleInputChange}
                       >
@@ -1066,10 +1066,10 @@ export default function EmployerPostIntership() {
                             className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>
+                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>
                                 {tag}
                               </span>
-                              {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                              {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -1092,7 +1092,7 @@ export default function EmployerPostIntership() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
+                  className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Posting...' : 'Post Internship'}
                 </button>

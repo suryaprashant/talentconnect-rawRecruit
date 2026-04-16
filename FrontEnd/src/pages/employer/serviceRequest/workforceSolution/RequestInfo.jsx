@@ -90,7 +90,7 @@ export default function RegistrationPage({ onBackClick, formData, handleInputCha
               <button 
                 type="button"
                 onClick={onBackClick}
-                className="text-blue-500 hover:underline"
+                className="text-[#1e4ed8] hover:underline"
               >
                 ← Back to Home
               </button>

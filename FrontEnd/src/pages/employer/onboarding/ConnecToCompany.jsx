@@ -16,7 +16,7 @@ const CustomSelect = ({ label, name, value, onChange, options, error, required =
                 name={name}
                 value={value || ''}
                 onChange={onChange}
-                className={`appearance-none w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 ${
+                className={`appearance-none w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80 ${
                     error ? 'border-red-500' : 'border-gray-300'
                 }`}
             >
@@ -179,16 +179,16 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
     
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#143694]/15 via-[#f093fb]/10 to-[#1e4ed8]/15 p-4">
             {/* Blur Background around card */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative w-full max-w-2xl">
                 {/* Blur background behind card */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
                 
                 <motion.div
                     className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -197,16 +197,16 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                     transition={{ duration: 0.3 }}
                 >
                     {/* Decorative top bar */}
-                    <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+                    <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
                     {/* Progress indicator */}
                     <div className="flex items-center justify-start mb-8">
                         <div className="flex items-center space-x-4">
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                                 ✓
                             </div>
-                            <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            <div className="w-16 h-px bg-gradient-to-r from-[#143694]/30 to-[#1e4ed8]/30"></div>
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                                 2
                             </div>
                             <div className="w-16 h-px bg-gray-300"></div>
@@ -237,7 +237,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                                     value={formData.companyName || ''}
                                     onChange={handleCompanyNameChange}
                                     placeholder="Enter your new company name"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 ${
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80 ${
                                         errors.companyName ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 />
@@ -247,7 +247,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                                         name="companyName"
                                         value={formData.companyName || ''}
                                         onChange={handleCompanyNameChange}
-                                        className={`appearance-none w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 ${
+                                        className={`appearance-none w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80 ${
                                             errors.companyName ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     >
@@ -269,7 +269,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                             <button
                                 type="button"
                                 onClick={toggleCompanyRegistration}
-                                className="text-[#667eea] text-sm font-medium mt-1 hover:text-[#764ba2] hover:underline transition-colors"
+                                className="text-[#143694] text-sm font-medium mt-1 hover:text-[#1e4ed8] hover:underline transition-colors"
                             >
                                 {isRegisteringNewCompany ? 'Select Existing Company' : 'Register Your Company'}
                             </button>
@@ -324,7 +324,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                                     value={formData.pincode || ''}
                                     onChange={handlePincodeChange}
                                     placeholder="Enter Pincode"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
                                 />
                             </div>
                         </div>
@@ -340,7 +340,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                             <button
                                 type="button"
                                 onClick={handleNext}
-                                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
                             >
                                 Next
                             </button>

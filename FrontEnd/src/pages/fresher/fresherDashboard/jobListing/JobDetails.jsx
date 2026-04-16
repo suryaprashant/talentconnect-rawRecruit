@@ -133,7 +133,7 @@ const FJobDetails = () => {
                             </div>
                             {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
                                 {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
-                                <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
+                                <button onClick={handleApply} className="bg-[#1e4ed8] hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
                             </div>)}
                         </header>
 

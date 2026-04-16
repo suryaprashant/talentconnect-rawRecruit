@@ -257,7 +257,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         />
                     ) : (
-                        <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-bold text-xs flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-[#143694] font-bold text-xs flex-shrink-0">
                             {sender.name?.charAt(0)?.toUpperCase() || '?'}
                         </div>
                     )}
@@ -292,7 +292,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                             e.stopPropagation();
                             handleNotificationClick(notification);
                         }}
-                        className="mt-2 inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                        className="mt-2 inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-[#143694] transition-colors"
                     >
                         <FiDownload className="mr-1" />
                         Download {notification.fileName}
@@ -333,7 +333,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                             >
                                 {/* Hide generic icon for chat — avatar is shown inside renderNotificationContent */}
                                 {notification.type !== 'NEW_CHAT_MESSAGE' && (
-                                    <div className="p-2 mr-3 text-blue-500 bg-blue-100 rounded-full flex-shrink-0">
+                                    <div className="p-2 mr-3 text-[#1e4ed8] bg-blue-100 rounded-full flex-shrink-0">
                                         {getNotificationIcon(notification.type)}
                                     </div>
                                 )}
@@ -341,7 +341,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                                     {renderNotificationContent(notification)}
                                 </div>
                                 {!notification.read && (
-                                    <div className="w-2 h-2 ml-2 bg-blue-500 rounded-full self-center flex-shrink-0"></div>
+                                    <div className="w-2 h-2 ml-2 bg-[#1e4ed8] rounded-full self-center flex-shrink-0"></div>
                                 )}
                             </div>
                         ))

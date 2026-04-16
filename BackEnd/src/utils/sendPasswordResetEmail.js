@@ -13,13 +13,13 @@ export const sendPasswordResetEmail = async (to, resetLink, userName = null) => 
     subject: "Password Reset Request",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-        <h2 style="color: #667eea;">Password Reset Request</h2>
+        <h2 style="color: #143694;">Password Reset Request</h2>
         ${userName ? `<p>Hi ${userName},</p>` : '<p>Hello,</p>'}
         <p>We received a request to reset your password for your Rawrecruit account.</p>
         
         <div style="text-align: center; margin: 30px 0;">
           <a href="${resetLink}" 
-             style="background-color: #667eea; color: white; padding: 12px 24px; 
+             style="background-color: #143694; color: white; padding: 12px 24px; 
                     text-decoration: none; border-radius: 8px; font-weight: bold;
                     display: inline-block; border: none;">
             Reset Your Password
@@ -69,7 +69,7 @@ export const sendPasswordChangedConfirmation = async (to, userName = null) => {
         ${userName ? `<p>Hi ${userName},</p>` : '<p>Hello,</p>'}
         <p>Your Rawrecruit account password has been successfully changed.</p>
         
-        <div style="background: #f0f9ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0;">
+        <div style="background: #f0f9ff; border-left: 4px solid #143694; padding: 15px; margin: 20px 0;">
           <p><strong>Security Tips:</strong></p>
           <ul style="margin: 10px 0; padding-left: 20px;">
             <li>Use a strong, unique password</li>

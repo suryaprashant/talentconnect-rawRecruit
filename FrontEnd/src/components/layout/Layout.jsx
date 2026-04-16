@@ -31,7 +31,7 @@ function Layout({ children }) {
 > */}
 
           {/* <main
-  className="relative flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10
+  className="relative flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10
             "
 > */}
 

@@ -1,6 +1,6 @@
 function Settings() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Page Header with only search box */}
         <div className="mb-8">
@@ -8,7 +8,7 @@ function Settings() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-center py-6">
               <div className="absolute left-0 top-0 bottom-0 flex items-center pl-6">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Settings
                 </h1>
               </div>
@@ -20,7 +20,7 @@ function Settings() {
                   <input
                     type="text"
                     placeholder="Search settings..."
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none shadow-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white/90 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
               </div>
@@ -29,10 +29,10 @@ function Settings() {
         </div>
         
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
             User Settings
           </h2>
-          <p className="text-gray-600 p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
+          <p className="text-gray-600 p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl">
             Your settings options would be displayed here.
           </p>
         </div>

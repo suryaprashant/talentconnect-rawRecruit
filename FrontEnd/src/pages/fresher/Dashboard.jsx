@@ -130,18 +130,18 @@ function FresherDashboard() {
   if (dashboardData.loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8 pt-20">
@@ -151,7 +151,7 @@ function FresherDashboard() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Fresher Dashboard
                 </h1>
               </div>
@@ -343,7 +343,7 @@ function FresherDashboard() {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                <tr className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
@@ -373,7 +373,7 @@ function FresherDashboard() {
                 {/* Totals Row */}
                 <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-                  <td className="px-4 py-3 text-[#667eea]">{getTotalForStatus('Applied')}</td>
+                  <td className="px-4 py-3 text-[#143694]">{getTotalForStatus('Applied')}</td>
                   <td className="px-4 py-3 text-yellow-600">{getTotalForStatus('Shortlisted')}</td>
                   <td className="px-4 py-3 text-green-600">{getTotalForStatus('Accepted')}</td>
                   <td className="px-4 py-3 text-red-600">{getTotalForStatus('Rejected')}</td>
@@ -393,7 +393,7 @@ function FresherDashboard() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/fresher-dashboard/Off-campus')}
             >
               <FiPlus className="w-4 h-4 mr-2" />
@@ -402,7 +402,7 @@ function FresherDashboard() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/profile')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -413,7 +413,7 @@ function FresherDashboard() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/profile')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -424,7 +424,7 @@ function FresherDashboard() {
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               onClick={() => navigate('/application-status/Off-campus')}
             >
               My Applications
@@ -432,7 +432,7 @@ function FresherDashboard() {
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               onClick={() => navigate('/fresher-interviews')}
             >
               Scheduled Interview

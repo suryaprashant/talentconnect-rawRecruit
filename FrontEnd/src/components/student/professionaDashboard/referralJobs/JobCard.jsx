@@ -21,12 +21,12 @@ const JobCard = ({ job, userType }) => {
 
         <button
           onClick={toggleSave}
-          className="text-gray-400 hover:text-blue-500 focus:outline-none"
+          className="text-gray-400 hover:text-[#1e4ed8] focus:outline-none"
           aria-label={isSaved ? "Unsave job" : "Save job"}
         >
           {isSaved ? (
             
-            <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-5 h-5 text-[#1e4ed8]" fill="currentColor" viewBox="0 0 20 20">
               <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
             </svg>
           ) : (
@@ -249,7 +249,7 @@ const navigate = useNavigate();
     const endDate = new Date(job.endDate);
 
     if (now < startDate) {
-      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+      return { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' };
     } else if (now >= startDate && now <= endDate) {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
@@ -270,7 +270,7 @@ const navigate = useNavigate();
     }
     
     const roleColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
       "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
       "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
@@ -391,7 +391,7 @@ const navigate = useNavigate();
         {/* Employment Type Badge */}
         {job.employmentType && (
           <div className="mb-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+            <span className="px-3 py-1 bg-blue-100 text-[#143694] border border-blue-300 rounded-full text-xs font-semibold">
               {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
             </span>
           </div>

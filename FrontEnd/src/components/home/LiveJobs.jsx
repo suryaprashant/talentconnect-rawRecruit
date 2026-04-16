@@ -318,7 +318,7 @@ const LiveJobs = () => {
             )}
 
             {job.internshipDuration && (
-              <span className="text-[10px] bg-purple-100 text-purple-600 px-2 py-1 rounded-full font-medium">
+              <span className="text-[10px] bg-purple-100 text-[#143694] px-2 py-1 rounded-full font-medium">
                 ⏱ {job.internshipDuration}
               </span>
             )}

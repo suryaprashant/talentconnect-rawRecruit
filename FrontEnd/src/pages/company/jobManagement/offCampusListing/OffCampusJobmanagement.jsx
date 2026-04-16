@@ -163,7 +163,7 @@ export default function OffCampusJobManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 pt-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
 
@@ -260,7 +260,7 @@ export default function OffCampusJobManagement() {
           <div className="divide-y divide-gray-100">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading jobs...</p>
               </div>
             ) : currentJobs?.length === 0 ? (
@@ -281,7 +281,7 @@ export default function OffCampusJobManagement() {
                         onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
                         className="group cursor-pointer"
                       >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors">
                           {job?.jobRoles?.map((title, ind) => title).join(', ')}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
@@ -306,7 +306,7 @@ export default function OffCampusJobManagement() {
 
                     {/* Views - col-span-1 */}
                     <div className="col-span-2 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                         {job.views || 0}
                       </span>
                     </div>
@@ -326,7 +326,7 @@ export default function OffCampusJobManagement() {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => showNewApplication(job)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                           title="View Job"
                         >
                           <Eye size={16} />
@@ -360,7 +360,7 @@ export default function OffCampusJobManagement() {
                 </button>
                 
                 <div className="text-sm text-gray-600">
-                  Page <span className="font-semibold text-[#667eea]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                  Page <span className="font-semibold text-[#143694]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
                 </div>
               </div>
 
@@ -395,7 +395,7 @@ export default function OffCampusJobManagement() {
                       onClick={() => handlePageClick(pageNum)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                         currentPage === pageNum 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                           : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >

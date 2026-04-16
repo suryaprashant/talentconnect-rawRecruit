@@ -172,7 +172,7 @@ export default function JobManagementDashboard() {
               {tabs.map(tab => (
                 <button
                   key={tab}
-                  className={`px-4 py-2 ${activeTab === tab ? 'border-b-2 border-blue-500' : ''}`}
+                  className={`px-4 py-2 ${activeTab === tab ? 'border-b-2 border-[#1e4ed8]' : ''}`}
                   onClick={() => handleTabChange(tab)}
                 >
                   {tab}
@@ -274,7 +274,7 @@ export default function JobManagementDashboard() {
               {tabs.map(tab => (
                 <button
                   key={`second-${tab}`}
-                  className={`px-4 py-2 ${activeTab === tab ? 'border-b-2 border-blue-500' : ''}`}
+                  className={`px-4 py-2 ${activeTab === tab ? 'border-b-2 border-[#1e4ed8]' : ''}`}
                   onClick={() => handleTabChange(tab)}
                 >
                   {tab}

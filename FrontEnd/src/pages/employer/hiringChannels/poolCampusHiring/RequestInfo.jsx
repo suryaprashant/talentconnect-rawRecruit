@@ -330,16 +330,16 @@
 //   const availableStreams = collegeStreamMapping[formData.collegeTypes] || [];
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+//     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
 //       <div className="container mx-auto px-4 py-8 max-w-4xl">
 //         {/* Header section */}
 //         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
 //           <div className="text-center mb-6">
 //             <div className="flex items-center justify-center mb-3">
-//               <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-//                 <Users className="h-5 w-5 text-[#667eea]" />
+//               <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+//                 <Users className="h-5 w-5 text-[#143694]" />
 //               </div>
-//               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+//               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
 //                 Pool Campus Connect: Hire Bigger
 //               </h1>
 //             </div>
@@ -356,7 +356,7 @@
 //         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
 //           {/* Main heading */}
 //           <div className="text-center mb-8">
-//             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for Pool Campus Hiring</h2>
+//             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Register for Pool Campus Hiring</h2>
 //             <p className="text-gray-500 mt-2">Fill in your requirements to find the best talent from multiple campuses.</p>
 //           </div>
 
@@ -424,7 +424,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -440,8 +440,8 @@
 //                         className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.collegeTypes === type ? "bg-blue-50" : ""}`}
 //                       >
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.collegeTypes === type ? "text-[#667eea] font-medium" : "text-gray-700"}>{type}</span>
-//                           {formData.collegeTypes === type && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.collegeTypes === type ? "text-[#143694] font-medium" : "text-gray-700"}>{type}</span>
+//                           {formData.collegeTypes === type && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -493,7 +493,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -502,8 +502,8 @@
 //                     {availableStreams.map(stream => (
 //                       <div key={stream} onClick={() => handleMultiSelect('studentStreams', stream)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.studentStreams.includes(stream) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.studentStreams.includes(stream) ? "text-[#667eea] font-medium" : "text-gray-700"}>{stream}</span>
-//                           {formData.studentStreams.includes(stream) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.studentStreams.includes(stream) ? "text-[#143694] font-medium" : "text-gray-700"}>{stream}</span>
+//                           {formData.studentStreams.includes(stream) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -520,7 +520,7 @@
 //                 value={formData.criteria} 
 //                 onChange={handleChange} 
 //                 placeholder="Example: Minimum 60% aggregate, No active backlogs..." 
-//                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
+//                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
 //                 required
 //               />
 //             </div>
@@ -533,7 +533,7 @@
 //                 value={formData.description}
 //                 onChange={handleChange}
 //                 placeholder="Provide a detailed job description..."
-//                 className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-500' : ''}`}
+//                 className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-500' : ''}`}
 //                 maxLength={600}
 //                 required
 //               />
@@ -582,7 +582,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -591,8 +591,8 @@
 //                     {skillsOptions.map(skill => (
 //                       <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.skills.includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}>{skill}</span>
-//                           {formData.skills.includes(skill) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.skills.includes(skill) ? "text-[#143694] font-medium" : "text-gray-700"}>{skill}</span>
+//                           {formData.skills.includes(skill) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -621,8 +621,8 @@
 //                   {benefitsOptions.map(benefit => (
 //                     <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}>{benefit}</span>
-//                         {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.benefits.includes(benefit) ? "text-[#143694] font-medium" : "text-gray-700"}>{benefit}</span>
+//                         {formData.benefits.includes(benefit) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -650,8 +650,8 @@
 //                   {tagsOptions.map(tag => (
 //                     <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}>{tag}</span>
-//                         {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}>{tag}</span>
+//                         {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -679,8 +679,8 @@
 //                   {amenitiesOptions.map(item => (
 //                     <div key={item} onClick={() => handleMultiSelect('amenities', item)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenities.includes(item) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.amenities.includes(item) ? "text-[#667eea] font-medium" : "text-gray-700"}>{item}</span>
-//                         {formData.amenities.includes(item) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.amenities.includes(item) ? "text-[#143694] font-medium" : "text-gray-700"}>{item}</span>
+//                         {formData.amenities.includes(item) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -697,7 +697,7 @@
 //                     name="currency"
 //                     value={formData.packageDetails.currency}
 //                     onChange={handlePackageDetailsChange}
-//                     className="w-full h-full p-3 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+//                     className="w-full h-full p-3 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
 //                   >
 //                     <option value="INR">INR</option>
 //                     <option value="USD">USD</option>
@@ -711,7 +711,7 @@
 //                   value={formData.packageDetails.totalCTC}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Total CTC (e.g. 1000000)"
-//                   className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                   required
 //                 />
 //               </div>
@@ -722,7 +722,7 @@
 //                   value={formData.packageDetails.fixedPay}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Fixed Pay (e.g. 800000)"
-//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                 />
 //                 <input
 //                   type="number"
@@ -730,7 +730,7 @@
 //                   value={formData.packageDetails.joiningBonus}
 //                   onChange={handlePackageDetailsChange}
 //                   placeholder="Joining Bonus (e.g. 50000)"
-//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+//                   className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
 //                 />
 //               </div>
 //             </div>
@@ -813,7 +813,7 @@
 //                         e.stopPropagation();
 //                         handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
 //                       }}
-//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium"
+//                       className="ml-2 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium"
 //                     >
 //                       Add
 //                     </button>
@@ -822,8 +822,8 @@
 //                     {jobRoles.map(role => (
 //                       <div key={role} onClick={() => handleMultiSelect('jobRoles', role)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.jobRoles.includes(role) ? "bg-blue-50" : ""}`}>
 //                         <div className="flex items-center justify-between">
-//                           <span className={formData.jobRoles.includes(role) ? "text-[#667eea] font-medium" : "text-gray-700"}>{role}</span>
-//                           {formData.jobRoles.includes(role) && <span className="text-[#667eea]">✓</span>}
+//                           <span className={formData.jobRoles.includes(role) ? "text-[#143694] font-medium" : "text-gray-700"}>{role}</span>
+//                           {formData.jobRoles.includes(role) && <span className="text-[#143694]">✓</span>}
 //                         </div>
 //                       </div>
 //                     ))}
@@ -841,7 +841,7 @@
 //                     key={mode} 
 //                     type="button" 
 //                     onClick={() => handleMultiSelect('workMode', mode)} 
-//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
 //                   >
 //                     {mode}
 //                   </button>
@@ -858,7 +858,7 @@
 //                     key={type} 
 //                     type="button" 
 //                     onClick={() => handleMultiSelect('employmentType', type)} 
-//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
 //                   >
 //                     {type}
 //                   </button>
@@ -875,7 +875,7 @@
 //                     key={category} 
 //                     type="button" 
 //                     onClick={() => handleMultiSelect('collegeCategories', category)} 
-//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.collegeCategories.includes(category) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+//                     className={`px-4 py-2 border rounded-lg transition-colors ${formData.collegeCategories.includes(category) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
 //                   >
 //                     {category}
 //                   </button>
@@ -897,7 +897,7 @@
 //                       value={formData.placementStartDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       required 
 //                     />
 //                   </div>
@@ -912,7 +912,7 @@
 //                       value={formData.placementEndDate} 
 //                       onChange={handleChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                       required 
 //                     />
 //                   </div>
@@ -928,7 +928,7 @@
 //                   name="preferredHiringMode" 
 //                   value={formData.preferredHiringMode} 
 //                   onChange={handleChange} 
-//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
 //                   required
 //                 >
 //                   <option value="" disabled>Select preferred mode</option>
@@ -949,7 +949,7 @@
 //                   value={formData.onlineTestDate} 
 //                   onChange={handleChange} 
 //                   onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                 />
 //               </div>
 //             </div>
@@ -968,7 +968,7 @@
 //                       value={formData.interviewWindow.start} 
 //                       onChange={handleInterviewWindowChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                     />
 //                   </div>
 //                 </div>
@@ -982,7 +982,7 @@
 //                       value={formData.interviewWindow.end} 
 //                       onChange={handleInterviewWindowChange} 
 //                       onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                       className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                     />
 //                   </div>
 //                 </div>
@@ -1000,7 +1000,7 @@
 //                   value={formData.offerRolloutDate} 
 //                   onChange={handleChange} 
 //                   onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                 />
 //               </div>
 //             </div>
@@ -1013,7 +1013,7 @@
 //                   name="numberOfRounds" 
 //                   value={formData.numberOfRounds} 
 //                   onChange={handleChange} 
-//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
 //                   required
 //                 >
 //                   <option value="" disabled>Select number of rounds</option>
@@ -1037,8 +1037,8 @@
 //                   {selectionProcessOptions.map(process => (
 //                     <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.selectionProcess.includes(process) ? "bg-blue-50" : ""}`}>
 //                       <div className="flex items-center justify-between">
-//                         <span className={formData.selectionProcess.includes(process) ? "text-[#667eea] font-medium" : "text-gray-700"}>{process}</span>
-//                         {formData.selectionProcess.includes(process) && <span className="text-[#667eea]">✓</span>}
+//                         <span className={formData.selectionProcess.includes(process) ? "text-[#143694] font-medium" : "text-gray-700"}>{process}</span>
+//                         {formData.selectionProcess.includes(process) && <span className="text-[#143694]">✓</span>}
 //                       </div>
 //                     </div>
 //                   ))}
@@ -1055,7 +1055,7 @@
 //                 value={formData.contactPerson.name} 
 //                 onChange={handleContactChange} 
 //                 placeholder="Enter full name" 
-//                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                 required 
 //               />
 //             </div>
@@ -1068,7 +1068,7 @@
 //                   name="designation" 
 //                   value={formData.contactPerson.designation} 
 //                   onChange={handleContactChange} 
-//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
 //                   required
 //                 >
 //                   <option value="" disabled>Select designation</option>
@@ -1089,7 +1089,7 @@
 //                   value={formData.contactPerson.email} 
 //                   onChange={handleContactChange} 
 //                   placeholder="example@company.com" 
-//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                   required 
 //                 />
 //               </div>
@@ -1106,7 +1106,7 @@
 //                   value={formData.contactPerson.mobile} 
 //                   onChange={handleContactChange} 
 //                   placeholder="Enter 10-digit mobile number" 
-//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                   required 
 //                 />
 //               </div>
@@ -1123,7 +1123,7 @@
 //                   value={formData.contactPerson.linkedin} 
 //                   onChange={handleContactChange} 
 //                   placeholder="https://www.linkedin.com/in/username" 
-//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+//                   className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
 //                 />
 //               </div>
 //             </div>
@@ -1136,7 +1136,7 @@
 //                   name="minStudents" 
 //                   value={formData.minStudents} 
 //                   onChange={handleChange} 
-//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+//                   className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
 //                   required
 //                 >
 //                   <option value="" disabled>Select minimum students</option>
@@ -1151,7 +1151,7 @@
 //               <button 
 //                 type="submit" 
 //                 disabled={isSubmitting} 
-//                 className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
+//                 className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50"
 //               >
 //                 {isSubmitting ? 'Submitting...' : 'Register'}
 //               </button>
@@ -1929,16 +1929,16 @@ const handleSelectOrAddSkill = async (skillName) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Building2 className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Building2 className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Pool Campus Connect: Hire Bigger
               </h1>
             </div>
@@ -1958,7 +1958,7 @@ const handleSelectOrAddSkill = async (skillName) => {
         {/* Main Form - Two Column Layout */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for Pool-Campus Hiring</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Register for Pool-Campus Hiring</h2>
             <p className="text-gray-500 text-sm mt-1">Fill in your requirements to find the best talent from multiple campuses across the nation.</p>
           </div>
 
@@ -1966,8 +1966,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 1: Venue & College Details */}
             <div className="pt-2">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Building2 className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Venue & College Details</h3>
               </div>
@@ -2024,8 +2024,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                         {amenitiesOptions.map(item => (
                           <div key={item} onClick={() => handleMultiSelect('amenities', item)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenities.includes(item) ? "bg-blue-50" : ""}`}>
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.amenities.includes(item) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{item}</span>
-                              {formData.amenities.includes(item) && <span className="text-[#667eea]">✓</span>}
+                              <span className={`text-sm ${formData.amenities.includes(item) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{item}</span>
+                              {formData.amenities.includes(item) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -2065,7 +2065,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
                                 }
                               }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                             />
                             <button
                               type="button"
@@ -2073,7 +2073,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 e.stopPropagation();
                                 handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
                               }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
                               Add
                             </button>
@@ -2092,10 +2092,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 formData.collegeTypes === type ? "bg-blue-50/50" : ""
                               }`}
                             >
-                              <span className={`text-sm ${formData.collegeTypes === type ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                              <span className={`text-sm ${formData.collegeTypes === type ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                 {type}
                               </span>
-                              {formData.collegeTypes === type && <span className="text-[#667eea] font-bold">✓</span>}
+                              {formData.collegeTypes === type && <span className="text-[#143694] font-bold">✓</span>}
                             </div>
                           ))}
                           
@@ -2151,7 +2151,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   setCustomDegree('');
                                 }
                               }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                             />
                             <button
                               type="button"
@@ -2161,7 +2161,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 handleAddDegree(customDegree);
                                 setCustomDegree('');
                               }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
                               Add
                             </button>
@@ -2237,7 +2237,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   setCustomStream('');
                                 }
                               }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                             />
                             <button
                               type="button"
@@ -2247,7 +2247,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 handleAddStream(customStream, formData.collegeDegrees[0].value);
                                 setCustomStream('');
                               }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
                               Add
                             </button>
@@ -2263,10 +2263,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 formData.collegeStreams.includes(stream) ? "bg-blue-50/50" : ""
                               }`}
                             >
-                              <span className={`text-sm ${formData.collegeStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                              <span className={`text-sm ${formData.collegeStreams.includes(stream) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                 {stream}
                               </span>
-                              {formData.collegeStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+                              {formData.collegeStreams.includes(stream) && <span className="text-[#143694] font-bold">✓</span>}
                             </div>
                           ))}
                           
@@ -2286,7 +2286,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                   <label className="block mb-2 font-medium text-sm text-gray-700">College Categories <span className="text-red-500">*</span></label>
                   <div className="flex flex-wrap gap-2">
                     {collegeCategoryOptions.map(category => (
-                      <button key={category} type="button" onClick={() => handleMultiSelect('collegeCategories', category)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.collegeCategories.includes(category) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
+                      <button key={category} type="button" onClick={() => handleMultiSelect('collegeCategories', category)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.collegeCategories.includes(category) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
                         {category}
                       </button>
                     ))}
@@ -2306,7 +2306,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value="Everyone"
                         checked={formData.broadcastType === 'Everyone'}
                         onChange={handleChange}
-                        className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                        className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                       />
                       <span className="ml-2 text-sm text-gray-700 font-medium">Global (All Colleges)</span>
                     </label>
@@ -2317,7 +2317,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value="Location"
                         checked={formData.broadcastType === 'Location'}
                         onChange={handleChange}
-                        className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                        className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                       />
                       <span className="ml-2 text-sm text-gray-700 font-medium">Local (Match by Venue)</span>
                     </label>
@@ -2334,8 +2334,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 2: Job Description & Requirements */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Target className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Target className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Description & Requirements</h3>
               </div>
@@ -2351,7 +2351,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.criteria} 
                       onChange={handleChange} 
                       placeholder="Example: Minimum 60% aggregate, No active backlogs..." 
-                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
+                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
                       required
                     />
                   </div>
@@ -2364,7 +2364,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.description}
                       onChange={handleChange}
                       placeholder="Provide a detailed job description..."
-                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
                       maxLength={500}
                       required
                     />
@@ -2380,7 +2380,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                {/* Required Skills Section */}
 <div ref={skillsRef} className="relative pt-2">
   <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
-    <Target className="w-4 h-4 text-[#667eea]" />
+    <Target className="w-4 h-4 text-[#143694]" />
     Required Skills <span className="text-red-500">*</span>
   </label>
 
@@ -2388,13 +2388,13 @@ const handleSelectOrAddSkill = async (skillName) => {
     group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
     bg-gradient-to-r from-gray-50 to-white 
     border rounded-xl transition-all duration-300
-    ${isSkillDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+    ${isSkillDropdownOpen ? 'border-[#143694] ring-2 ring-[#143694]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
   `}>
     {/* Display Selected Tags */}
     {formData.skills.map((skill) => (
       <div 
         key={skill} 
-        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
       >
         {skill}
         <button 
@@ -2439,11 +2439,11 @@ const handleSelectOrAddSkill = async (skillName) => {
             <button
               key={index}
               type="button"
-              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
               onClick={() => handleSelectOrAddSkill(skill)}
             >
               <span>{skill}</span>
-              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
             </button>
           ))}
 
@@ -2451,12 +2451,12 @@ const handleSelectOrAddSkill = async (skillName) => {
         {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
           <button
             type="button"
-            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
             onClick={() => handleSelectOrAddSkill(customSkillSearch)}
           >
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                <Layers size={16} className="text-[#764ba2]" />
+                <Layers size={16} className="text-[#1e4ed8]" />
               </div>
               <span>Create new skill: "<span className="underline italic">{customSkillSearch}</span>"</span>
             </div>
@@ -2479,7 +2479,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-2">
                       {['Hybrid', 'On-site', 'Remote'].map(mode => (
-                        <button key={mode} type="button" onClick={() => handleMultiSelect('workMode', mode)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
+                        <button key={mode} type="button" onClick={() => handleMultiSelect('workMode', mode)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
                           {mode}
                         </button>
                       ))}
@@ -2491,7 +2491,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Employment Type <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-2">
                       {['Part-time', 'Full-time', 'Contract'].map(type => (
-                        <button key={type} type="button" onClick={() => handleMultiSelect('employmentType', type)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
+                        <button key={type} type="button" onClick={() => handleMultiSelect('employmentType', type)} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
                           {type}
                         </button>
                       ))}
@@ -2504,8 +2504,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 3: Job Position Details */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Briefcase className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Position Details</h3>
               </div>
@@ -2525,7 +2525,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       styles={{
                         control: (base, state) => ({
                           ...base,
-                          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+                          borderColor: state.isFocused ? '#143694' : '#e5e7eb',
                           minHeight: '44px',
                           height: '44px',
                           fontSize: '14px',
@@ -2626,7 +2626,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                     setCustomJobRole('');
                                   }
                                 }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                               />
                               <button
                                 type="button"
@@ -2636,7 +2636,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   handleAddJobRole(customJobRole);
                                   setCustomJobRole('');
                                 }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                                className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
                                 Add
                               </button>
@@ -2652,10 +2652,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
                                 }`}
                               >
-                                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                   {role}
                                 </span>
-                                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+                                {formData.jobRoles.includes(role) && <span className="text-[#143694] font-bold">✓</span>}
                               </div>
                             ))}
                             
@@ -2676,7 +2676,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                   <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode <span className="text-red-500">*</span></label>
                   <div className="flex flex-wrap gap-2">
                     {preferredHiringModeOptions.map(mode => (
-                      <button key={mode} type="button" onClick={() => setFormData(prev => ({ ...prev, preferredHiringMode: mode }))} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.preferredHiringMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
+                      <button key={mode} type="button" onClick={() => setFormData(prev => ({ ...prev, preferredHiringMode: mode }))} className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.preferredHiringMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}>
                         {mode}
                       </button>
                     ))}
@@ -2688,8 +2688,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 4: Compensation & Benefits */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <IndianRupee className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Compensation & Benefits</h3>
               </div>
@@ -2704,7 +2704,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         name="currency"
                         value={formData.packageDetails.currency}
                         onChange={handlePackageDetailsChange}
-                        className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                        className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
                       >
                         <option value="INR">₹ INR</option>
                         <option value="USD">$ USD</option>
@@ -2718,7 +2718,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails.totalCTC}
                       onChange={handlePackageDetailsChange}
                       placeholder="Total CTC (e.g. 1000000)"
-                      className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       required
                     />
                   </div>
@@ -2729,7 +2729,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails.fixedPay}
                       onChange={handlePackageDetailsChange}
                       placeholder="Fixed Pay (e.g. 800000)"
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     />
                     <input
                       type="number"
@@ -2737,7 +2737,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails.joiningBonus}
                       onChange={handlePackageDetailsChange}
                       placeholder="Variable Pay (e.g. 50000)"
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     />
                   </div>
                 </div>
@@ -2762,8 +2762,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                       {benefitsOptions.map(benefit => (
                         <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
-                            {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{benefit}</span>
+                            {formData.benefits.includes(benefit) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -2791,8 +2791,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                       {tagsOptions.map(tag => (
                         <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
-                            {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{tag}</span>
+                            {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -2805,8 +2805,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 5: Hiring Timeline */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Clock className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Clock className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Hiring Timeline</h3>
               </div>
@@ -2824,7 +2824,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'placementStartDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Start date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           required
                           wrapperClassName="w-full"
                         />
@@ -2839,7 +2839,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'placementEndDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="End date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           required
                           wrapperClassName="w-full"
                         />
@@ -2860,7 +2860,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         onChange={(date) => handleDateChange(date, 'onlineTestDate')}
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select date"
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         wrapperClassName="w-full"
                       />
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2878,7 +2878,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'start')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="Start date"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2891,7 +2891,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'end')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="End date"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2912,7 +2912,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
                         dateFormat="dd-MM-yyyy"
                         placeholderText="Select date"
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         wrapperClassName="w-full"
                       />
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -2923,7 +2923,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
                     <div className="relative">
-                      <select name="numberOfRounds" value={formData.numberOfRounds} onChange={handleChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+                      <select name="numberOfRounds" value={formData.numberOfRounds} onChange={handleChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
                         <option value="" disabled>Select number of rounds</option>
                         {numberOfRoundsOptions.map((round) => (<option key={round} value={round}>{round}</option>))}
                       </select>
@@ -2960,7 +2960,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 onClick={() => handleMultiSelect('selectionProcess', process)}
                                 className={`text-sm cursor-pointer ${
                                   isSelected
-                                    ? "text-[#667eea] font-medium"
+                                    ? "text-[#143694] font-medium"
                                     : "text-gray-700"
                                 }`}
                               >
@@ -2992,8 +2992,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 6: Contact Information */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <MessageSquare className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <MessageSquare className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Contact Information</h3>
               </div>
@@ -3004,14 +3004,14 @@ const handleSelectOrAddSkill = async (skillName) => {
                   {/* Contact Person */}
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact Person <span className="text-red-500">*</span></label>
-                    <input type="text" name="name" value={formData.contactPerson.name} onChange={handleContactChange} placeholder="Enter full name" className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                    <input type="text" name="name" value={formData.contactPerson.name} onChange={handleContactChange} placeholder="Enter full name" className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
                   </div>
 
                   {/* Contact person designation */}
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact person designation <span className="text-red-500">*</span></label>
                     <div className="relative">
-                      <select name="designation" value={formData.contactPerson.designation} onChange={handleContactChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+                      <select name="designation" value={formData.contactPerson.designation} onChange={handleContactChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
                         <option value="" disabled>Select designation</option>
                         {designationOptions.map((designation) => (<option key={designation} value={designation}>{designation}</option>))}
                       </select>
@@ -3027,7 +3027,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact person email <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input type="email" name="email" value={formData.contactPerson.email} onChange={handleContactChange} placeholder="example@company.com" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                      <input type="email" name="email" value={formData.contactPerson.email} onChange={handleContactChange} placeholder="example@company.com" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
                     </div>
                   </div>
 
@@ -3036,7 +3036,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact person mobile no <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input type="tel" name="mobile" value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                      <input type="tel" name="mobile" value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
                     </div>
                   </div>
                 </div>
@@ -3048,7 +3048,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact person LinkedIn Profile</label>
                     <div className="relative">
                       <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input type="url" name="linkedin" value={formData.contactPerson.linkedin} onChange={handleContactChange} placeholder="https://www.linkedin.com/in/username" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" />
+                      <input type="url" name="linkedin" value={formData.contactPerson.linkedin} onChange={handleContactChange} placeholder="https://www.linkedin.com/in/username" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" />
                     </div>
                   </div>
 
@@ -3056,7 +3056,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Minimum Students to be Hired <span className="text-red-500">*</span></label>
                     <div className="relative">
-                      <select name="minStudents" value={formData.minStudents} onChange={handleChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
+                      <select name="minStudents" value={formData.minStudents} onChange={handleChange} className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" required>
                         <option value="" disabled>Select minimum students</option>
                         {minimumStudentsOptions.map((option) => (<option key={option} value={option}>{option}</option>))}
                       </select>
@@ -3070,7 +3070,7 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* Register Button */}
             <div className="flex justify-between pt-4">
               <BackButton></BackButton>
-              <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50">
+              <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50">
                 {isSubmitting ? 'Submitting...' : 'Register'}
               </button>
             </div>

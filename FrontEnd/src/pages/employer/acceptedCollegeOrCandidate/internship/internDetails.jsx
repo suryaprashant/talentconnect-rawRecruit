@@ -320,7 +320,7 @@ const InternshipDetails = ({ job,
                     href={applicant.linkedIn.startsWith('http') ? applicant.linkedIn : `https://${applicant.linkedIn}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-blue-50 text-[#143694] rounded-lg hover:bg-blue-100 transition-colors"
                   >
                     <Linkedin size={16} className="mr-2" />
                     LinkedIn
@@ -407,7 +407,7 @@ const InternshipDetails = ({ job,
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
           {/* Header */}
@@ -421,7 +421,7 @@ const InternshipDetails = ({ job,
                 Back
               </button>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   {job?.jobTitle || 'Accepted Internship Applications'}
                 </h1>
                 <p className="text-gray-600 mt-1">
@@ -437,7 +437,7 @@ const InternshipDetails = ({ job,
           {/* Applicants List */}
           {isSubmitting && applications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
               <p className="mt-4 text-gray-600">Loading accepted applications...</p>
             </div>
           ) : applications.length === 0 ? (
@@ -482,7 +482,7 @@ const InternshipDetails = ({ job,
                         </div>
                         <div className="flex-1">
                           <div 
-                            className="cursor-pointer hover:text-[#667eea] transition-colors"
+                            className="cursor-pointer hover:text-[#143694] transition-colors"
                             onClick={() => handleViewApplicantDetails(application)}
                           >
                             <h3 className="font-semibold text-gray-900 text-lg">{applicant.name}</h3>
@@ -525,7 +525,7 @@ const InternshipDetails = ({ job,
                       <div className="flex items-center gap-2">
                         {/* <button
                           onClick={() => handleViewApplicantDetails(application)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                           title="View Details"
                         >
                           <User size={16} />
@@ -533,7 +533,7 @@ const InternshipDetails = ({ job,
                         <button
                           onClick={() => handleMessageClick(application)}
                           disabled={isProcessing}
-                          className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 disabled:opacity-50"
+                          className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-100 hover:text-[#143694] transition-all duration-200 disabled:opacity-50"
                           title="Message"
                         >
                           <Send size={16} />

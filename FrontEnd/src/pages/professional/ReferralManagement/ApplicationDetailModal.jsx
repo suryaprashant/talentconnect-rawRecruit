@@ -109,7 +109,7 @@ const handleStatusUpdate = async (status) => {
           <button 
     disabled={isProcessing}
     onClick={() => handleStatusUpdate('Referred To Company')}
-    className="px-6 py-3 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl font-bold transition-all text-sm disabled:opacity-50 border border-blue-200 flex items-center gap-2"
+    className="px-6 py-3 bg-blue-50 text-[#143694] hover:bg-blue-100 rounded-xl font-bold transition-all text-sm disabled:opacity-50 border border-blue-200 flex items-center gap-2"
   >
    
     Refer to Company

@@ -12,7 +12,7 @@ export default function RegisterPage({
       {/* Background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl" />
       </div>
 
@@ -20,8 +20,8 @@ export default function RegisterPage({
 
         {/* Header (compressed) */}
         <header className="mb-6 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
-            Pool Campus Connect: Hire Bigger
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
+            Pool Campus Connect: Hire Bigger 
           </h1>
 
           <p className="text-gray-600 text-base md:text-lg max-w-xl mx-auto mt-3">
@@ -33,7 +33,7 @@ export default function RegisterPage({
         {/* Form Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg p-6">
 
-          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent text-center mb-1">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent text-center mb-1">
             Request Info for On-Campus Hiring 
           </h2>
 
@@ -47,7 +47,7 @@ export default function RegisterPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-700 font-medium mb-1 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                  <Calendar className="w-4 h-4 text-[#1e4ed8]" />
                   Date
                 </label>
                 <input
@@ -56,20 +56,20 @@ export default function RegisterPage({
                   value={formData.date || ""}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#93c5fd] outline-none"
+                  className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#143694] outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-gray-700 font-medium mb-1 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#3b82f6]" />
+                  <Clock className="w-4 h-4 text-[#1e4ed8]" />
                   Time
                 </label>
                 <select
                   name="time"
                   value={formData.time || ""}
                   onChange={handleInputChange}
-                  className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#93c5fd] outline-none"
+                  className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#143694] outline-none"
                 >
                   <option value="">Select Time</option>
                   <option value="09:00">9:00 AM</option>
@@ -83,7 +83,7 @@ export default function RegisterPage({
             {/* Message */}
             <div>
               <label className="block text-gray-700 font-medium mb-1 flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
+                <MessageSquare className="w-4 h-4 text-[#1e4ed8]" />
                 Message
               </label>
               <textarea
@@ -91,13 +91,13 @@ export default function RegisterPage({
                 value={formData.message || ""}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#93c5fd] outline-none resize-none"
+                className="w-full bg-white/50 border border-white/50 rounded-xl p-3 focus:ring-2 focus:ring-[#143694] outline-none resize-none"
                 placeholder="Type your message..."
               />
             </div>
 
             {/* Terms */}
-            <div className="flex items-start gap-3 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/5 p-3 rounded-xl border border-[#93c5fd]/20">
+            <div className="flex items-start gap-3 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/5 p-3 rounded-xl border border-[#143694]/20">
               <input
                 type="checkbox"
                 name="acceptTerms"
@@ -116,7 +116,7 @@ export default function RegisterPage({
               <button
                 type="button"
                 onClick={onBackClick}
-                className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] font-medium"
+                className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#1d4ed8] font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back 
@@ -125,7 +125,7 @@ export default function RegisterPage({
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl text-base font-semibold hover:shadow-lg transition-all"
+                className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl text-base font-semibold hover:shadow-lg transition-all"
               >
                 <Send className="w-5 h-5" />
                 Submit Request

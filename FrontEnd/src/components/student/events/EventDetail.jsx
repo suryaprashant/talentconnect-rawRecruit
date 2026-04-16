@@ -35,7 +35,7 @@ const EventDetail = () => {
         <h2 className="text-2xl font-bold mb-4">Event not found </h2>
         <button
           onClick={() => navigate(`/${localStorage.getItem('selectedRole')}-events/${event_name}`)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-[#143694]"
         >
           Back to {event_name}
         </button>
@@ -267,7 +267,7 @@ const EventDetail = () => {
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
                       viewBox="0 0 24 24"
-                      className="w-10 h-10 text-blue-700"
+                      className="w-10 h-10 text-[#143694]"
                     >
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zM7.119 20.452H3.555V9h3.564v11.452z" />
                     </svg>

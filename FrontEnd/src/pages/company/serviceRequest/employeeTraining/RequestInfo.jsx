@@ -137,16 +137,16 @@ export default function RequesInfo({ onBackClick }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-4">
-                <Building2 className="h-6 w-6 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-4">
+                <Building2 className="h-6 w-6 text-[#143694]" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 OnDemand Training: Upskill with Purpose
               </h1>
             </div>
@@ -162,7 +162,7 @@ export default function RequesInfo({ onBackClick }) {
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8">
           {/* Form heading */}
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
               Register for On-Demand Training
             </h2>
             <p className="text-gray-500 mt-2">Fill in your training requirements to get started</p>
@@ -199,10 +199,10 @@ export default function RequesInfo({ onBackClick }) {
                           className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.numberOfEmployees === option ? "bg-blue-50" : ""}`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className={formData.numberOfEmployees === option ? "text-[#667eea] font-medium" : "text-gray-700"}>
+                            <span className={formData.numberOfEmployees === option ? "text-[#143694] font-medium" : "text-gray-700"}>
                               {option}
                             </span>
-                            {formData.numberOfEmployees === option && <span className="text-[#667eea]">✓</span>}
+                            {formData.numberOfEmployees === option && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -262,13 +262,13 @@ export default function RequesInfo({ onBackClick }) {
                                 type="checkbox"
                                 checked={formData.skillTypes.includes(option)}
                                 readOnly
-                                className="mr-3 h-4 w-4 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea]"
+                                className="mr-3 h-4 w-4 text-[#143694] border-gray-300 rounded focus:ring-[#143694]"
                               />
-                              <span className={formData.skillTypes.includes(option) ? "text-[#667eea] font-medium" : "text-gray-700"}>
+                              <span className={formData.skillTypes.includes(option) ? "text-[#143694] font-medium" : "text-gray-700"}>
                                 {option}
                               </span>
                             </div>
-                            {formData.skillTypes.includes(option) && <span className="text-[#667eea]">✓</span>}
+                            {formData.skillTypes.includes(option) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -290,7 +290,7 @@ export default function RequesInfo({ onBackClick }) {
                       type="button"
                       className={`flex items-center justify-center px-4 py-3 border rounded-lg transition-colors flex-1 ${
                         formData.trainingMode === mode 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                           : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
                       }`}
                       onClick={() => updateFormData('trainingMode', mode)}
@@ -312,7 +312,7 @@ export default function RequesInfo({ onBackClick }) {
                       type="button"
                       className={`flex items-center justify-center px-4 py-3 border rounded-lg transition-colors flex-1 ${
                         formData.evaluationType === type 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                           : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
                       }`}
                       onClick={() => updateFormData('evaluationType', type)}
@@ -353,10 +353,10 @@ export default function RequesInfo({ onBackClick }) {
                         className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.hoursOrDays === option ? "bg-blue-50" : ""}`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={formData.hoursOrDays === option ? "text-[#667eea] font-medium" : "text-gray-700"}>
+                          <span className={formData.hoursOrDays === option ? "text-[#143694] font-medium" : "text-gray-700"}>
                             {option}
                           </span>
-                          {formData.hoursOrDays === option && <span className="text-[#667eea]">✓</span>}
+                          {formData.hoursOrDays === option && <span className="text-[#143694]">✓</span>}
                         </div>
                       </div>
                     ))}
@@ -370,7 +370,7 @@ export default function RequesInfo({ onBackClick }) {
               <button 
                 type="button"
                 onClick={onBackClick}
-                className="px-6 py-3 text-[#667eea] hover:text-[#764ba2] font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                className="px-6 py-3 text-[#143694] hover:text-[#1e4ed8] font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
                 ← Back
               </button>
@@ -378,7 +378,7 @@ export default function RequesInfo({ onBackClick }) {
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmit}
-                className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="flex items-center">

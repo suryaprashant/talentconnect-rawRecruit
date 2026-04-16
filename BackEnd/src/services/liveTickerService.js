@@ -4,9 +4,9 @@ import Application from "../models/applicationModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import Onboarding from "../models/studentonboardingModel.js";
+import CollegeOnboarding from "../models//collegeDashboard/collegeOnboardingModel.js";
 
-
-// 🔥 helper for "time ago"
+//  helper for "time ago"
 const getTimeAgo = (date) => {
   const now = new Date();
   const seconds = Math.floor((now - new Date(date)) / 1000);
@@ -52,9 +52,9 @@ export const getTickerDataService = async () => {
         .limit(2)
         .populate({
           path: "job",
-          select: "jobTitle companyPosted candidatePosted collegePosted"
+          select: "jobTitle jobRoles companyPosted candidatePosted collegePosted"
         })
-        .select("job applicant createdAt")
+        .select("job applicant applicantType createdAt")
         .lean(),
 
       // ✅ Company onboarding
@@ -67,25 +67,64 @@ export const getTickerDataService = async () => {
     // 🔥 Collect IDs for batch fetching
     const companyIds = [];
     const candidateIds = [];
+    const collegeIds = [];
+    const collegeApplicantIds = [];
+    const companyApplicantIds = [];
 
+    latestApplications.forEach(app => {
+      if (!app.applicant || !app.applicantType) return;
+
+      if (app.applicantType === "college") {
+        collegeApplicantIds.push(app.applicant);
+      }
+
+      if (app.applicantType === "company") {
+        companyApplicantIds.push(app.applicant);
+      }
+    });
     latestJobs.forEach(job => {
       if (job.companyPosted) companyIds.push(job.companyPosted);
       if (job.candidatePosted) candidateIds.push(job.candidatePosted);
+      if (job.collegePosted) collegeIds.push(job.collegePosted); // ✅ ADD
     });
 
     latestApplications.forEach(app => {
       if (app.job?.companyPosted) companyIds.push(app.job.companyPosted);
       if (app.job?.candidatePosted) candidateIds.push(app.job.candidatePosted);
+      if (app.job?.collegePosted) collegeIds.push(app.job.collegePosted); // ✅ ADD
     });
+    const [collegeApplicants, companyApplicants] = await Promise.all([
+      CollegeOnboarding.find({ _id: { $in: collegeApplicantIds } })
+        .select("collegeUniversityDetails.collegeName")
+        .lean(),
 
+      CompanyProfile.find({ _id: { $in: companyApplicantIds } })
+        .select("companyDetails.companyName")
+        .lean()
+    ]);
+    const collegeApplicantMap = {};
+      collegeApplicants.forEach(c => {
+        collegeApplicantMap[c._id.toString()] =
+          c.collegeUniversityDetails?.collegeName;
+      });
+
+      const companyApplicantMap = {};
+      companyApplicants.forEach(c => {
+        companyApplicantMap[c._id.toString()] =
+          c.companyDetails?.companyName;
+      });
     // 🔥 Batch fetch
-    const [companies, candidates] = await Promise.all([
+    const [companies, candidates, colleges] = await Promise.all([
       CompanyProfile.find({ _id: { $in: companyIds } })
         .select("companyDetails.companyName")
         .lean(),
 
       Onboarding.find({ _id: { $in: candidateIds } })
         .select("name")
+        .lean(),
+
+      CollegeOnboarding.find({ _id: { $in: collegeIds } }) // ✅ ADD
+        .select("collegeUniversityDetails.collegeName")
         .lean()
     ]);
 
@@ -98,6 +137,13 @@ export const getTickerDataService = async () => {
     const candidateMap = {};
     candidates.forEach(c => {
       candidateMap[c._id.toString()] = c.name;
+    });
+
+    const collegeMap = {}; // ✅ ADD
+
+    colleges.forEach(c => {
+      collegeMap[c._id.toString()] =
+        c.collegeUniversityDetails?.collegeName;
     });
 
     // 🔥 helper to resolve company
@@ -113,7 +159,10 @@ export const getTickerDataService = async () => {
       }
 
       if (job.collegePosted) {
-        return "a college";
+        return (
+          collegeMap[job.collegePosted.toString()] ||
+          "a college"
+        );
       }
 
       return "our platform";
@@ -133,15 +182,33 @@ export const getTickerDataService = async () => {
 
         try {
           if (app.applicant) {
-            const user = await Onboarding.findById(app.applicant)
-              .select("name")
-              .lean();
+            const id = app.applicant.toString();
 
-            if (user?.name) name = user.name;
+            // ✅ NEW: College
+            if (app.applicantType === "college") {
+              name = collegeApplicantMap[id] || "a college";
+            }
+
+            // ✅ NEW: Company
+            else if (app.applicantType === "company") {
+              name = companyApplicantMap[id] || "a company";
+            }
+
+            // ✅ EXISTING FLOW (unchanged)
+            else {
+              const user = await Onboarding.findById(app.applicant)
+                .select("name")
+                .lean();
+
+              if (user?.name) name = user.name;
+            }
           }
         } catch (err) {}
 
-        const jobTitle = app.job?.jobTitle || "a job";
+        const jobTitle =
+          app.job?.jobTitle ||
+          app.job?.jobRoles?.[0] ||
+          "a job";
         const company = resolveCompanyName(app.job);
         const timeAgo = getTimeAgo(app.createdAt);
 

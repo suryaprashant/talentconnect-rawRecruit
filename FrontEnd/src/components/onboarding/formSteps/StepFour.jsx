@@ -171,12 +171,12 @@ const isLookingForActive = (option) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
@@ -184,10 +184,10 @@ const isLookingForActive = (option) => {
 
           {/* Header with gradient */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
-              <Target className="w-10 h-10 text-[#667eea]" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mx-auto mb-4">
+              <Target className="w-10 h-10 text-[#143694]" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
               Career Goals & Preferences
             </h1>
             <p className="text-gray-600 mb-4">
@@ -376,7 +376,7 @@ const isLookingForActive = (option) => {
                     multiValueRemove: (base) => ({
                       ...base,
                       borderRadius: '0 9999px 9999px 0',
-                      color: '#8b5cf6',
+                      color: '#1e40af',
                       ':hover': {
                         backgroundColor: 'rgba(102, 126, 234, 0.2)',
                         color: '#5b21b6',
@@ -399,8 +399,8 @@ const isLookingForActive = (option) => {
                     type="button"
                     onClick={() => handleLookingForClick(option)}
                     className={`p-3 border rounded-xl transition-all duration-200 font-medium ${isLookingForActive(option)
-                      ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                      : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                      ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-lg shadow-purple-500/30"
+                      : "text-gray-700 border-gray-300 hover:border-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5"
                       }`}
                   >
                     {option}
@@ -421,8 +421,8 @@ const isLookingForActive = (option) => {
                     type="button"
                     onClick={() => handleMultiSelect("employmentType", type)}
                     className={`p-3 border rounded-xl transition-all duration-200 font-medium capitalize ${localFormData.employmentType.includes(type)
-                      ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                      : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                      ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-lg shadow-purple-500/30"
+                      : "text-gray-700 border-gray-300 hover:border-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5"
                       }`}
                   >
                     {type.replace("-", " ")}
@@ -445,7 +445,7 @@ const isLookingForActive = (option) => {
             <button
               type="button"
               onClick={handleNextClick}
-              className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
+              className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
             >
               Next
             </button>

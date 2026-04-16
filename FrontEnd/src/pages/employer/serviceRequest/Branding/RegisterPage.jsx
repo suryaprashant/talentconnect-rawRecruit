@@ -88,7 +88,7 @@ export default function RegisterPage({ onBackClick, formData={}, handleInputChan
               <button 
                 type="button"
                 onClick={handleSubmit}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-[#143694] transition-colors"
               >
                 Submit Request
               </button>

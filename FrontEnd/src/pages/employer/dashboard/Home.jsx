@@ -559,13 +559,13 @@ function Home() {
   if (dashboardData.loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Page Header with only search box */}
         <div className="mb-8 -mt-10">
@@ -573,7 +573,7 @@ function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Company Dashboard
                 </h1>
               </div>
@@ -583,7 +583,7 @@ function Home() {
                   <input
                     type="text"
                     placeholder="Search across dashboard..."
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none shadow-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white/90 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
               </div>
@@ -824,7 +824,7 @@ function Home() {
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">Service Requests Status</h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
                   <span className="text-gray-700 font-medium">Pending Requests</span>
@@ -851,7 +851,7 @@ function Home() {
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/service-request/workforce-solution')}
-                className="w-full border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+                className="w-full border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               >
                 Manage Service Requests
               </Button>
@@ -868,7 +868,7 @@ function Home() {
                   <span className="text-sm font-bold text-gray-900">{dashboardData.totalApplied}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] h-3 rounded-full" style={{ width: '100%' }}></div>
+                  <div className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] h-3 rounded-full" style={{ width: '100%' }}></div>
                 </div>
               </div>
 
@@ -937,7 +937,7 @@ function Home() {
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/job-management/On-campus')}
-                className="w-full border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+                className="w-full border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               >
                 View Job Management
               </Button>
@@ -951,7 +951,7 @@ function Home() {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                <tr className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
@@ -961,9 +961,9 @@ function Home() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {/* On-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#667eea]/5 to-transparent">
+                <tr className="hover:bg-gradient-to-r from-[#143694]/5 to-transparent">
                   <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
-                  <td className="px-4 py-3 text-[#667eea] font-semibold">{dashboardData.appliedByCategory['On-campus']}</td>
+                  <td className="px-4 py-3 text-[#143694] font-semibold">{dashboardData.appliedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-yellow-600 font-semibold">{dashboardData.shortlistedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-green-600 font-semibold">{dashboardData.acceptedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-red-600 font-semibold">{dashboardData.rejectedByCategory['On-campus']}</td>
@@ -987,7 +987,7 @@ function Home() {
                 {/* Totals Row */}
                 <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-                  <td className="px-4 py-3 text-[#667eea]">{dashboardData.totalApplied}</td>
+                  <td className="px-4 py-3 text-[#143694]">{dashboardData.totalApplied}</td>
                   <td className="px-4 py-3 text-yellow-600">{dashboardData.totalShortlisted}</td>
                   <td className="px-4 py-3 text-green-600">{dashboardData.totalAccepted}</td>
                   <td className="px-4 py-3 text-red-600">{dashboardData.totalRejected}</td>
@@ -1007,7 +1007,7 @@ function Home() {
               <h2 className="text-lg font-semibold text-gray-900">Recent Shortlisted</h2>
               <button
                 onClick={() => navigate('/shortlisted/on-campus-listings')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
+                className="text-sm text-[#143694] hover:text-[#1e4ed8] font-medium"
               >
                 View All →
               </button>
@@ -1044,7 +1044,7 @@ function Home() {
               <h2 className="text-lg font-semibold text-gray-900">Recent Accepted</h2>
               <button
                 onClick={() => navigate('/accepted/on-campus-listings')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
+                className="text-sm text-[#143694] hover:text-[#1e4ed8] font-medium"
               >
                 View All →
               </button>
@@ -1084,7 +1084,7 @@ function Home() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/hiring-channels/on-campus-hiring')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -1095,7 +1095,7 @@ function Home() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -1106,7 +1106,7 @@ function Home() {
             <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-[#667eea]/30"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/30"
               onClick={() => navigate('/hiring-channels/off-campus-hiring')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -1117,7 +1117,7 @@ function Home() {
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               onClick={() => navigate('/job-management/On-campus')}
             >
               Manage Applications
@@ -1125,7 +1125,7 @@ function Home() {
             <Button
               variant="outline"
               size="md"
-              className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+              className="border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               onClick={() => navigate('/employer-interviews')}
             >
               Schedule Interviews

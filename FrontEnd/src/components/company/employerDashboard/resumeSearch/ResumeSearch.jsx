@@ -21,18 +21,18 @@ function ResumeSearch({ onSearch, onFileUpload }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center px-4">
       <div className="w-full max-w-4xl">
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-center justify-center mb-8">
   <div className="flex items-center mb-4 md:mb-0 md:mr-6">
-    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20">
-      <Search className="h-8 w-8 text-[#667eea]" />
+    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20">
+      <Search className="h-8 w-8 text-[#143694]" />
     </div>
   </div>
   <div className="text-center md:text-left">
-    <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
+    <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-3">
       Smart Resume Search for Faster Hiring
     </h1>
     <p className="text-gray-600 max-w-2xl text-center">
@@ -53,7 +53,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
                 value={searchParams.query}
                 onChange={handleChange}
                 placeholder="Search by job title, skills, or keywords"
-                className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
               />
             </div>
 
@@ -73,7 +73,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
                     name="location"
                     value={searchParams.location}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
                   >
                     <option value="">Select Location</option>
                     <option value="Remote">Remote</option>
@@ -104,7 +104,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
                     value={searchParams.experience}
                     onChange={handleChange}
                     placeholder="Minimum years of experience"
-                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                   />
                 </div>
               </div>
@@ -124,7 +124,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
                   name="salary"
                   value={searchParams.salary}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
                 >
                   <option value="">Select Salary Range</option>
                   <option value="0-50000">$0 - $50,000</option>
@@ -144,7 +144,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
             <div className="flex flex-col items-center space-y-6 pt-4">
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 font-medium text-lg"
+                className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 font-medium text-lg"
               >
                 Search Resumes
               </button>

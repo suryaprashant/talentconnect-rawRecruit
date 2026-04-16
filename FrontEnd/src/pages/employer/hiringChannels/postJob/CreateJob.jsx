@@ -240,16 +240,16 @@ export default function EmployerPostJob() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-3">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Briefcase className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Create Job Listing
               </h1>
             </div>
@@ -263,7 +263,7 @@ export default function EmployerPostJob() {
           {/* Basic Job Details */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-              <Briefcase className="h-5 w-5 mr-2 text-[#667eea]" />
+              <Briefcase className="h-5 w-5 mr-2 text-[#143694]" />
               Basic Job Details
             </h2>
             <p className="text-sm text-gray-600 mb-6">Provide the core details about this job opportunity.</p>
@@ -275,21 +275,21 @@ export default function EmployerPostJob() {
                 <div className="flex gap-2 flex-wrap">
                   <button 
                     type="button" 
-                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Full-time' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Full-time' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                     onClick={() => handleOptionSelect('employmentType', 'Full-time')}
                   >
                     Full-time
                   </button>
                   <button 
                     type="button" 
-                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Part-time' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Part-time' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                     onClick={() => handleOptionSelect('employmentType', 'Part-time')}
                   >
                     Part-time
                   </button>
                   <button 
                     type="button" 
-                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Contract' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.employmentType === 'Contract' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                     onClick={() => handleOptionSelect('employmentType', 'Contract')}
                   >
                     Contract
@@ -306,7 +306,7 @@ export default function EmployerPostJob() {
                     id="jobTitle" 
                     name="jobTitle" 
                     placeholder="Enter the Job Title" 
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     value={formData.jobTitle} 
                     onChange={handleInputChange} 
                   />
@@ -319,7 +319,7 @@ export default function EmployerPostJob() {
                     <select 
                       id="workMode" 
                       name="workMode" 
-                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                       value={formData.workMode} 
                       onChange={handleInputChange}
                     >
@@ -375,8 +375,8 @@ export default function EmployerPostJob() {
                           className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.location.includes(city.name) ? "bg-blue-50" : ""}`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className={formData.location.includes(city.name) ? "text-[#667eea] font-medium" : "text-gray-700"}>{city.name}</span>
-                            {formData.location.includes(city.name) && <span className="text-[#667eea]">✓</span>}
+                            <span className={formData.location.includes(city.name) ? "text-[#143694] font-medium" : "text-gray-700"}>{city.name}</span>
+                            {formData.location.includes(city.name) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -396,7 +396,7 @@ export default function EmployerPostJob() {
                       value="Everyone"
                       checked={formData.broadcastType === 'Everyone'}
                       onChange={handleInputChange}
-                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                      className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                     />
                     <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
                   </label>
@@ -407,7 +407,7 @@ export default function EmployerPostJob() {
                       value="Location"
                       checked={formData.broadcastType === 'Location'}
                       onChange={handleInputChange}
-                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                      className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                     />
                     <span className="ml-2 text-gray-700">Broadcast by Location</span>
                   </label>
@@ -429,7 +429,7 @@ export default function EmployerPostJob() {
                       name="currency"
                       value={formData.packageDetails.currency}
                       onChange={handlePackageDetailsChange}
-                      className="w-full h-full pl-3 pr-8 py-3 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                      className="w-full h-full pl-3 pr-8 py-3 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
                     >
                       <option value="USD">USD</option>
                       <option value="INR">INR</option>
@@ -441,7 +441,7 @@ export default function EmployerPostJob() {
                     type="number"
                     name="totalCTC"
                     placeholder="Enter Total CTC"
-                    className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     value={formData.packageDetails.totalCTC}
                     onChange={handlePackageDetailsChange}
                     min="0"
@@ -455,7 +455,7 @@ export default function EmployerPostJob() {
                     value={formData.packageDetails.fixedPay}
                     onChange={handlePackageDetailsChange}
                     placeholder="Fixed Pay (optional)"
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                   />
                   <input
                     type="number"
@@ -463,7 +463,7 @@ export default function EmployerPostJob() {
                     value={formData.packageDetails.joiningBonus}
                     onChange={handlePackageDetailsChange}
                     placeholder="Joining Bonus (optional)"
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                   />
                 </div>
               </div>
@@ -479,7 +479,7 @@ export default function EmployerPostJob() {
                   id="numberOfOpenings" 
                   name="numberOfOpenings" 
                   placeholder="Ex. 5" 
-                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                   value={formData.numberOfOpenings} 
                   onChange={handleInputChange} 
                   min="1" 
@@ -493,7 +493,7 @@ export default function EmployerPostJob() {
                   id="description"
                   name="description"
                   placeholder="Describe the job responsibilities and requirements..."
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
                   value={formData.description}
                   onChange={handleInputChange}
                   maxLength={500}
@@ -511,7 +511,7 @@ export default function EmployerPostJob() {
           {/* Selection Criteria Section */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-              <Target className="h-5 w-5 mr-2 text-[#667eea]" />
+              <Target className="h-5 w-5 mr-2 text-[#143694]" />
               Selection Criteria
             </h2>
             <p className="text-sm text-gray-600 mb-6">Outline the qualifications for the ideal candidate.</p>
@@ -524,7 +524,7 @@ export default function EmployerPostJob() {
                   id="eligibilityCriteria" 
                   name="eligibilityCriteria" 
                   placeholder="e.g., Minimum 3.0 GPA, Must be eligible to work in the specified location..." 
-                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
                   value={formData.eligibilityCriteria} 
                   onChange={handleInputChange}
                 />
@@ -538,7 +538,7 @@ export default function EmployerPostJob() {
                     <select 
                       id="minEducation" 
                       name="minEducation" 
-                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                       value={formData.minEducation} 
                       onChange={handleInputChange}
                     >
@@ -556,7 +556,7 @@ export default function EmployerPostJob() {
                     <select 
                       id="yearsOfExperience" 
                       name="yearsOfExperience" 
-                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                       value={formData.yearsOfExperience} 
                       onChange={handleInputChange}
                     >
@@ -574,7 +574,7 @@ export default function EmployerPostJob() {
                   <BookOpen className="h-4 w-4 mr-2 text-gray-500" />
                   Preferred Field of Study
                 </label>
-                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#667eea]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}>
+                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#143694]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.studentStreams.map((stream, index) => (
                       <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
@@ -608,7 +608,7 @@ export default function EmployerPostJob() {
               {/* Skills */}
               <div ref={skillsDropdownRef}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#667eea]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}>
+                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#143694]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.skills.map((skill, index) => (
                       <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
@@ -642,7 +642,7 @@ export default function EmployerPostJob() {
               {/* Benefits */}
               <div ref={benefitsDropdownRef}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
-                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#667eea]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}>
+                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#143694]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.benefits.map((benefit, index) => (
                       <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
@@ -702,8 +702,8 @@ export default function EmployerPostJob() {
                         onClick={() => handleSelectItem('tags', tag, null, 'tags')}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}>{tag}</span>
-                          {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                          <span className={formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}>{tag}</span>
+                          {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
                         </div>
                       </div>
                     ))}
@@ -717,7 +717,7 @@ export default function EmployerPostJob() {
                   <Award className="h-4 w-4 mr-2 text-gray-500" />
                   Certifications (if any)
                 </label>
-                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#667eea]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, certifications: true }))}>
+                <div className="relative p-2 border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-[#143694]/50" onClick={() => setDropdownOpen(prev => ({ ...prev, certifications: true }))}>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.certifications.map((cert, index) => (
                       <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
@@ -758,7 +758,7 @@ export default function EmployerPostJob() {
                   <select 
                     id="workAuthorization" 
                     name="workAuthorization" 
-                    className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     value={formData.workAuthorization} 
                     onChange={handleInputChange}
                   >
@@ -784,7 +784,7 @@ export default function EmployerPostJob() {
             <button 
               type="submit" 
               disabled={isSubmitting} 
-              className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
+              className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50"
             >
               {isSubmitting ? 'Posting...' : 'Post Your Job'}
             </button>

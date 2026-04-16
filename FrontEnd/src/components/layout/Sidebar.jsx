@@ -104,7 +104,7 @@ const loading = false;
                     rounded-xl
                     transition-all duration-500
                     bg-[length:200%_auto]
-                    bg-gradient-to-r from-[#667eea] via-[#764ba2] to-[#667eea]
+                    bg-gradient-to-r from-[#143694] via-[#1e4ed8] to-[#143694]
                     hover:bg-right
                     hover:shadow-[0_10px_20px_rgba(118,75,162,0.4)]
                     hover:-translate-y-1

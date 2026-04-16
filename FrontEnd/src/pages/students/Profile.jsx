@@ -77,10 +77,10 @@ const customSelectStyles = {
 
   dropdownIndicator: (base, state) => ({
     ...base,
-    color: state.isFocused ? '#667eea' : '#9ca3af',
+    color: state.isFocused ? '#143694' : '#9ca3af',
     transition: 'all 0.2s ease',
     ':hover': {
-      color: '#667eea',
+      color: '#143694',
     },
   }),
 
@@ -593,7 +593,7 @@ const isLookingForActive = (option) => {
         <p className="text-red-600 mb-4">{error}</p>
         <Button
           variant="primary"
-          className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
+          className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
           onClick={() => {
             setActiveTab('profile');
             setError(null);
@@ -645,7 +645,7 @@ const isLookingForActive = (option) => {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="Enter company name"
                         value={exp.company}
                         onChange={(e) => handleWorkExperienceChange(index, 'company', e.target.value)}
@@ -658,7 +658,7 @@ const isLookingForActive = (option) => {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="Enter job role"
                         value={exp.role}
                         onChange={(e) => handleWorkExperienceChange(index, 'role', e.target.value)}
@@ -672,7 +672,7 @@ const isLookingForActive = (option) => {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                           value={exp.startDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'startDate', e.target.value)}
                         />
@@ -683,7 +683,7 @@ const isLookingForActive = (option) => {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                           value={exp.endDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'endDate', e.target.value)}
                         />
@@ -695,7 +695,7 @@ const isLookingForActive = (option) => {
                         Description
                       </label>
                       <textarea
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         rows="3"
                         placeholder="Enter job description"
                         value={exp.description}
@@ -713,7 +713,7 @@ const isLookingForActive = (option) => {
                           <div className="flex text-sm text-gray-600">
                             <label
                               htmlFor={`experience-certificate-upload-${index}`}
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-[#143694] hover:text-[#1e4ed8] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#143694]"
                             >
                               <span>Upload a file</span>
                               <input
@@ -763,7 +763,7 @@ const isLookingForActive = (option) => {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.currentSalaryAmount}
                       onChange={(e) => handleProfileDataChange('currentSalaryAmount', e.target.value)}
@@ -787,7 +787,7 @@ const isLookingForActive = (option) => {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.expectedSalaryAmount}
                       onChange={(e) => handleProfileDataChange('expectedSalaryAmount', e.target.value)}
@@ -805,7 +805,7 @@ const isLookingForActive = (option) => {
                   </Button>
                   <Button
                     variant="primary"
-                    className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                    className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                     onClick={handleProfessionalSwitch}
                     disabled={loading}
                   >
@@ -867,14 +867,14 @@ const isLookingForActive = (option) => {
 
                       <div className="space-y-6">
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             About
                           </h5>
                           <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Contact Information
                           </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -890,7 +890,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Personal Details
                           </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -918,7 +918,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Academic Background
                           </h5>
                           
@@ -950,7 +950,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Skills
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -967,7 +967,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Tools and Platforms
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -984,7 +984,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Interested Industry type
                           </h5>
                           <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
@@ -993,7 +993,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Interested Job Roles
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -1010,7 +1010,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Preferred Job Locations
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -1029,7 +1029,7 @@ const isLookingForActive = (option) => {
                       
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Employment type
                           </h5>
                           <div className="flex gap-2">
@@ -1044,7 +1044,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Shift Preference
                           </h5>
                           <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-xl">
@@ -1053,7 +1053,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Certifications
                           </h5>
                           {profileData.certifications && profileData.certifications.length > 0 ? (
@@ -1062,7 +1062,7 @@ const isLookingForActive = (option) => {
                                 <li key={idx}>
                                   {cert.name || 'N/A'}
                                   {cert.url && (
-                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-[#667eea] hover:underline">
+                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-[#143694] hover:underline">
                                       (Link)
                                     </a>
                                   )}
@@ -1075,7 +1075,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Awards & Recognition
                           </h5>
                           {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
@@ -1107,7 +1107,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Published Blogs/Articles
                           </h5>
                           {profileData.publications && profileData.publications.length > 0 ? (
@@ -1115,7 +1115,7 @@ const isLookingForActive = (option) => {
                                 {profileData.publications.map((pub, idx) => (
                                     <li key={idx}>
                                       {pub.url ? (
-                                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">{pub.title}</a>
+                                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">{pub.title}</a>
                                       ) : pub.title}
                                     </li>
                                 ))}
@@ -1124,7 +1124,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Achievements 
                           </h5>
                           {profileData.achievements && profileData.achievements.length > 0 ? (
@@ -1138,7 +1138,7 @@ const isLookingForActive = (option) => {
                         </div>
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                             Known Languages
                           </h5>
                           <div className="flex flex-wrap gap-2">
@@ -1167,7 +1167,7 @@ const isLookingForActive = (option) => {
              <div className="flex justify-end p-6 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 mt-6">
               <Button
                 variant="primary"
-                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                 onClick={isProfileEditing ? handleSaveChanges : () => setIsProfileEditing(true)}
                 disabled={loading}
               >
@@ -1200,7 +1200,7 @@ const isLookingForActive = (option) => {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Enter your name"
                       value={profileData.fullName}
                       onChange={(e) => handleProfileDataChange('fullName', e.target.value)}
@@ -1229,7 +1229,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="email"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="hello@xyz.com"
                         value={profileData.email}
                         onChange={(e) => handleProfileDataChange('email', e.target.value)}
@@ -1265,7 +1265,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="tel"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         placeholder="1234567890"
                         value={profileData.phone}
                         onChange={(e) => handleProfileDataChange('phone', e.target.value)}
@@ -1291,7 +1291,7 @@ const isLookingForActive = (option) => {
                     </label>
                     {isProfileEditing ? (
                         <textarea
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         rows="4"
                         placeholder="Tell us a little about yourself"
                         value={profileData.about}
@@ -1329,7 +1329,7 @@ const isLookingForActive = (option) => {
                               dateFormat="MMMM d, yyyy"
                               maxDate={new Date()}
                               placeholderText="Select date"
-                              className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                              className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                             />
                           </div>
 
@@ -1338,7 +1338,7 @@ const isLookingForActive = (option) => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
                                 <option value="">Select Gender</option>
                                 {predefinedGenders.map(gender => <option key={gender} value={gender}>{gender}</option>)}
                             </select>
@@ -1347,7 +1347,7 @@ const isLookingForActive = (option) => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
                                 <option value="">Select Status</option>
                                 {predefinedMaritalStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                             </select>
@@ -1356,7 +1356,7 @@ const isLookingForActive = (option) => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Ethnicity</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
                                 <option value="">Select Ethnicity</option>
                                 {predefinedEthnicities.map(ethnicity => <option key={ethnicity} value={ethnicity}>{ethnicity}</option>)}
                             </select>
@@ -1365,7 +1365,7 @@ const isLookingForActive = (option) => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status / Work Authorization</label>
                         {isProfileEditing ? (
-                           <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
+                           <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
                                 <option value="">Select Status</option>
                                 {predefinedVisaStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                             </select>
@@ -1389,7 +1389,7 @@ const isLookingForActive = (option) => {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.college}
                       onChange={(e) => handleProfileDataChange('college', e.target.value)}
@@ -1407,7 +1407,7 @@ const isLookingForActive = (option) => {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.degree}
                       onChange={(e) => handleProfileDataChange('degree', e.target.value)}
@@ -1425,7 +1425,7 @@ const isLookingForActive = (option) => {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.yearOfGraduation}
                       onChange={(e) => handleProfileDataChange('yearOfGraduation', e.target.value)}
@@ -1443,7 +1443,7 @@ const isLookingForActive = (option) => {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.cgpa}
                       onChange={(e) => handleProfileDataChange('cgpa', e.target.value)}
@@ -1465,7 +1465,7 @@ const isLookingForActive = (option) => {
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="degree-certificate-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-[#143694] hover:text-[#1e4ed8] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#143694]"
                           >
                             <span>Upload a file</span>
                             <input
@@ -1490,7 +1490,7 @@ const isLookingForActive = (option) => {
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.degreeCertificateUrl ? (
-                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                           View Certificate
                         </a>
                       ) : (
@@ -1621,7 +1621,7 @@ const isLookingForActive = (option) => {
                         <Button
                           key={option}
                           variant={isLookingForActive(option) ? 'primary' : 'outline'}
-                          className={`rounded-xl ${isLookingForActive(option) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                          className={`rounded-xl ${isLookingForActive(option) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleLookingForChange(option)}
                         >
                           {option}
@@ -1648,7 +1648,7 @@ const isLookingForActive = (option) => {
                         <Button
                           key={type}
                           variant={profileData.employmentType === type ? 'primary' : 'outline'}
-                          className={`rounded-xl ${profileData.employmentType === type ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                          className={`rounded-xl ${profileData.employmentType === type ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleProfileDataChange('employmentType', type)}
                         >
                           {type}
@@ -1667,7 +1667,7 @@ const isLookingForActive = (option) => {
                     </label>
                     {isProfileEditing ? (
                         <select
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         value={profileData.openToShift}
                         onChange={(e) => handleProfileDataChange('openToShift', e.target.value)}
                         >
@@ -1699,7 +1699,7 @@ const isLookingForActive = (option) => {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                     rows="3"
                     placeholder="Enter your skills (comma separated)"
                     value={profileData.skills.join(', ')}
@@ -1735,7 +1735,7 @@ const isLookingForActive = (option) => {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                     rows="3"
                     placeholder="Enter tools and platforms (comma separated), e.g., Jira, Docker, AWS"
                     value={profileData.toolsAndPlatforms.join(', ')}
@@ -1777,7 +1777,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.linkedin.com/in/yourprofile"
                         value={profileData.linkedin.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('linkedin', `http://${e.target.value}`)}
@@ -1785,7 +1785,7 @@ const isLookingForActive = (option) => {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.linkedin ? (
-                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.linkedin}
                           </a>
                         ) : "N/A"}
@@ -1804,7 +1804,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="github.com/yourprofile"
                         value={profileData.github.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('github', `http://${e.target.value}`)}
@@ -1812,7 +1812,7 @@ const isLookingForActive = (option) => {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.github ? (
-                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.github}
                           </a>
                         ) : "N/A"}
@@ -1831,7 +1831,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.yourwebsite.com"
                         value={profileData.portfolio.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('portfolio', `http://${e.target.value}`)}
@@ -1839,7 +1839,7 @@ const isLookingForActive = (option) => {
                     ) : (
                       <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.portfolio ? (
-                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                             {profileData.portfolio}
                           </a>
                         ) : "N/A"}
@@ -1867,7 +1867,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         value={cert.name}
                         onChange={(e) => {
                           const newCerts = [...profileData.certifications];
@@ -1892,7 +1892,7 @@ const isLookingForActive = (option) => {
                       {isProfileEditing ? (
                         <input
                           type="text"
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
+                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#143694] focus:border-[#143694] sm:text-sm border border-gray-200 bg-white/50"
                           placeholder="www.example.com"
                           value={cert.url.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                           onChange={(e) => {
@@ -1904,7 +1904,7 @@ const isLookingForActive = (option) => {
                       ) : (
                         <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#143694] hover:underline">
                               {cert.url}
                             </a>
                           ) : "N/A"}
@@ -1952,7 +1952,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                         <input 
                             type="text" 
-                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                             value={award.title} 
                             onChange={(e) => handleAwardChange(index, 'title', e.target.value)} 
                             placeholder="e.g., Dean's List, Best Capstone Project"
@@ -1967,7 +1967,7 @@ const isLookingForActive = (option) => {
                     {isProfileEditing ? (
                         <input 
                             type="text" 
-                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                             value={award.organization} 
                             onChange={(e) => handleAwardChange(index, 'organization', e.target.value)} 
                             placeholder="e.g., Google, IEEE, University Name"
@@ -1993,7 +1993,7 @@ const isLookingForActive = (option) => {
                           }
                           dateFormat="MMMM d, yyyy"
                           placeholderText="Select date"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                         />
 
                     ) : (
@@ -2016,7 +2016,7 @@ const isLookingForActive = (option) => {
                          dateFormat="MMMM d, yyyy"
                          placeholderText="Select date"
                          minDate={award.startDate ? new Date(award.startDate) : null}
-                         className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                         className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                        />
 
                     ) : (
@@ -2030,7 +2030,7 @@ const isLookingForActive = (option) => {
                 {isProfileEditing ? (
                     <textarea 
                         rows="3"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" 
                         value={award.description} 
                         onChange={(e) => handleAwardChange(index, 'description', e.target.value)} 
                         placeholder="Briefly describe the award and your role or contribution."
@@ -2064,11 +2064,11 @@ const isLookingForActive = (option) => {
                         {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removePublication(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg">Remove</Button>)}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-[#667eea] hover:underline">{pub.url}</a> : "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-[#143694] hover:underline">{pub.url}</a> : "N/A"}</div>)}
                         </div>
                     </div>
                 ))}
@@ -2091,11 +2091,11 @@ const isLookingForActive = (option) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Event (e.g., Hackathon Name)</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
                             </div>
                         </div>
                         <div>
@@ -2114,7 +2114,7 @@ const isLookingForActive = (option) => {
                                 dateFormat="MMMM d, yyyy"
                                 placeholderText="Select date"
                                 popperClassName="achievement-datepicker-popper"
-                                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                               />
                               
                               ) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
@@ -2142,7 +2142,7 @@ const isLookingForActive = (option) => {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
                     rows="3"
                     placeholder="Enter languages (comma separated), e.g., English, Hindi, Spanish"
                     value={profileData.languagesKnown.join(', ')}
@@ -2168,7 +2168,7 @@ const isLookingForActive = (option) => {
             <div className="flex justify-end p-6 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 mt-6">
               <Button
                 variant="primary"
-                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                 onClick={isProfileEditing ? handleSaveChanges : () => setIsProfileEditing(true)}
                 disabled={loading}
               >
@@ -2196,7 +2196,7 @@ const isLookingForActive = (option) => {
                 <div className="mb-4 p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-gray-900">Current Resume</p>
-                    <a href={`/student-resume-preview?url=${encodeURIComponent(profileData.resumeUrl)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-[#667eea] hover:underline">
+                    <a href={`/student-resume-preview?url=${encodeURIComponent(profileData.resumeUrl)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-[#143694] hover:underline">
                       View Resume
                     </a>
                   </div>
@@ -2227,23 +2227,23 @@ const isLookingForActive = (option) => {
   };
   //console.log(profileData)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10">
         <div
-          className="w-full h-32 bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 relative bg-cover bg-center cursor-pointer rounded-b-2xl"
+          className="w-full h-32 bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 relative bg-cover bg-center cursor-pointer rounded-b-2xl"
           style={{ backgroundImage: `url(${profileData.backgroundImageUrl})` }}
           onClick={handleBackgroundImageClick}
         >
           <input id="backgroundImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'backgroundImage')} />
           {!profileData.backgroundImageUrl && (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 bg-opacity-50 rounded-b-2xl">
+            <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 bg-opacity-50 rounded-b-2xl">
               <FiUploadCloud className="w-8 h-8 mr-2" />
               <span>Upload Background Image</span>
             </div>
@@ -2252,7 +2252,7 @@ const isLookingForActive = (option) => {
         <div className="bg-white/90 backdrop-blur-sm border-b border-white/50 pb-4 shadow-lg shadow-purple-50/50 rounded-b-2xl">
           <div className="relative px-4">
             <div className="absolute -top-16 left-4 cursor-pointer" onClick={handleProfileImageClick}>
-              <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border-4 border-white/90 overflow-hidden shadow-lg">
+              <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center border-4 border-white/90 overflow-hidden shadow-lg">
                 {profileData.profileImageUrl ? (
                   <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -2267,7 +2267,7 @@ const isLookingForActive = (option) => {
           </div>
           <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 {profileData.fullName || 'Name Surname'}
               </h2>
               <p className="text-gray-600">{profileData.email || 'hello@gmail.com'}</p>
@@ -2275,7 +2275,7 @@ const isLookingForActive = (option) => {
             <div className="flex items-center justify-between w-full">
               {/* LEFT: Name + Email */}
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   {profileData.fullName || 'Name Surname'}
                 </h2>
                 <p className="text-gray-600">
@@ -2287,7 +2287,7 @@ const isLookingForActive = (option) => {
               <div className="flex gap-6">
                 {/* Hiring Score */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.hiringScore ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Hiring Score</p>
@@ -2295,7 +2295,7 @@ const isLookingForActive = (option) => {
 
                 {/* Rank */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.rank ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Rank</p>
@@ -2303,7 +2303,7 @@ const isLookingForActive = (option) => {
 
                 {/* Resume Score */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-[#667eea]">
+                  <p className="text-lg font-semibold text-[#143694]">
                     {stats.resumeScore ?? '--'}
                   </p>
                   <p className="text-sm text-gray-500">Resume Score</p>
@@ -2313,7 +2313,7 @@ const isLookingForActive = (option) => {
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Switch to Professional</span>
               <button
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2]' : 'bg-gray-200'}`}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8]' : 'bg-gray-200'}`}
                 role="switch"
                 aria-checked={switchToPro}
                 onClick={() => setSwitchToPro(!switchToPro)}
@@ -2327,7 +2327,7 @@ const isLookingForActive = (option) => {
               <button 
                 key={tab} 
                 className={`px-6 py-3 font-medium transition-all duration-200 ${activeTab === tab 
-                  ? 'border-b-2 border-[#667eea] text-[#667eea]' 
+                  ? 'border-b-2 border-[#143694] text-[#143694]' 
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/50 rounded-t-lg'}`} 
                 onClick={() => setActiveTab(tab)}
               >

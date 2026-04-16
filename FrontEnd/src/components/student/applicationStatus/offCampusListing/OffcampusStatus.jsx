@@ -11,9 +11,9 @@ const OffcampusStatus = () => {
   // Early return BEFORE any hooks
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="relative z-10 flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
         </div>
       </div>
     );
@@ -365,9 +365,9 @@ const OffcampusStatus = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="relative z-10 flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
         </div>
       </div>
     );
@@ -375,7 +375,7 @@ const OffcampusStatus = () => {
 
   if (error && offcampusJobs.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 max-w-md">
           <div className="text-red-500 mb-4 text-center">
             <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -386,7 +386,7 @@ const OffcampusStatus = () => {
           <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
           <button
             onClick={fetchApplication}
-            className="w-full px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-300"
+            className="w-full px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300"
           >
             Try Again
           </button>
@@ -396,12 +396,12 @@ const OffcampusStatus = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-6">
@@ -409,11 +409,11 @@ const OffcampusStatus = () => {
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-5 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
-                <Award className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                <Award className="h-5 w-5 text-[#143694]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Off-Campus Application Status
                 </h1>
                 <p className="text-sm text-gray-600">
@@ -432,7 +432,7 @@ const OffcampusStatus = () => {
               <input
                 type="text"
                 placeholder="Search off-campus applications..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -443,7 +443,7 @@ const OffcampusStatus = () => {
                 <Filter className="h-4 w-4 text-gray-400" />
               </div>
               <select
-                className="pl-10 pr-8 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
+                className="pl-10 pr-8 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694]"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -468,7 +468,7 @@ const OffcampusStatus = () => {
               <div className="p-4 border-b border-white/60">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base font-semibold text-gray-900">Off-Campus Applications</h2>
-                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
+                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full">
                     {sortedJobs.length}
                   </span>
                 </div>
@@ -483,7 +483,7 @@ const OffcampusStatus = () => {
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
                           selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20' 
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
                             : 'hover:bg-white/30 border border-transparent'
                         }`}
                       >
@@ -506,8 +506,8 @@ const OffcampusStatus = () => {
                             <div 
                               className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center ${
                                 selectedJob?.id === job.id 
-                                  ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
-                                  : 'bg-white/50 border border-white/60 text-[#667eea]'
+                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                                  : 'bg-white/50 border border-white/60 text-[#143694]'
                               }`}
                               style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
                             >
@@ -519,7 +519,7 @@ const OffcampusStatus = () => {
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
                             <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                               <span className="inline-flex items-center">
-                                <MapPin className="h-3 w-3 mr-1 text-[#667eea]" />
+                                <MapPin className="h-3 w-3 mr-1 text-[#143694]" />
                                 {job.location}
                               </span>
                               <span className={`text-xs px-1.5 py-0.5 rounded ${
@@ -588,10 +588,10 @@ const OffcampusStatus = () => {
                         />
                       ) : null}
                       <div 
-                        className={`${selectedJob.companyLogo ? 'hidden' : 'flex'} w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 items-center justify-center border border-white/60`}
+                        className={`${selectedJob.companyLogo ? 'hidden' : 'flex'} w-12 h-12 rounded-xl bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 items-center justify-center border border-white/60`}
                         style={selectedJob.companyLogo ? {} : { display: selectedJob.companyLogo ? 'none' : 'flex' }}
                       >
-                        <span className="text-lg font-bold text-[#667eea]">
+                        <span className="text-lg font-bold text-[#143694]">
                           {getCompanyInitials(selectedJob.company)}
                         </span>
                       </div>
@@ -635,12 +635,12 @@ const OffcampusStatus = () => {
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
                               <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
                                 isActive 
-                                  ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent text-white'
+                                  ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white'
                                   : 'bg-white/50 border-white/60 text-gray-400'
                               }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
-                              <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
+                              <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
                                 {step}
                               </span>
                             </div>
@@ -649,7 +649,7 @@ const OffcampusStatus = () => {
                       </div>
                       <div className="h-1.5 bg-white/50 absolute left-[16.5%] right-[16.5%] top-4 -z-10">
                         <div
-                          className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
+                          className="h-1.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] transition-all duration-300 rounded-full"
                           style={{
                             width: `${(getStatusIndex(selectedJob.status) / (offCampusStatusSteps.length - 1)) * 100}%`
                           }}
@@ -665,7 +665,7 @@ const OffcampusStatus = () => {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Briefcase className="h-4 w-4 text-[#667eea]" />
+                        <Briefcase className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Job Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
@@ -673,7 +673,7 @@ const OffcampusStatus = () => {
                     
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <MapPin className="h-4 w-4 text-[#667eea]" />
+                        <MapPin className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Location</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.location}</p>
@@ -684,7 +684,7 @@ const OffcampusStatus = () => {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-[#667eea]" />
+                        <Calendar className="h-4 w-4 text-[#143694]" />
                         <span className="text-xs font-medium text-gray-700">Applied Date</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
@@ -693,7 +693,7 @@ const OffcampusStatus = () => {
                     {selectedJob.salary && (
                       <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
-                          <svg className="h-4 w-4 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-4 w-4 text-[#143694]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           <span className="text-xs font-medium text-gray-700">Compensation</span>
@@ -709,7 +709,7 @@ const OffcampusStatus = () => {
                     {selectedJob.workMode && selectedJob.workMode !== "Not specified" && (
                       <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
-                          <Clock className="h-4 w-4 text-[#667eea]" />
+                          <Clock className="h-4 w-4 text-[#143694]" />
                           <span className="text-xs font-medium text-gray-700">Work Mode</span>
                         </div>
                         <p className="text-sm text-gray-900">{selectedJob.workMode}</p>
@@ -720,7 +720,7 @@ const OffcampusStatus = () => {
                     {selectedJob.skills && selectedJob.skills.length > 0 && (
                       <div className={`p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl ${selectedJob.workMode && selectedJob.workMode !== "Not specified" ? 'md:col-span-1' : 'col-span-2'}`}>
                         <div className="flex items-center gap-2 mb-2">
-                          <svg className="h-4 w-4 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-4 w-4 text-[#143694]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                           <span className="text-xs font-medium text-gray-700">Required Skills</span>
@@ -745,7 +745,7 @@ const OffcampusStatus = () => {
                   {selectedJob.description && selectedJob.description !== "No description available" && (
                     <div className="mb-5">
                       <div className="flex items-center gap-2 mb-2">
-                        <svg className="h-4 w-4 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 text-[#143694]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span className="text-xs font-medium text-gray-700">Description</span>
@@ -762,7 +762,7 @@ const OffcampusStatus = () => {
                   <div className="mt-auto">
                     <button 
                       onClick={() => handleViewFullDetails(selectedJob)}
-                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-300 group"
+                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 group"
                     >
                       View Full Details
                       <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />

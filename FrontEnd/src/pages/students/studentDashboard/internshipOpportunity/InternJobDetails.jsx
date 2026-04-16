@@ -19,7 +19,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
       {/* Card */}
       <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
         <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
-          <Briefcase className="h-10 w-10 text-[#667eea]" />
+          <Briefcase className="h-10 w-10 text-[#143694]" />
         </div>
         
         <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
@@ -36,7 +36,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
               e.nativeEvent.stopImmediatePropagation(); 
               onLogin();
             }}
-            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
           >
             Login to Continue
           </button>
@@ -70,10 +70,10 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
         {/* Modal panel */}
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+          <div className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-lg shadow-sm">
                   {company.companyName?.charAt(0) || 'C'}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -104,25 +104,25 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               {/* Company Details Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Employees</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.numberOfEmployees || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Industry</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.industryType || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Country</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.country || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Type</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.companyType || 'N/A'}
@@ -136,7 +136,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                 <div className="space-y-2">
                   {company.email && (
                     <div className="flex items-center">
-                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-[#143694] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                       <span className="text-gray-700 text-sm">{company.email}</span>
@@ -144,7 +144,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                   )}
                   {company.website && (
                     <div className="flex items-center">
-                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-[#143694] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                       </svg>
                       <span className="text-gray-700 text-sm">{company.website}</span>
@@ -160,7 +160,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
             <div className="flex justify-end">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#143694]"
               >
                 Close
               </button>
@@ -360,7 +360,7 @@ const InternJobDetails = () => {
       return (
         <div className="flex flex-wrap gap-2 mt-1">
           {data.map((item, index) => (
-            <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
+            <span key={index} className="bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
               {item}
             </span>
           ))}
@@ -425,19 +425,19 @@ const InternJobDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
 
   if (error || !jobDetails) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
         <div className="text-center p-4">
           <p className="text-xl font-semibold text-red-500">{error || "Internship not found"}</p>
           <button
-            className="mt-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-lg hover:shadow-[#667eea]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+            className="mt-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] hover:shadow-lg hover:shadow-[#143694]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
             onClick={() => navigate('/student-dashboard/Internship')}
           >
             Back to Internships
@@ -453,7 +453,7 @@ const InternJobDetails = () => {
   const companyData = getCompanyData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
      <LoginPromptModal 
         isOpen={showLoginModal} 
         onClose={() => setShowLoginModal(false)} 
@@ -463,7 +463,7 @@ const InternJobDetails = () => {
         {/* Top Back Button */}
         <button 
           onClick={handleBackToList} 
-          className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
+          className="inline-flex items-center text-[#143694] hover:text-[#1e4ed8] mb-6 transition-colors"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
           Back
@@ -490,8 +490,8 @@ const InternJobDetails = () => {
                   onClick={() => setShowCompanyModal(true)}
                   className="w-full h-full flex items-center justify-center group"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 rounded-full flex items-center justify-center group-hover:opacity-90 transition-opacity">
-                    <span className="text-lg font-bold text-[#667eea]">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 rounded-full flex items-center justify-center group-hover:opacity-90 transition-opacity">
+                    <span className="text-lg font-bold text-[#143694]">
                       {getInitials(companyName)}
                     </span>
                   </div>
@@ -507,7 +507,7 @@ const InternJobDetails = () => {
                 onClick={() => setShowCompanyModal(true)}
                 className="text-left group"
               >
-                <p className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mr-2 group-hover:text-[#667eea] transition-colors">
+                <p className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mr-2 group-hover:text-[#143694] transition-colors">
                   {companyName}
                 </p>
                 {/* <div className="flex items-center text-xs text-gray-500 mt-1">
@@ -522,7 +522,7 @@ const InternJobDetails = () => {
               onClick={handleShare}
               className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm shadow-sm"
             >
-              <Share2 className="w-4 h-4 text-[#667eea]" />
+              <Share2 className="w-4 h-4 text-[#143694]" />
               Share
             </button>
             {!isApplied && (
@@ -532,7 +532,7 @@ const InternJobDetails = () => {
                   <button 
                     onClick={handleSave} 
                     disabled={isSaving}
-                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm ${
+                    className={`bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 hover:from-[#143694]/20 hover:to-[#1e4ed8]/20 text-[#143694] font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm ${
                       isSaving ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -551,7 +551,7 @@ const InternJobDetails = () => {
                 <button 
                   onClick={handleApply}
                   disabled={isApplying}
-                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 text-sm ${
+                  className={`px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 text-sm ${
                     isApplying ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
@@ -590,20 +590,20 @@ const InternJobDetails = () => {
 
         {/* About Company */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             About {companyName}
           </h3>
           <p className="text-gray-700 mb-4">{jobDetails.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-4 rounded-lg">
               <div className="font-bold text-lg">{jobDetails.companyPosted?.companyDetails?.numberOfEmployees || "N/A"}</div>
               <div className="text-sm text-gray-600">Employees</div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-4 rounded-lg">
               <div className="font-bold text-lg capitalize">{jobDetails.companyPosted?.companyDetails?.industryType || "N/A"}</div>
               <div className="text-sm text-gray-600">Industry</div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-4 rounded-lg">
               <div className="font-bold text-lg">{jobDetails.companyPosted?.companyDetails?.country || "N/A"}</div>
               <div className="text-sm text-gray-600">Country</div>
             </div>
@@ -612,51 +612,51 @@ const InternJobDetails = () => {
 
         {/* Internship Details */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Internship Details Hii
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">
-              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Location</div>
+                <div className="font-medium text-[#143694]">Location</div>
                 <div className="text-gray-700">{Array.isArray(jobDetails.location) ? jobDetails.location.join(', ') : jobDetails.location}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <Clock className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <Clock className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Duration</div>
+                <div className="font-medium text-[#143694]">Duration</div>
                 <div className="text-gray-700">{jobDetails.internshipDuration || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <Briefcase className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <Briefcase className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Work Mode</div>
+                <div className="font-medium text-[#143694]">Work Mode</div>
                 <div className="text-gray-700 capitalize">{jobDetails.workMode || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <Users className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <Users className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Number of Openings</div>
+                <div className="font-medium text-[#143694]">Number of Openings</div>
                 <div className="text-gray-700">{jobDetails.numberOfOpenings || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <IndianRupee className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <IndianRupee className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Stipend</div>
+                <div className="font-medium text-[#143694]">Stipend</div>
                 <div className="text-gray-700">
                   {formatStipend()}
                 </div>
               </div>
             </div>
             <div className="flex items-start">
-              <Globe className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <Globe className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Work Authorization</div>
+                <div className="font-medium text-[#143694]">Work Authorization</div>
                 <div className="text-gray-700 capitalize">{jobDetails.workAuthorization || 'N/A'}</div>
               </div>
             </div>
@@ -665,7 +665,7 @@ const InternJobDetails = () => {
 
         {/* Internship Description */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Internship Description
           </h3>
           <p className="text-gray-700 whitespace-pre-wrap">
@@ -675,7 +675,7 @@ const InternJobDetails = () => {
 
         {/* Eligibility Criteria */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Eligibility Criteria
           </h3>
           <p className="text-gray-700 whitespace-pre-wrap">
@@ -685,7 +685,7 @@ const InternJobDetails = () => {
 
         {/* Key Skills */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Key Skills Required
           </h3>
           {renderTags(jobDetails.skills)}
@@ -693,7 +693,7 @@ const InternJobDetails = () => {
 
         {/* Benefits & Perks */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Benefits & Perks
           </h3>
           {renderTags(jobDetails.benefits)}
@@ -701,21 +701,21 @@ const InternJobDetails = () => {
 
         {/* Education Requirements */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Education Requirements
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">
-              <GraduationCap className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <GraduationCap className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Minimum Education</div>
+                <div className="font-medium text-[#143694]">Minimum Education</div>
                 <div className="text-gray-700 capitalize">{jobDetails.minEducation || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <FileText className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <FileText className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Preferred Streams</div>
+                <div className="font-medium text-[#143694]">Preferred Streams</div>
                 {renderTags(jobDetails.studentStreams)}
               </div>
             </div>
@@ -724,23 +724,23 @@ const InternJobDetails = () => {
 
         {/* Certificate Requirements */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Certificate Requirements
           </h3>
           <div className="flex items-center">
-            <CheckCircle className="w-5 h-5 mr-3 text-[#667eea] flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 mr-3 text-[#143694] flex-shrink-0" />
             <div className="text-gray-700">{jobDetails.certifications || "Not Required"}</div>
           </div>
         </section>
 
         {/* Important Dates - UPDATED with calculated deadline */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Important Dates
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Application Deadline</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Application Deadline</div>
               <div className="font-medium text-red-600">
                 {applicationDeadline 
                   ? applicationDeadline.toLocaleDateString('en-GB', {
@@ -751,16 +751,16 @@ const InternJobDetails = () => {
                   : 'N/A'}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Internship Start</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Internship Start</div>
               <div className="font-medium text-gray-700">Flexible</div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Interview Dates</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Interview Dates</div>
               <div className="font-medium text-gray-700">To be scheduled</div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Results</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Results</div>
               <div className="font-medium text-gray-700">Rolling basis</div>
             </div>
           </div>
@@ -771,7 +771,7 @@ const InternJobDetails = () => {
           <div className="flex justify-left">
             <button 
               onClick={() => handleBackToList()} 
-              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+              className="inline-flex items-center px-6 py-3 bg-white text-[#143694] border border-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white rounded-xl transition-all duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />

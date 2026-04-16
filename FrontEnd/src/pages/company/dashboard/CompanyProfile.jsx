@@ -78,7 +78,7 @@ export default function CompanyProfile() {
     if (loading) return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#667eea] border-t-transparent"></div>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#143694] border-t-transparent"></div>
           <p className="mt-3 text-gray-600">Loading company profile...</p>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function CompanyProfile() {
           <p className="text-lg font-medium text-gray-900">{error}</p>
           <button
             onClick={fetchProfileData}
-            className="mt-4 px-4 py-2 bg-[#667eea] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
+            className="mt-4 px-4 py-2 bg-[#143694] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
           >
             Try Again
           </button>
@@ -131,7 +131,7 @@ export default function CompanyProfile() {
       {/* Header Banner */}
       <div className="relative h-48">
         {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/20 via-[#f093fb]/10 to-[#1e4ed8]/20"></div>
 
         {profileData?.backgroundImageUrl && (
           <div className="absolute inset-0">
@@ -144,7 +144,7 @@ export default function CompanyProfile() {
         )}
 
         {/* Content Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/8 to-[#764ba2]/15 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/15 via-[#f093fb]/8 to-[#1e4ed8]/15 backdrop-blur-sm"></div>
 
         {/* Banner Upload Overlay */}
         <label
@@ -207,25 +207,25 @@ export default function CompanyProfile() {
                 <div className="flex flex-wrap items-center gap-4 mt-3">
                   {profileData?.companyDetails?.industryType && (
                     <div className="flex items-center gap-2 text-gray-600">
-                      <Briefcase className="h-4 w-4 text-[#667eea]" />
+                      <Briefcase className="h-4 w-4 text-[#143694]" />
                       <span className="text-sm">{profileData.companyDetails.industryType}</span>
                     </div>
                   )}
 
                   {profileData?.companyDetails?.companyLocation && (
                     <div className="flex items-center gap-2 text-gray-600">
-                      <MapPin className="h-4 w-4 text-[#667eea]" />
+                      <MapPin className="h-4 w-4 text-[#143694]" />
                       <span className="text-sm">{profileData.companyDetails.companyLocation}</span>
                     </div>
                   )}
 
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Users className="h-4 w-4 text-[#667eea]" />
+                    <Users className="h-4 w-4 text-[#143694]" />
                     <span className="text-sm">{profileData?.companyDetails?.numberOfEmployees || 'N/A'} Employees</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="h-4 w-4 text-[#667eea]" />
+                    <Calendar className="h-4 w-4 text-[#143694]" />
                     <span className="text-sm">Est. {profileData?.companyDetails?.establishedYear || 'N/A'}</span>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export default function CompanyProfile() {
                       href={profileData.companyDetails.companyLinkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-[#143694] rounded-lg hover:bg-blue-100 transition-colors text-sm"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
@@ -269,14 +269,14 @@ export default function CompanyProfile() {
                   key={tab}
                   className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
                     activeTab === tab
-                      ? 'text-[#667eea]'
+                      ? 'text-[#143694]'
                       : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab}
                   {activeTab === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#667eea]"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#143694]"></div>
                   )}
                 </button>
               ))}

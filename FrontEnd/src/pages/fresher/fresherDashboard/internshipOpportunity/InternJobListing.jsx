@@ -512,9 +512,9 @@ if (compact) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading internships...</p>
         </div>
       </div>
@@ -523,7 +523,7 @@ if (compact) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 max-w-md text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#fca5a5]/30 to-[#ef4444]/20 rounded-full mb-4">
             <AlertCircle className="w-8 h-8 text-[#ef4444]" />
@@ -531,7 +531,7 @@ if (compact) {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{error}</h3>
           <button
             onClick={fetchInternships}
-            className="mt-4 px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200"
+            className="mt-4 px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200"
           >
             Try Again
           </button>
@@ -541,12 +541,12 @@ if (compact) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#a5b4fc]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
       </div>
@@ -558,7 +558,7 @@ if (compact) {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Internship Opportunities for Freshers
                 </h1>
                 <p className="text-gray-600 mt-2">
@@ -580,10 +580,10 @@ if (compact) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Internships</p>
-                <p className="text-2xl font-bold text-[#667eea]">{allJobs.length}</p>
+                <p className="text-2xl font-bold text-[#143694]">{allJobs.length}</p>
               </div>
-              <div className="p-2 bg-gradient-to-br from-[#a5b4fc]/30 to-[#667eea]/20 rounded-lg">
-                <Building className="w-5 h-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#a5b4fc]/30 to-[#143694]/20 rounded-lg">
+                <Building className="w-5 h-5 text-[#143694]" />
               </div>
             </div>
           </div>
@@ -638,11 +638,11 @@ if (compact) {
                 <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
                 
                 {filters.workMode.map(mode => (
-                  <span key={mode} className="inline-flex items-center bg-gradient-to-r from-[#a5b4fc]/20 to-[#667eea]/10 text-[#667eea] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                  <span key={mode} className="inline-flex items-center bg-gradient-to-r from-[#a5b4fc]/20 to-[#143694]/10 text-[#143694] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
                     {mode}
                     <button 
                       onClick={() => removeFilter('workMode', mode)}
-                      className="ml-2 text-[#667eea] hover:text-[#5b21b6]"
+                      className="ml-2 text-[#143694] hover:text-[#5b21b6]"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -715,11 +715,11 @@ if (compact) {
                 )}
 
                 {filters.duration && (
-                  <span className="inline-flex items-center bg-gradient-to-r from-[#ddd6fe]/20 to-[#8b5cf6]/10 text-[#8b5cf6] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                  <span className="inline-flex items-center bg-gradient-to-r from-[#ddd6fe]/20 to-[#1e40af]/10 text-[#1e40af] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
                     Duration: {filters.duration}
                     <button 
                       onClick={() => removeFilter('duration', filters.duration)}
-                      className="ml-2 text-[#8b5cf6] hover:text-[#7c3aed]"
+                      className="ml-2 text-[#1e40af] hover:text-[#7c3aed]"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -750,10 +750,10 @@ if (compact) {
                   onClick={() => setShowMainFilter(!showMainFilter)}
                   className={`flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border ${showMainFilter ? 'border-[#a5b4fc] ring-2 ring-[#a5b4fc]/10' : 'border-white/50 hover:border-[#a5b4fc]/50'} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md`}
                 >
-                  <Filter className="h-4 w-4 text-[#667eea]" />
+                  <Filter className="h-4 w-4 text-[#143694]" />
                   <span className="text-sm font-medium text-gray-700">Filter</span>
                   {getActiveFiltersCount() > 0 && (
-                    <span className="px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#667eea] text-white text-xs rounded-full">
+                    <span className="px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#143694] text-white text-xs rounded-full">
                       {getActiveFiltersCount()}
                     </span>
                   )}
@@ -799,10 +799,10 @@ if (compact) {
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
-                      <Briefcase className="h-4 w-4 text-[#667eea] mr-2" />
+                      <Briefcase className="h-4 w-4 text-[#143694] mr-2" />
                       <span className="text-sm font-medium text-gray-700">Work Mode</span>
                       {filters.workMode.length > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#667eea] text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#143694] text-white text-xs rounded-full">
                           {filters.workMode.length}
                         </span>
                       )}
@@ -810,7 +810,7 @@ if (compact) {
                     {filters.workMode.length > 0 && (
                       <button
                         onClick={() => clearFilterSection('workMode')}
-                        className="text-xs text-[#667eea] hover:text-[#5b21b6] font-medium"
+                        className="text-xs text-[#143694] hover:text-[#5b21b6] font-medium"
                       >
                         Clear
                       </button>
@@ -836,7 +836,7 @@ if (compact) {
                                 id={`workMode-${option.label}-${index}`}
                                 checked={filters.workMode.includes(option.label)}
                                 onChange={() => handleFilterChange('workMode', option.label)}
-                                className="h-4 w-4 text-[#667eea] focus:ring-[#a5b4fc]/50 border-gray-300 rounded"
+                                className="h-4 w-4 text-[#143694] focus:ring-[#a5b4fc]/50 border-gray-300 rounded"
                               />
                               <label 
                                 htmlFor={`workMode-${option.label}-${index}`}
@@ -1026,10 +1026,10 @@ if (compact) {
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-[#8b5cf6] mr-2" />
+                      <Clock className="h-4 w-4 text-[#1e40af] mr-2" />
                       <span className="text-sm font-medium text-gray-700">Duration</span>
                       {filters.duration && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#8b5cf6] text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-[#1e40af] text-white text-xs rounded-full">
                           1
                         </span>
                       )}
@@ -1037,7 +1037,7 @@ if (compact) {
                     {filters.duration && (
                       <button
                         onClick={() => clearFilterSection('duration')}
-                        className="text-xs text-[#8b5cf6] hover:text-[#7c3aed] font-medium"
+                        className="text-xs text-[#1e40af] hover:text-[#7c3aed] font-medium"
                       >
                         Clear
                       </button>
@@ -1063,7 +1063,7 @@ if (compact) {
                               name="duration"
                               checked={filters.duration === option.label}
                               onChange={() => handleFilterChange('duration', option.label)}
-                              className="h-4 w-4 text-[#8b5cf6] focus:ring-[#ddd6fe]/50 border-gray-300 rounded"
+                              className="h-4 w-4 text-[#1e40af] focus:ring-[#ddd6fe]/50 border-gray-300 rounded"
                             />
                             <label 
                               htmlFor={`duration-${option.label}`}
@@ -1249,7 +1249,7 @@ if (compact) {
 
               {/* View All Button */}
               <div className="mt-10 text-center">
-                <button className="px-8 py-3.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200 text-base font-medium">
+                <button className="px-8 py-3.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-base font-medium">
                   View All Internships
                 </button>
               </div>
@@ -1266,7 +1266,7 @@ if (compact) {
               <div className="flex flex-wrap gap-4 justify-center">
                 <button
                   onClick={clearAllFilters}
-                  className="px-8 py-3.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200 text-base font-medium"
+                  className="px-8 py-3.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-base font-medium"
                 >
                   Reset All Filters
                 </button>

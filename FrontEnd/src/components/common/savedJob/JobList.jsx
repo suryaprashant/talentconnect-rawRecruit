@@ -66,7 +66,7 @@ const JobList = ({ jobs }) => {
       
       // Show initials if no logo
       return (
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-sm">
           {getInitials(collegeName)}
         </div>
       );
@@ -92,7 +92,7 @@ const JobList = ({ jobs }) => {
       
       // Show initials if no logo
       return (
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-sm">
           {getInitials(companyName)}
         </div>
       );
@@ -151,12 +151,12 @@ const JobList = ({ jobs }) => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
 
         {/* Header */}
         {/*<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Saved Opportunities
           </h1>
           <p className="text-gray-600 mt-2">Browse your saved opportunities</p>
@@ -204,13 +204,13 @@ const JobList = ({ jobs }) => {
                           </div>
 
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#143694] transition-colors line-clamp-1">
                               {titleName || "Name"}
                             </h3>
 
                             <div className="flex items-center text-sm text-gray-600 mt-1">
                               <span className="mr-3 capitalize">{job?.jobType || "Job"}</span>
-                              <span className="px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-xs font-medium">
+                              <span className="px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full text-xs font-medium">
                                 Saved
                               </span>
                             </div>
@@ -469,7 +469,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
     
   //   // Show initials if no logo
   //   return (
-  //     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+  //     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-sm">
   //       {getInitials(orgName)}
   //     </div>
   //   );
@@ -480,7 +480,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   const initials = getInitials(orgName);
 
   return (
-    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center">
       {/* Background Layer: Initials are always here */}
       <span className="text-white font-bold text-sm absolute z-0">
         {initials}
@@ -574,7 +574,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
 
         {/* Header */}
@@ -630,13 +630,13 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                           </div>
 
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#143694] transition-colors line-clamp-1">
                               {orgName}
                             </h3>
 
                             <div className="flex items-center text-sm text-gray-600 mt-1">
                               <span className="mr-3 capitalize">{job?.jobType || "Job"}</span>
-                              <span className="px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-xs font-medium">
+                              <span className="px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full text-xs font-medium">
                                 Saved
                               </span>
                             </div>

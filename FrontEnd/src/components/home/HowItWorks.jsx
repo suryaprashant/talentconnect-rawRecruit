@@ -17,7 +17,7 @@ const companySteps = [
 
 const candidateSteps = [
   { icon: UserPlus, title: "Build Your Profile", desc: "Showcase skills, projects, and resume to recruiters." },
-  { icon: Search, title: "Explore Opportunities", desc: "Find on-campus, off-campus, and internship roles." },
+  { icon: Search, title: "Explore Opportunities", desc: "Find off-campus and internship roles." },
   { icon: Send, title: "Apply & Track", desc: "Apply instantly and track your application progress." },
 ];
 

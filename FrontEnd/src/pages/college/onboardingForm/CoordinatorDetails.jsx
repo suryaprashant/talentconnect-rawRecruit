@@ -373,18 +373,18 @@ export default function CoordinatorDetails({
         {/* Card with blur border effect */}
         <div className="relative w-full max-w-4xl">
           {/* Blur border */}
-          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#93c5fd]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
+          <div className="absolute -inset-6 bg-gradient-to-br from-[#fbcfe8]/20 via-[#143694]/20 to-[#a7f3d0]/20 rounded-4xl blur-2xl -z-10"></div>
           
           {/* Optional corner accent blurs */}
           <div className="absolute -top-8 -left-8 w-32 h-32 bg-[#fbcfe8]/30 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#93c5fd]/30 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#143694]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#c7d2fe]/30 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#a7f3d0]/30 rounded-full blur-3xl -z-10"></div>
           
           {/* Main Card */}
           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
 
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent mb-6">
               Placement Coordinator Details
             </h1>
             <p className="text-gray-600 text-lg mb-8">
@@ -402,7 +402,7 @@ export default function CoordinatorDetails({
                   name="coordinatorName"
                   value={formData.coordinatorName || ""}
                   onChange={handleChange}
-                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
+                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg ${
                     errors.coordinatorName 
                       ? 'border-red-300 focus:ring-red-300' 
                       : 'border-gray-200/80'
@@ -472,7 +472,7 @@ export default function CoordinatorDetails({
                   value={formData.officialEmail || ""}
                   onChange={handleChange}
                   placeholder="hello@xyz.com"
-                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
+                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg ${
                     errors.officialEmail 
                       ? 'border-red-300 focus:ring-red-300' 
                       : 'border-gray-200/80'
@@ -497,7 +497,7 @@ export default function CoordinatorDetails({
                   value={formData.officialMobile || ""}
                   onChange={handleChange}
                   placeholder="9876543210"
-                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
+                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg ${
                     errors.officialMobile 
                       ? 'border-red-300 focus:ring-red-300' 
                       : 'border-gray-200/80'
@@ -522,7 +522,7 @@ export default function CoordinatorDetails({
                   value={formData.linkedinProfile || ""}
                   onChange={handleChange}
                   placeholder="e.g., linkedin.com/in/username or www.linkedin.com/in/username"
-                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
+                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694] focus:border-transparent transition-all duration-200 text-lg ${
                     errors.linkedinProfile 
                       ? 'border-red-300 focus:ring-red-300' 
                       : 'border-gray-200/80'
@@ -546,7 +546,7 @@ export default function CoordinatorDetails({
               </button>
               <button
                 onClick={handleNext}
-                className="px-10 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 font-medium text-lg"
+                className="px-10 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium text-lg"
               >
                 Next
               </button>

@@ -73,7 +73,7 @@
 //                   id={`${category._id}-${filter._id}`}
 //                   checked={filter.checked}
 //                   onChange={(e) => onFilterChange(category._id, filter._id, e.target.checked)}
-//                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+//                   className="h-4 w-4 text-blue-600 focus:ring-[#1e4ed8] border-gray-300 rounded"
 //                 />
 //                 <label
 //                   htmlFor={`${category._id}-${filter._id}`}

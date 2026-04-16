@@ -60,16 +60,16 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#143694]/15 via-[#f093fb]/10 to-[#1e4ed8]/15 p-4">
       {/* Blur Background around card */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative w-full max-w-2xl">
         {/* Blur background behind card */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
 
         <motion.div
           className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -79,7 +79,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
           transition={{ duration: 0.3 }}
         >
           {/* Decorative top bar */}
-          <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+          <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
           <h1 className="text-2xl font-bold mb-1 text-gray-800">Introduce Yourself as a Company!</h1>
           <p className="text-gray-600 mb-6">
@@ -187,7 +187,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                   value={formData.mobile}
                   onChange={handleFieldChange}
                   placeholder="1234567890"
-                  className={`block w-full pl-10 pr-3 py-2 border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80`}
+                  className={`block w-full pl-10 pr-3 py-2 border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80`}
                   required
                 />
               </div>
@@ -210,7 +210,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                   value={formData.linkedIn}
                   onChange={handleFieldChange}
                   placeholder="https://linkedin.com/in/yourname"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-500">Example: https://linkedin.com/in/yourname</p>
@@ -226,7 +226,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
               >
                 Next
               </button>

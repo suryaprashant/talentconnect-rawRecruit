@@ -70,17 +70,17 @@ const HackathonList = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex justify-center items-center">
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative z-10 text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
-          <p className="mt-4 text-gray-600 font-medium bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#143694] mx-auto"></div>
+          <p className="mt-4 text-gray-600 font-medium bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Loading hackathons...
           </p>
         </div>
@@ -90,12 +90,12 @@ const HackathonList = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex justify-center items-center">
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative z-10 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 max-w-md w-full mx-4">
@@ -108,7 +108,7 @@ const HackathonList = () => {
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Hackathons</h3>
             <p className="text-gray-600 mb-6">{error}</p>
             <button
-              className="inline-flex items-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+              className="inline-flex items-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 px-6 py-3 rounded-xl font-medium"
               onClick={() => loadHackathons()}
             >
               <FiLoader className="w-4 h-4 mr-2" />
@@ -125,12 +125,12 @@ const HackathonList = () => {
   const upcomingHackathons = hackathons.filter(h => new Date(h.startDate || h.date) > new Date()).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8">
@@ -138,7 +138,7 @@ const HackathonList = () => {
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                 Hackathons & Innovation Challenges
               </h1>
               <p className="text-gray-600">
@@ -147,10 +147,10 @@ const HackathonList = () => {
             </div>
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-2 bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 p-3 rounded-xl">
-                <FiCalendar className="w-5 h-5 text-[#667eea]" />
+                <FiCalendar className="w-5 h-5 text-[#143694]" />
                 <div>
                   <p className="text-sm text-gray-600">Total Events</p>
-                  <p className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  <p className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                     {hackathons.length}
                   </p>
                 </div>
@@ -162,10 +162,10 @@ const HackathonList = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="p-4 bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 border border-[#a5b4fc]/20 rounded-xl">
               <div className="flex items-center space-x-2">
-                <FiUsers className="w-5 h-5 text-[#667eea]" />
+                <FiUsers className="w-5 h-5 text-[#143694]" />
                 <div>
                   <p className="text-sm text-gray-600">Total Participants</p>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  <p className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                     {totalParticipants.toLocaleString()}
                   </p>
                 </div>
@@ -213,19 +213,19 @@ const HackathonList = () => {
               <span className="text-sm text-gray-500">Quick filters:</span>
               <button
                 onClick={() => handleSort('date')}
-                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'date' ? 'bg-[#667eea] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'date' ? 'bg-[#143694] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 Recent
               </button>
               <button
                 onClick={() => handleSort('popularity')}
-                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'popularity' ? 'bg-[#667eea] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'popularity' ? 'bg-[#143694] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 Popular
               </button>
               <button
                 onClick={() => handleSort('prize')}
-                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'prize' ? 'bg-[#667eea] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 ${sortBy === 'prize' ? 'bg-[#143694] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 High Prize
               </button>
@@ -266,7 +266,7 @@ const HackathonList = () => {
             <div className="text-center py-12">
               <div className="max-w-md mx-auto">
                 <div className="w-20 h-20 bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FiSearch className="w-10 h-10 text-[#667eea]" />
+                  <FiSearch className="w-10 h-10 text-[#143694]" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No Hackathons Found</h3>
                 <p className="text-gray-600 mb-6">
@@ -276,7 +276,7 @@ const HackathonList = () => {
                 </p>
                 {searchTerm && (
                   <button
-                    className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+                    className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 px-6 py-3 rounded-xl font-medium"
                     onClick={() => setSearchTerm('')}
                   >
                     Clear Search

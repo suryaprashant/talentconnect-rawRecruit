@@ -314,17 +314,17 @@ export default function EmployerInterviewScheduler() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <div className="max-w-6xl mx-auto px-4 py-8">
 
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-4">
-                <Building2 className="h-6 w-6 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-4">
+                <Building2 className="h-6 w-6 text-[#143694]" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Interview Scheduler
               </h1>
               
@@ -338,7 +338,7 @@ export default function EmployerInterviewScheduler() {
         <select
           value={dateSort}
           onChange={(e) => setDateSort(e.target.value)}
-          className="px-4 py-2 border border-gray-300 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#667eea]"
+          className="px-4 py-2 border border-gray-300 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#143694]"
         >
           <option value="desc">Newest First</option>
           <option value="asc">Oldest First</option>
@@ -347,7 +347,7 @@ export default function EmployerInterviewScheduler() {
 
           {loading ? (
             <div className="text-center py-10">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
               <p className="mt-4 text-gray-600">Loading interviews...</p>
             </div>
           ) : interviews.length === 0 ? (
@@ -387,8 +387,8 @@ export default function EmployerInterviewScheduler() {
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex gap-5">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
-                          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-[#667eea]">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center">
+                          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-[#143694]">
                             {avatarLetter}
 
                           </div>
@@ -440,7 +440,7 @@ export default function EmployerInterviewScheduler() {
                         href={interview.meetLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-5 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-sm font-medium hover:shadow-lg"
+                        className="px-5 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-sm font-medium hover:shadow-lg"
                       >
                         Join Meeting
                       </a>

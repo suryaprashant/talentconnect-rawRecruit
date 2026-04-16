@@ -71,12 +71,12 @@ const WEIGHT_KEYS = ['skills','jobRoles','experience','cgpa','batchYear','locati
 
 const WEIGHT_META = {
   skills:     { label: 'Skills',      color: '#6366f1', group: 'core' },
-  jobRoles:   { label: 'Job Roles',   color: '#8b5cf6', group: 'core' },
+  jobRoles:   { label: 'Job Roles',   color: '#1e40af', group: 'core' },
   experience: { label: 'Experience',  color: '#0ea5e9', group: 'core' },
   location:   { label: 'Location',    color: '#14b8a6', group: 'core' },
   salary:     { label: 'Salary',      color: '#f59e0b', group: 'core' },
   cgpa:       { label: 'CGPA',        color: '#10b981', group: 'academics' },
-  batchYear:  { label: 'Batch Year',  color: '#3b82f6', group: 'academics' },
+  batchYear:  { label: 'Batch Year',  color: '#1e4ed8', group: 'academics' },
   degree:     { label: 'Degree',      color: '#ec4899', group: 'academics' },
   stream:     { label: 'Stream',      color: '#f97316', group: 'academics' },
 };
@@ -452,7 +452,7 @@ const AdminDashboard = () => {
   }
 
   const stats = [
-    { title: 'Total Users',   value: dashboardData.totalUsers || 0,       icon: Users,         color: 'bg-blue-500',   change: '+12%' },
+    { title: 'Total Users',   value: dashboardData.totalUsers || 0,       icon: Users,         color: 'bg-[#1e4ed8]',   change: '+12%' },
     { title: 'Companies',     value: dashboardData.totalCompanies || 0,   icon: Building2,     color: 'bg-green-500',  change: '+8%'  },
     { title: 'Colleges',      value: dashboardData.totalColleges || 0,    icon: GraduationCap, color: 'bg-purple-500', change: '+5%'  },
     { title: 'Applications',  value: dashboardData.totalJobApplicationSubmission || dashboardData.totalApplications || 0, icon: FileText, color: 'bg-orange-500', change: '+15%' },
@@ -551,7 +551,7 @@ const AdminDashboard = () => {
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">User Management</h3>
             <p className="text-gray-500 mb-4">Manage users, companies, and colleges</p>
-            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Manage Users</button>
+            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-[#143694]">Manage Users</button>
           </div>
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Analytics</h3>
@@ -561,7 +561,7 @@ const AdminDashboard = () => {
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Settings</h3>
             <p className="text-gray-500 mb-4 my-5">Configure system settings</p>
-            <button className="w-full bg-purple-600 text-white py-2 px-4 my-4 rounded-md hover:bg-purple-700">Open Settings</button>
+            <button className="w-full bg-[#143694] text-white py-2 px-4 my-4 rounded-md hover:bg-purple-700">Open Settings</button>
           </div>
 
           {/* Threshold card — now matches orange Applications stat card */}
@@ -618,7 +618,7 @@ const AdminDashboard = () => {
                   <span key={f} className={`${cls} text-xs font-semibold px-3 py-1 rounded-full`}>{f}</span>
                 ))}
               </div>
-              <button className="bg-purple-600 text-white py-2 px-5 rounded-md hover:bg-purple-700 font-medium text-sm" style={{ display:'flex', alignItems:'center', gap:'7px' }}>
+              <button className="bg-[#143694] text-white py-2 px-5 rounded-md hover:bg-purple-700 font-medium text-sm" style={{ display:'flex', alignItems:'center', gap:'7px' }}>
                 <BarChart3 size={14} />
                 Configure Weights
               </button>

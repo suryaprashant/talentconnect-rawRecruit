@@ -76,7 +76,7 @@ export default function EmployerUserManagement() {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#667eea] border-t-transparent"></div>
+                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#143694] border-t-transparent"></div>
                     <p className="mt-3 text-gray-600">Loading team members...</p>
                 </div>
             </div>
@@ -95,7 +95,7 @@ export default function EmployerUserManagement() {
                     <p className="text-lg font-medium text-gray-900">{error}</p>
                     <button 
                         onClick={() => window.location.reload()}
-                        className="mt-4 px-4 py-2 bg-[#667eea] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
+                        className="mt-4 px-4 py-2 bg-[#143694] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
                     >
                         Try Again
                     </button>
@@ -106,10 +106,10 @@ export default function EmployerUserManagement() {
 
     return (
         <>
-            <div className="flex flex-col w-full bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 min-h-screen">
+            <div className="flex flex-col w-full bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 min-h-screen">
                 <div className="container mx-auto py-6 px-4">
                     <div className="mb-6 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                        <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Manage Users
                         </h2>
                         <p className="text-gray-600">
@@ -123,8 +123,8 @@ export default function EmployerUserManagement() {
                             <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                                 <div className="mb-6">
                                     <div className="flex items-center mb-4">
-                                        <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-3">
-                                            <Users className="w-5 h-5 text-[#667eea]" />
+                                        <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-3">
+                                            <Users className="w-5 h-5 text-[#143694]" />
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-900">User Groups</h3>
@@ -136,7 +136,7 @@ export default function EmployerUserManagement() {
                                         <h2 className="text-sm font-medium text-gray-700">Filters</h2>
                                         <button 
                                             onClick={() => { setSearchTerm(''); setSelectedGroup('all'); }} 
-                                            className="text-xs bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent hover:from-[#5a6fd8] hover:to-[#6b46c1]"
+                                            className="text-xs bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent hover:from-[#5a6fd8] hover:to-[#6b46c1]"
                                         >
                                             Clear all
                                         </button>
@@ -149,7 +149,7 @@ export default function EmployerUserManagement() {
                                 
                                 <div>
                                     <h2 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
-                                        <Filter className="h-4 w-4 mr-2 text-[#667eea]" />
+                                        <Filter className="h-4 w-4 mr-2 text-[#143694]" />
                                         Groups
                                     </h2>
                                     <div className="space-y-2">
@@ -159,14 +159,14 @@ export default function EmployerUserManagement() {
                                                     key={group}
                                                     className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 ${
                                                         selectedGroup === group 
-                                                            ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20' 
+                                                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
                                                             : 'bg-gray-50 hover:bg-gray-100'
                                                     }`}
                                                 >
                                                     <div className="flex items-center">
                                                         <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center mr-3 ${
                                                             selectedGroup === group 
-                                                                ? 'border-[#667eea] bg-[#667eea]' 
+                                                                ? 'border-[#143694] bg-[#143694]' 
                                                                 : 'border-gray-300'
                                                         }`}>
                                                             {selectedGroup === group && (
@@ -179,7 +179,7 @@ export default function EmployerUserManagement() {
                                                     </div>
                                                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
                                                         selectedGroup === group 
-                                                            ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' 
+                                                            ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white' 
                                                             : 'bg-gray-200 text-gray-700'
                                                     }`}>
                                                         {groupCounts[group]}
@@ -208,7 +208,7 @@ export default function EmployerUserManagement() {
                                             <h2 className="text-lg font-bold text-gray-900">All Users ({users.length})</h2>
                                             <p className="text-sm text-gray-600 mt-1">Manage your team's access and roles.</p>
                                         </div>
-                                        {/* <button className="px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2">
+                                        {/* <button className="px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2">
                                             <UserPlus size={16} />
                                             Add User
                                         </button> */}
@@ -223,7 +223,7 @@ export default function EmployerUserManagement() {
                                         <input
                                             type="text"
                                             placeholder="Search by name or email..."
-                                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                         />
@@ -287,7 +287,7 @@ export default function EmployerUserManagement() {
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <span className={`text-sm font-medium ${
                                                                 user.userType === 'Owner' 
-                                                                    ? 'text-purple-600' 
+                                                                    ? 'text-[#143694]' 
                                                                     : user.userType === 'Admin' 
                                                                     ? 'text-blue-600' 
                                                                     : 'text-green-600'

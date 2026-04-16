@@ -25,16 +25,16 @@ const serviceData = [
 
 export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
       <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
         
         {/* Header */}
         <header className="mb-8 pt-2">
           <div className="flex items-center justify-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
-              <Users className="h-6 w-6 text-[#667eea]" />
+            <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+              <Users className="h-6 w-6 text-[#143694]" />
             </div>
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
               Pool Campus Connect: Hire Bigger
             </h1>
           </div>
@@ -54,14 +54,14 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                   className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col h-96" // Fixed height for square shape
                 >
                   {/* Purple hover overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/0 to-[#764ba2]/0 group-hover:from-[#667eea]/5 group-hover:to-[#764ba2]/5 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
                   
                   {/* Purple border on hover */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#667eea]/20 rounded-lg transition-all duration-300"></div>
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#143694]/20 rounded-lg transition-all duration-300"></div>
                   
                   <div className="relative z-10 h-full flex flex-col">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-4">
-                      <IconComponent className="h-5 w-5 text-[#667eea]" />
+                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mb-4">
+                      <IconComponent className="h-5 w-5 text-[#143694]" />
                     </div>
                     <h3 className="text-base font-bold text-gray-900 mb-3">
                       {service.title}
@@ -80,7 +80,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <section className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
           <button
             onClick={onRequestInfoClick}
-            className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg transition-all text-base"
+            className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg transition-all text-base"
           >
             Register Now
           </button>

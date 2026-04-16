@@ -119,17 +119,17 @@ const EventList = ({ event_name }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative z-10 flex justify-center items-center h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#667eea] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#143694] mx-auto mb-4"></div>
             <p className="text-gray-600 font-medium">Loading {event_name} events...</p>
             <p className="text-sm text-gray-500 mt-2">Discovering exciting opportunities for you</p>
           </div>
@@ -140,12 +140,12 @@ const EventList = ({ event_name }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative z-10 flex justify-center items-center h-screen">
@@ -158,7 +158,7 @@ const EventList = ({ event_name }) => {
             <h2 className="text-xl font-bold text-gray-900 mb-2">Unable to Load Events</h2>
             <p className="text-gray-600 mb-6">{error}</p>
             <button
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
+              className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
               onClick={loadEvents}
             >
               Try Again
@@ -170,12 +170,12 @@ const EventList = ({ event_name }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 p-4 md:p-6">
@@ -183,7 +183,7 @@ const EventList = ({ event_name }) => {
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2 capitalize">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2 capitalize">
                 {event_name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
               </h1>
               <p className="text-gray-600">
@@ -235,7 +235,7 @@ const EventList = ({ event_name }) => {
                   key={filter.id}
                   className={`flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
                     activeFilter === filter.id
-                      ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-purple-500/30'
+                      ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-purple-500/30'
                       : 'bg-white/50 backdrop-blur-sm border border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => setActiveFilter(filter.id)}
@@ -295,7 +295,7 @@ const EventList = ({ event_name }) => {
                   Clear Filters
                 </button>
                 <button
-                  className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
+                  className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
                   onClick={loadEvents}
                 >
                   Refresh Events
@@ -321,7 +321,7 @@ const EventList = ({ event_name }) => {
                 <button className="px-4 py-2 text-sm font-medium bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200">
                   Subscribe
                 </button>
-                <button className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200">
+                <button className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200">
                   View All Events
                 </button>
               </div>

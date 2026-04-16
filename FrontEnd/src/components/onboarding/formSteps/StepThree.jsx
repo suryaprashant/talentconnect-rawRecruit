@@ -293,7 +293,7 @@ const handleAddCollege = async (name) => {
               yearOfGraduation: e.target.value,
             }))
           }
-          className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+          className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
         >
           <option value="" disabled>Select Year</option>
           {yearOptions.map(year => (
@@ -308,21 +308,21 @@ const handleAddCollege = async (name) => {
   );
 
  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
           
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
-              <GraduationCap className="w-10 h-10 text-[#667eea]" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mx-auto mb-4">
+              <GraduationCap className="w-10 h-10 text-[#143694]" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
               Educational Background
             </h1>
             <p className="text-gray-600 mb-4">
@@ -420,7 +420,7 @@ const handleAddCollege = async (name) => {
                             semester: e.target.value,
                           }))
                         }
-                        className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                        className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
                       >
                         <option value="" disabled>Select semester</option>
                         {[...Array(8)].map((_, i) => (
@@ -532,7 +532,7 @@ const handleAddCollege = async (name) => {
                 type="text"
                 value={localFormData.cgpa && localFormData.cgpa !== "Not Found" ? localFormData.cgpa : ""}
                 onChange={(e) => setLocalFormData((prev) => ({ ...prev, cgpa: e.target.value }))}
-                className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
                 placeholder="Enter your CGPA or percentage"
               />
             </div> */}
@@ -542,7 +542,7 @@ const handleAddCollege = async (name) => {
               <label htmlFor="degreeCertificate" className="block text-gray-700 font-medium text-sm mb-2">
                 Degree Certificate (Optional)
               </label>
-              <label className="flex items-center w-full p-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#667eea] hover:bg-[#667eea]/5 transition-all duration-200">
+              <label className="flex items-center w-full p-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#143694] hover:bg-[#143694]/5 transition-all duration-200">
                 <div className="flex items-center flex-grow">
                   <UploadIcon className="w-5 h-5 text-gray-400 mr-3" />
                   <span className="text-gray-600">
@@ -558,7 +558,7 @@ const handleAddCollege = async (name) => {
             <button type="button" onClick={onBack} className="px-8 py-3 bg-white/70 border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 font-medium">
               Back
             </button>
-            <button type="button" onClick={handleNextClick} className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg font-medium">
+            <button type="button" onClick={handleNextClick} className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg font-medium">
               Next
             </button>
           </div>
@@ -572,7 +572,7 @@ const customSelectStyles = {
     ...base,
     minHeight: '56px',
     borderRadius: '12px',
-    borderColor: state.isFocused ? '#667eea' : '#d1d5db',
+    borderColor: state.isFocused ? '#143694' : '#d1d5db',
     boxShadow: state.isFocused ? '0 0 0 3px rgba(102,126,234,0.1)' : 'none',
   }),
 };

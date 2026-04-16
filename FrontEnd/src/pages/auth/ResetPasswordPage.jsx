@@ -111,9 +111,9 @@ function ResetPasswordPage() {
 
   if (validating) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694] mx-auto"></div>
           <p className="mt-4 text-gray-600">Validating reset link...</p>
           <p className="mt-2 text-sm text-gray-500">Token: {token?.substring(0, 20)}...</p>
         </div>
@@ -123,15 +123,15 @@ function ResetPasswordPage() {
 
   if (!validToken) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="relative w-full max-w-md">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
             
             <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8 text-center">
               <div className="h-1 bg-gradient-to-r from-[#f5576c] via-[#f093fb] to-[#f5576c] rounded-t-2xl absolute top-0 left-0 right-0"></div>
@@ -167,7 +167,7 @@ function ResetPasswordPage() {
               <div className="space-y-4">
                 <Link 
                   to="/forgot-password" 
-                  className="block w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-md"
+                  className="block w-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-md"
                 >
                   Request New Reset Link
                 </Link>
@@ -196,21 +196,21 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="relative w-full max-w-md">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
           
           <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8">
-            <div className="h-1 bg-gradient-to-r from-[#43e97b] via-[#667eea] to-[#764ba2] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+            <div className="h-1 bg-gradient-to-r from-[#43e97b] via-[#143694] to-[#1e4ed8] rounded-t-2xl absolute top-0 left-0 right-0"></div>
             
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#43e97b]/10 to-[#667eea]/10 text-[#43e97b] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#43e97b]/10 to-[#143694]/10 text-[#43e97b] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
                 </svg>
@@ -250,7 +250,7 @@ function ResetPasswordPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
                     placeholder="Enter new password (min. 6 characters)"
                     required
                     minLength="6"
@@ -267,7 +267,7 @@ function ResetPasswordPage() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
                     placeholder="Confirm new password"
                     required
                     minLength="6"
@@ -310,7 +310,7 @@ function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[#43e97b] to-[#667eea] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-md"
+                className="w-full bg-gradient-to-r from-[#43e97b] to-[#143694] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-md"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

@@ -36,7 +36,7 @@ const ProfessionalJobListings = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1e4ed8]"></div>
       </div>
     );
   }
@@ -47,7 +47,7 @@ const ProfessionalJobListings = () => {
         <div className="text-red-500 text-center p-4">
           <p className="text-xl font-semibold">{error}</p>
           <button
-            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            className="mt-4 bg-[#1e4ed8] hover:bg-blue-600 text-white px-4 py-2 rounded"
             onClick={() => loadJobs()}
           >
             Try Again

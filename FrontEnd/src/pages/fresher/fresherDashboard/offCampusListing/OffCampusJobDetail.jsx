@@ -74,10 +74,10 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
         {/* Modal panel */}
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+          <div className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-lg shadow-sm">
                   {company.companyName?.charAt(0) || 'C'}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -108,25 +108,25 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 
               {/* Company Details Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Employees</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.numberOfEmployees || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Industry</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.industryType || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Country</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.country || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-3 rounded-lg">
                   <div className="text-sm font-medium text-gray-600">Type</div>
                   <div className="text-lg font-semibold text-gray-900 mt-1">
                     {company.companyType || 'N/A'}
@@ -140,7 +140,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                 <div className="space-y-2">
                   {company.email && (
                     <div className="flex items-center">
-                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-[#143694] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                       <span className="text-gray-700 text-sm">{company.email}</span>
@@ -148,7 +148,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
                   )}
                   {company.website && (
                     <div className="flex items-center">
-                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-[#143694] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                       </svg>
                       <span className="text-gray-700 text-sm">{company.website}</span>
@@ -164,7 +164,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
             <div className="flex justify-end">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#143694]"
               >
                 Close
               </button>
@@ -293,19 +293,19 @@ function OffCampusJobDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
 
   if (error || !jobDetail) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
         <div className="text-center p-4">
           <p className="text-xl font-semibold text-red-500">{error || "Job not found"}</p>
           <button
-            className="mt-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-lg hover:shadow-[#667eea]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+            className="mt-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] hover:shadow-lg hover:shadow-[#143694]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
             onClick={loadJobDetails}
           >
             Try Again
@@ -344,7 +344,7 @@ function OffCampusJobDetail() {
       return (
         <div className="flex flex-wrap gap-2 mt-1">
           {data.map((item, index) => (
-            <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
+            <span key={index} className="bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
               {item}
             </span>
           ))}
@@ -355,12 +355,12 @@ function OffCampusJobDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
         {/* Back Button - Top Left */}
         <button 
           onClick={handleBackToList} 
-          className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
+          className="inline-flex items-center text-[#143694] hover:text-[#1e4ed8] mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-1" />
           Back
@@ -369,7 +369,7 @@ function OffCampusJobDetail() {
         {/* Header - Modified to make company name clickable */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
               {jobDetail.companyPosted?.profileImageUrl ? (
                 <button 
                   onClick={() => setShowCompanyModal(true)}
@@ -390,7 +390,7 @@ function OffCampusJobDetail() {
                   onClick={() => setShowCompanyModal(true)}
                   className="w-full h-full flex items-center justify-center group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg group-hover:opacity-90 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-lg group-hover:opacity-90 transition-opacity">
                     {companyData.companyName?.charAt(0) || 'C'}
                   </div>
                 </button>
@@ -401,7 +401,7 @@ function OffCampusJobDetail() {
                 onClick={() => setShowCompanyModal(true)}
                 className="text-left group"
               >
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent group-hover:text-[#667eea] transition-colors">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent group-hover:text-[#143694] transition-colors">
                   {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"}
                   {/* {Array.isArray(jobDetail.jobRoles) 
                     ? jobDetail.jobRoles.join(', ') 
@@ -422,7 +422,7 @@ function OffCampusJobDetail() {
                   <button 
                     onClick={handleSave} 
                     disabled={isSaving}
-                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200 ${
+                    className={`bg-gradient-to-br from-[#143694]/10 to-[#1e4ed8]/10 hover:from-[#143694]/20 hover:to-[#1e4ed8]/20 text-[#143694] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200 ${
                       isSaving ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -441,7 +441,7 @@ function OffCampusJobDetail() {
                 <button 
                   onClick={handleApply}
                   disabled={isApplying}
-                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 ${
+                  className={`px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 ${
                     isApplying ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
@@ -462,62 +462,62 @@ function OffCampusJobDetail() {
 
         {/* Opportunity Details */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Opportunity Details
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Job Roles</div>
+                <div className="font-medium text-[#143694]">Job Roles</div>
                 {renderTags(jobDetail.jobRoles)}
               </div>
             </div>
             <div className="flex items-start">
-              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Work Location</div>
+                <div className="font-medium text-[#143694]">Work Location</div>
                 {renderTags(jobDetail.location)}
               </div>
             </div>
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Work Mode</div>
+                <div className="font-medium text-[#143694]">Work Mode</div>
                 {renderTags(jobDetail.workMode)}
               </div>
             </div>
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Employment Type</div>
+                <div className="font-medium text-[#143694]">Employment Type</div>
                 {renderTags(jobDetail.employmentType)}
               </div>
             </div>
             <div className="flex items-start">
-              <Building2 className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
+              <Building2 className="w-5 h-5 mt-0.5 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Industry Type</div>
+                <div className="font-medium text-[#143694]">Industry Type</div>
                 <div className="text-gray-700 capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <Users className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
+              <Users className="w-5 h-5 mt-0.5 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Department</div>
+                <div className="font-medium text-[#143694]">Department</div>
                 <div className="text-gray-700">{jobDetail.department || 'N/A'}</div>
               </div>
             </div>
             <div className="flex items-start">
-              <Navigation className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
+              <Navigation className="w-5 h-5 mt-0.5 mr-3 text-[#143694] flex-shrink-0" />
               <div>
-                <div className="font-medium text-[#667eea]">Drive Venue</div>
+                <div className="font-medium text-[#143694]">Drive Venue</div>
                 <div className="text-gray-700">{jobDetail.venue || 'N/A'}</div>
               </div>
             </div>
@@ -526,36 +526,36 @@ function OffCampusJobDetail() {
 
         {/* Candidate Requirements */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Candidate Requirements
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
                 <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Degree</div>
+                <div className="font-medium text-[#143694]">Degree</div>
                 {renderTags(jobDetail.degree)}
               </div>
             </div>
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Eligible Streams</div>
+                <div className="font-medium text-[#143694]">Eligible Streams</div>
                 {renderTags(jobDetail.studentStreams)}
               </div>
             </div>
             <div className="flex items-start col-span-1 sm:col-span-2">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Required Skills</div>
+                <div className="font-medium text-[#143694]">Required Skills</div>
                 {renderTags(jobDetail.skills)}
               </div>
             </div>
@@ -564,28 +564,28 @@ function OffCampusJobDetail() {
 
         {/* Compensation & Benefits */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Compensation & Benefits
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-              <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#143694]">Total CTC</div>
               <div className="text-lg font-bold text-gray-900">
                 {jobDetail.packageDetails?.totalCTC
                   ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.totalCTC.toLocaleString()}`
                   : 'Not Specified'}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-              <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#143694]">Fixed Pay</div>
               <div className="text-lg font-bold text-gray-900">
                 {jobDetail.packageDetails?.fixedPay
                   ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.fixedPay.toLocaleString()}`
                   : 'N/A'}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-              <div className="text-sm font-medium text-[#667eea]">Variable Pay</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#143694]">Variable Pay</div>
               <div className="text-lg font-bold text-gray-900">
                 {jobDetail.packageDetails?.joiningBonus
                   ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.joiningBonus.toLocaleString()}`
@@ -593,22 +593,22 @@ function OffCampusJobDetail() {
               </div>
             </div>
           </div>
-          <h4 className="font-medium text-[#667eea] mb-2">Benefits Offered</h4>
+          <h4 className="font-medium text-[#143694] mb-2">Benefits Offered</h4>
           {renderTags(jobDetail.benefits)}
         </section>
 
         {/* Hiring Process */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Hiring Process
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
               <div className="col-span-1 sm:col-span-2">
-                <div className="font-medium text-[#667eea] mb-2">Selection Process</div>
+                <div className="font-medium text-[#143694] mb-2">Selection Process</div>
 
                 {normalizeSelectionProcess(jobDetail.selectionProcess)?.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -618,7 +618,7 @@ function OffCampusJobDetail() {
                         className="border border-gray-200 rounded-lg p-3 bg-white"
                       >
                         <div className="flex items-center gap-2 mb-1">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] flex items-center justify-center">
                             <span className="text-xs font-bold text-white">{index + 1}</span>
                           </div>
                           <span className="text-sm font-medium text-gray-800">
@@ -636,11 +636,11 @@ function OffCampusJobDetail() {
 
             </div>
             <div className="flex items-start">
-              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#143694] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
               <div>
-                <div className="font-medium text-[#667eea]">Number of Rounds</div>
+                <div className="font-medium text-[#143694]">Number of Rounds</div>
                 <div className="text-gray-700">{jobDetail.rounds?.join(', ') || 'N/A'}</div>
               </div>
             </div>
@@ -649,7 +649,7 @@ function OffCampusJobDetail() {
 
         {/* About the role - KEPT AS ORIGINAL TEXT */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             About the Role
           </h3>
           <p className="text-gray-700 whitespace-pre-wrap">
@@ -659,7 +659,7 @@ function OffCampusJobDetail() {
 
         {/* Eligibility Criteria - KEPT AS ORIGINAL TEXT */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Eligibility Criteria
           </h3>
           <p className="text-gray-700 whitespace-pre-wrap">
@@ -669,29 +669,29 @@ function OffCampusJobDetail() {
 
         {/* Important Dates */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Important Dates
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Application Deadline */}
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Registration Deadline</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Registration Deadline</div>
               <div className="font-medium text-red-600">
                 {formatDate(jobDetail.endDate)}
               </div>
             </div>
 
             {/* Online Test Date */}
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Test Date</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Test Date</div>
               <div className="font-medium text-gray-700">
                 {formatDate(jobDetail.onlineTestDate)}
               </div>
             </div>
 
             {/* Interview Window */}
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Interview Window</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Interview Window</div>
               <div className="font-medium text-gray-700">
                 {jobDetail.interviewWindow?.start
                   ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
@@ -700,8 +700,8 @@ function OffCampusJobDetail() {
             </div>
 
             {/* Offer Rollout */}
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Results</div>
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#143694]">Results</div>
               <div className="font-medium text-gray-700">
                 {formatDate(jobDetail.offerRolloutDate)}
               </div>
@@ -714,7 +714,7 @@ function OffCampusJobDetail() {
           <div className="flex justify-left">
             <button 
               onClick={() => handleBackToList()} 
-              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+              className="inline-flex items-center px-6 py-3 bg-white text-[#143694] border border-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white rounded-xl transition-all duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
