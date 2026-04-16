@@ -62,7 +62,7 @@ const ApplicationCard = ({ application }) => {
       <div className="border-t border-gray-100 p-4 grid grid-cols-2 gap-2">
         <Link 
           to={`/registered/pool-campus-opportunities/${id}`} 
-          className="btn btn-primary text-center bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 px-4 text-sm font-medium"
+          className="btn btn-primary text-center bg-blue-600 hover:bg-[#143694] text-white rounded-md py-2 px-4 text-sm font-medium"
         >
           View Details
         </Link>

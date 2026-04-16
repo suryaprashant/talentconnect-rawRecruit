@@ -209,22 +209,22 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="space-y-3">
                             <div className="flex items-center text-gray-700">
-                                <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                                <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">College Type:</span>
                                 <span className="ml-2">{collegeType || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-gray-700">
-                                <Calendar className="w-4 h-4 mr-3 text-blue-500" />
+                                <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">Established:</span>
                                 <span className="ml-2">{establishedYear || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-gray-700">
-                                <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                                <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">University:</span>
                                 <span className="ml-2">{universityName || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-gray-700">
-                                <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                                <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">City:</span>
                                 <span className="ml-2">{city || 'N/A'}</span>
                             </div>
@@ -232,22 +232,22 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
                         
                         <div className="space-y-3">
                             <div className="flex items-center text-gray-700">
-                                <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                                <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">State:</span>
                                 <span className="ml-2">{state || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-gray-700">
-                                <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                                <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">Country:</span>
                                 <span className="ml-2">{country || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-gray-700">
-                                <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                                <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">Pincode:</span>
                                 <span className="ml-2">{pincode || 'N/A'}</span>
                             </div>
                             {/* <div className="flex items-center text-gray-700">
-                                <Globe className="w-4 h-4 mr-3 text-blue-500" />
+                                <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                                 <span className="font-medium">Website:</span>
                                 {collegeWebsite ? (
                                     <a 
@@ -488,8 +488,8 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
                         disabled={isProcessing || isSubmitting}
                         className={`flex items-center justify-center flex-1 py-2 font-medium rounded-md transition-colors duration-200 ${
                             (isProcessing || isSubmitting) 
-                                ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-blue-500' 
-                                : 'bg-white border border-gray-300 text-blue-500 hover:bg-gray-300'
+                                ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-[#1e4ed8]' 
+                                : 'bg-white border border-gray-300 text-[#1e4ed8] hover:bg-gray-300'
                         }`}
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

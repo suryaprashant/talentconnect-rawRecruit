@@ -125,6 +125,14 @@ const Footer = ({
                   Careers
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => navigate("/blogs")}
+                  className="text-gray-400 hover:text-white transition"
+                >
+                  Blogs
+                </button>
+              </li>
             </ul>
           </div>
 

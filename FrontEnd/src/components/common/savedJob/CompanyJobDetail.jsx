@@ -95,7 +95,7 @@ const renderTags = (items) => {
       {items.map((item, index) => (
         <span
           key={index}
-          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+          className="px-3 py-1.5 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] border border-[#143694]/20 rounded-full text-sm font-medium"
         >
           {item}
         </span>
@@ -268,9 +268,9 @@ const handleApply = async () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#143694] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading opportunity details...</p>
         </div>
       </div>
@@ -279,11 +279,11 @@ const handleApply = async () => {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl font-semibold text-red-500">Opportunity not found</p>
           <button
-            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
             onClick={fetchJobDetails}
           >
             Try Again
@@ -330,17 +330,17 @@ const handleApply = async () => {
   const postingIsApplied = job.isApplied || false;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <main className="px-6 py-6">
         {/* Top Back Button */}
-        <button onClick={handleBackToList} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
+        <button onClick={handleBackToList} className="inline-flex items-center text-[#143694] hover:text-[#1e4ed8] mb-6 transition-colors">
           <ArrowLeft className="h-5 w-5 mr-1" />
-          Back
+          Back 
         </button>
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
           {/* Header Section - UnifiedJobDetail style */}
-          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
+          <div className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 px-6 py-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
@@ -361,7 +361,7 @@ const handleApply = async () => {
                 </div>
                 <div>
                   {/* Organization Name - Gradient text */}
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                     {organizationName}
                   </h1>
                   {/* Job Role */}
@@ -375,13 +375,13 @@ const handleApply = async () => {
             {/* Location and Date */}
             <div className="flex flex-wrap items-center text-sm text-gray-600 mt-4 gap-4">
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
+                <Calendar className="h-5 w-5 mr-1 text-[#143694]" />
                 <span>
                   {hasValue(job.startDate) ? `${formatDate(job.startDate)} - ${formatDate(job.endDate)}` : 'Dates Not Specified'}
                 </span>
               </div>
               <div className="flex items-center">
-                <MapPin className="h-5 w-5 mr-1 text-[#667eea]" />
+                <MapPin className="h-5 w-5 mr-1 text-[#143694]" />
                 <span>{location_display}</span>
               </div>
             </div>
@@ -401,7 +401,7 @@ const handleApply = async () => {
                 disabled={isSaving}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
               >
-                <Save className={`h-4 w-4 mr-2 ${isSaving ? 'text-[#667eea]' : 'text-gray-400'}`} />
+                <Save className={`h-4 w-4 mr-2 ${isSaving ? 'text-[#143694]' : 'text-gray-400'}`} />
                 {isSaving ? 'Removing...' : 'Unsave'}
               </button>
 
@@ -409,7 +409,7 @@ const handleApply = async () => {
                 <button
                   onClick={handleApply}
                   disabled={isApplying}
-                  className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   {isApplying ? 'Applying...' : 'Apply'}
@@ -427,7 +427,7 @@ const handleApply = async () => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-600 mb-1">Min Package</p>
-                    <p className="text-base font-bold text-[#667eea] truncate">
+                    <p className="text-base font-bold text-[#143694] truncate">
                       {totalCTC 
                         ? `${currency} ${totalCTC.toLocaleString()}`
                         : 'N/A'
@@ -456,11 +456,11 @@ const handleApply = async () => {
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                    <Briefcase className="h-5 w-5 text-purple-600" />
+                    <Briefcase className="h-5 w-5 text-[#143694]" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-600 mb-1">Employment Type</p>
-                    <p className="text-sm font-medium text-purple-600 truncate">
+                    <p className="text-sm font-medium text-[#143694] truncate">
                       {typeof job.employmentType === 'string' 
                         ? job.employmentType 
                         : Array.isArray(job.employmentType) 
@@ -476,7 +476,7 @@ const handleApply = async () => {
 
           {/* Job Type Badge - UnifiedJobDetail style */}
           <div className="px-6 py-4">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-sm font-semibold border border-[#667eea]/20">
+            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full text-sm font-semibold border border-[#143694]/20">
               {job.jobType || 'On-Campus'} • {job.lookingFor || 'Full Time'}
             </span>
           </div>
@@ -484,7 +484,7 @@ const handleApply = async () => {
           {/* About This Opportunity - From CollegeDetailModal */}
           {hasValue(job.description) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 About This Opportunity
               </h2>
               <p className="text-gray-700 whitespace-pre-wrap">
@@ -495,10 +495,10 @@ const handleApply = async () => {
 
           {/* Contact Information - From CollegeDetailModal */}
           <div className="px-6 py-6">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
               Point of Contact - Campus Placement Officer
             </h2>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+            <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
               <div className="flex items-start gap-4">
                 <div className="p-2.5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0 mt-1">
                   <Users className="h-5 w-5 text-blue-600" />
@@ -534,7 +534,7 @@ const handleApply = async () => {
                 {contactPerson?.mobile && (
                   <div className="flex items-center gap-3 flex-1">
                     <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0">
-                      <Phone className="h-5 w-5 text-purple-600" />
+                      <Phone className="h-5 w-5 text-[#143694]" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs text-gray-600 mb-1">Phone</p>
@@ -573,20 +573,20 @@ const handleApply = async () => {
           {/* Tentative Dates - From CollegeDetailModal */}
           {proposedSchedule && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Tentative Dates to held On-Campus
               </h2>
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                  <div className="text-sm font-medium text-[#667eea]">Proposed Start Date</div>
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                  <div className="text-sm font-medium text-[#143694]">Proposed Start Date</div>
                   <div className="text-lg font-semibold text-gray-900">{formatDateSafe(proposedSchedule?.startDate)}</div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                  <div className="text-sm font-medium text-[#667eea]">Proposed End Date</div>
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                  <div className="text-sm font-medium text-[#143694]">Proposed End Date</div>
                   <div className="text-lg font-semibold text-gray-900">{formatDateSafe(proposedSchedule?.endDate)}</div>
                 </div>
-                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                  <div className="text-sm font-medium text-[#667eea]">Preferred Mode</div>
+                <div className="bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 p-4 rounded-lg">
+                  <div className="text-sm font-medium text-[#143694]">Preferred Mode</div>
                   <div className="text-lg font-semibold text-gray-900">{proposedSchedule?.preferredMode || 'N/A'}</div>
                 </div>
               </div>
@@ -596,7 +596,7 @@ const handleApply = async () => {
           {/* Preferred Company Types - From CollegeDetailModal */}
           {hasValidData(job.companyType) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Preferred Company Types
               </h2>
               {renderTags(job.companyType)}
@@ -606,17 +606,17 @@ const handleApply = async () => {
           {/* College Student Details - From CollegeDetailModal */}
           {(roundDetails.length > 0 || studentStreams.length > 0) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 College Student Details
               </h2>
               <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                  <thead className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#667eea] uppercase">S.No.</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#667eea] uppercase">Branch</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#667eea] uppercase">No. of Students</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#667eea] uppercase">Skills</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[#143694] uppercase">S.No.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[#143694] uppercase">Branch</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[#143694] uppercase">No. of Students</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[#143694] uppercase">Skills</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -648,7 +648,7 @@ const handleApply = async () => {
           {/* Amenities Offered - From CollegeDetailModal */}
           {hasValidData(job.amenitiesRequired) && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 Amenities Offered
               </h2>
               {renderTags(job.amenitiesRequired)}
@@ -658,14 +658,14 @@ const handleApply = async () => {
           {/* College Website - From CollegeDetailModal */}
           {collegeDetails?.profileAchievements?.collegeWebsite && (
             <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-4">
                 College Website
               </h2>
               <a 
                 href={collegeDetails.profileAchievements.collegeWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-[#667eea] hover:text-[#764ba2]"
+                className="inline-flex items-center text-[#143694] hover:text-[#1e4ed8]"
               >
                 <Globe className="h-5 w-5 mr-2" />
                 <span className="truncate">Visit College Website</span>
@@ -674,12 +674,12 @@ const handleApply = async () => {
           )}
 
           {/* Footer Buttons - From CollegeDetailModal */}
-          {/* <div className="px-6 py-6 border-t border-gray-100 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+          {/* <div className="px-6 py-6 border-t border-gray-100 bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => toast.success('Message feature coming soon')}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#143694] transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
                 >
                   <Send size={16} className="md:size-4" />
                   <span>Message Officer</span>
@@ -687,7 +687,7 @@ const handleApply = async () => {
 
                 <button 
                   onClick={() => toast.success('Alternate date feature coming soon')}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
                 >
                   <Calendar size={16} className="md:size-4" />
                   <span>Alternate Date</span>
@@ -712,7 +712,7 @@ const handleApply = async () => {
             <div className="flex justify-left">
               <button 
                 onClick={handleBackToList} 
-                className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+                className="inline-flex items-center px-6 py-3 bg-white text-[#143694] border border-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white rounded-xl transition-all duration-200"
               >
                 <ArrowLeft className="h-5 w-5 mr-2" />
                 Back

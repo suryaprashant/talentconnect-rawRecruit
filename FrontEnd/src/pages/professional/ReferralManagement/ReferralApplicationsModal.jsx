@@ -85,7 +85,7 @@ const handleAction = async (appId, action) => {
               <div 
                 key={app._id} 
                 onClick={() => setSelectedApp(app)} 
-                className="border rounded-xl p-5 hover:border-blue-500 hover:shadow-md cursor-pointer transition-all bg-white shadow-sm"
+                className="border rounded-xl p-5 hover:border-[#1e4ed8] hover:shadow-md cursor-pointer transition-all bg-white shadow-sm"
               >
                 <div className="flex flex-wrap justify-between items-start gap-4">
                   <div className="flex gap-4">

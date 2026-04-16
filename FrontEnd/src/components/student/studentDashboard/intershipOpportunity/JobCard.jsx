@@ -169,7 +169,7 @@ const JobCard = ({ job, userType, onClick }) => {
       const statusMap = {
         Open: { status: 'Active', color: 'bg-green-100 text-green-700' },
         Closed: { status: 'Completed', color: 'bg-gray-100 text-gray-700' },
-        Pending: { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' },
+        Pending: { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' },
       };
       return statusMap[job.jobStatus] || { status: job.jobStatus, color: 'bg-gray-100 text-gray-700' };
     }
@@ -183,7 +183,7 @@ const JobCard = ({ job, userType, onClick }) => {
     const endDate = new Date(job.endDate);
 
     if (now < startDate) {
-      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+      return { status: 'Upcoming', color: 'bg-blue-100 text-[#143694]' };
     } else if (now >= startDate && now <= endDate) {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
@@ -198,7 +198,7 @@ const JobCard = ({ job, userType, onClick }) => {
       const title = job.jobTitle || job.lookingFor || "Job Role";
       return (
         <div className="flex items-center mt-1">
-          <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium">
+          <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border border-blue-200 rounded-full text-sm font-medium">
             {title}
           </span>
         </div>
@@ -206,7 +206,7 @@ const JobCard = ({ job, userType, onClick }) => {
     }
     
     const roleColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
       "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
       "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
@@ -240,7 +240,7 @@ const JobCard = ({ job, userType, onClick }) => {
     if (!job.studentStreams?.length) return null;
     
     const streamColors = [
-      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] border-blue-200",
       "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
       "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
@@ -387,7 +387,7 @@ const JobCard = ({ job, userType, onClick }) => {
         {/* Employment Type Badge - commented out as in original */}
         {/* {job.employmentType && (
           <div className="mt-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+            <span className="px-3 py-1 bg-blue-100 text-[#143694] border border-blue-300 rounded-full text-xs font-semibold">
               {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
             </span>
           </div>

@@ -171,7 +171,7 @@ export default function PoolCampusJobManagement() {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="max-w-4xl mx-auto p-4 py-8">
           <button
             onClick={handleBackToList}
@@ -184,11 +184,11 @@ export default function PoolCampusJobManagement() {
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
-                  <Building2 className="h-6 w-6 text-[#667eea]" />
+                <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl">
+                  <Building2 className="h-6 w-6 text-[#143694]" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                     Applications for: {displayJobRoles(selectedJob)}
                   </h2>
                   <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -207,7 +207,7 @@ export default function PoolCampusJobManagement() {
 
             {collegesLoading ? (
               <div className="flex flex-col items-center justify-center p-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading college applications...</p>
               </div>
             ) : error ? (
@@ -249,17 +249,17 @@ export default function PoolCampusJobManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="max-w-7xl mx-auto p-4 py-8">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="mb-4 md:mb-0">
               <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Building2 className="h-5 w-5 text-[#143694]" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Shortlisted Pool-Campus Drives
                 </h1>
               </div>
@@ -275,7 +275,7 @@ export default function PoolCampusJobManagement() {
               </div>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                 placeholder="Search by job role or work location"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -315,7 +315,7 @@ export default function PoolCampusJobManagement() {
           <div className="divide-y divide-gray-100">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading drives...</p>
               </div>
             ) : currentJobs.length === 0 ? (
@@ -336,7 +336,7 @@ export default function PoolCampusJobManagement() {
                         to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                         className="group cursor-pointer block"
                       >
-                        <div className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                        <div className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors">
                           {displayJobRoles(job)}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
@@ -370,7 +370,7 @@ export default function PoolCampusJobManagement() {
 
                     {/* Views */}
                     <div className="col-span-1 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                         {job?.views || 0}
                       </span>
                     </div>
@@ -391,7 +391,7 @@ export default function PoolCampusJobManagement() {
                         <button
                           onClick={() => handleViewColleges(job)}
                           //disabled={!job.applicationCount || job.applicationCount === 0}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="View College Applications"
                         >
                           <Eye size={16} />
@@ -425,7 +425,7 @@ export default function PoolCampusJobManagement() {
                 </button>
                 
                 <div className="text-sm text-gray-600">
-                  Page <span className="font-semibold text-[#667eea]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                  Page <span className="font-semibold text-[#143694]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
                 </div>
               </div>
 
@@ -460,7 +460,7 @@ export default function PoolCampusJobManagement() {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                         currentPage === pageNum 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                           : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >

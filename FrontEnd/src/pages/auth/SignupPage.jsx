@@ -6,8 +6,8 @@ import { useLegacyAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
 import ReactGA from "react-ga4";
-import heroImage from "../../assets/RR-Tagline.png";
-
+import heroImage from "../../assets/rawrecruit_transparent.png";
+import logo from "../../assets/logo1.png";
 const ONBOARDING_ROUTES = {
   candidate: '/student-form',
   student: '/student-form',
@@ -415,30 +415,41 @@ function SignupPage() {
           <div className="relative z-10">
 
             {/* LOGO */}
-            <div className="flex items-center gap-2 mb-6">
+            {/* <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg">
                 <span
                   className="material-symbols-outlined text-[#143694] cursor-pointer"
                   onClick={() => navigate("/")}
                 >
-                  account_tree
+                  <img src ={logo} ></img>
                 </span>
               </div>
               <span
-                className="text-xl font-extrabold tracking-tight cursor-pointer"
+                className="text-xl font-extrabold tracking-tight bg-white text-primaryBrand  cursor-pointer"
                 onClick={() => navigate("/")}
               >
                 RawRecruit
               </span>
-            </div>
-            <div className="mb-6">
+            </div> */}
+
+            <div
+              className="flex items-center gap-3 mb-6 px-3 py-2 rounded-xl bg-white backdrop-blur-sm cursor-pointer"
+              onClick={() => navigate("/")}
+            >
+              <img src={logo} className="w-9 h-9" />
+        
+              <span className="text-xl font-bold tracking-tight text-primaryBrand">
+                Raw<span className="text-[#1e4ed8]">Recruit</span>
+              </span>
+            </div>         
+            {/* <div className="mb-6">
               <h2 className="font-[Manrope] text-3xl font-bold text-white">
                 Join the Network
               </h2>
               {/* <p className="text-white/90 text-sm mt-2">
                 Select your journey to begin your intentional connection.
-              </p> */}
-            </div>
+              </p> 
+            </div> */}
             {/* ROLE TAG */}
             <p className="text-xs uppercase tracking-widest text-white/70 mb-2">
               {currentRole.toUpperCase()}
@@ -450,10 +461,10 @@ function SignupPage() {
             </h2>
 
             {/* FEATURES */}
-            <div className="space-y-3">
+            <div className="space-y-6">
               {content?.points?.map((item, index) => (
                 <div key={index} className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-green-400 mt-0.5">
+                  <span className="material-symbols-outlined text-green-400 mt-1">
                     verified
                   </span>
                   <div>
@@ -622,10 +633,10 @@ function SignupPage() {
   </div>
 );
   // return (
-  //   <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+  //   <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
   //     {/* Fixed background elements */}
   //     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-  //       <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+  //       <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
   //       <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
   //     </div>
 
@@ -654,16 +665,16 @@ function SignupPage() {
   //     <div className="min-h-screen flex items-center justify-center p-4 pt-32">
   //       <div className="relative w-full max-w-md">
   //         {/* Blur Background behind card */}
-  //         <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-4 bottom-4"></div>
+  //         <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-4 bottom-4"></div>
           
   //         {/* Main Signup Card */}
   //         <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8">
   //           {/* Decorative top bar */}
-  //           <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+  //           <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
             
   //           {/* Header */}
   //           <div className="text-center mb-8">
-  //             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
+  //             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
   //               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
   //                 <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clipRule="evenodd" />
   //               </svg>
@@ -676,7 +687,7 @@ function SignupPage() {
               
   //             {selectedRole && (
   //               <p className="text-gray-600">
-  //                 Signing up as <span className="font-semibold text-[#667eea]">{roleDisplayNames[selectedRole] || selectedRole}</span>
+  //                 Signing up as <span className="font-semibold text-[#143694]">{roleDisplayNames[selectedRole] || selectedRole}</span>
   //               </p>
   //             )}
   //           </div>
@@ -692,7 +703,7 @@ function SignupPage() {
   //                     name="email"
   //                     value={formData.email}
   //                     onChange={handleChange}
-  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
   //                     placeholder="Email Address"
   //                     required
   //                   />
@@ -704,7 +715,7 @@ function SignupPage() {
   //                     name="password"
   //                     value={formData.password}
   //                     onChange={handleChange}
-  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
   //                     placeholder="Password"
   //                     required
   //                   />
@@ -716,7 +727,7 @@ function SignupPage() {
   //                     name="confirmPassword"
   //                     value={formData.confirmPassword}
   //                     onChange={handleChange}
-  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+  //                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
   //                     placeholder="Confirm Password"
   //                     required
   //                   />
@@ -731,7 +742,7 @@ function SignupPage() {
   //                   <button 
   //                       type="button" 
   //                       onClick={() => setIsOtpSent(false)}
-  //                       className="text-xs text-[#667eea] underline mt-1"
+  //                       className="text-xs text-[#143694] underline mt-1"
   //                   >
   //                       Change Email
   //                   </button>
@@ -740,7 +751,7 @@ function SignupPage() {
   //                   type="text"
   //                   value={otp}
   //                   onChange={(e) => setOtp(e.target.value)}
-  //                   className="w-full px-4 py-3 text-center text-2xl tracking-widest border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
+  //                   className="w-full px-4 py-3 text-center text-2xl tracking-widest border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] transition-all duration-300 bg-white/80"
   //                   placeholder="123456"
   //                   maxLength="6"
   //                   required
@@ -756,7 +767,7 @@ function SignupPage() {
 
   //             <button
   //               type="submit"
-  //               className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-md"
+  //               className="w-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-md"
   //               disabled={loading}
   //             >
   //               {loading ? (
@@ -834,7 +845,7 @@ function SignupPage() {
   //             Already have an account?{' '}
   //             <Link 
   //               to="/login" 
-  //               className="text-[#667eea] font-semibold hover:text-[#764ba2] hover:underline transition-colors"
+  //               className="text-[#143694] font-semibold hover:text-[#1e4ed8] hover:underline transition-colors"
   //             >
   //               Log In
   //             </Link>

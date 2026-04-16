@@ -210,22 +210,22 @@ const CollegeDetailsModal = () => (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div className="space-y-3">
                         <div className="flex items-center text-gray-700">
-                            <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">College Type:</span>
                             <span className="ml-2">{collegeType || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <Calendar className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">Established:</span>
                             <span className="ml-2">{establishedYear || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <Users className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <Users className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">University:</span>
                             <span className="ml-2">{universityName || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">City:</span>
                             <span className="ml-2">{city || 'N/A'}</span>
                         </div>
@@ -233,29 +233,29 @@ const CollegeDetailsModal = () => (
                     
                     <div className="space-y-3">
                         <div className="flex items-center text-gray-700">
-                            <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">State:</span>
                             <span className="ml-2">{state || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">Country:</span>
                             <span className="ml-2">{country || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">Pincode:</span>
                             <span className="ml-2">{pincode || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
-                            <Globe className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                            <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                             <span className="font-medium">Website:</span>
                             {collegeWebsite ? (
                                 <a 
                                     href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="ml-2 text-[#3b82f6] hover:underline"
+                                    className="ml-2 text-[#1e4ed8] hover:underline"
                                 >
                                     Visit Website
                                 </a>
@@ -276,7 +276,7 @@ const CollegeDetailsModal = () => (
                                     href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#2563eb] transition-colors"
+                                    className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#2563eb] transition-colors"
                                 >
                                     <Globe className="w-4 h-4" />
                                     <span>Website</span>
@@ -287,7 +287,7 @@ const CollegeDetailsModal = () => (
                                     href={linkedinProfile.startsWith('http') ? linkedinProfile : `https://${linkedinProfile}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#2563eb] transition-colors"
+                                    className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#2563eb] transition-colors"
                                 >
                                     <Link className="w-4 h-4" />
                                     <span>LinkedIn</span>
@@ -403,7 +403,7 @@ const CollegeDetailsModal = () => (
                             )}
                             {averagePackage && (
                                 <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-                                    <div className="text-2xl font-bold text-purple-600">₹{averagePackage} LPA</div>
+                                    <div className="text-2xl font-bold text-[#143694]">₹{averagePackage} LPA</div>
                                     <div className="text-sm text-gray-600 mt-1">Average Package</div>
                                 </div>
                             )}
@@ -538,8 +538,8 @@ const CollegeDetailsModal = () => (
                         disabled={isProcessing || isSubmitting}
                         className={`flex items-center justify-center flex-1 py-2 font-medium rounded-md transition-colors duration-200 ${
                             (isProcessing || isSubmitting) 
-                                ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-blue-500' 
-                                : 'bg-white border border-gray-300 text-blue-500 hover:bg-blue-50'
+                                ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-[#1e4ed8]' 
+                                : 'bg-white border border-gray-300 text-[#1e4ed8] hover:bg-blue-50'
                         }`}
                     >
                         <Send className="w-5 h-5 mr-2" />

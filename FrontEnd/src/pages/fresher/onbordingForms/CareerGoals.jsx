@@ -223,7 +223,7 @@ const CareerGoals = () => {
           </div>
 
           <div className="flex justify-end">
-            <button className="text-purple-600 text-sm">Add experience</button>
+            <button className="text-[#143694] text-sm">Add experience</button>
           </div>
         </div>
 

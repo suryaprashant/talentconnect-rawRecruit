@@ -90,7 +90,7 @@ const JobDriveManagement = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
-            { count: statistics?.total || 0, label: "Total Jobs", color: "text-blue-700" },
+            { count: statistics?.total || 0, label: "Total Jobs", color: "text-[#143694]" },
             { count: statistics?.internship || 0, label: "Internships", color: "text-purple-700" },
             { count: statistics?.oncampus || 0, label: "On-campus", color: "text-orange-700" },
             { count: statistics?.offcampus || 0, label: "Off-campus", color: "text-teal-700" },
@@ -178,7 +178,7 @@ const JobDriveManagement = () => {
                       </td>
                       <td className="p-2">{job.companyName || "N/A"}</td>
                       <td className="p-2">
-                        <div className="inline-flex items-center rounded-md bg-blue-100 text-blue-700 px-2 py-0.5 text-xs font-semibold">
+                        <div className="inline-flex items-center rounded-md bg-blue-100 text-[#143694] px-2 py-0.5 text-xs font-semibold">
                           {job.jobType || "N/A"}
                         </div>
                       </td>

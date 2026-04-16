@@ -230,7 +230,7 @@ const InternJobDetailPage = () => {
                         <div className="flex space-x-2 mt-4">
                             {!isApplied && (<>
                                 <button
-                                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none"
+                                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-[#143694] focus:outline-none"
                                     onClick={() => handleApply()}
                                 >
                                     Register Now
@@ -613,7 +613,7 @@ const InternJobDetailPage = () => {
                     {/* Note to Students */}
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Note to Students</h2>
-                        <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+                        <div className="bg-blue-50 border-l-4 border-[#1e4ed8] p-4">
                             <div className="flex">
                                 <div className="flex-shrink-0">
                                     <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -621,7 +621,7 @@ const InternJobDetailPage = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-3">
-                                    <p className="text-sm text-blue-700">
+                                    <p className="text-sm text-[#143694]">
                                         Please keep your TalentConnect profile updated and check your registered email for test links and interview schedules. No communication will be sent via SMS or WhatsApp.
                                     </p>
                                 </div>

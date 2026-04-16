@@ -14,17 +14,17 @@ export default function RegisterPage({
   handleSubmit
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
       <div className="container mx-auto px-4 max-w-2xl flex flex-col py-4">
 
         {/* Header */}
         <header className="mb-6 pt-2 text-center">
           <div className="flex items-center justify-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
-              <Building2 className="h-6 w-6 text-[#667eea]" />
+            <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+              <Building2 className="h-6 w-6 text-[#143694]" />
             </div>
 
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
               OffCampus Access: Hire Beyond Boundaries
             </h1>
           </div>
@@ -37,7 +37,7 @@ export default function RegisterPage({
 
         {/* Form Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent text-center">
             Request Information
           </h2>
 
@@ -61,7 +61,7 @@ export default function RegisterPage({
                   value={formData.date || ""}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]}
-                  className="w-full border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                  className="w-full border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                 />
               </div>
 
@@ -75,7 +75,7 @@ export default function RegisterPage({
                   name="time"
                   value={formData.time || ""}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                  className="w-full border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                 >
                   <option value="">Select Time</option>
                   <option value="09:00">9:00 AM</option>
@@ -97,7 +97,7 @@ export default function RegisterPage({
                 value={formData.message || ""}
                 onChange={handleInputChange}
                 placeholder="Type your message here..."
-                className="w-full h-28 border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                className="w-full h-28 border border-gray-200 rounded-lg p-3 bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
               />
             </div>
 
@@ -109,7 +109,7 @@ export default function RegisterPage({
                   name="termsAccepted"
                   checked={formData.termsAccepted || false}
                   onChange={handleInputChange}
-                  className="peer h-5 w-5 appearance-none rounded border border-gray-300 bg-white checked:bg-[#667eea] checked:border-[#667eea] focus:ring-2 focus:ring-[#667eea]/50 transition"
+                  className="peer h-5 w-5 appearance-none rounded border border-gray-300 bg-white checked:bg-[#143694] checked:border-[#143694] focus:ring-2 focus:ring-[#143694]/50 transition"
                 />
                 <Check className="absolute h-3 w-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
               </div>
@@ -132,7 +132,7 @@ export default function RegisterPage({
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all"
+                className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all"
               >
                 Submit Request
               </button>

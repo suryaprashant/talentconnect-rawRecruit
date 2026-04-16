@@ -72,7 +72,7 @@ const loading = false;
           </div>
           
 
-          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-1 py-4 space-y-1 overflow-y-hidden">
     
             {/* Role-specific Sidebars */}
             {/* {selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
@@ -104,7 +104,7 @@ const loading = false;
                     rounded-xl
                     transition-all duration-500
                     bg-[length:200%_auto]
-                    bg-gradient-to-r from-[#667eea] via-[#764ba2] to-[#667eea]
+                    bg-gradient-to-r from-[#143694] via-[#1e4ed8] to-[#143694]
                     hover:bg-right
                     hover:shadow-[0_10px_20px_rgba(118,75,162,0.4)]
                     hover:-translate-y-1

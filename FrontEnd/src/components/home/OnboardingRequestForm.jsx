@@ -24,11 +24,13 @@ export default function OnboardingRequestForm({ onClose }) {
     try {
       setLoading(true);
 
-      await axios.post("/api/servicerequests/onboarding-support", {
+      const backendUrl = import.meta.env.VITE_Backend_URL;
+
+      await axios.post(`${backendUrl}/api/servicerequests/onboarding-support`, {
         ...form,
       });
 
-      alert("Request submitted successfully ");
+      alert("Request submitted successfully");
       onClose();
     } catch (err) {
       console.error(err);

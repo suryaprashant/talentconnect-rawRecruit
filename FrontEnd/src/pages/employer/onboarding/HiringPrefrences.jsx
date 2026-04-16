@@ -119,14 +119,14 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     }, []);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#143694]/15 via-[#f093fb]/10 to-[#1e4ed8]/15 p-4">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative w-full max-w-2xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
                 
                 <motion.div
                     className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -134,19 +134,19 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+                    <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
                     <div className="flex items-center justify-start mb-8">
                         <div className="flex items-center space-x-4">
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                                 ✓
                             </div>
-                            <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            <div className="w-16 h-px bg-gradient-to-r from-[#143694]/30 to-[#1e4ed8]/30"></div>
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                                 ✓
                             </div>
                             <div className="w-16 h-px bg-gray-300"></div>
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                                 3
                             </div>
                         </div>
@@ -186,7 +186,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                             <div className="relative">
                                 <div
                                     onClick={toggleJobRolesDropdown}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] cursor-pointer flex justify-between items-center transition-all duration-300 bg-white/80 ${
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] cursor-pointer flex justify-between items-center transition-all duration-300 bg-white/80 ${
                                         errors.jobRoles ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 >
@@ -249,7 +249,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                             borderColor: '#9ca3af'
                                         },
                                         '&:focus-within': {
-                                            borderColor: '#667eea',
+                                            borderColor: '#143694',
                                             boxShadow: '0 0 0 2px rgba(102, 126, 234, 0.3)'
                                         }
                                     }),
@@ -306,7 +306,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                 onClick={() => handleLookingForChange(option.value)}
                                 className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
                                   isLookingForActive(option.value)
-                                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
                                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                 }`}
                               >
@@ -337,7 +337,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                         onClick={() => handleEmploymentTypeChange(option.value)}
                                         className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
                                             formData.employmentType?.includes(option.value)
-                                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
                                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                         }`}
                                     >
@@ -361,7 +361,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                             <button
                                 type="button"
                                 onClick={handleNextClick}
-                                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                                className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
                             >
                                 Next
                             </button>

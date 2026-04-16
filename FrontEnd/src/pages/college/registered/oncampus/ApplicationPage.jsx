@@ -258,7 +258,7 @@ function ApplicationPage() {
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
@@ -354,32 +354,32 @@ function ApplicationPage() {
             {/* <div className="flex border-b border-white/50">
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'All Jobs' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('All Jobs')}
               >
                 All Jobs ({jobs.length || 0})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Open' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Open')}
               >
                 Open ({openJobsCount})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Pending' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Pending')}
               >
                 Pending ({pendingJobsCount})
               </button>
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Closed' 
-                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
-                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                  ? 'border-b-2 border-[#1e4ed8] text-[#1e4ed8]' 
+                  : 'text-gray-600 hover:text-[#1e4ed8] hover:bg-white/30'}`}
                 onClick={() => setActiveTab('Closed')}
               >
                 Closed ({closedJobsCount})
@@ -403,7 +403,7 @@ function ApplicationPage() {
   <div className="divide-y divide-gray-100">
     {loading ? (
       <div className="p-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b82f6]"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
         <p className="mt-4 text-gray-600">Loading jobs...</p>
       </div>
     ) : error ? (
@@ -440,7 +440,7 @@ function ApplicationPage() {
                   onClick={() => handleDegreeClick(job)}
                   className="group cursor-pointer"
                 >
-                  <h3 className="font-semibold text-gray-900 group-hover:text-[#3b82f6] transition-colors line-clamp-2">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
                     {jobDegree}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -463,7 +463,7 @@ function ApplicationPage() {
               {/* Views Column - col-span-2 */}
               <div className="col-span-2 text-center">
                 <div className="flex items-center justify-center">
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                     {views}
                   </span>
                 </div>
@@ -486,7 +486,7 @@ function ApplicationPage() {
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={(e) => handleViewAllApplications(jobId, e)}
-                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#3b82f6] hover:bg-gray-50 hover:border-[#3b82f6]/50 transition-all duration-200"
+                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
                     title="View All Applications"
                   >
                     <Eye size={16} />
@@ -502,7 +502,7 @@ function ApplicationPage() {
                     disabled={deletingJobId === jobId}
                   >
                     {deletingJobId === jobId ? (
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#3b82f6] border-r-transparent"></div>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#1e4ed8] border-r-transparent"></div>
                     ) : (
                       <Trash size={16} />
                     )}
@@ -535,7 +535,7 @@ function ApplicationPage() {
                       key={page}
                       onClick={() => handlePageClick(page)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 font-medium ${currentPage === page
-                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white shadow-md shadow-[#93c5fd]/30'
+                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-md shadow-[#143694]/30'
                         : 'bg-white/50 backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/70'
                         }`}
                     >

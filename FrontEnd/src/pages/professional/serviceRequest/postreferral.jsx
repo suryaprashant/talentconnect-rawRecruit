@@ -10,12 +10,12 @@ import { City } from 'country-state-city';
 // ─── Reusable layout primitives ───────────────────────────────────────────────
 const SectionHeader = ({ icon: Icon, title, subtitle, step }) => (
     <div className="flex items-start gap-3 mb-6 pb-4 border-b border-gray-100">
-        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white text-xs font-bold shadow shadow-[#667eea]/30 shrink-0 mt-0.5">
+        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white text-xs font-bold shadow shadow-[#143694]/30 shrink-0 mt-0.5">
             {step}
         </div>
         <div className="flex-1">
             <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-[#667eea]" />
+                <Icon className="h-4 w-4 text-[#143694]" />
                 <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
             </div>
             {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
@@ -29,7 +29,7 @@ const FieldLabel = ({ htmlFor, children, required }) => (
     </label>
 );
 
-const inputCls = "w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/25 focus:border-[#667eea] transition-all placeholder:text-gray-400";
+const inputCls = "w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/25 focus:border-[#143694] transition-all placeholder:text-gray-400";
 const textareaCls = `${inputCls} resize-none`;
 
 const selectStyles = {
@@ -38,10 +38,10 @@ const selectStyles = {
         minHeight: '38px',
         borderRadius: '8px',
         fontSize: '13px',
-        borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+        borderColor: state.isFocused ? '#143694' : '#e5e7eb',
         boxShadow: state.isFocused ? '0 0 0 3px rgba(102,126,234,0.12)' : 'none',
         backgroundColor: '#fff',
-        '&:hover': { borderColor: '#667eea' },
+        '&:hover': { borderColor: '#143694' },
     }),
     menu: (base) => ({ ...base, fontSize: '13px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }),
     multiValue: (base) => ({ ...base, backgroundColor: '#ede9fe', borderRadius: '6px' }),
@@ -61,8 +61,8 @@ const PillBtn = ({ label, active, onClick }) => (
         onClick={onClick}
         className={`px-4 py-1.5 text-xs font-semibold rounded-full border transition-all duration-150
             ${active
-                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-sm shadow-[#667eea]/30'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-[#667eea]/50 hover:text-[#667eea]'
+                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-sm shadow-[#143694]/30'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-[#143694]/50 hover:text-[#143694]'
             }`}
     >
         {label}
@@ -73,11 +73,11 @@ const DropTrigger = ({ label, isOpen, onClick }) => (
     <div
         onClick={onClick}
         className={`flex items-center justify-between px-3 py-2 w-full border rounded-lg cursor-pointer text-sm transition-all
-            ${isOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-[#667eea]/50'}
+            ${isOpen ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-[#143694]/50'}
             bg-white text-gray-500`}
     >
         <span>{label}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#667eea]' : 'text-gray-400'}`} />
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#143694]' : 'text-gray-400'}`} />
     </div>
 );
 
@@ -426,7 +426,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
     return (
         <div className="min-h-screen bg-[#f8f7ff]">
             {/* ── Top Banner ─────────────────────────────────────────────────── */}
-            <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] px-6 py-5">
+            <div className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] px-6 py-5">
                 <div className="max-w-3xl mx-auto flex items-center gap-4">
                     <div className="p-2.5 bg-white/20 rounded-xl">
                         <Briefcase className="h-5 w-5 text-white" />
@@ -526,7 +526,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                                     type="radio" name="broadcastType" value="Everyone"
                                     checked={formData.broadcastType === 'Everyone'}
                                     onChange={handleInputChange}
-                                    className="h-4 w-4 accent-[#667eea]"
+                                    className="h-4 w-4 accent-[#143694]"
                                 />
                                 <span className="text-sm text-gray-700">Broadcast to Everyone</span>
                             </label>
@@ -535,7 +535,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                                     type="radio" name="broadcastType" value="Location"
                                     checked={formData.broadcastType === 'Location'}
                                     onChange={handleInputChange}
-                                    className="h-4 w-4 accent-[#667eea]"
+                                    className="h-4 w-4 accent-[#143694]"
                                 />
                                 <span className="text-sm text-gray-700">Broadcast by Location</span>
                             </label>
@@ -555,7 +555,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                                         name="currency"
                                         value={formData.packageDetails.currency}
                                         onChange={handlePackageDetailsChange}
-                                        className="h-full pl-3 pr-8 py-2 text-sm font-medium border border-r-0 border-gray-200 rounded-l-lg appearance-none bg-gray-50 text-gray-700 focus:outline-none focus:border-[#667eea]"
+                                        className="h-full pl-3 pr-8 py-2 text-sm font-medium border border-r-0 border-gray-200 rounded-l-lg appearance-none bg-gray-50 text-gray-700 focus:outline-none focus:border-[#143694]"
                                     >
                                         <option value="USD">$ USD</option>
                                         <option value="INR">₹ INR</option>
@@ -566,7 +566,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                                 <input
                                     type="number" name="totalCTC"
                                     placeholder="Total CTC"
-                                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/25 focus:border-[#667eea] bg-white placeholder:text-gray-400"
+                                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-[#143694]/25 focus:border-[#143694] bg-white placeholder:text-gray-400"
                                     value={formData.packageDetails.totalCTC}
                                     onChange={handlePackageDetailsChange}
                                     min="0" required
@@ -724,7 +724,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                         <FieldLabel>Skills</FieldLabel>
                         <div
                             className={`p-2.5 border rounded-lg transition-all cursor-text
-                                ${dropdownOpen.skills ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-[#667eea]/50'}
+                                ${dropdownOpen.skills ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-[#143694]/50'}
                                 bg-white`}
                             onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}
                         >
@@ -754,7 +754,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
         {skillInput &&
             !fetchedSkills.some(s => s.toLowerCase() === skillInput.toLowerCase()) && (
                 <div
-                    className="px-4 py-3 text-sm font-semibold text-[#667eea] hover:bg-[#667eea]/5 cursor-pointer border-t"
+                    className="px-4 py-3 text-sm font-semibold text-[#143694] hover:bg-[#143694]/5 cursor-pointer border-t"
                     onClick={() => handleAddNewSkill(skillInput)}
                 >
                     + Add "{skillInput}"
@@ -772,7 +772,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                             <FieldLabel>Benefits</FieldLabel>
                             <div
                                 className={`p-2.5 border rounded-lg transition-all cursor-text
-                                    ${dropdownOpen.benefits ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-[#667eea]/50'}
+                                    ${dropdownOpen.benefits ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-[#143694]/50'}
                                     bg-white`}
                                 onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}
                             >
@@ -800,14 +800,14 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                             <FieldLabel>Tags</FieldLabel>
                             <div
                                 className={`p-2.5 border rounded-lg transition-all cursor-pointer
-                                    ${dropdownOpen.tags ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-[#667eea]/50'}
+                                    ${dropdownOpen.tags ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-[#143694]/50'}
                                     bg-white`}
                                 onClick={() => setDropdownOpen(prev => ({ ...prev, tags: true }))}
                             >
                                 <ChipList items={formData.tags} field="tags" />
                                 <div className="flex items-center justify-between text-gray-400">
                                     <span className="text-sm">{formData.tags.length > 0 ? 'Add more...' : 'Select tags'}</span>
-                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen.tags ? 'rotate-180 text-[#667eea]' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen.tags ? 'rotate-180 text-[#143694]' : ''}`} />
                                 </div>
                             </div>
                             {dropdownOpen.tags && (
@@ -834,7 +834,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                         <FieldLabel>Certifications (if any)</FieldLabel>
                         <div
                             className={`p-2.5 border rounded-lg transition-all cursor-text
-                                ${dropdownOpen.certifications ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-[#667eea]/50'}
+                                ${dropdownOpen.certifications ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-[#143694]/50'}
                                 bg-white`}
                             onClick={() => setDropdownOpen(prev => ({ ...prev, certifications: true }))}
                         >
@@ -873,7 +873,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-[#667eea] to-[#764ba2] rounded-xl shadow-md shadow-[#667eea]/25 hover:shadow-lg hover:shadow-[#667eea]/35 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-[#143694] to-[#1e4ed8] rounded-xl shadow-md shadow-[#143694]/25 hover:shadow-lg hover:shadow-[#143694]/35 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? (
                             <>

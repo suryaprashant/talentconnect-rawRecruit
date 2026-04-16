@@ -30,14 +30,14 @@ export default function Overview({profileData}) {
     .join(", ");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8">
         {/* Company Description Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-3">
             Company Description
           </h2>
-          <p className="text-gray-700 leading-relaxed p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
+          <p className="text-gray-700 leading-relaxed p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl">
             {companyDetails?.description || "No company description available. You can add one in the Profile section."}
           </p>
         </div>
@@ -48,8 +48,8 @@ export default function Overview({profileData}) {
           <div className="grid md:grid-cols-2 border-b border-gray-100">
             <div className="p-6 border-r border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <User className="w-5 h-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <User className="w-5 h-5 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Your Details</h3>
               </div>
@@ -62,7 +62,7 @@ export default function Overview({profileData}) {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Contact Information</h3>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="font-medium text-gray-600">Name:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {employerDetails?.name || "Not specified"}
                 </div>
 
@@ -78,7 +78,7 @@ export default function Overview({profileData}) {
                 </div>
 
                 <div className="font-medium text-gray-600">Phone:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded flex items-center">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded flex items-center">
                   <Phone size={14} className="mr-2" />
                   {employerDetails?.mobile || "Not specified"}
                 </div>
@@ -122,7 +122,7 @@ export default function Overview({profileData}) {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Company Information</h3>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="font-medium text-gray-600">Name:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {companyDetails?.companyName || "—"}
                 </div>
 
@@ -138,7 +138,7 @@ export default function Overview({profileData}) {
                 </div>
 
                 <div className="font-medium text-gray-600">City:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {companyDetails?.city || "—"}
                 </div>
 
@@ -153,7 +153,7 @@ export default function Overview({profileData}) {
                 </div>
 
                 <div className="font-medium text-gray-600">Type:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded">
                   {companyDetails?.companyType || "—"}
                 </div>
 
@@ -169,7 +169,7 @@ export default function Overview({profileData}) {
                 </div>
 
                 <div className="font-medium text-gray-600">Contact:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded flex items-center">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded flex items-center">
                   <Phone size={14} className="mr-2" />
                   {companyDetails?.contactNumber || "—"}
                 </div>
@@ -221,7 +221,7 @@ export default function Overview({profileData}) {
                     hiringPreferences.jobRoles.map((role, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-2 py-1 rounded text-xs"
+                        className="inline-flex bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-2 py-1 rounded text-xs"
                       >
                         {role.replace(/_/g, " ")}
                       </span>
@@ -255,12 +255,12 @@ export default function Overview({profileData}) {
                 </div>
 
                 <div className="font-medium text-gray-600">Employment type:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded flex flex-wrap gap-2">
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#143694]/5 to-transparent px-3 py-2 rounded flex flex-wrap gap-2">
                   {hiringPreferences?.employmentType?.length ? (
                     hiringPreferences.employmentType.map((type, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-2 py-1 rounded text-xs"
+                        className="inline-flex bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-2 py-1 rounded text-xs"
                       >
                         {type}
                       </span>

@@ -8,6 +8,7 @@ import { getCollegeServiceRequestStatus, getCompanyPostingForOncampus, getColleg
 import { getCompanyDashboardMetrics } from '@/lib/Company_AxiosInstance'
 import ActivationBlock from '@/components/dashboard/ActivationBlock'
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { Clock, FileCheck, FileCheck2, XCircle } from 'lucide-react'
 function Home() {
   const navigate = useNavigate()
   const [collegeOppTab, setCollegeOppTab] = useState('On-Campus');
@@ -147,6 +148,8 @@ useEffect(() => {
           totalAccepted: metricsData.totalAccepted,
           totalRejected: metricsData.totalRejected,
           serviceRequests: serviceRequestsData,
+          interviewsToday: metricsData.interviewsToday || 0,
+          totalScheduledInterviews: metricsData.totalScheduledInterviews || 0,
           loading: false
         })
       } else {
@@ -161,7 +164,7 @@ useEffect(() => {
   if (dashboardData.loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#93c5fd]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     )
   }
@@ -172,7 +175,7 @@ useEffect(() => {
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
@@ -195,7 +198,7 @@ useEffect(() => {
                   <input
                     type="text"
                     placeholder="Search across dashboard..."
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
               </div> */}
@@ -228,7 +231,7 @@ useEffect(() => {
           key={btn.label}
           onClick={() => navigate(btn.path)}
       className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-900 text-white rounded-xl transition-all duration-300 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
-          //  className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-600 text-white rounded-xl transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
+          //  className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-600 text-white rounded-xl transition-all duration-300 hover:bg-[#143694] hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
         >
           {btn.icon}
           <span className="text-[11px] font-bold uppercase tracking-tight">
@@ -349,7 +352,7 @@ useEffect(() => {
                   <div className="text-[10px] text-gray-500 truncate">Applied</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-bold text-[#8b5cf6]">{dashboardData.totalRejected}</div>
+                  <div className="text-sm font-bold text-[#1e40af]">{dashboardData.totalRejected}</div>
                   <div className="text-[10px] text-gray-500 truncate">Rejected</div>
                 </div>
               </div>
@@ -361,21 +364,21 @@ useEffect(() => {
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
             onClick={() => navigate('/shortlisted/on-campus-listings')}
           >
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#8b5cf6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#1e40af] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#1e40af]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
             <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7c3aed]/20 rounded-2xl transition-all duration-300"></div>
 
             <div className="relative z-10 flex flex-col flex-grow">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-start space-x-2">
-                  <div className="p-1.5 bg-gradient-to-br from-[#7c3aed]/10 to-[#8b5cf6]/10 rounded-lg border border-[#7c3aed]/20 mt-0.5">
+                  <div className="p-1.5 bg-gradient-to-br from-[#7c3aed]/10 to-[#1e40af]/10 rounded-lg border border-[#7c3aed]/20 mt-0.5">
                     <FiClock className="w-4 h-4 text-[#7c3aed]" />
                   </div>
                   <div>
                     <h3 className="text-xs font-semibold text-gray-900 leading-tight">Shortlisted</h3>
                   </div>
                 </div>
-                <div className="p-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                <div className="p-1 bg-gradient-to-r from-[#7c3aed] to-[#1e40af] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
                     <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
                   </svg>
@@ -398,21 +401,21 @@ useEffect(() => {
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
             onClick={() => navigate('/service-request/workforce-solution')}
           >
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/10 via-transparent to-[#a78bfa]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#8b5cf6]/20 rounded-2xl transition-all duration-300"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1e40af] to-[#a78bfa] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1e40af]/10 via-transparent to-[#a78bfa]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#1e40af]/20 rounded-2xl transition-all duration-300"></div>
 
             <div className="relative z-10 flex flex-col flex-grow">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-start space-x-2">
-                  <div className="p-1.5 bg-gradient-to-br from-[#8b5cf6]/10 to-[#a78bfa]/10 rounded-lg border border-[#8b5cf6]/20 mt-0.5">
-                    <FiFileText className="w-4 h-4 text-[#8b5cf6]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#1e40af]/10 to-[#a78bfa]/10 rounded-lg border border-[#1e40af]/20 mt-0.5">
+                    <FiFileText className="w-4 h-4 text-[#1e40af]" />
                   </div>
                   <div>
                     <h3 className="text-xs font-semibold text-gray-900 leading-tight">Requests</h3>
                   </div>
                 </div>
-                <div className="p-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
+                <div className="p-1 bg-gradient-to-r from-[#1e40af] to-[#a78bfa] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
                     <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
                   </svg>
@@ -420,7 +423,7 @@ useEffect(() => {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#8b5cf6]">{dashboardData.serviceRequests.pending}</p>
+                <p className="text-xl font-bold text-[#1e40af]">{dashboardData.serviceRequests.pending}</p>
                 <span className="text-xs text-gray-500">Pending</span>
               </div>
               
@@ -433,7 +436,8 @@ useEffect(() => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
 
           {/* Applications */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/manage-application/campus-placement')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
               <FiFileText className="w-5 h-5 text-[#143694]" />
             </div>
@@ -446,7 +450,8 @@ useEffect(() => {
           </div>
 
           {/* Shortlisted */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/registered/on-campus-opportunities')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
               <FiCheckCircle className="w-5 h-5 text-[#143694]" />
             </div>
@@ -459,9 +464,10 @@ useEffect(() => {
           </div>
 
           {/* Offers (Accepted) */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/accepted/on-campus-request')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
-              <FiClock className="w-5 h-5 text-green-600" />
+              <FileCheck2 className="w-5 h-5 text-green-600" />
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900">
@@ -472,9 +478,10 @@ useEffect(() => {
           </div>
 
           {/* Rejected Jobs */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+          <div onClick ={() => navigate('/accepted/on-campus-request')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
             <div className="p-2 bg-[#143694]/10 rounded-lg">
-              <FiBriefcase className="w-5 h-5 text-[#143694]" />
+              <XCircle className="w-5 h-5 text-[#143694]" />
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900">
@@ -484,21 +491,46 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* CTA BUTTON */}
-          <button
-            onClick={() => navigate('/college-interviews')}
-            className="
-              flex flex-col items-center justify-center
-              bg-[#143694] text-white rounded-xl
-              hover:bg-[#1e4ed8]
-              shadow-sm hover:shadow-md
-              transition-all duration-200
-              p-4
-            "
-          >
-            <span className="text-sm font-medium">Schedule</span>
-            <span className="text-base font-semibold">Interviews</span>
-          </button>
+          {/* Scheduled Interviews */}
+          <div className="flex items-center justify-center">
+            <div
+              onClick={() => navigate('/interviews')}
+              className="group w-full h-full flex items-center justify-between
+                border border-gray-200 text-[#143694]
+                bg-white
+                hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8]
+                hover:text-white hover:border-transparent
+                transition-all duration-300 ease-in-out
+                rounded-xl font-semibold tracking-wide
+                shadow-sm hover:shadow-md p-4 cursor-pointer relative overflow-hidden"
+            >
+              {/* Left Content */}
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-[#143694]/10 rounded-lg group-hover:bg-white/20">
+                  <Clock className="w-5 h-5" />
+                </div>
+
+                <div>
+                  <p className="text-xl font-bold group-hover:text-white">
+                    {dashboardData.totalScheduledInterviews || 0}
+                  </p>
+                  <p className="text-xs opacity-80 group-hover:text-white">Scheduled Interviews</p>
+                </div>
+              </div>
+
+              {/* Hover Tooltip */}
+              <div
+                className="absolute bottom-0 left-0 right-0 text-center text-xs
+                  bg-white text-[#143694]
+                  py-1 rounded-t-lg
+                  opacity-0 translate-y-full
+                  group-hover:opacity-100 group-hover:translate-y-0
+                  transition-all duration-300"
+              >
+                Today: {dashboardData.interviewsToday || 0}
+              </div>
+            </div>
+          </div>
 
         </div>
         {/* Service Requests Status & Application Funnel */}
@@ -556,7 +588,7 @@ useEffect(() => {
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <FiBriefcase className="w-5 h-5 text-blue-700" />
+                  <FiBriefcase className="w-5 h-5 text-[#143694]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 text-sm truncate max-w-[150px]">
@@ -592,7 +624,7 @@ useEffect(() => {
                       </span>
                     ))}
                     {remainingSkillsCount > 0 && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md font-bold">
+                      <span className="text-[10px] bg-blue-100 text-[#143694] px-2 py-0.5 rounded-md font-bold">
                         +{remainingSkillsCount} more
                       </span>
                     )}
@@ -628,7 +660,7 @@ useEffect(() => {
       variant="outline"
       size="md"
       onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
-      className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+      className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
     >
       See All {collegeOppTab} Opportunities
     </Button>
@@ -674,7 +706,7 @@ useEffect(() => {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <FiBriefcase className="w-4 h-4 text-blue-700" />
+                    <FiBriefcase className="w-4 h-4 text-[#143694]" />
                   </div>
                   <div>
                     {console.log(job)}
@@ -686,7 +718,7 @@ useEffect(() => {
                   job.status === 'Accepted' ? 'bg-green-50 text-green-700' :
                   job.status === 'Shortlisted' ? 'bg-amber-50 text-amber-700' :
                   job.status === 'Rejected' ? 'bg-red-50 text-red-700' :
-                  'bg-blue-50 text-blue-700'
+                  'bg-blue-50 text-[#143694]'
                 }`}>
                   {job.status}
                 </span>
@@ -714,7 +746,7 @@ useEffect(() => {
         variant="outline"
         size="md"
         onClick={() => navigate(appTab === 'On-Campus' ? '/application-status/oncampus' : '/application-status/poolcampus')}
-        className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200"
+        className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200"
       >
         See All {appTab} Applications
       </Button>
@@ -753,7 +785,7 @@ useEffect(() => {
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/service-request/workforce-solution')}
-                className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+                className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
               >
                 Manage Service Requests
               </Button>
@@ -770,7 +802,7 @@ useEffect(() => {
                   <span className="text-sm font-bold text-gray-900">{dashboardData.totalApplied}</span>
                 </div>
                 <div className="w-full bg-gray-200/50 backdrop-blur-sm rounded-full h-3">
-                  <div className="bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] h-3 rounded-full" style={{ width: '100%' }}></div>
+                  <div className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] h-3 rounded-full" style={{ width: '100%' }}></div>
                 </div>
               </div>
 
@@ -819,7 +851,7 @@ useEffect(() => {
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/job-management/On-campus')}
-                className="w-full border-[#93c5fd] text-[#3b82f6] hover:bg-gradient-to-r hover:from-[#93c5fd] hover:to-[#3b82f6] hover:text-white transition-all duration-200 backdrop-blur-sm"
+                className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
               >
                 View Job Management
               </Button>
@@ -833,7 +865,7 @@ useEffect(() => {
   <div className="overflow-x-auto">
     <table className="min-w-full divide-y divide-gray-200/50 text-sm">
       <thead>
-        <tr className="bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 backdrop-blur-sm">
+        <tr className="bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 backdrop-blur-sm">
           <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
           <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
           <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
@@ -842,10 +874,10 @@ useEffect(() => {
       </thead>
       <tbody className="divide-y divide-gray-100/50">
         {/* On-Campus Row */}
-        <tr className="hover:bg-gradient-to-r from-[#93c5fd]/5 to-transparent transition-colors duration-200">
+        <tr className="hover:bg-gradient-to-r from-[#143694]/5 to-transparent transition-colors duration-200">
           <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
           <td className="px-4 py-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/20 text-[#3b82f6] backdrop-blur-sm">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#143694]/20 text-[#1e4ed8] backdrop-blur-sm">
               {dashboardData.appliedByCategory['On-campus']}
             </span>
           </td>
@@ -891,7 +923,7 @@ useEffect(() => {
         <tr className="hover:bg-gradient-to-r from-gray-100/20 to-transparent font-semibold bg-white/50 backdrop-blur-sm">
           <td className="px-4 py-3 font-medium text-gray-900">Total</td>
           <td className="px-4 py-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/30 text-[#3b82f6] backdrop-blur-sm">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#143694]/30 text-[#1e4ed8] backdrop-blur-sm">
               {dashboardData.totalApplied}
             </span>
           </td>
@@ -926,7 +958,7 @@ useEffect(() => {
               <h2 className="text-lg font-semibold text-gray-900">Recent Shortlisted</h2>
               <button
                 onClick={() => navigate('/shortlisted/on-campus-listings')}
-                className="text-sm text-[#3b82f6] hover:text-[#1d4ed8] font-medium transition-colors duration-200"
+                className="text-sm text-[#1e4ed8] hover:text-[#1d4ed8] font-medium transition-colors duration-200"
               >
                 View All →
               </button>
@@ -985,7 +1017,7 @@ useEffect(() => {
             {/* <Button
               variant="primary"
               size="md"
-              className="flex items-center justify-center bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 backdrop-blur-sm"
+              className="flex items-center justify-center bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 backdrop-blur-sm"
               onClick={() => navigate('/hiring-channels/post-a-job')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
@@ -1143,7 +1175,7 @@ export default Home
 //       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
 //         <div className="relative">
 //           <div className="w-16 h-16 border-2 border-gray-200 rounded-full"></div>
-//           <div className="absolute top-0 left-0 w-16 h-16 border-2 border-[#667eea] border-t-transparent rounded-full animate-spin"></div>
+//           <div className="absolute top-0 left-0 w-16 h-16 border-2 border-[#143694] border-t-transparent rounded-full animate-spin"></div>
 //         </div>
 //       </div>
 //     )
@@ -1157,7 +1189,7 @@ export default Home
 //         <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-t from-white/90 to-transparent"></div>
 //         {/* Subtle geometric pattern */}
 //         <div className="absolute inset-0 opacity-5">
-//           <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(30deg,#667eea_1px,transparent_1px),linear-gradient(-30deg,#667eea_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+//           <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(30deg,#143694_1px,transparent_1px),linear-gradient(-30deg,#143694_1px,transparent_1px)] bg-[size:60px_60px]"></div>
 //         </div>
 //       </div>
 
@@ -1173,7 +1205,7 @@ export default Home
 //       <div className="flex flex-wrap items-center gap-6 mt-4">
 //         {/* Overview Label */}
 //         <div className="flex items-center gap-2">
-//           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+//           <div className="w-2 h-2 bg-[#1e4ed8] rounded-full"></div>
 //           <div>
 //             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Label</div>
 //             <div className="text-sm font-medium text-gray-900">Overview</div>
@@ -1221,12 +1253,12 @@ export default Home
     
 //     <div className="relative w-full lg:w-80">
 //       <div className="relative group">
-//         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-//         <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors group-focus-within:text-blue-500" />
+//         <div className="absolute inset-0 bg-gradient-to-r from-[#1e4ed8]/10 to-indigo-500/10 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+//         <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors group-focus-within:text-[#1e4ed8]" />
 //         <input
 //           type="text"
 //           placeholder="Search across dashboard..."
-//           className="relative w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:outline-none transition-all duration-300 text-gray-700 placeholder-gray-400 group-hover:border-gray-300 shadow-sm"
+//           className="relative w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1e4ed8]/20 focus:border-blue-400 focus:outline-none transition-all duration-300 text-gray-700 placeholder-gray-400 group-hover:border-gray-300 shadow-sm"
 //         />
 //       </div>
 //     </div>
@@ -1240,7 +1272,7 @@ export default Home
 //             onClick={() => navigate('/application-status/oncampus')}
 //             className="group relative bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all duration-500 cursor-pointer hover:-translate-y-1"
 //           >
-//             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-t-xl"></div>
+//             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1e4ed8] to-indigo-500 rounded-t-xl"></div>
             
 //             <div className="flex items-start justify-between mb-5">
 //               <div>
@@ -1275,7 +1307,7 @@ export default Home
 //             <div className="flex items-start justify-between mb-5">
 //               <div>
 //                 <div className="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center mb-4">
-//                   <FiTarget className="w-6 h-6 text-purple-600" />
+//                   <FiTarget className="w-6 h-6 text-[#143694]" />
 //                 </div>
 //                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Pool-Campus</h3>
 //               </div>
@@ -1289,7 +1321,7 @@ export default Home
 //               <p className="text-sm text-gray-600">Companies Applied</p>
 //             </div>
             
-//             <div className="flex items-center text-sm text-purple-600 font-medium">
+//             <div className="flex items-center text-sm text-[#143694] font-medium">
 //               View Details
 //               <FiChevronRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300" />
 //             </div>
@@ -1300,7 +1332,7 @@ export default Home
 //             onClick={() => navigate('/applications')}
 //             className="group relative bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all duration-500 cursor-pointer hover:-translate-y-1"
 //           >
-//             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-t-xl"></div>
+//             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-[#1e4ed8] rounded-t-xl"></div>
             
 //             <div className="flex items-start justify-between mb-5">
 //               <div>
@@ -1502,13 +1534,13 @@ export default Home
 //               <div>
 //                 <div className="flex items-center justify-between mb-3">
 //                   <div className="flex items-center">
-//                     <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mr-2"></div>
+//                     <div className="w-2 h-2 bg-gradient-to-r from-[#1e4ed8] to-indigo-500 rounded-full mr-2"></div>
 //                     <span className="font-medium text-gray-900">Total Applied</span>
 //                   </div>
 //                   <span className="font-medium text-gray-900">{dashboardData.totalApplied}</span>
 //                 </div>
 //                 <div className="w-full h-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full overflow-hidden">
-//                   <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style={{ width: '100%' }}></div>
+//                   <div className="h-full bg-gradient-to-r from-[#1e4ed8] to-indigo-500 rounded-full" style={{ width: '100%' }}></div>
 //                 </div>
 //               </div>
 
@@ -1624,7 +1656,7 @@ export default Home
 //                 <div className="group grid grid-cols-5 gap-4 p-4 bg-gray-50/50 hover:bg-purple-50/50 rounded-lg border border-transparent hover:border-purple-100 transition-all duration-300">
 //                   <div className="flex items-center">
 //                     <div className="w-10 h-10 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center mr-3">
-//                       <FiTarget className="w-5 h-5 text-purple-600" />
+//                       <FiTarget className="w-5 h-5 text-[#143694]" />
 //                     </div>
 //                     <div>
 //                       <div className="font-medium text-gray-900">Pool-Campus</div>
@@ -1632,7 +1664,7 @@ export default Home
 //                     </div>
 //                   </div>
 //                   <div className="flex items-center justify-end">
-//                     <span className="text-lg font-medium text-purple-600">{dashboardData.appliedByCategory['Pool-campus']}</span>
+//                     <span className="text-lg font-medium text-[#143694]">{dashboardData.appliedByCategory['Pool-campus']}</span>
 //                   </div>
 //                   <div className="flex items-center justify-end">
 //                     <span className="text-gray-400">-</span>
@@ -1721,7 +1753,7 @@ export default Home
 //                 onClick={() => navigate('/hiring-channels/post-a-job')}
 //                 className="group p-5 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl border border-blue-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 text-left"
 //               >
-//                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+//                 <div className="w-12 h-12 bg-gradient-to-br from-[#1e4ed8] to-blue-600 rounded-lg flex items-center justify-center mb-4">
 //                   <FiBriefcase className="w-6 h-6 text-white" />
 //                 </div>
 //                 <h4 className="font-medium text-gray-900 mb-1 group-hover:text-blue-600">Post Opportunity</h4>
@@ -1754,10 +1786,10 @@ export default Home
 //                 onClick={() => navigate('/service-request/workforce-solution')}
 //                 className="group p-5 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl border border-purple-100 hover:border-purple-200 hover:shadow-md transition-all duration-300 text-left"
 //               >
-//                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+//                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-[#143694] rounded-lg flex items-center justify-center mb-4">
 //                   <FiFileText className="w-6 h-6 text-white" />
 //                 </div>
-//                 <h4 className="font-medium text-gray-900 mb-1 group-hover:text-purple-600">Service Requests</h4>
+//                 <h4 className="font-medium text-gray-900 mb-1 group-hover:text-[#143694]">Service Requests</h4>
 //                 <p className="text-sm text-gray-600">Handle all requests</p>
 //               </button>
 //             </div>

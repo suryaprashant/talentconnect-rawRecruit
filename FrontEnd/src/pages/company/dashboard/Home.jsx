@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Briefcase, FileText, CheckCircle, Clock } from "lucide-react";
+import { Briefcase, FileText, CheckCircle, Clock, FileCheck2 } from "lucide-react";
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
 import { FiSearch } from 'react-icons/fi'
@@ -409,6 +409,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         recentAccepted,
         totalActiveJobs,
         totalOffers,
+        interviewsToday: metricsData.interviewsToday || 0,
+        totalScheduledInterviews: metricsData.totalScheduledInterviews || 0,
         loading: false
       })
     } else {
@@ -423,13 +425,13 @@ const [activeTab, setActiveTab] = useState('On-Campus');
   if (dashboardData.loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     )
   }
   const companyName = company?.profile?.companyDetails?.companyName || "Company";
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Page Header with only search box */}
         <div className="mb-6 -mt-14">
@@ -732,7 +734,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
 
           {/* Active Jobs */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div  onClick ={() => navigate('/job-management/On-campus')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#7765DA]/10 rounded-lg">
                 <Briefcase className="w-5 h-5 text-[#7765DA]" />
@@ -745,7 +748,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Applications */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/job-management/On-campus')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#5767D0]/10 rounded-lg">
                 <FileText className="w-5 h-5 text-[#5767D0]" />
@@ -758,7 +762,8 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Shortlisted */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/shortlisted/on-campus-listings')}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-[#4F0DCE]/10 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-[#4F0DCE]" />
@@ -771,35 +776,58 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           </div>
 
           {/* Offers */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
+          <div onClick ={() => navigate('/accepted/on-campus-listings')} 
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-green-100 rounded-lg">
-                <Clock className="w-5 h-5 text-green-600" />
+                <FileCheck2 className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900">{dashboardData.totalOffers || 0}</p>
-                <p className="text-xs text-gray-500">Offers</p>
+                <p className="text-xs text-gray-500">Accepted</p>
               </div>
             </div>
           </div>
 
-          {/* Button */}
+          {/* Schedule Interviews */}
           <div className="flex items-center justify-center">
-            <Button
-              variant="outline"
-              size="md"
-              className="w-full h-full flex items-center justify-center
-                border-[#143694] text-[#143694]
-                bg-[#143694]/5
+            <div
+              onClick={() => navigate('/interviews')}
+              className="group w-full h-full flex items-center justify-between
+                border border-gray-200 text-[#143694]
+                bg-white
                 hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8]
                 hover:text-white hover:border-transparent
                 transition-all duration-300 ease-in-out
                 rounded-xl font-semibold tracking-wide
-                shadow-sm hover:shadow-md"
-              onClick={() => navigate('/interviews')}
+                shadow-sm hover:shadow-md p-4 cursor-pointer relative overflow-hidden"
             >
-              Schedule Interviews
-            </Button>
+              {/* Left Content */}
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-[#143694]/10 rounded-lg group-hover:bg-white/20">
+                  <Clock className="w-5 h-5" />
+                </div>
+
+                <div>
+                  <p className="text-xl font-bold group-hover:text-white">
+                    {dashboardData.totalScheduledInterviews || 0}
+                  </p>
+                  <p className="text-xs opacity-80 group-hover:text-white">Scheduled Interviews</p>
+                </div>
+              </div>
+
+              {/* Hover Tooltip */}
+              <div
+                className="absolute bottom-0 left-0 right-0 text-center text-xs
+                  bg-white text-[#143694]
+                  py-1 rounded-t-lg
+                  opacity-0 translate-y-full
+                  group-hover:opacity-100 group-hover:translate-y-0
+                  transition-all duration-300"
+              >
+                Today: {dashboardData.interviewsToday || 0}
+              </div>
+            </div>
           </div>
 
         </div>
@@ -855,7 +883,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#143694]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
@@ -900,7 +928,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
   <div className="mt-4">
     <button
       onClick={() => navigate(activeTab === 'On-Campus' ? '/company-dashboard/On-campus' : '/company-dashboard/Pool-campus')}
-      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+      className="w-full py-2.5 border border-[#143694] text-[#143694] text-sm font-semibold rounded-xl hover:bg-[#143694] hover:text-white transition-all"
     >
       See All {activeTab} Requests
     </button>
@@ -951,7 +979,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#143694]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                   </div>
@@ -965,7 +993,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                   job.status === 'Accepted' ? 'bg-green-50 text-green-700' :
                   job.status === 'Shortlisted' ? 'bg-amber-50 text-amber-700' :
                   job.status === 'Rejected' ? 'bg-red-50 text-red-700' :
-                  'bg-blue-50 text-blue-700'
+                  'bg-blue-50 text-[#143694]'
                 }`}>
                   {job.status}
                 </span>
@@ -998,7 +1026,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
   <div className="mt-4">
     <button
       onClick={() => navigate(appTab === 'On-Campus' ? '/company/application-status/oncampus' : '/company/application-status/poolcampus')}
-      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+      className="w-full py-2.5 border border-[#143694] text-[#143694] text-sm font-semibold rounded-xl hover:bg-[#143694] hover:text-white transition-all"
     >
       See All {appTab} Applications
     </button>
@@ -1013,7 +1041,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">Service Requests Status</h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
                   <span className="text-gray-700 font-medium">Pending Requests</span>
@@ -1040,7 +1068,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/service-request/workforce-solution')}
-                className="w-full border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+                className="w-full border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               >
                 Manage Service Requests
               </Button>
@@ -1057,7 +1085,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                   <span className="text-sm font-bold text-gray-900">{dashboardData.totalApplied}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] h-3 rounded-full" style={{ width: '100%' }}></div>
+                  <div className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] h-3 rounded-full" style={{ width: '100%' }}></div>
                 </div>
               </div>
 
@@ -1126,7 +1154,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                 variant="outline"
                 size="md"
                 onClick={() => navigate('/job-management/On-campus')}
-                className="w-full border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
+                className="w-full border-[#143694] text-[#143694] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white"
               >
                 View Job Management
               </Button>
@@ -1147,7 +1175,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         jobTab === 'Off-campus'  ? '/job-management/Off-campus'  :
         '/job-management/Internship'
       )}
-      className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium transition-colors"
+      className="text-sm text-[#143694] hover:text-[#1e4ed8] font-medium transition-colors"
     >
       See All →
     </button>
@@ -1219,14 +1247,14 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           <div
             key={job._id || index}
             onClick={() => navigate(mgmtPath)}
-            className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md hover:border-[#667eea]/40 transition-all cursor-pointer group"
+            className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md hover:border-[#143694]/40 transition-all cursor-pointer group"
           >
             {/* Role + Badge */}
             <div className="flex items-start justify-between gap-2 mb-4">
-              <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#667eea] transition-colors line-clamp-2">
+              <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#143694] transition-colors line-clamp-2">
                 {roles}
               </h3>
-              <span className="text-[10px] font-bold text-[#667eea] bg-[#667eea]/10 px-2 py-1 rounded-md uppercase tracking-wider whitespace-nowrap flex-shrink-0">
+              <span className="text-[10px] font-bold text-[#143694] bg-[#143694]/10 px-2 py-1 rounded-md uppercase tracking-wider whitespace-nowrap flex-shrink-0">
                 {jobTab === 'On-campus'   ? 'On Campus'   :
                  jobTab === 'Pool-campus' ? 'Pool Campus' :
                  jobTab === 'Off-campus'  ? 'Off Campus'  : 'Internship'}
@@ -1264,7 +1292,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
         jobTab === 'Off-campus'  ? '/job-management/Off-campus'  :
         '/job-management/Internship'
       )}
-      className="w-full py-2.5 border border-[#667eea] text-[#667eea] text-sm font-semibold rounded-xl hover:bg-[#667eea] hover:text-white transition-all"
+      className="w-full py-2.5 border border-[#143694] text-[#143694] text-sm font-semibold rounded-xl hover:bg-[#143694] hover:text-white transition-all"
     >
       See All {
         jobTab === 'On-campus'   ? 'On Campus'   :
@@ -1284,7 +1312,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                <tr className="bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5">
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
@@ -1294,9 +1322,9 @@ const [activeTab, setActiveTab] = useState('On-Campus');
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {/* On-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#667eea]/5 to-transparent">
+                <tr className="hover:bg-gradient-to-r from-[#143694]/5 to-transparent">
                   <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
-                  <td className="px-4 py-3 text-[#667eea] font-semibold">{dashboardData.appliedByCategory['On-campus']}</td>
+                  <td className="px-4 py-3 text-[#143694] font-semibold">{dashboardData.appliedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-yellow-600 font-semibold">{dashboardData.shortlistedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-green-600 font-semibold">{dashboardData.acceptedByCategory['On-campus']}</td>
                   <td className="px-4 py-3 text-red-600 font-semibold">{dashboardData.rejectedByCategory['On-campus']}</td>
@@ -1320,7 +1348,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                 {/* Totals Row */}
                 <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-                  <td className="px-4 py-3 text-[#667eea]">{dashboardData.totalApplied}</td>
+                  <td className="px-4 py-3 text-[#143694]">{dashboardData.totalApplied}</td>
                   <td className="px-4 py-3 text-yellow-600">{dashboardData.totalShortlisted}</td>
                   <td className="px-4 py-3 text-green-600">{dashboardData.totalAccepted}</td>
                   <td className="px-4 py-3 text-red-600">{dashboardData.totalRejected}</td>
@@ -1340,7 +1368,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
               <h2 className="text-lg font-semibold text-gray-900">Recent Shortlisted</h2>
               <button
                 onClick={() => navigate('/shortlisted/on-campus-listings')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
+                className="text-sm text-[#143694] hover:text-[#1e4ed8] font-medium"
               >
                 View All →
               </button>
@@ -1377,7 +1405,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
               <h2 className="text-lg font-semibold text-gray-900">Recent Accepted</h2>
               <button
                 onClick={() => navigate('/accepted/on-campus-listings')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
+                className="text-sm text-[#143694] hover:text-[#1e4ed8] font-medium"
               >
                 View All →
               </button>

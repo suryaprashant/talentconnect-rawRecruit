@@ -32,7 +32,7 @@ const HackathonDetail = () => {
         <h2 className="text-2xl font-bold mb-4">Hackathon not found </h2>
         <button
           onClick={() => navigate(`/${localStorage.getItem('selectedRole')}-events/hackathon`)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-[#143694]"
         >
           Back to Hackathons
         </button>

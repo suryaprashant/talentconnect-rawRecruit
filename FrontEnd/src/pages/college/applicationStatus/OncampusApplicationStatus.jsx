@@ -260,7 +260,7 @@ export default function OncampusApplicationStatus() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3b82f6] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1e4ed8] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading on-campus applications...</p>
         </div>
       </div>
@@ -280,7 +280,7 @@ export default function OncampusApplicationStatus() {
           <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
           <button
             onClick={fetchApplication}
-            className="w-full px-4 py-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
+            className="w-full px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300"
           >
             Try Again
           </button>
@@ -292,10 +292,10 @@ export default function OncampusApplicationStatus() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       <div className="container mx-auto px-4 pt-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-1">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
 
           {/* Header */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-2">
             <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
               Your Application Status
             </h2>
@@ -331,11 +331,11 @@ export default function OncampusApplicationStatus() {
         <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 rounded-lg">
-                <Award className="h-5 w-5 text-[#3b82f6]" />
+              <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                <Award className="h-5 w-5 text-[#1e4ed8]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
                   On-Campus Application Status
                 </h1>
                 <p className="text-sm text-gray-600">
@@ -352,7 +352,7 @@ export default function OncampusApplicationStatus() {
             <input
               type="text"
               placeholder="Search on-campus applications..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none text-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -366,7 +366,7 @@ export default function OncampusApplicationStatus() {
               <div className="p-4 border-b border-white/60">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base font-semibold text-gray-900">On-Campus Applications</h2>
-                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 text-[#3b82f6] rounded-full">
+                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#1e4ed8] rounded-full">
                     {filteredJobs.length}
                   </span>
                 </div>
@@ -381,7 +381,7 @@ export default function OncampusApplicationStatus() {
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
                           selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#1e4ed8]/20' 
                             : 'hover:bg-white/30 border border-transparent'
                         }`}
                       >
@@ -398,8 +398,8 @@ export default function OncampusApplicationStatus() {
                             <div 
                               className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center font-bold text-xs ${
                                 selectedJob?.id === job.id 
-                                  ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
-                                  : 'bg-white/50 border border-white/60 text-[#3b82f6]'
+                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                                  : 'bg-white/50 border border-white/60 text-[#1e4ed8]'
                               }`}
                             >
                               {getCompanyInitials(job.company)}
@@ -411,14 +411,14 @@ export default function OncampusApplicationStatus() {
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
                             <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                               <span className="inline-flex items-center">
-                                <MapPin className="h-3 w-3 mr-1 text-[#3b82f6]" />
+                                <MapPin className="h-3 w-3 mr-1 text-[#1e4ed8]" />
                                 {job.location}
                               </span>
                               <span className={`text-xs px-1.5 py-0.5 rounded ${
                                 job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
                                 job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
                                 job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-blue-100 text-blue-700 border border-blue-200'
+                                'bg-blue-100 text-[#143694] border border-blue-200'
                               }`}>
                                 {job.status}
                               </span>
@@ -472,7 +472,7 @@ export default function OncampusApplicationStatus() {
                           className="w-12 h-12 rounded-xl object-cover border border-white/60"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#1e4ed8]">
                           {getCompanyInitials(selectedJob.company)}
                         </div>
                       )}
@@ -515,12 +515,12 @@ export default function OncampusApplicationStatus() {
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
                               <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
                                 isActive 
-                                  ? 'bg-[#3b82f6] border-[#3b82f6] text-white'
+                                  ? 'bg-[#1e4ed8] border-[#1e4ed8] text-white'
                                   : 'bg-white/50 border-white/60 text-gray-400'
                               }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
-                              <span className={`text-xs text-center ${isActive ? 'text-[#3b82f6] font-medium' : 'text-gray-500'}`}>
+                              <span className={`text-xs text-center ${isActive ? 'text-[#1e4ed8] font-medium' : 'text-gray-500'}`}>
                                 {step}
                               </span>
                             </div>
@@ -529,7 +529,7 @@ export default function OncampusApplicationStatus() {
                       </div>
                       <div className="h-1.5 bg-white/50 absolute left-[16.5%] right-[16.5%] top-4 -z-10">
                         <div
-                          className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
+                          className="h-1.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] transition-all duration-300 rounded-full"
                           style={{
                             width: `${(getStatusIndex(selectedJob.status) / (onCampusStatusSteps.length - 1)) * 100}%`
                           }}
@@ -544,7 +544,7 @@ export default function OncampusApplicationStatus() {
                   <div className="grid grid-cols-2 gap-4 mb-5">
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Briefcase className="h-4 w-4 text-[#3b82f6]" />
+                        <Briefcase className="h-4 w-4 text-[#1e4ed8]" />
                         <span className="text-xs font-medium text-gray-700">Job Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
@@ -552,7 +552,7 @@ export default function OncampusApplicationStatus() {
                     
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-[#3b82f6]" />
+                        <Calendar className="h-4 w-4 text-[#1e4ed8]" />
                         <span className="text-xs font-medium text-gray-700">Education</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.degree}</p>
@@ -560,7 +560,7 @@ export default function OncampusApplicationStatus() {
                     
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <MapPin className="h-4 w-4 text-[#3b82f6]" />
+                        <MapPin className="h-4 w-4 text-[#1e4ed8]" />
                         <span className="text-xs font-medium text-gray-700">Location</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.location}</p>
@@ -568,7 +568,7 @@ export default function OncampusApplicationStatus() {
                     
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Clock className="h-4 w-4 text-[#3b82f6]" />
+                        <Clock className="h-4 w-4 text-[#1e4ed8]" />
                         <span className="text-xs font-medium text-gray-700">Applied</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
@@ -608,7 +608,7 @@ export default function OncampusApplicationStatus() {
                   <div className="mt-auto">
                 <button 
                   onClick={() => handleViewFullDetails(selectedJob)}
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
+                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300"
                 >
                   View Full Details
                   <ArrowRight className="h-3.5 w-3.5 ml-2" />

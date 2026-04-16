@@ -213,7 +213,7 @@ const CollegeCard = ({ college, onClick }) => {
 
   // Get colored badges for degree types - with +X more format
   const getDegreeBadges = () => {
-    if (!college.degreeType?.length) return null;
+    if (!college.degree.length) return null;
     
     const roleColors = [
       "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
@@ -223,8 +223,8 @@ const CollegeCard = ({ college, onClick }) => {
       "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
-    const visibleDegrees = college.degreeType.slice(0, 4);
-    const remainingCount = college.degreeType.length > 4 ? college.degreeType.length - 4 : 0;
+    const visibleDegrees = college.degree.slice(0, 4);
+    const remainingCount = college.degree.length > 4 ? college.degree.length - 4 : 0;
     
     return (
       <div className="flex flex-wrap gap-1 mt-2">
@@ -251,10 +251,6 @@ const CollegeCard = ({ college, onClick }) => {
     
     const streamColors = [
       "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
-      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
-      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
-      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
-      "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
     const visibleStreams = college.studentStreams.slice(0, 4);
@@ -266,7 +262,7 @@ const CollegeCard = ({ college, onClick }) => {
         {visibleStreams.map((stream, index) => (
           <span 
             key={index} 
-            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors[index % streamColors.length]}`}
+            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors}`}
           >
             {stream}
           </span>

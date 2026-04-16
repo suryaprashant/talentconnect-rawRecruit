@@ -39,7 +39,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
       {/* Card */}
       <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
         <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
-          <Building2 className="h-10 w-10 text-[#667eea]" />
+          <Building2 className="h-10 w-10 text-[#143694]" />
         </div>
         
         <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
@@ -56,7 +56,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
               e.nativeEvent.stopImmediatePropagation(); 
               onLogin();
             }}
-            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
           >
             Login to Continue
           </button>
@@ -421,7 +421,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                     type="date"
                     value={selectedStartDate}
                     onChange={(e) => setSelectedStartDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={formatDateForInput(new Date())}
                   />
                 </div>
@@ -437,7 +437,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                     type="date"
                     value={selectedEndDate}
                     onChange={(e) => setSelectedEndDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={selectedStartDate || formatDateForInput(new Date())}
                   />
                 </div>
@@ -506,22 +506,22 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">College Type:</span>
                   <span className="ml-2">{collegeType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-3 text-blue-500" />
+                  <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Established:</span>
                   <span className="ml-2">{establishedYear || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">University:</span>
                   <span className="ml-2">{universityName || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">City:</span>
                   <span className="ml-2">{city || 'N/A'}</span>
                 </div>
@@ -529,22 +529,22 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">State:</span>
                   <span className="ml-2">{state || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Country:</span>
                   <span className="ml-2">{country || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Pincode:</span>
                   <span className="ml-2">{pincode || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Globe className="w-4 h-4 mr-3 text-blue-500" />
+                  <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Website:</span>
                   {collegeWebsite ? (
                     <a 
@@ -572,7 +572,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   if (loading) {
     return (
       <div className="relative w-full h-full bg-white flex items-center justify-center rounded-l-2xl">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
@@ -588,7 +588,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             <p className="text-lg font-medium text-gray-900 mb-4">{error || 'Posting not found'}</p>
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300"
             >
               Close
             </button>
@@ -676,7 +676,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             {!isSaved && !isApplied && (
               <button
                 onClick={() => handleSave(posting._id)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 transition-all duration-200 text-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 transition-all duration-200 text-sm"
                 title="Save"
               >
                 <Save size={12} className="md:size-3" />
@@ -708,7 +708,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs text-gray-600 mb-1">Minimum Package</p>
-                  <p className="text-base font-bold text-[#667eea] truncate">
+                  <p className="text-base font-bold text-[#143694] truncate">
                     {posting.packageDetails?.totalCTC 
                       ? `${posting.packageDetails.currency || '₹'} ${posting.packageDetails.totalCTC.toLocaleString()}`
                       : 'N/A'
@@ -737,11 +737,11 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                  <Briefcase className="h-5 w-5 text-purple-600" />
+                  <Briefcase className="h-5 w-5 text-[#143694]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs text-gray-600 mb-1">Employment Type</p>
-                  <p className="text-sm font-medium text-purple-600 truncate">
+                  <p className="text-sm font-medium text-[#143694] truncate">
                     {posting.employmentType?.join(', ') || 'N/A'}
                   </p>
                 </div>
@@ -806,7 +806,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                   {posting?.contactPerson?.mobile && (
                     <div className="flex items-center gap-3 flex-1">
                       <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0">
-                        <Phone className="h-5 w-5 text-purple-600" />
+                        <Phone className="h-5 w-5 text-[#143694]" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs text-gray-600 mb-1">Phone</p>
@@ -980,7 +980,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               <button
                 onClick={handleMessageClick}
                 disabled={isSubmitting || !posting?.collegePosted?.userId}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex-1 sm:flex-none"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#143694] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex-1 sm:flex-none"
               >
                 <Send size={16} className="md:size-4" />
                 <span>{isSubmitting ? 'Connecting...' : 'Message Officer'}</span>
@@ -988,7 +988,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
 
               <button 
                 onClick={handleAlternateDateClick}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
               >
                 <Calendar size={16} className="md:size-4" />
                 <span>Suggest Date</span>
@@ -998,7 +998,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             {!isApplied && (
               <button 
                 onClick={() => handleApply(posting._id)}
-                className="inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-2.5 rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium text-sm md:text-base w-full sm:w-auto mt-3 sm:mt-0"
+                className="inline-flex items-center justify-center gap-2 bg-primaryBrand text-white px-6 py-2.5 rounded-xl hover:bg-[#1e4ed8] transition-all duration-200 font-medium text-sm md:text-base w-full sm:w-auto mt-3 sm:mt-0"
               >
                 <CheckCircle size={16} className="md:size-4" />
                 Accept Invitation

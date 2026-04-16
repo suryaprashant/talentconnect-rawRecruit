@@ -43,9 +43,9 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-8">Contact us</h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-8">Contact us</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Contact Form */}
@@ -59,7 +59,7 @@ const ContactUs = () => {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                  className={`w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
                     errors.message ? 'border-red-500' : 'border-gray-200'
                   }`}
                   rows="4"
@@ -76,7 +76,7 @@ const ContactUs = () => {
                   name="acceptTerms"
                   checked={formData.acceptTerms}
                   onChange={handleChange}
-                  className="h-5 w-5 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea]/50"
+                  className="h-5 w-5 text-[#143694] border-gray-300 rounded focus:ring-[#143694]/50"
                 />
                 <label className="ml-2 block text-sm text-gray-900">
                   I accept the Terms
@@ -89,7 +89,7 @@ const ContactUs = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {submitting ? (
                   <>
@@ -109,14 +109,14 @@ const ContactUs = () => {
           {/* Contact Information */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 space-y-6">
             <div className="flex items-start">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
-                <Mail className="h-5 w-5 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-4">
+                <Mail className="h-5 w-5 text-[#143694]" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Email</h2>
                 <a
                   href="mailto:contact-us@talentconnectes.com"
-                  className="text-[#667eea] hover:text-[#764ba2] transition-colors"
+                  className="text-[#143694] hover:text-[#1e4ed8] transition-colors"
                 >
                   contact-us@talentconnectes.com
                 </a>
@@ -124,14 +124,14 @@ const ContactUs = () => {
             </div>
 
             <div className="flex items-start">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
-                <Phone className="h-5 w-5 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-4">
+                <Phone className="h-5 w-5 text-[#143694]" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Phone</h2>
                 <a
                   href="tel:+917979863193"
-                  className="text-[#667eea] hover:text-[#764ba2] transition-colors"
+                  className="text-[#143694] hover:text-[#1e4ed8] transition-colors"
                 >
                   +91-7979863193
                 </a>
@@ -139,8 +139,8 @@ const ContactUs = () => {
             </div>
 
             <div className="flex items-start">
-              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
-                <MapPin className="h-5 w-5 text-[#667eea]" />
+              <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-4">
+                <MapPin className="h-5 w-5 text-[#143694]" />
               </div>
            <div>
   <h2 className="text-lg font-semibold text-gray-900 mb-1">
@@ -156,7 +156,7 @@ const ContactUs = () => {
     href="https://maps.google.com/?q=RUKMINI%20VENKATASWAMY%20REDDY%20ARCADE,%20B-Block,%20Ashoka%20Lane,%20Green%20Glen%20Layout,%20Bellandur,%20Bangalore,%20Karnataka%20560103"
     target="_blank"
     rel="noopener noreferrer"
-    className="text-[#667eea] hover:text-[#764ba2] transition-colors mt-1 inline-block underline-offset-2 hover:underline"
+    className="text-[#143694] hover:text-[#1e4ed8] transition-colors mt-1 inline-block underline-offset-2 hover:underline"
     aria-label="Get directions to office on Google Maps"
   >
     Get Directions

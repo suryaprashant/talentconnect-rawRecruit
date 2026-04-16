@@ -79,7 +79,7 @@ const CasestudyApplicantDetails = ({ casestudy, onClose }) => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-6">
+      <div className="bg-[#143694] text-white p-6">
         <button 
           onClick={onClose}
           className="mb-4 flex items-center text-purple-100 hover:text-white"
@@ -199,7 +199,7 @@ const CasestudyApplicantDetails = ({ casestudy, onClose }) => {
                         <h3 className="text-2xl font-bold text-gray-900">{registration.name}</h3>
                         <p className="text-gray-600">{registration.email}</p>
                         {registration.projectTitle && (
-                          <p className="text-sm text-purple-600 font-medium mt-1">
+                          <p className="text-sm text-[#143694] font-medium mt-1">
                             Project: {registration.projectTitle}
                           </p>
                         )}
@@ -269,19 +269,19 @@ const CasestudyApplicantDetails = ({ casestudy, onClose }) => {
                       <div className="flex space-x-4">
                         {registration.userDetails.linkedIn && (
                           <a href={registration.userDetails.linkedIn} target="_blank" rel="noopener noreferrer" 
-                             className="text-purple-600 hover:underline text-sm">LinkedIn</a>
+                             className="text-[#143694] hover:underline text-sm">LinkedIn</a>
                         )}
                         {registration.userDetails.github && (
                           <a href={registration.userDetails.github} target="_blank" rel="noopener noreferrer" 
-                             className="text-purple-600 hover:underline text-sm">GitHub</a>
+                             className="text-[#143694] hover:underline text-sm">GitHub</a>
                         )}
                         {registration.userDetails.portfolio && (
                           <a href={registration.userDetails.portfolio} target="_blank" rel="noopener noreferrer" 
-                             className="text-purple-600 hover:underline text-sm">Portfolio</a>
+                             className="text-[#143694] hover:underline text-sm">Portfolio</a>
                         )}
                         {registration.userDetails.cv && (
                           <a href={registration.userDetails.cv} target="_blank" rel="noopener noreferrer" 
-                             className="text-purple-600 hover:underline text-sm">Resume</a>
+                             className="text-[#143694] hover:underline text-sm">Resume</a>
                         )}
                       </div>
                     </div>

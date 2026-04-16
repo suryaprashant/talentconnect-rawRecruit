@@ -359,12 +359,12 @@ const validateAllFields = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
@@ -372,10 +372,10 @@ const validateAllFields = () => {
 
           {/* Header with gradient */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
-              <User className="w-10 h-10 text-[#667eea]" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mx-auto mb-4">
+              <User className="w-10 h-10 text-[#143694]" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
               Basic Information
             </h1>
             <p className="text-gray-600 mb-4">
@@ -395,7 +395,7 @@ const validateAllFields = () => {
                 </label>
                 <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.name
                   ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
-                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  : 'border-gray-300 hover:border-[#143694] focus-within:border-[#143694] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
                   }`}>
                   <User className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
@@ -426,7 +426,7 @@ const validateAllFields = () => {
                 </label>
                 <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.email
                   ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
-                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  : 'border-gray-300 hover:border-[#143694] focus-within:border-[#143694] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
                   }`}>
                   <MailIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
@@ -460,7 +460,7 @@ const validateAllFields = () => {
                 </label>
                 <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.phone
                   ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
-                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  : 'border-gray-300 hover:border-[#143694] focus-within:border-[#143694] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
                   }`}>
                   <PhoneIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
@@ -495,7 +495,7 @@ const validateAllFields = () => {
               </label>
               <div className={`relative border rounded-xl transition-all duration-200 ${validationErrors.profileType
                 ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
-                : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                : 'border-gray-300 hover:border-[#143694] focus-within:border-[#143694] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
                 }`}>
                 <select
                   id="profileType"
@@ -536,7 +536,7 @@ const validateAllFields = () => {
            //   disabled={!parsedData.phone || !formData.profileType || !parsedData.name}
               // disabled={!formData.phone && !parsedData.phone}
               disabled={!formData.phone || !formData.name}
-              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" /* Increased padding and text */
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" /* Increased padding and text */
             >
               Next
             </button>

@@ -58,7 +58,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     {isProfileEditing ? (
                         <input
                             type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             placeholder={`Enter ${getOrgFieldLabel().toLowerCase()} name`}
                             value={orgFieldValue || ''}
                             onChange={(e) => handleInputChange(orgFieldKey, e.target.value)}
@@ -77,7 +77,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     {isProfileEditing ? (
                         <input
                             type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             placeholder={`Enter ${type === 'leadership' ? 'role' : 'job role'}`}
                             value={experience.role || ''}
                             onChange={(e) => handleInputChange('role', e.target.value)}
@@ -96,7 +96,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     {isProfileEditing ? (
                         <input
                             type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             value={experience.startDate || ''}
                             onChange={(e) => handleInputChange('startDate', e.target.value)}
                         />
@@ -114,7 +114,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     {isProfileEditing ? (
                         <input
                             type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             value={experience.endDate || ''}
                             onChange={(e) => handleInputChange('endDate', e.target.value)}
                         />
@@ -131,7 +131,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     </label>
                     {isProfileEditing ? (
                         <textarea
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all resize-none"
                             placeholder="Describe your role, responsibilities, and achievements..."
                             rows="4"
                             value={experience.description || ''}
@@ -152,7 +152,7 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
                             <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
                             <div className="text-sm text-gray-600">
-                                <label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                                <label className="cursor-pointer text-blue-600 hover:text-[#143694] font-medium">
                                     Upload a file
                                     <input
                                         type="file"
@@ -211,7 +211,7 @@ const AchievementCard = React.memo(({ achievement, onUpdate, onRemove, canRemove
                     {isProfileEditing ? (
                         <input
                             type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             placeholder="e.g., Won 1st place"
                             value={achievement.title || ''}
                             onChange={(e) => onUpdate('achievement', achievement.id, 'title', e.target.value)}
@@ -230,7 +230,7 @@ const AchievementCard = React.memo(({ achievement, onUpdate, onRemove, canRemove
                     {isProfileEditing ? (
                         <input
                             type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             placeholder="e.g., National Hackathon 2024"
                             value={achievement.event || ''}
                             onChange={(e) => onUpdate('achievement', achievement.id, 'event', e.target.value)}
@@ -249,7 +249,7 @@ const AchievementCard = React.memo(({ achievement, onUpdate, onRemove, canRemove
                     {isProfileEditing ? (
                         <input
                             type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
                             value={achievement.date || ''}
                             onChange={(e) => onUpdate('achievement', achievement.id, 'date', e.target.value)}
                         />
@@ -283,31 +283,31 @@ const AwardCard = React.memo(({ award, onUpdate, onRemove, canRemove, isProfileE
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Award Title</label>
                     {isProfileEditing ? (
-                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Employee of the Month" value={award.title || ''} onChange={(e) => handleInputChange('title', e.target.value)} />
+                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" placeholder="e.g., Employee of the Month" value={award.title || ''} onChange={(e) => handleInputChange('title', e.target.value)} />
                     ) : ( <div className={displayFieldStyle}>{award.title || "N/A"}</div> )}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Organization</label>
                     {isProfileEditing ? (
-                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Company Name" value={award.organization || ''} onChange={(e) => handleInputChange('organization', e.target.value)} />
+                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" placeholder="e.g., Company Name" value={award.organization || ''} onChange={(e) => handleInputChange('organization', e.target.value)} />
                     ) : ( <div className={displayFieldStyle}>{award.organization || "N/A"}</div> )}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
                     {isProfileEditing ? (
-                        <input type="date" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value={award.startDate || ''} onChange={(e) => handleInputChange('startDate', e.target.value)} />
+                        <input type="date" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" value={award.startDate || ''} onChange={(e) => handleInputChange('startDate', e.target.value)} />
                     ) : ( <div className={displayFieldStyle}>{award.startDate || "N/A"}</div> )}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
                     {isProfileEditing ? (
-                        <input type="date" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value={award.endDate || ''} onChange={(e) => handleInputChange('endDate', e.target.value)} />
+                        <input type="date" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" value={award.endDate || ''} onChange={(e) => handleInputChange('endDate', e.target.value)} />
                     ) : ( <div className={displayFieldStyle}>{award.endDate || "N/A"}</div> )}
                 </div>
                 <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                     {isProfileEditing ? (
-                        <textarea className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Describe the award" value={award.description || ''} onChange={(e) => handleInputChange('description', e.target.value)} />
+                        <textarea className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" rows="3" placeholder="Describe the award" value={award.description || ''} onChange={(e) => handleInputChange('description', e.target.value)} />
                     ) : ( <div className={`${displayFieldStyle} items-start min-h-[80px]`}>{award.description || "N/A"}</div> )}
                 </div>
             </div>
@@ -334,13 +334,13 @@ const PublicationCard = React.memo(({ publication, onUpdate, onRemove, canRemove
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Publication Title</label>
                     {isProfileEditing ? (
-                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., The Future of AI" value={publication.title || ''} onChange={(e) => handleInputChange('title', e.target.value)} />
+                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" placeholder="e.g., The Future of AI" value={publication.title || ''} onChange={(e) => handleInputChange('title', e.target.value)} />
                     ) : ( <div className={displayFieldStyle}>{publication.title || "N/A"}</div> )}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Publication URL</label>
                     {isProfileEditing ? (
-                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://example.com/publication" value={publication.url || ''} onChange={(e) => handleInputChange('url', e.target.value)} />
+                        <input type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]" placeholder="https://example.com/publication" value={publication.url || ''} onChange={(e) => handleInputChange('url', e.target.value)} />
                     ) : (
                         <div className={displayFieldStyle}>
                             {publication.url ? <a href={publication.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{publication.url}</a> : "N/A"}

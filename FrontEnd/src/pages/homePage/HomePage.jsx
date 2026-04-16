@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/home/Navbar";
 import HeroSection from "@/components/home/Hero";
 import RoleCards from "@/components/home/RoleCard";
@@ -41,7 +42,29 @@ const HomePage = () => {
 
   return (
     <div className="bg-background text-foreground">
+      <Helmet>
+        <title>
+          Campus Hiring Platform India | Hire Freshers via On-Campus & Off-Campus
+        </title>
 
+        <meta
+          name="description"
+          content="Post hiring requirements, connect with verified colleges, and hire freshers using on-campus, pool-campus, and off-campus recruitment — all in one platform."
+        />
+
+        <meta
+          name="keywords"
+          content="campus hiring platform India, hire freshers, pool campus hiring, on campus recruitment software, off campus hiring"
+        />
+
+        {/* Open Graph (for sharing) */}
+        <meta property="og:title" content="Campus Hiring Platform India" />
+        <meta
+          property="og:description"
+          content="Hire freshers faster with one unified campus hiring platform."
+        />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* 1. Navbar */}
       <Navbar />
 

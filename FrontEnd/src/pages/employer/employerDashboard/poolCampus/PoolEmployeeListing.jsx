@@ -537,7 +537,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#93c5fd] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694] mx-auto"></div>
                     <p className="mt-4 text-gray-600">Loading pool campus postings...</p>
                 </div>
             </div>
@@ -554,7 +554,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{error}</h3>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-4 px-6 py-3 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
+                        className="mt-4 px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200"
                     >
                         Try Again
                     </button>
@@ -568,7 +568,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
             {/* Pastel blur background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
@@ -581,7 +581,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                         <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
                         <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">
                             <div>
-                                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
                                     Colleges Posting for Pool Campus
                                 </h1>
                                 <p className="text-gray-600 mt-2">
@@ -598,10 +598,10 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600">Total Postings</p>
-                                <p className="text-2xl font-bold text-[#3b82f6]">{postings.length}</p>
+                                <p className="text-2xl font-bold text-[#1e4ed8]">{postings.length}</p>
                             </div>
-                            <div className="p-2 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg">
-                                <Building2 className="w-5 h-5 text-[#3b82f6]" />
+                            <div className="p-2 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg">
+                                <Building2 className="w-5 h-5 text-[#1e4ed8]" />
                             </div>
                         </div>
                     </div>
@@ -654,11 +654,11 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
                                 
                                 {filters.workMode.map(mode => (
-                                    <span key={mode} className="inline-flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/10 text-[#3b82f6] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                                    <span key={mode} className="inline-flex items-center bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/10 text-[#1e4ed8] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
                                         {mode}
                                         <button 
                                             onClick={() => removeFilter('workMode', mode)}
-                                            className="ml-2 text-[#3b82f6] hover:text-[#1d4ed8]"
+                                            className="ml-2 text-[#1e4ed8] hover:text-[#1d4ed8]"
                                         >
                                             <X className="h-3 w-3" />
                                         </button>
@@ -747,12 +747,12 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                             <div className="relative">
                                 <button
                                     onClick={() => setShowMainFilter(!showMainFilter)}
-                                    className={`flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border ${showMainFilter ? 'border-[#93c5fd] ring-2 ring-[#93c5fd]/10' : 'border-white/50 hover:border-[#93c5fd]/50'} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md`}
+                                    className={`flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border ${showMainFilter ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-white/50 hover:border-[#143694]/50'} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md`}
                                 >
-                                    <Filter className="h-4 w-4 text-[#3b82f6]" />
+                                    <Filter className="h-4 w-4 text-[#1e4ed8]" />
                                     <span className="text-sm font-medium text-gray-700">Filter</span>
                                     {getActiveFiltersCount() > 0 && (
-                                        <span className="px-2 py-0.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-xs rounded-full">
+                                        <span className="px-2 py-0.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-xs rounded-full">
                                             {getActiveFiltersCount()}
                                         </span>
                                     )}
@@ -765,7 +765,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl hover:border-[#93c5fd]/50 transition-all duration-200 appearance-none pr-10 text-sm font-medium text-gray-700 shadow-sm hover:shadow-md"
+                                    className="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl hover:border-[#143694]/50 transition-all duration-200 appearance-none pr-10 text-sm font-medium text-gray-700 shadow-sm hover:shadow-md"
                                 >
                                     <option value="newest">Sort: Newest First</option>
                                     <option value="oldest">Sort: Oldest First</option>
@@ -796,10 +796,10 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 {/* <div className="relative">
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center">
-                                            <Briefcase className="h-4 w-4 text-[#3b82f6] mr-2" />
+                                            <Briefcase className="h-4 w-4 text-[#1e4ed8] mr-2" />
                                             <span className="text-sm font-medium text-gray-700">Work Mode</span>
                                             {filters.workMode.length > 0 && (
-                                                <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-xs rounded-full">
+                                                <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-xs rounded-full">
                                                     {filters.workMode.length}
                                                 </span>
                                             )}
@@ -807,7 +807,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                         {filters.workMode.length > 0 && (
                                             <button
                                                 onClick={() => clearFilterSection('workMode')}
-                                                className="text-xs text-[#3b82f6] hover:text-[#1d4ed8] font-medium"
+                                                className="text-xs text-[#1e4ed8] hover:text-[#1d4ed8] font-medium"
                                             >
                                                 Clear
                                             </button>
@@ -816,7 +816,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                     
                                     <button
                                         onClick={() => toggleSubDropdown('workMode')}
-                                        className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#93c5fd]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                                        className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#143694]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
                                     >
                                         <span className="text-sm text-gray-700">Select Work Mode</span>
                                         <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.workMode ? 'transform rotate-180' : ''}`} />
@@ -833,7 +833,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                                                 id={`workMode-${option.label}-${index}`}
                                                                 checked={filters.workMode.includes(option.label)}
                                                                 onChange={() => handleFilterChange('workMode', option.label)}
-                                                                className="h-4 w-4 text-[#3b82f6] focus:ring-[#93c5fd]/50 border-gray-300 rounded"
+                                                                className="h-4 w-4 text-[#1e4ed8] focus:ring-[#143694]/50 border-gray-300 rounded"
                                                             />
                                                             <label 
                                                                 htmlFor={`workMode-${option.label}-${index}`}
@@ -999,7 +999,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                             <select
                                                 value={filters.location}
                                                 onChange={(e) => handleFilterChange('location', e.target.value)}
-                                                className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#93c5fd]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
+                                                className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
                                             >
                                                 <option value="">Select Location</option>
                                                 <option value="Multi - Select">Multi - Select</option>
@@ -1045,7 +1045,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                                 value={filters.college}
                                                 onChange={(e) => handleFilterChange('college', e.target.value)}
                                                 placeholder="Type college name..."
-                                                className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#93c5fd]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
+                                                className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
                                             />
                                         </div>
                                     )}
@@ -1100,7 +1100,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
 
                             {/* View All Button */}
                             <div className="mt-10 text-center">
-                                <button className="px-8 py-3.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-base font-medium">
+                                <button className="px-8 py-3.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-base font-medium">
                                     View All Postings
                                 </button>
                             </div>
@@ -1117,7 +1117,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                             <div className="flex flex-wrap gap-4 justify-center">
                                 <button
                                     onClick={clearAllFilters}
-                                    className="px-8 py-3.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-base font-medium"
+                                    className="px-8 py-3.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-base font-medium"
                                 >
                                     Reset All Filters
                                 </button>

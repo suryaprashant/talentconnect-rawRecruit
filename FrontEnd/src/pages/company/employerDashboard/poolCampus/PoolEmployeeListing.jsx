@@ -376,9 +376,9 @@ const handleContactClick = (e) => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                     <p className="mt-4 text-gray-600">Loading pool campus postings...</p>
                 </div>
             </div>
@@ -430,10 +430,10 @@ if (compact) {
 }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
             <div className="container mx-auto px-4 py-8 pt-22">
                 {/* --- NEW CAMPUS TOGGLE HEADER --- */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
 
                     {/* Header */}
                     <div className="flex items-center gap-3 mb-4">
@@ -469,45 +469,78 @@ if (compact) {
                     </div>
 {/* --- END OF NEW HEADER --- */}
                 {/* Header Section */}
-                <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                        <div className="mb-4 md:mb-0">
-                            <div className="flex items-center mb-2">
-                                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                                    <Building2 className="h-5 w-5 text-[#667eea]" />
-                                </div>
-                                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                    Colleges Posting for Pool-Campus
-                                </h1>
-                            </div>
-                            <p className="text-gray-600">
-                                Explore pool-campus drives posted by various colleges. 
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200 appearance-none pr-10"
-                                >
-                                    <option value="newest">Sort: Newest</option>
-                                    <option value="oldest">Sort: Oldest</option>
-                                    <option value="a-z">Sort: A-Z</option>
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                            </div>
-                            
-                            <button
-                                onClick={clearAllFilters}
-                                disabled={getActiveFiltersCount() === 0}
-                                className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                            >
-                                Clear all
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
+
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3 mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg">
+          <Building2 className="h-5 w-5 text-[#143694]" />
+        </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+          Colleges Posting for Pool-Campus
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Explore pool-campus drives posted by various colleges.
+      </p>
+
+    </div>
+
+    {/* RIGHT - Actions */}
+    <div className="flex items-center gap-3 w-full md:w-auto">
+
+      {/* Sort */}
+      <div className="relative w-full md:w-auto">
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="
+            w-full md:w-auto
+            px-4 py-2.5 pr-10 
+            bg-gray-50 border border-gray-200 rounded-xl
+            text-sm text-gray-700
+            focus:ring-2 focus:ring-[#143694]/30 
+            focus:border-[#143694] focus:outline-none
+            appearance-none transition-all duration-200
+            hover:bg-gray-100
+          "
+        >
+          <option value="newest">Sort: Newest</option>
+          <option value="oldest">Sort: Oldest</option>
+          <option value="a-z">Sort: A-Z</option>
+        </select>
+
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+      </div>
+
+      {/* Clear Filters (only when needed) */}
+      {getActiveFiltersCount() > 0 && (
+        <button
+          onClick={clearAllFilters}
+          className="
+            px-4 py-2.5 text-sm font-medium 
+            text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-xl
+            hover:bg-[#143694] hover:text-white
+            transition-all duration-200
+          "
+        >
+          Clear all
+        </button>
+      )}
+
+    </div>
+
+  </div>
+
+</div>
 
                 {/* Stats Cards Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -515,10 +548,10 @@ if (compact) {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600">Total Pool Drives</p>
-                                <p className="text-2xl font-bold text-[#3b82f6]">{postings.length}</p>
+                                <p className="text-2xl font-bold text-[#1e4ed8]">{postings.length}</p>
                             </div>
-                            <div className="p-2 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg">
-                                <Building2 className="w-5 h-5 text-[#3b82f6]" />
+                            <div className="p-2 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg">
+                                <Building2 className="w-5 h-5 text-[#1e4ed8]" />
                             </div>
                         </div>
                     </div>
@@ -575,7 +608,7 @@ if (compact) {
                                         {degree}
                                         <button 
                                             onClick={() => removeFilter('degree', degree)}
-                                            className="ml-2 text-purple-600 hover:text-purple-800"
+                                            className="ml-2 text-[#143694] hover:text-purple-800"
                                         >
                                             <X className="h-3 w-3" />
                                         </button>
@@ -645,12 +678,12 @@ if (compact) {
                         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
                             <button
                                 onClick={() => setShowMainFilter(!showMainFilter)}
-                                className={`flex items-center gap-2 px-4 py-2.5 bg-white border ${showMainFilter ? 'border-[#667eea] ring-2 ring-[#667eea]/10' : 'border-gray-200 hover:border-gray-300'} rounded-xl transition-all duration-200`}
+                                className={`flex items-center gap-2 px-4 py-2.5 bg-white border ${showMainFilter ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-gray-300'} rounded-xl transition-all duration-200`}
                             >
                                 <Filter className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm font-medium text-gray-700">Filter</span>
                                 {getActiveFiltersCount() > 0 && (
-                                    <span className="px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                    <span className="px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
                                         {getActiveFiltersCount()}
                                     </span>
                                 )}
@@ -668,7 +701,7 @@ if (compact) {
                                                 <GraduationCap className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Degree</span>
                                                 {filters.degree.length > 0 && (
-                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                                    <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
                                                         {filters.degree.length}
                                                     </span>
                                                 )}
@@ -676,7 +709,7 @@ if (compact) {
                                             {filters.degree.length > 0 && (
                                                 <button
                                                     onClick={() => clearFilterSection('degree')}
-                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                    className="text-xs text-[#143694] hover:text-[#1e4ed8]"
                                                 >
                                                     Clear
                                                 </button>
@@ -701,7 +734,7 @@ if (compact) {
                                                                 id={`degree-${option.label}-${index}`}
                                                                 checked={filters.degree.includes(option.label)}
                                                                 onChange={() => handleFilterChange('degree', option.label)}
-                                                                className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                                                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                                                             />
                                                             <label 
                                                                 htmlFor={`degree-${option.label}-${index}`}
@@ -723,7 +756,7 @@ if (compact) {
                                                 <BookOpen className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Courses</span>
                                                 {filters.courses.length > 0 && (
-                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                                    <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
                                                         {filters.courses.length}
                                                     </span>
                                                 )}
@@ -731,7 +764,7 @@ if (compact) {
                                             {filters.courses.length > 0 && (
                                                 <button
                                                     onClick={() => clearFilterSection('courses')}
-                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                    className="text-xs text-[#143694] hover:text-[#1e4ed8]"
                                                 >
                                                     Clear
                                                 </button>
@@ -756,7 +789,7 @@ if (compact) {
                                                                 id={`course-${option.label}-${index}`}
                                                                 checked={filters.courses.includes(option.label)}
                                                                 onChange={() => handleFilterChange('courses', option.label)}
-                                                                className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                                                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                                                             />
                                                             <label 
                                                                 htmlFor={`course-${option.label}-${index}`}
@@ -778,7 +811,7 @@ if (compact) {
                                                 <Briefcase className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Employment Type</span>
                                                 {(filters.internship || filters.fullTime) && (
-                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                                    <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
                                                         {(filters.internship ? 1 : 0) + (filters.fullTime ? 1 : 0)}
                                                     </span>
                                                 )}
@@ -786,7 +819,7 @@ if (compact) {
                                             {(filters.internship || filters.fullTime) && (
                                                 <button
                                                     onClick={() => clearFilterSection('employmentType')}
-                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                    className="text-xs text-[#143694] hover:text-[#1e4ed8]"
                                                 >
                                                     Clear
                                                 </button>
@@ -810,7 +843,7 @@ if (compact) {
                                                             id="internship"
                                                             checked={filters.internship}
                                                             onChange={() => handleFilterChange('internship', !filters.internship)}
-                                                            className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                                                            className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                                                         />
                                                         <label 
                                                             htmlFor="internship"
@@ -825,7 +858,7 @@ if (compact) {
                                                             id="fullTime"
                                                             checked={filters.fullTime}
                                                             onChange={() => handleFilterChange('fullTime', !filters.fullTime)}
-                                                            className="h-4 w-4 text-[#667eea] focus:ring-[#667eea]/50 border-gray-300 rounded"
+                                                            className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
                                                         />
                                                         <label 
                                                             htmlFor="fullTime"
@@ -846,7 +879,7 @@ if (compact) {
                                                 <MapPin className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Location</span>
                                                 {Array.isArray(filters.location) && filters.location.length > 0 && (
-                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                                    <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
                                                         {filters.location.length}
                                                     </span>
                                                 )}
@@ -854,7 +887,7 @@ if (compact) {
                                             {Array.isArray(filters.location) && filters.location.length > 0 && (
                                                 <button
                                                     onClick={() => handleFilterChange('location', [])}
-                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                    className="text-xs text-[#143694] hover:text-[#1e4ed8]"
                                                 >
                                                     Clear
                                                 </button>
@@ -955,7 +988,7 @@ if (compact) {
                             <div className="flex flex-wrap gap-3 justify-center">
                                 <button
                                     onClick={clearAllFilters}
-                                    className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+                                    className="px-6 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300"
                                 >
                                     Clear All Filters
                                 </button>

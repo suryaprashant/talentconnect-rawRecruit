@@ -27,16 +27,16 @@ export default function TermsAndConditions({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 p-4">
       {/* Background decorative elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative max-w-2xl mx-auto">
         {/* Blur background behind card */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
 
         <motion.div
           className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -45,11 +45,11 @@ export default function TermsAndConditions({
           transition={{ duration: 0.3 }}
         >
           {/* Decorative top bar */}
-          <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+          <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -77,14 +77,14 @@ export default function TermsAndConditions({
 
           {/* Agreement Checkbox */}
           <div className="mb-8 ">
-            <div className="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl border border-gray-200">
+            <div className="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl border border-gray-200">
               <div>
                 <input
                   type="checkbox"
                   id="acceptTerms"
                   checked={formData.acceptedTerms || false}
                   onChange={handleAcceptTerms}
-                  className="mr-3 h-5 w-5 text-[#667eea] focus:ring-[#667eea]/30 border-gray-300 rounded"
+                  className="mr-3 h-5 w-5 text-[#143694] focus:ring-[#143694]/30 border-gray-300 rounded"
                 />
                 <label
                   htmlFor="acceptTerms"
@@ -95,7 +95,7 @@ export default function TermsAndConditions({
               </div>
               <a
                 onClick={() => setIsModalOpen(true)}
-                className="text-blue-600 hover:text-blue-700 underline cursor-pointer mt-2"
+                className="text-blue-600 hover:text-[#143694] underline cursor-pointer mt-2"
               >
                 Terms & Services
               </a>
@@ -119,7 +119,7 @@ export default function TermsAndConditions({
               disabled={!formData.acceptedTerms}
               className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                 formData.acceptedTerms
-                  ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                  ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >

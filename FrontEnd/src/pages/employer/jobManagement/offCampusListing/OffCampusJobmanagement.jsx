@@ -141,17 +141,17 @@
 //   }
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+//     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
 //       <div className="container mx-auto px-4 py-8 pt-22">
 //         {/* Header Section */}
 //         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
 //           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
 //             <div className="mb-4 md:mb-0">
 //               <div className="flex items-center mb-2">
-//                 <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-//                   <Building2 className="h-5 w-5 text-[#667eea]" />
+//                 <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+//                   <Building2 className="h-5 w-5 text-[#143694]" />
 //                 </div>
-//                 <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+//                 <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
 //                   Manage Off-Campus Applications
 //                 </h1>
 //               </div>
@@ -165,7 +165,7 @@
 //           <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
 //             <button
 //               className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'All Jobs' 
-//                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+//                 ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
 //                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
 //               }`}
 //               onClick={() => setActiveTab('All Jobs')}
@@ -174,7 +174,7 @@
 //             </button>
 //             <button
 //               className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'Published' 
-//                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+//                 ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
 //                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
 //               }`}
 //               onClick={() => setActiveTab('Published')}
@@ -183,7 +183,7 @@
 //             </button>
 //             <button
 //               className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'Drafts' 
-//                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+//                 ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
 //                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
 //               }`}
 //               onClick={() => setActiveTab('Drafts')}
@@ -202,7 +202,7 @@
 //               </div>
 //               <input
 //                 type="text"
-//                 className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+//                 className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
 //                 placeholder="Search by name or email"
 //                 value={searchQuery}
 //                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -211,7 +211,7 @@
 
 //             <button
 //               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${showFilters 
-//                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+//                 ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
 //                 : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
 //               }`}
 //               onClick={() => setShowFilters(!showFilters)}
@@ -264,7 +264,7 @@
 //           <div className="divide-y divide-gray-100">
 //             {loading ? (
 //               <div className="p-12 text-center">
-//                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+//                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
 //                 <p className="mt-4 text-gray-600">Loading jobs...</p>
 //               </div>
 //             ) : currentJobs?.length === 0 ? (
@@ -285,7 +285,7 @@
 //                   <div className="grid grid-cols-12 gap-4 items-center">
 //                     {/* Job Title */}
 //                     <div className="col-span-4">
-//                       <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+//                       <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors">
 //                         {job?.jobRoles[0]}
 //                       </h3>
 //                       <div className="flex items-center gap-2 mt-1">
@@ -319,7 +319,7 @@
 
 //                     {/* Applications Count */}
 //                     <div className="col-span-2 text-center">
-//                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+//                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
 //                         {job?.applicationCount || 0}
 //                       </span>
 //                     </div>
@@ -329,7 +329,7 @@
 //                       <div className="flex items-center justify-center gap-2">
 //                         <button 
 //                           onClick={() => handleView(job._id)}
-//                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+//                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
 //                           title="View Job"
 //                         >
 //                           <Eye size={16} />
@@ -368,7 +368,7 @@
 //                     onClick={() => handlePageClick(page)}
 //                     className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
 //                       currentPage === page 
-//                         ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+//                         ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
 //                         : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
 //                     }`}
 //                   >
@@ -522,17 +522,17 @@ export default function OffCampusJobManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="mb-4 md:mb-0">
               <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Building2 className="h-5 w-5 text-[#143694]" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   Manage Off-Campus Jobs
                 </h1>
               </div>
@@ -548,7 +548,7 @@ export default function OffCampusJobManagement() {
               </div>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                 placeholder="Search by job role or location"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -587,7 +587,7 @@ export default function OffCampusJobManagement() {
           <div className="divide-y divide-gray-100">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                 <p className="mt-4 text-gray-600">Loading jobs...</p>
               </div>
             ) : currentJobs?.length === 0 ? (
@@ -608,7 +608,7 @@ export default function OffCampusJobManagement() {
                         onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
                         className="group cursor-pointer"
                       >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors">
                           {Array.isArray(job?.jobRoles) 
                             ? job.jobRoles.join(', ') 
                             : job?.jobRoles || 'N/A'
@@ -636,7 +636,7 @@ export default function OffCampusJobManagement() {
 
                     {/* Views */}
                     <div className="col-span-2 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                         {job.views || 0}
                       </span>
                     </div>
@@ -657,7 +657,7 @@ export default function OffCampusJobManagement() {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleViewJob(job)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                           title="View job details"
                         >
                           <Eye size={16} />
@@ -691,7 +691,7 @@ export default function OffCampusJobManagement() {
                 </button>
                 
                 <div className="text-sm text-gray-600">
-                  Page <span className="font-semibold text-[#667eea]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                  Page <span className="font-semibold text-[#143694]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
                 </div>
               </div>
 
@@ -726,7 +726,7 @@ export default function OffCampusJobManagement() {
                       onClick={() => handlePageClick(pageNum)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                         currentPage === pageNum 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                           : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >

@@ -170,7 +170,7 @@ const DriveDetailPage = () => {
                 {drive.timeline.map((item, index) => (
                   <div key={index} className="mb-8 flex">
                     <div className="flex flex-col items-center mr-4">
-                      <div className="rounded-full bg-blue-500 w-3 h-3"></div>
+                      <div className="rounded-full bg-[#1e4ed8] w-3 h-3"></div>
                       {index < drive.timeline.length - 1 && (
                         <div className="h-full w-0.5 bg-blue-200"></div>
                       )}

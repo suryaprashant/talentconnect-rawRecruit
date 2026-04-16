@@ -61,7 +61,7 @@ const EmployerPoolCampus = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1e4ed8]"></div>
             </div>
         );
     }
@@ -72,7 +72,7 @@ const EmployerPoolCampus = () => {
                 <h2 className="text-2xl font-bold mb-4">{error || 'Posting not found'}</h2>
                 <button
                     onClick={() => navigate('/company-dashboard/Pool-campus')}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-[#1e4ed8] text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                     Back to Listings
                 </button>
@@ -103,9 +103,9 @@ const EmployerPoolCampus = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Visit College Website"
-                                className="flex items-center hover:text-blue-500 ml-5"
+                                className="flex items-center hover:text-[#1e4ed8] ml-5"
                             >
-                                <svg className="w-5 h-5 text-gray-600 hover:text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-5 h-5 text-gray-600 hover:text-[#1e4ed8]" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
                                 </svg>
                             </a>
@@ -129,7 +129,7 @@ const EmployerPoolCampus = () => {
                         </div>
                         <div className="flex gap-2">
                             <button
-                                className="border border-blue-500 text-blue-500 px-4 py-2 rounded text-sm"
+                                className="border border-[#1e4ed8] text-[#1e4ed8] px-4 py-2 rounded text-sm"
                                 onClick={() => handleApply(id)}
                             >
                                 Accept Invitation

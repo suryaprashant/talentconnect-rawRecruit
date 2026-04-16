@@ -280,7 +280,7 @@ const PoolCampusEmployeeDash = () => {
                     type="date"
                     value={selectedStartDate}
                     onChange={(e) => setSelectedStartDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={formatDateForInput(new Date())}
                   />
                 </div>
@@ -296,7 +296,7 @@ const PoolCampusEmployeeDash = () => {
                     type="date"
                     value={selectedEndDate}
                     onChange={(e) => setSelectedEndDate(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                     min={selectedStartDate || formatDateForInput(new Date())}
                   />
                 </div>
@@ -369,22 +369,22 @@ const PoolCampusEmployeeDash = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">College Type:</span>
                   <span className="ml-2">{collegeType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-3 text-blue-500" />
+                  <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Established:</span>
                   <span className="ml-2">{establishedYear || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">University:</span>
                   <span className="ml-2">{universityName || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">City:</span>
                   <span className="ml-2">{city || 'N/A'}</span>
                 </div>
@@ -392,22 +392,22 @@ const PoolCampusEmployeeDash = () => {
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">State:</span>
                   <span className="ml-2">{state || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Country:</span>
                   <span className="ml-2">{country || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Pincode:</span>
                   <span className="ml-2">{pincode || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
-                  <Globe className="w-4 h-4 mr-3 text-blue-500" />
+                  <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                   <span className="font-medium">Website:</span>
                   {collegeWebsite ? (
                     <a 
@@ -431,7 +431,7 @@ const PoolCampusEmployeeDash = () => {
               <div className="space-y-3">
                 {collegeDetails.placementCoordinatorDetails?.coordinatorName && (
                   <div className="flex items-center text-gray-700">
-                    <Users className="w-4 h-4 mr-3 text-blue-500" />
+                    <Users className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Name:</span>
                     <span className="ml-2">{collegeDetails.placementCoordinatorDetails.coordinatorName}</span>
                     {collegeDetails.placementCoordinatorDetails.designation && (
@@ -441,7 +441,7 @@ const PoolCampusEmployeeDash = () => {
                 )}
                 {collegeDetails.placementCoordinatorDetails?.officialEmail && (
                   <div className="flex items-center text-gray-700">
-                    <Mail className="w-4 h-4 mr-3 text-blue-500" />
+                    <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Email:</span>
                     <a 
                       href={`mailto:${collegeDetails.placementCoordinatorDetails.officialEmail}`}
@@ -453,7 +453,7 @@ const PoolCampusEmployeeDash = () => {
                 )}
                 {collegeDetails.placementCoordinatorDetails?.officialMobile && (
                   <div className="flex items-center text-gray-700">
-                    <Phone className="w-4 h-4 mr-3 text-blue-500" />
+                    <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Phone:</span>
                     <a 
                       href={`tel:${collegeDetails.placementCoordinatorDetails.officialMobile}`}
@@ -465,7 +465,7 @@ const PoolCampusEmployeeDash = () => {
                 )}
                 {collegeDetails.placementCoordinatorDetails?.linkedInUrl && (
                   <div className="flex items-center text-gray-700">
-                    <Linkedin className="w-4 h-4 mr-3 text-blue-500" />
+                    <Linkedin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">LinkedIn:</span>
                     <a 
                       href={collegeDetails.placementCoordinatorDetails.linkedInUrl.startsWith('http') 
@@ -490,15 +490,15 @@ const PoolCampusEmployeeDash = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
       </div>
     );
   }
 
   if (error || !posting) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         <div className="container mx-auto px-4 py-8 pt-22">
           <button 
             onClick={handleBack}
@@ -527,7 +527,7 @@ const PoolCampusEmployeeDash = () => {
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Main Container */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
@@ -545,14 +545,14 @@ const PoolCampusEmployeeDash = () => {
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
               <div className="flex items-start gap-4">
                 {/* <div 
-                  className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                  className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setShowCollegeModal(true)}
                 >
-                  <Building2 className="h-6 w-6 text-[#667eea]" />
+                  <Building2 className="h-6 w-6 text-[#143694]" />
                 </div> */}
                 <div>
                   <h2 
-                    className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors"
+                    className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors"
                     onClick={() => setShowCollegeModal(true)}
                   >
                     {collegeName}
@@ -573,7 +573,7 @@ const PoolCampusEmployeeDash = () => {
                       href={collegeDetails?.profileAchievements?.collegeWebsite || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 transition-all duration-200"
+                      className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 transition-all duration-200"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Globe className="h-3 w-3 mr-1.5" />
@@ -585,7 +585,7 @@ const PoolCampusEmployeeDash = () => {
 
               <div className="flex flex-col items-center gap-4">
                 <div 
-                  className="w-24 h-24 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  className="w-24 h-24 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setShowCollegeModal(true)}
                 >
                   {collegeDetails?.profileImage ? (
@@ -595,7 +595,7 @@ const PoolCampusEmployeeDash = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Building2 className="h-12 w-12 text-[#667eea]" />
+                    <Building2 className="h-12 w-12 text-[#143694]" />
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -609,7 +609,7 @@ const PoolCampusEmployeeDash = () => {
                   {!isSaved && !isApplied && (
                     <button
                       onClick={() => handleSave(id)}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 transition-all duration-200"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 transition-all duration-200"
                     >
                       <Save size={16} />
                       Save
@@ -668,7 +668,7 @@ const PoolCampusEmployeeDash = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Minimum Package</p>
-                  <p className="text-2xl font-bold text-[#667eea]">
+                  <p className="text-2xl font-bold text-[#143694]">
                     {posting.packageDetails?.totalCTC ? `${posting.packageDetails.currency} ${posting.packageDetails.totalCTC.toLocaleString()}` : 'N/A'}
                   </p>
                 </div>
@@ -696,12 +696,12 @@ const PoolCampusEmployeeDash = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Employment Type</p>
-                  <p className="text-2xl font-bold text-purple-600">
+                  <p className="text-2xl font-bold text-[#143694]">
                     {posting.employmentType?.join(', ') || 'N/A'}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                  <Star className="h-5 w-5 text-purple-600" />
+                  <Star className="h-5 w-5 text-[#143694]" />
                 </div>
               </div>
             </div>
@@ -742,7 +742,7 @@ const PoolCampusEmployeeDash = () => {
 
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
-                    <Phone className="h-4 w-4 text-purple-600" />
+                    <Phone className="h-4 w-4 text-[#143694]" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Phone</p>
@@ -804,7 +804,7 @@ const PoolCampusEmployeeDash = () => {
                 posting.companyType.map((type, index) => (
                   <span 
                     key={index} 
-                    className="px-3 py-1.5 text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
+                    className="px-3 py-1.5 text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 hover:border-[#143694]/30 transition-all duration-200"
                   >
                     {type}
                   </span>
@@ -892,7 +892,7 @@ const PoolCampusEmployeeDash = () => {
                 posting.amenitiesRequired.map((amenity, index) => (
                   <span 
                     key={index} 
-                    className="px-3 py-1.5 text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
+                    className="px-3 py-1.5 text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#143694]/10 hover:to-[#1e4ed8]/10 hover:border-[#143694]/30 transition-all duration-200"
                   >
                     {amenity}
                   </span>
@@ -905,7 +905,7 @@ const PoolCampusEmployeeDash = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200">
             <div className="flex flex-wrap gap-3">
               <button 
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#143694] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleMessageOfficer}
                 disabled={isSubmitting || !posting?.collegePosted?.userId}
               >
@@ -914,7 +914,7 @@ const PoolCampusEmployeeDash = () => {
               </button>
               <button 
                 onClick={handleAlternateDateClick}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-[#143694] rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
                 <Calendar size={16} />
                 Suggest Alternate Date

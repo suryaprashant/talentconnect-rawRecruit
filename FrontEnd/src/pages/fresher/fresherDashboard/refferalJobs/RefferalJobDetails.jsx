@@ -63,7 +63,7 @@ const RefferalJobDetails = () => {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1e4ed8]"></div>
             </div>
         );
     }
@@ -108,7 +108,7 @@ const RefferalJobDetails = () => {
                 </button>
                 <button
                     onClick={handleApply}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+                    className="bg-[#1e4ed8] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
                 >
                     Apply
                 </button>
@@ -152,7 +152,7 @@ const RefferalJobDetails = () => {
                             <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
                                 {/* Handlers from original file */}
                                 <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
-                                <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
+                                <button onClick={handleApply} className="bg-[#1e4ed8] hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
                             </div>
                         </header>
 

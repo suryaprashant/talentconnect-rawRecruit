@@ -11,7 +11,7 @@ import { SocketProvider } from "./context/SocketContext.jsx";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import ReactGA from "react-ga4";
-
+import { HelmetProvider } from "react-helmet-async";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
@@ -24,16 +24,18 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthContextRole>
-      <BrowserRouter> {/* Keep BrowserRouter here */}
-        <RoleProvider>
-          <AuthProvider>
-            <SocketProvider>
-              <App />
-              <Toaster />
-            </SocketProvider>
-          </AuthProvider>
-        </RoleProvider>
-      </BrowserRouter>
+        <HelmetProvider>
+          <BrowserRouter> {/* Keep BrowserRouter here */}
+            <RoleProvider>
+              <AuthProvider>
+                <SocketProvider>
+                  <App />
+                  <Toaster />
+                </SocketProvider>
+              </AuthProvider>
+            </RoleProvider>
+          </BrowserRouter>
+        </HelmetProvider>
       </AuthContextRole>
     </GoogleOAuthProvider>
   </>

@@ -167,7 +167,7 @@ const ServiceRequestManagement = () => {
         return "bg-yellow-100 text-yellow-700";
       case "approved":
       case "in progress":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-[#143694]";
       case "completed":
         return "bg-green-100 text-green-700";
       case "rejected":
@@ -212,7 +212,7 @@ const ServiceRequestManagement = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
-            { count: statistics?.total || 0, label: "Total", color: "text-blue-700" },
+            { count: statistics?.total || 0, label: "Total", color: "text-[#143694]" },
             { count: statistics?.pending || 0, label: "Pending", color: "text-yellow-700" },
             { count: statistics?.inProgress || 0, label: "In Progress", color: "text-slate-700" },
             { count: statistics?.completed || 0, label: "Completed", color: "text-green-700" },
@@ -334,7 +334,7 @@ const ServiceRequestManagement = () => {
                           {/* View button always available */}
                           <button
                             onClick={() => handleOpenViewModal(req)}
-                            className="inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 h-8 px-3"
+                            className="inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-[#143694] h-8 px-3"
                             title="View"
                           >
                             <Eye className="w-4 h-4" />
@@ -464,7 +464,7 @@ const ServiceRequestManagement = () => {
                     }
                     rows={4}
                     maxLength={500}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] resize-none"
                     placeholder="Enter your message to the requester..."
                     required
                   />
@@ -490,7 +490,7 @@ const ServiceRequestManagement = () => {
                     onChange={(e) =>
                       setApprovalData({ ...approvalData, meetingLink: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
                     placeholder="https://meet.google.com/xyz-abc-def or any relevant link"
                   />
                   <p className="text-xs text-slate-500 mt-1">

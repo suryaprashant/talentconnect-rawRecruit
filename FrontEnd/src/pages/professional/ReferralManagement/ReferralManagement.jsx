@@ -70,7 +70,7 @@ const handleViewApplicants = (job, viewType) => {
   );
   console.log(filteredJobs)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
         
         {/* Header Section */}
@@ -78,10 +78,10 @@ const handleViewApplicants = (job, viewType) => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="mb-4 md:mb-0">
               <div className="flex items-center mb-2">
-                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-5 w-5 text-[#667eea]" />
+                <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Briefcase className="h-5 w-5 text-[#143694]" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                   My Referral Postings
                 </h1>
               </div>
@@ -95,7 +95,7 @@ const handleViewApplicants = (job, viewType) => {
               </div>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:outline-none transition-all"
                 placeholder="Search your roles or locations..."
                 value={searchQuery}
                 onChange={(e) => {
@@ -130,7 +130,7 @@ const handleViewApplicants = (job, viewType) => {
           <div className="divide-y divide-gray-100 min-h-[400px]">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#667eea]"></div>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#143694]"></div>
                 <p className="mt-2 text-gray-500">Loading your postings...</p>
               </div>
             ) : currentJobs.length === 0 ? (

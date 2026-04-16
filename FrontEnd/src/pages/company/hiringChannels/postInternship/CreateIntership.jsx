@@ -451,20 +451,20 @@ degree: formData.degree.map(d => d.label),
       minHeight: '42px',
       borderRadius: '8px',
       fontSize: '14px',
-      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      borderColor: state.isFocused ? '#143694' : '#e5e7eb',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
       backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-      '&:hover': { borderColor: '#667eea' },
+      '&:hover': { borderColor: '#143694' },
     }),
     menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
     multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
     multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
-    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    multiValueRemove: (base) => ({ ...base, color: '#143694', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
     placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 pt-8 mb-6 max-w-4xl">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
             <div className="flex items-center gap-3 mb-2">
@@ -504,25 +504,31 @@ degree: formData.degree.map(d => d.label),
         </div>
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header Section - Compact */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Briefcase className="h-5 w-5 text-[#667eea]" />
+        
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6 text-center">
+
+            <div className="flex items-center justify-center mb-3">
+              
+              <div className="p-2 bg-[#143694]/10 rounded-lg mr-3">
+                <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+
+              <h1 className="text-2xl md:text-3xl font-semibold text-[#143694] tracking-tight">
                 Create Internship Opportunity
               </h1>
+
             </div>
-            <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+
+            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
               Post a new internship opportunity and connect with talented students. Fill in the details below to create your internship listing.
             </p>
+
           </div>
-        </div>
+        
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Internship Details</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Internship Details</h2>
             <p className="text-gray-500 text-sm mt-1">Fill in the details to create your internship postings</p>
           </div>
 
@@ -532,8 +538,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 1: Internship Position Details */}
               <div className="pt-2">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Briefcase className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Briefcase className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Internship Position Details</h3>
                 </div>
@@ -578,7 +584,7 @@ degree: formData.degree.map(d => d.label),
                         <button
                           key={mode}
                           type="button"
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                           onClick={() => handleOptionSelect('workMode', mode)}
                         >
                           {mode}
@@ -592,8 +598,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 2: Location & Broadcasting */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Target className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Target className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Location & Broadcasting</h3>
                 </div>
@@ -658,7 +664,7 @@ degree: formData.degree.map(d => d.label),
                           value="Everyone"
                           checked={formData.broadcastType === 'Everyone'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast to Everyone</span>
                       </label>
@@ -669,7 +675,7 @@ degree: formData.degree.map(d => d.label),
                           value="Location"
                           checked={formData.broadcastType === 'Location'}
                           onChange={handleInputChange}
-                          className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                          className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]/50"
                         />
                         <span className="ml-2 text-sm text-gray-700">Broadcast by Location</span>
                       </label>
@@ -684,8 +690,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 3: Compensation & Duration */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <IndianRupee className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Compensation & Duration</h3>
                 </div>
@@ -703,7 +709,7 @@ degree: formData.degree.map(d => d.label),
                             name="currency"
                             value={formData.minPackage.currency}
                             onChange={handleSalaryChange}
-                            className="w-full h-full p-3 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                            className="w-full h-full p-3 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
                           >
                             <option value="INR">₹ INR</option>
                             <option value="USD">$ USD</option>
@@ -715,7 +721,7 @@ degree: formData.degree.map(d => d.label),
                           type="number"
                           name="amount"
                           placeholder="Enter amount"
-                          className="flex-1 p-3 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="flex-1 p-3 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           value={formData.minPackage.amount}
                           onChange={handleSalaryChange}
                           min="0"
@@ -733,7 +739,7 @@ degree: formData.degree.map(d => d.label),
                         id="numberOfOpenings"
                         name="numberOfOpenings"
                         placeholder="e.g., 5"
-                        className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         value={formData.numberOfOpenings}
                         onChange={handleInputChange}
                         min="1"
@@ -751,7 +757,7 @@ degree: formData.degree.map(d => d.label),
                         <select
                           id="internshipDuration"
                           name="internshipDuration"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.internshipDuration}
                           onChange={handleInputChange}
                         >
@@ -773,7 +779,7 @@ degree: formData.degree.map(d => d.label),
                         <select
                           id="minEducation"
                           name="minEducation"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.minEducation}
                           onChange={handleInputChange}
                         >
@@ -792,8 +798,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 4: Job Description & Requirements */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <MessageSquare className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <MessageSquare className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Job Description & Requirements</h3>
                 </div>
@@ -808,7 +814,7 @@ degree: formData.degree.map(d => d.label),
                       id="description"
                       name="description"
                       placeholder="Describe the job responsibilities, day-to-day tasks, and requirements..."
-                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
                       value={formData.description}
                       onChange={handleInputChange}
                       maxLength={500}
@@ -830,7 +836,7 @@ degree: formData.degree.map(d => d.label),
                       id="eligibilityCriteria"
                       name="eligibilityCriteria"
                       placeholder="e.g., Must be currently enrolled in a degree program, Minimum GPA of 3.0..."
-                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
+                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
                       value={formData.eligibilityCriteria}
                       onChange={handleInputChange}
                     />
@@ -841,8 +847,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 5: Timeline & Scheduling */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Clock className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Clock className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Timeline & Scheduling</h3>
                 </div>
@@ -864,7 +870,7 @@ degree: formData.degree.map(d => d.label),
                           onChange={(date) => handleDateChange(date, 'startDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Start date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar
@@ -885,7 +891,7 @@ degree: formData.degree.map(d => d.label),
                           onChange={(date) => handleDateChange(date, 'onlineTestDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Test date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar
@@ -901,8 +907,8 @@ degree: formData.degree.map(d => d.label),
               {/* SECTION 6: Student Eligibility & Skills */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <GraduationCap className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Student Eligibility & Skills</h3>
                 </div>
@@ -971,7 +977,7 @@ Preferred Streams
                    {/* --- INTEGRATED SKILLS SECTION --- */}
 <div ref={skillsRef} className="relative pt-2">
   <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
-    <Award className="w-4 h-4 text-[#667eea]" />
+    <Award className="w-4 h-4 text-[#143694]" />
     Required Skills <span className="text-red-500">*</span>
   </label>
 
@@ -979,13 +985,13 @@ Preferred Streams
     group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
     bg-gradient-to-r from-gray-50 to-white 
     border rounded-xl transition-all duration-300
-    ${isDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+    ${isDropdownOpen ? 'border-[#143694] ring-2 ring-[#143694]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
   `}>
     {/* Selected Tags */}
     {formData.skills.map((skill) => (
       <div 
         key={skill} 
-        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
       >
         {skill}
         <button 
@@ -1023,11 +1029,11 @@ Preferred Streams
             <button
               key={index}
               type="button"
-              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
               onClick={() => handleSelectOrAdd(skill)}
             >
               <span>{skill}</span>
-              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
             </button>
           ))}
 
@@ -1035,12 +1041,12 @@ Preferred Streams
         {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
           <button
             type="button"
-            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
             onClick={() => handleSelectOrAdd(customSkillSearch)}
           >
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                <Target size={16} className="text-[#764ba2]" />
+                <Target size={16} className="text-[#1e4ed8]" />
               </div>
               <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
             </div>
@@ -1097,7 +1103,7 @@ Preferred Streams
                                     handleCustomAdd('benefits', customBenefit, setCustomBenefit);
                                   }
                                 }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                               />
                               <button
                                 type="button"
@@ -1105,7 +1111,7 @@ Preferred Streams
                                   e.stopPropagation();
                                   handleCustomAdd('benefits', customBenefit, setCustomBenefit);
                                 }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                                className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
                                 Add
                               </button>
@@ -1121,10 +1127,10 @@ Preferred Streams
                                   formData.benefits.includes(benefit) ? "bg-blue-50/50" : ""
                                 }`}
                               >
-                                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                   {benefit}
                                 </span>
-                                {formData.benefits.includes(benefit) && <span className="text-[#667eea] font-bold">✓</span>}
+                                {formData.benefits.includes(benefit) && <span className="text-[#143694] font-bold">✓</span>}
                               </div>
                             ))}
                           </div>
@@ -1138,8 +1144,8 @@ Preferred Streams
               {/* SECTION 7: Additional Information & Tags */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center mb-4">
-                  <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                    <Award className="h-4 w-4 text-[#667eea]" />
+                  <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                    <Award className="h-4 w-4 text-[#143694]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">Additional Information & Tags</h3>
                 </div>
@@ -1155,7 +1161,7 @@ Preferred Streams
                         <select
                           id="certifications"
                           name="certifications"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.certifications[0] || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value ? [e.target.value] : [] }))}
                         >
@@ -1177,7 +1183,7 @@ Preferred Streams
                         <select
                           id="workAuthorization"
                           name="workAuthorization"
-                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                          className="w-full p-3 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
                           value={formData.workAuthorization}
                           onChange={handleInputChange}
                         >
@@ -1221,10 +1227,10 @@ Preferred Streams
                             className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>
+                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>
                                 {tag}
                               </span>
-                              {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                              {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
                             </div>
                           </div>
                         ))}
@@ -1247,7 +1253,7 @@ Preferred Streams
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
+                  className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Posting...' : 'Post Internship'}
                 </button>

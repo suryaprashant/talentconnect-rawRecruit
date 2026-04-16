@@ -263,7 +263,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
 
                 {/* Dropdown Trigger */}
                 <div
-                    className="flex items-center justify-between p-4 w-full border border-gray-300 rounded-xl cursor-pointer hover:border-[#667eea] transition-all duration-200"
+                    className="flex items-center justify-between p-4 w-full border border-gray-300 rounded-xl cursor-pointer hover:border-[#143694] transition-all duration-200"
                     onClick={(e) => { e.stopPropagation(); toggleDropdown(field); }}
                 >
                     <div className="flex items-center">
@@ -292,16 +292,16 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                 <li
                                     key={option}
                                     onClick={(e) => { e.stopPropagation(); handleMultiSelect(field, option); }}
-                                    className={`px-4 py-3 hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
+                                    className={`px-4 py-3 hover:bg-gradient-to-r from-[#143694]/5 to-[#1e4ed8]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
                                         (formData[field] || []).includes(option)
-                                            ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#5b21b6]"
+                                            ? "bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#5b21b6]"
                                             : ""
                                     }`}
                                 >
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-700">{option}</span>
                                         {(formData[field] || []).includes(option) && (
-                                            <svg className="w-5 h-5 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5 text-[#143694]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                         )}
@@ -316,12 +316,12 @@ export const FresherStepFour = ({ onNext, onBack }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
             {/* Pastel blur background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
@@ -329,10 +329,10 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                     
                     {/* Header with gradient */}
                     <div className="text-center mb-8">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
-                            <Target className="w-10 h-10 text-[#667eea]" />
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mx-auto mb-4">
+                            <Target className="w-10 h-10 text-[#143694]" />
                         </div>
-                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                             Career Goals & Experience
                         </h1>
                         <p className="text-gray-600 mb-4">
@@ -514,7 +514,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                         multiValueRemove: (base) => ({
                                             ...base,
                                             borderRadius: '0 9999px 9999px 0',
-                                            color: '#8b5cf6',
+                                            color: '#1e40af',
                                             ':hover': {
                                                 backgroundColor: 'rgba(102, 126, 234, 0.2)',
                                                 color: '#5b21b6',
@@ -543,7 +543,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                 placeholder={formData.expectedSalaryCurrency === "INR" ? "e.g., 50000" : 
                             formData.expectedSalaryCurrency === "USD" ? "e.g., 50000" :
                             "e.g., 50000"}
-                className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
             />
         </div>
         <div className="relative w-32">
@@ -552,7 +552,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                 name="expectedSalaryCurrency"
                 value={formData.expectedSalaryCurrency || "INR"}
                 onChange={handleChange}
-                className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
             >
                 <option value="INR">INR</option>
                 <option value="USD">USD</option>
@@ -573,8 +573,8 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                         type="button"
                                         className={`p-3 border rounded-xl transition-all duration-200 font-medium ${
                                             isLookingForActive(option)
-                                                ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                                                : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                                                ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-lg shadow-purple-500/30"
+                                                : "text-gray-700 border-gray-300 hover:border-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5"
                                         }`}
                                         onClick={() => handleLookingForChange(option)}
                                     >
@@ -594,8 +594,8 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                         type="button"
                                         className={`p-3 border rounded-xl transition-all duration-200 font-medium capitalize ${
                                             currentEmploymentType.includes(option)
-                                                ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                                                : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                                                ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent shadow-lg shadow-purple-500/30"
+                                                : "text-gray-700 border-gray-300 hover:border-[#143694] hover:bg-gradient-to-r hover:from-[#143694]/5 hover:to-[#1e4ed8]/5"
                                         }`}
                                         onClick={() => handleMultiSelect("employmentType", option)}
                                     >
@@ -628,7 +628,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                                     name="company"
                                                     value={exp.company}
                                                     onChange={(e) => handleExperienceChange(index, e)}
-                                                    className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                                                    className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
                                                 >
                                                     <option value="" disabled>Select Company</option>
                                                     {companyOptions.map(company => (
@@ -699,9 +699,9 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                                 boxShadow: state.isFocused
                                                   ? "0 0 0 3px rgba(102,126,234,0.1)"
                                                   : "none",
-                                                borderColor: state.isFocused ? "#667eea" : "#d1d5db",
+                                                borderColor: state.isFocused ? "#143694" : "#d1d5db",
                                                 "&:hover": {
-                                                  borderColor: "#667eea"
+                                                  borderColor: "#143694"
                                                 }
                                               }),
                                               valueContainer: (base) => ({
@@ -729,7 +729,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                                 ...base,
                                                 color: "#9ca3af",
                                                 "&:hover": {
-                                                  color: "#667eea"
+                                                  color: "#143694"
                                                 }
                                               }),
                                               menu: (base) => ({
@@ -769,7 +769,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                                     startDate={exp.startDate ? new Date(exp.startDate) : null}
                                                     endDate={exp.endDate ? new Date(exp.endDate) : null}
                                                     placeholderText="Select start date"
-                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
                                                 />
                                             </div>
                                         </div>
@@ -785,7 +785,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                                     endDate={exp.endDate ? new Date(exp.endDate) : null}
                                                     minDate={exp.startDate ? new Date(exp.startDate) : null}
                                                     placeholderText="Select end date"
-                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
                                                 />
                                             </div>
                                         </div>
@@ -798,7 +798,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                             name="description"
                                             value={exp.description}
                                             onChange={(e) => handleExperienceChange(index, e)}
-                                            className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400 min-h-[100px]"
+                                            className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#143694] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400 min-h-[100px]"
                                             placeholder="Describe your role, responsibilities, and achievements..."
                                         />
                                     </div>
@@ -810,7 +810,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                 <button
                                     type="button"
                                     onClick={handleAddExperience}
-                                    className="flex items-center px-4 py-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/30 rounded-xl text-[#5b21b6] hover:bg-gradient-to-r hover:from-[#667eea]/20 hover:to-[#764ba2]/20 hover:shadow-md transition-all duration-200 font-medium"
+                                    className="flex items-center px-4 py-2 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/30 rounded-xl text-[#5b21b6] hover:bg-gradient-to-r hover:from-[#143694]/20 hover:to-[#1e4ed8]/20 hover:shadow-md transition-all duration-200 font-medium"
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
                                     Add experience
@@ -831,7 +831,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                         <button
                             type="button"
                             onClick={handleClick}
-                            className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
+                            className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
                         >
                             Next
                         </button>

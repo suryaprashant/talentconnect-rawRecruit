@@ -15,7 +15,7 @@
 //           200: '#ddd6fe',
 //           300: '#c4b5fd',
 //           400: '#a78bfa',
-//           500: '#8b5cf6',
+//           500: '#1e40af',
 //           600: '#7c3aed',
 //           700: '#6d28d9',
 //           800: '#5b21b6',
@@ -136,84 +136,152 @@ export default {
 		  md: 'calc(var(--radius) - 2px)',
 		  sm: 'calc(var(--radius) - 4px)'
 		},
+		// colors: {
+		// 	primaryBrand: "#143694",
+		//   border: "hsl(var(--border))", // Merged with your earlier "#E5E7EB"
+		//   background: 'hsl(var(--background))',
+		//   foreground: 'hsl(var(--foreground))',
+		//   card: {
+		// 	DEFAULT: 'hsl(var(--card))',
+		// 	foreground: 'hsl(var(--card-foreground))'
+		//   },
+		//   popover: {
+		// 	DEFAULT: 'hsl(var(--popover))',
+		// 	foreground: 'hsl(var(--popover-foreground))'
+		//   },
+		//   primary: {
+		// 	DEFAULT: 'hsl(var(--primary))',
+		// 	foreground: 'hsl(var(--primary-foreground))',
+		// 	// Added your primary color palette
+		// 	50: '#f5f3ff',
+		// 	100: '#ede9fe',
+		// 	200: '#ddd6fe',
+		// 	300: '#c4b5fd',
+		// 	400: '#a78bfa',
+		// 	500: '#1e40af',
+		// 	600: '#7c3aed',
+		// 	700: '#6d28d9',
+		// 	800: '#5b21b6',
+		// 	900: '#4c1d95',
+		// 	950: '#2e1065',
+		//   },
+		//   secondary: {
+		// 	DEFAULT: 'hsl(var(--secondary))',
+		// 	foreground: 'hsl(var(--secondary-foreground))',
+		// 	// Added your secondary color palette
+		// 	50: '#f0fdfa',
+		// 	100: '#ccfbf1',
+		// 	200: '#99f6e4',
+		// 	300: '#5eead4',
+		// 	400: '#2dd4bf',
+		// 	500: '#14b8a6',
+		// 	600: '#0d9488',
+		// 	700: '#0f766e',
+		// 	800: '#115e59',
+		// 	900: '#134e4a',
+		// 	950: '#042f2e',
+		//   },
+		//   accent: {
+		// 	DEFAULT: 'hsl(var(--accent))',
+		// 	foreground: 'hsl(var(--accent-foreground))',
+		// 	// Added your accent color palette
+		// 	50: '#fff7ed',
+		// 	100: '#ffedd5',
+		// 	200: '#fed7aa',
+		// 	300: '#fdba74',
+		// 	400: '#fb923c',
+		// 	500: '#f97316',
+		// 	600: '#ea580c',
+		// 	700: '#c2410c',
+		// 	800: '#9a3412',
+		// 	900: '#7c2d12',
+		// 	950: '#431407',
+		//   },
+		//   muted: {
+		// 	DEFAULT: 'hsl(var(--muted))',
+		// 	foreground: 'hsl(var(--muted-foreground))'
+		//   },
+		//   destructive: {
+		// 	DEFAULT: 'hsl(var(--destructive))',
+		// 	foreground: 'hsl(var(--destructive-foreground))'
+		//   },
+		//   input: 'hsl(var(--input))',
+		//   ring: 'hsl(var(--ring))',
+		//   chart: {
+		// 	'1': 'hsl(var(--chart-1))',
+		// 	'2': 'hsl(var(--chart-2))',
+		// 	'3': 'hsl(var(--chart-3))',
+		// 	'4': 'hsl(var(--chart-4))',
+		// 	'5': 'hsl(var(--chart-5))'
+		//   }
+		// },
 		colors: {
-			primaryBrand: "#143694",
-		  border: "hsl(var(--border))", // Merged with your earlier "#E5E7EB"
-		  background: 'hsl(var(--background))',
-		  foreground: 'hsl(var(--foreground))',
-		  card: {
+		primaryBrand: "#143694",
+
+		border: "hsl(var(--border))",
+		background: 'hsl(var(--background))',
+		foreground: 'hsl(var(--foreground))',
+
+		card: {
 			DEFAULT: 'hsl(var(--card))',
 			foreground: 'hsl(var(--card-foreground))'
-		  },
-		  popover: {
+		},
+
+		popover: {
 			DEFAULT: 'hsl(var(--popover))',
 			foreground: 'hsl(var(--popover-foreground))'
-		  },
-		  primary: {
-			DEFAULT: 'hsl(var(--primary))',
-			foreground: 'hsl(var(--primary-foreground))',
-			// Added your primary color palette
-			50: '#f5f3ff',
-			100: '#ede9fe',
-			200: '#ddd6fe',
-			300: '#c4b5fd',
-			400: '#a78bfa',
-			500: '#8b5cf6',
-			600: '#7c3aed',
-			700: '#6d28d9',
-			800: '#5b21b6',
-			900: '#4c1d95',
-			950: '#2e1065',
-		  },
-		  secondary: {
-			DEFAULT: 'hsl(var(--secondary))',
-			foreground: 'hsl(var(--secondary-foreground))',
-			// Added your secondary color palette
-			50: '#f0fdfa',
-			100: '#ccfbf1',
-			200: '#99f6e4',
-			300: '#5eead4',
-			400: '#2dd4bf',
-			500: '#14b8a6',
-			600: '#0d9488',
-			700: '#0f766e',
-			800: '#115e59',
-			900: '#134e4a',
-			950: '#042f2e',
-		  },
-		  accent: {
-			DEFAULT: 'hsl(var(--accent))',
-			foreground: 'hsl(var(--accent-foreground))',
-			// Added your accent color palette
-			50: '#fff7ed',
-			100: '#ffedd5',
-			200: '#fed7aa',
-			300: '#fdba74',
-			400: '#fb923c',
-			500: '#f97316',
-			600: '#ea580c',
-			700: '#c2410c',
-			800: '#9a3412',
-			900: '#7c2d12',
-			950: '#431407',
-		  },
-		  muted: {
-			DEFAULT: 'hsl(var(--muted))',
-			foreground: 'hsl(var(--muted-foreground))'
-		  },
-		  destructive: {
-			DEFAULT: 'hsl(var(--destructive))',
-			foreground: 'hsl(var(--destructive-foreground))'
-		  },
-		  input: 'hsl(var(--input))',
-		  ring: 'hsl(var(--ring))',
-		  chart: {
-			'1': 'hsl(var(--chart-1))',
-			'2': 'hsl(var(--chart-2))',
-			'3': 'hsl(var(--chart-3))',
-			'4': 'hsl(var(--chart-4))',
-			'5': 'hsl(var(--chart-5))'
-		  }
+		},
+
+		// PRIMARY (Your brand system)
+		primary: {
+			DEFAULT: "#143694",
+			foreground: "#ffffff",
+
+			50: '#eef2ff',
+			100: '#e0e7ff',
+			200: '#c7d2fe',
+			300: '#a5b4fc',
+			400: '#818cf8',
+			500: '#6366f1',
+			600: '#4f46e5',
+			700: '#3730a3',
+			800: '#1e2a78',
+			900: '#143694',   // your brand
+			950: '#0b1c4d'
+		},
+
+		//  SECONDARY (lighter brand variant)
+		secondary: {
+			DEFAULT: "#1e4ed8",
+			foreground: "#ffffff"
+		},
+
+		//  ACCENT (soft highlight from same hue)
+		accent: {
+			DEFAULT: "#1e4ed8",
+			foreground: "#ffffff"
+		},
+
+		muted: {
+			DEFAULT: '#f1f5f9',
+			foreground: '#64748b'
+		},
+
+		destructive: {
+			DEFAULT: '#dc2626',
+			foreground: '#ffffff'
+		},
+
+		input: 'hsl(var(--input))',
+		ring: '#143694',
+
+		chart: {
+			'1': '#143694',
+			'2': '#1e4ed8',
+			'3': '#1e4ed8',
+			'4': '#60a5fa',
+			'5': '#143694'
+		}
 		},
 		animation: {
 		  'spin-slow': 'spin 3s linear infinite',

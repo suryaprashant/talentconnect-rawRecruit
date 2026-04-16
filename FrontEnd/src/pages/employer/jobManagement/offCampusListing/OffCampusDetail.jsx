@@ -115,7 +115,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
     
     return (
       <div className={`flex items-start ${className}`}>
-        {Icon && <Icon className="w-5 h-5 mr-3 mt-0.5 text-blue-500 flex-shrink-0" />}
+        {Icon && <Icon className="w-5 h-5 mr-3 mt-0.5 text-[#1e4ed8] flex-shrink-0" />}
         <div className="flex-1">
           <p className="font-semibold text-gray-700 text-sm mb-1">{label}</p>
           <p className="text-gray-900">{displayValue || 'Not specified'}</p>
@@ -168,7 +168,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
                       ? 'bg-red-500 text-white'
                       : applicationData.currentStatus === 'Shortlisted'
                       ? 'bg-yellow-500 text-white'
-                      : 'bg-blue-500 text-white'
+                      : 'bg-[#1e4ed8] text-white'
                   }`}>
                     {applicationData.currentStatus || 'Applied'}
                   </span>
@@ -226,7 +226,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
               </h3>
               <div className="space-y-3 bg-gray-50 rounded-lg p-4">
                 <div className="flex items-start">
-                  <Calendar className="w-5 h-5 mr-3 mt-0.5 text-blue-500 flex-shrink-0" />
+                  <Calendar className="w-5 h-5 mr-3 mt-0.5 text-[#1e4ed8] flex-shrink-0" />
                   <div className="flex-1">
                     <p className="font-semibold text-gray-700 text-sm mb-1">Applied On</p>
                     <p className="text-gray-900">{safeFormatDate(applicationData?.createdAt)}</p>
@@ -242,7 +242,7 @@ const ApplicantDetailsModal = ({ isOpen, onClose, applicant, application }) => {
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium text-sm"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-[#143694] hover:to-indigo-700 transition-colors font-medium text-sm"
             >
               Close
             </button>
@@ -275,7 +275,7 @@ const ResumeViewerModal = ({ isOpen, onClose, resumeUrl, applicantName, onDownlo
             {onDownload && (
               <button
                 onClick={onDownload}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-[#143694] hover:to-indigo-700 transition-all"
                 title="Download Resume"
               >
                 <Download className="h-4 w-4" />
@@ -325,7 +325,7 @@ const ResumeViewerModal = ({ isOpen, onClose, resumeUrl, applicantName, onDownlo
                 <p className="text-gray-500 mb-4">Opening resume in new window...</p>
                 <button
                   onClick={() => window.open(resumeUrl, '_blank')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-[#143694] hover:to-indigo-700"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Open Resume
@@ -937,7 +937,7 @@ const OffCampusDetails = ({ job, onClose }) => {
                             href={applicantData.linkedIn} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 border border-blue-200 text-[#143694] rounded-lg hover:bg-blue-200 transition-colors duration-200"
                           >
                             <Globe size={14} />
                             <span className="text-sm">LinkedIn</span>
@@ -979,7 +979,7 @@ const OffCampusDetails = ({ job, onClose }) => {
                         className={`flex items-center justify-center flex-1 py-2.5 font-medium rounded-lg transition-all duration-200 ${
                           !applicantData.resume && !applicantData.resumeUrl && !applicantData.cv
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-sm hover:shadow'
+                            : 'bg-gradient-to-r from-[#143694] to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-sm hover:shadow'
                         }`}
                         title={!applicantData.resume && !applicantData.resumeUrl && !applicantData.cv ? 'No resume available' : 'View Resume'}
                       >

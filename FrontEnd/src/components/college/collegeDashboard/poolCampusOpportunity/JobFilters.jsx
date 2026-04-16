@@ -259,7 +259,7 @@ const JobFilters = ({ filters, onChange }) => {
       
       {/* Apply Filters Button */}
       <div>
-        <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
+        <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-[#143694] transition duration-200">
           Apply Filters
         </button>
       </div>

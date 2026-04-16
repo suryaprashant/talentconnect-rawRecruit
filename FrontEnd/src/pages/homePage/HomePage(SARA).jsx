@@ -21,7 +21,7 @@ import { AboutModal } from '@/components/onboarding/AboutModal';
 import { DemoModal } from '@/components/onboarding/DemoModal';
 import { SolutionsModal } from '@/components/onboarding/SolutionModal';
 import { FeaturesModal } from '@/components/onboarding/FeatureModal';
-import heroImage from "../../assets/RR-Tagline.png";
+import heroImage from "../../assets/rawrecruit_transparent.png";
 import bgImage from "../../assets/bgImage.png";
 import h1 from "../../assets/ss-company-home--Q8hVb9h.png";
 import h2 from "../../assets/ss-student-ClIhnGfc.png";
@@ -268,7 +268,7 @@ const App = () => {
       title: 'On-Campus Recruitment',
       description: '', // Empty description
       icon: <GraduationCap className="w-8 h-8" />,
-      gradient: 'from-[#8B5CF6] via-[#7C3AED] to-[#6D28D9]',
+      gradient: 'from-[#1e40af] via-[#7C3AED] to-[#6D28D9]',
       accentColor: 'bg-[#7C3AED]',
       features: [
         'Targeted hiring within a single college',
@@ -294,8 +294,8 @@ const App = () => {
       title: 'Off-Campus Recruitment',
       description: '', // Empty description
       icon: <Globe className="w-8 h-8" />,
-      gradient: 'from-[#60A5FA] via-[#3B82F6] to-[#1D4ED8]',
-      accentColor: 'bg-[#3B82F6]',
+      gradient: 'from-[#60A5FA] via-[#1e4ed8] to-[#1D4ED8]',
+      accentColor: 'bg-[#1e4ed8]',
       features: [
         'Open hiring beyond campus boundaries',
         'Posted only by companies',
@@ -832,7 +832,7 @@ const ArrowRightIcon = () => (
           icon: <GraduationCap className="w-10 h-10" />, 
           title: 'On-Campus', 
           desc: 'Direct campus recruitment', 
-          color: '#8B5CF6'
+          color: '#1e40af'
         },
         { 
           icon: <Users className="w-10 h-10" />, 
@@ -862,7 +862,7 @@ const ArrowRightIcon = () => (
           icon: <Award className="w-10 h-10" />, 
           title: 'Branding', 
           desc: 'Employer brand building', 
-          color: '#8B5CF6'
+          color: '#1e40af'
         }
       ]
     },
@@ -874,7 +874,7 @@ const ArrowRightIcon = () => (
           icon: <GraduationCap className="w-10 h-10" />, 
           title: 'On-Campus', 
           desc: 'Host campus drives', 
-          color: '#8B5CF6'
+          color: '#1e40af'
         },
         { 
           icon: <Users className="w-10 h-10" />, 
@@ -904,7 +904,7 @@ const ArrowRightIcon = () => (
         //   icon: <PieChart className="w-10 h-10" />, 
         //   title: 'Analytics', 
         //   desc: 'Placement insights & reports', 
-        //   color: '#8B5CF6'
+        //   color: '#1e40af'
         // }
       ]
     },
@@ -916,7 +916,7 @@ const ArrowRightIcon = () => (
           icon: <GraduationCap className="w-10 h-10" />, 
           title: 'On-Campus', 
           desc: 'Manage campus recruitment', 
-          color: '#8B5CF6'
+          color: '#1e40af'
         },
         { 
           icon: <Network className="w-10 h-10" />, 
@@ -946,7 +946,7 @@ const ArrowRightIcon = () => (
           icon: <ShieldCheck className="w-10 h-10" />, 
           title: 'Brand Representation', 
           desc: 'Company brand management', 
-          color: '#8B5CF6'
+          color: '#1e40af'
         }
       ]
     }
@@ -1013,7 +1013,7 @@ const ArrowRightIcon = () => (
         <a
           key={item}
           href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-          className="px-4 py-2.5 text-[16px] font-medium text-gray-700 hover:text-purple-600 rounded-lg hover:bg-purple-50/60 transition-all duration-150"
+          className="px-4 py-2.5 text-[16px] font-medium text-gray-700 hover:text-[#143694] rounded-lg hover:bg-purple-50/60 transition-all duration-150"
         >
           {item}
         </a>
@@ -1027,7 +1027,7 @@ const ArrowRightIcon = () => (
         className="relative group"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-        <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
+        <div className="relative bg-gradient-to-r from-[#143694] to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
           <span className="flex items-center gap-2">
             Get Started
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1054,7 +1054,7 @@ const ArrowRightIcon = () => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(' ', '-')}`}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3.5 px-4 text-[16px] rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
+              className="text-gray-700 hover:text-[#143694] transition-all duration-300 py-3.5 px-4 text-[16px] rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
               onClick={() => setMobileMenuOpen(false)}
             >
               {item}
@@ -1070,7 +1070,7 @@ const ArrowRightIcon = () => (
             className="relative group w-full mt-3"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg w-full">
+            <div className="relative bg-gradient-to-r from-[#143694] to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg w-full">
               <span className="flex items-center justify-center gap-2">
                 Get Started
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1101,7 +1101,7 @@ const ArrowRightIcon = () => (
                   <div>
 
                     {/* Top Label */}
-                    <p className="text-xs sm:text-sm tracking-widest text-purple-600 font-semibold mb-4 sm:mb-6">
+                    <p className="text-xs sm:text-sm tracking-widest text-[#143694] font-semibold mb-4 sm:mb-6">
                       TRUSTED CAMPUS RECRUITMENT PLATFORM
                     </p>
 
@@ -1111,7 +1111,7 @@ const ArrowRightIcon = () => (
                         The Operating System
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-[#143694] to-pink-600 bg-clip-text text-transparent">
                         for Campus Recruitment
                       </span>
                     </h1>
@@ -1132,7 +1132,7 @@ const ArrowRightIcon = () => (
   
   <button
    onClick={() => handleRoleSelect('college')}
-    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+    className="flex-1 bg-gradient-to-r from-[#143694] to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
   >
     <span className="flex items-center justify-center gap-3">
       For Colleges
@@ -1142,7 +1142,7 @@ const ArrowRightIcon = () => (
 
   <button
   onClick={() => handleRoleSelect('company')}
-    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+    className="flex-1 bg-gradient-to-r from-[#143694] to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
   >
     <span className="flex items-center justify-center gap-3">
       For Companies
@@ -1163,7 +1163,7 @@ const ArrowRightIcon = () => (
                         { value: "95%",    label: "Satisfaction Rate" },
                       ].map(({ value, label }) => (
                         <div key={label} className="flex items-center gap-2">
-                          <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold flex-shrink-0">
+                          <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-[#143694] text-xs font-bold flex-shrink-0">
                             ✓
                           </div>
                           <p className="text-gray-700 text-sm whitespace-nowrap">
@@ -1225,7 +1225,7 @@ const ArrowRightIcon = () => (
             <div className="text-center mb-20">
                   
           {/* Small Top Label */}
-          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+          <p className="text-sm font-semibold tracking-widest uppercase text-[#143694] mb-6">
             PLATFORM OVERVIEW
           </p>
                   
@@ -1234,7 +1234,7 @@ const ArrowRightIcon = () => (
             <span className="text-[#0f172a]">
               One Platform.
             </span>{" "}
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#143694] to-pink-600 bg-clip-text text-transparent">
               Three Powerful Interfaces.
             </span>
           </h2>
@@ -1259,7 +1259,7 @@ const ArrowRightIcon = () => (
                     'Publish on-campus and pool-campus recruitment opportunities',
                     'Access student training, seminars, and institutional branding services'
                   ],
-                  color: '#8B5CF6',
+                  color: '#1e40af',
                   seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
                   description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
                 },
@@ -1287,7 +1287,7 @@ const ArrowRightIcon = () => (
                     'Coordinate hiring on behalf of multiple companies',
                     'Handle company approvals, scheduling, and recruitment operations'
                   ],
-                  color: '#3B82F6',
+                  color: '#1e4ed8',
                   seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
                   description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
                 }
@@ -1298,9 +1298,9 @@ const ArrowRightIcon = () => (
                   className="relative group cursor-pointer perspective-1000"
                 >
                   {/* Card with Glass Morphism - More expressive gradient on hover */}
-                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-7 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
+                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-7 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-[#1e4ed8]/10">
                     {/* Animated Top Accent - More expressive */}
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-[#1e4ed8] transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
                     
                     {/* Icon with enhanced hover effect - Further reduced margin */}
                     <div className="relative mb-3"> {/* Changed from mb-4 to mb-3 */}
@@ -1390,7 +1390,7 @@ const ArrowRightIcon = () => (
         <div className="container-xl">
           {/* Section Header */}
           <div className="text-center mb-14">
-            <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#143694] mb-6">
               CORE FEATURES
             </p>
             <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
@@ -1477,7 +1477,7 @@ const ArrowRightIcon = () => (
         
         {/* Section Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+          <p className="text-sm font-semibold tracking-widest uppercase text-[#143694] mb-6">
             HOW RAWRECRUIT WORKS
           </p>
           <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
@@ -1820,7 +1820,7 @@ const ArrowRightIcon = () => (
                       </svg>
                     </div>
                   </div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 group-hover:from-blue-500 group-hover:via-purple-600 group-hover:to-indigo-500 bg-clip-text text-transparent transition-all duration-300">
+                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-[#1e4ed8] group-hover:from-[#1e4ed8] group-hover:via-[#143694] group-hover:to-indigo-500 bg-clip-text text-transparent transition-all duration-300">
                     RawRecruit
                   </span>
                 </button>
@@ -2114,7 +2114,7 @@ const ArrowRightIcon = () => (
         }
         
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #8B5CF6, #EC4899);
+          background: linear-gradient(to bottom, #1e40af, #EC4899);
           border-radius: 5px;
         }
         

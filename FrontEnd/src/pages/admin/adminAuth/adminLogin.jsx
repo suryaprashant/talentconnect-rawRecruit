@@ -67,7 +67,7 @@ const AdminLogin = () => {
             {/* Features */}
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-teal-500 to-[#1e4ed8] flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -105,7 +105,7 @@ const AdminLogin = () => {
         <div className="flex justify-center animate-slide-up">
           <div className="rounded-xl bg-white/70 backdrop-blur-lg text-card-foreground w-full max-w-md border shadow-2xl">
             <div className="flex flex-col p-6 space-y-2 text-center pb-8">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-teal-500 to-[#1e4ed8] flex items-center justify-center mb-4">
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <div className="tracking-tight text-2xl font-bold text-slate-900">
@@ -162,7 +162,7 @@ const AdminLogin = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-12 bg-gradient-to-r from-teal-500 to-blue-500 text-white font-medium rounded-md shadow hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 bg-gradient-to-r from-teal-500 to-[#1e4ed8] text-white font-medium rounded-md shadow hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Signing In..." : "Sign In"}
                 </button>

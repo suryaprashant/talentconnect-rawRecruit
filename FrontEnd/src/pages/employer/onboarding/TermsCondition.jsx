@@ -18,16 +18,16 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#143694]/15 via-[#f093fb]/10 to-[#1e4ed8]/15 p-4">
       {/* Blur Background around card */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative w-full max-w-4xl">
         {/* Blur background behind card */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/5 to-[#1e4ed8]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
         
         <motion.div
           className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
@@ -36,20 +36,20 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
           transition={{ duration: 0.3 }}
         >
           {/* Decorative top bar */}
-          <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+          <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
           {/* Progress indicator */}
           <div className="flex items-center justify-start mb-8">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                 ✓
               </div>
-              <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
-              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-16 h-px bg-gradient-to-r from-[#143694]/30 to-[#1e4ed8]/30"></div>
+              <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                 ✓
               </div>
-              <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
-              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-16 h-px bg-gradient-to-r from-[#143694]/30 to-[#1e4ed8]/30"></div>
+              <div className="w-8 h-8 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-full flex items-center justify-center text-sm font-medium">
                 ✓
               </div>
             </div>
@@ -67,7 +67,7 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
                 id="acceptTerms"
                 checked={formData.acceptedTerms || false}
                 onChange={handleAcceptTerms}
-                className="mr-3 h-5 w-5 cursor-pointer accent-[#667eea]"
+                className="mr-3 h-5 w-5 cursor-pointer accent-[#143694]"
               />
               <label htmlFor="acceptTerms" className="text-sm cursor-pointer select-none text-gray-700">
                 I have read and agree to the Terms & Conditions and Privacy Policy
@@ -77,7 +77,7 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="text-sm text-[#667eea] hover:text-[#764ba2] hover:underline cursor-pointer font-medium transition-colors"
+              className="text-sm text-[#143694] hover:text-[#1e4ed8] hover:underline cursor-pointer font-medium transition-colors"
             >
               Read Terms & Services
             </button>
@@ -100,7 +100,7 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
               disabled={!formData.acceptedTerms}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md ${
                 formData.acceptedTerms
-                  ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:scale-[1.02]'
+                  ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:scale-[1.02]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >

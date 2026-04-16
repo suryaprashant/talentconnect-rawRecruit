@@ -638,29 +638,29 @@ const handleSelectOrAddSkill = async (skillName) => {
       minHeight: '42px',
       borderRadius: '8px',
       fontSize: '14px',
-      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      borderColor: state.isFocused ? '#143694' : '#e5e7eb',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
       backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-      '&:hover': { borderColor: '#667eea' },
+      '&:hover': { borderColor: '#143694' },
     }),
     menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
     multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
     multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
-    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    multiValueRemove: (base) => ({ ...base, color: '#143694', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
     placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                <Building2 className="h-5 w-5 text-[#667eea]" />
+              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                <Building2 className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
                 Pool Campus Connect: Hire Bigger
               </h1>
             </div>
@@ -685,7 +685,7 @@ const handleSelectOrAddSkill = async (skillName) => {
         {/* Main Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for Pool-Campus Hiring</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">Register for Pool-Campus Hiring</h2>
             <p className="text-gray-500 text-sm mt-1">Fill in your requirements to find the best talent from multiple campuses across the nation.</p>
           </div>
           
@@ -693,8 +693,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 1: Venue & College Details */}
             <div className="pt-2">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Building2 className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Building2 className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Venue & College Details</h3>
               </div>
@@ -749,8 +749,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                       {amenitiesOptions.map(item => (
                         <div key={item} onClick={() => handleMultiSelect('amenities', item)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${(formData.amenities || []).includes(item) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${(formData.amenities || []).includes(item) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{item}</span>
-                            {(formData.amenities || []).includes(item) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${(formData.amenities || []).includes(item) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{item}</span>
+                            {(formData.amenities || []).includes(item) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -791,7 +791,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
                               }
                             }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                           />
                           <button
                             type="button"
@@ -799,7 +799,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                               e.stopPropagation();
                               handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
                             }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                           >
                             Add
                           </button>
@@ -819,10 +819,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                               formData.collegeTypes === type ? "bg-blue-50/50" : ""
                             }`}
                           >
-                            <span className={`text-sm ${formData.collegeTypes === type ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                            <span className={`text-sm ${formData.collegeTypes === type ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                               {type}
                             </span>
-                            {formData.collegeTypes === type && <span className="text-[#667eea] font-bold">✓</span>}
+                            {formData.collegeTypes === type && <span className="text-[#143694] font-bold">✓</span>}
                           </div>
                         ))}
                         
@@ -873,7 +873,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
                               }
                             }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                           />
                           <button
                             type="button"
@@ -881,7 +881,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                               e.stopPropagation();
                               handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
                             }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                           >
                             Add
                           </button>
@@ -898,10 +898,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                               (formData.collegeDegrees || []).includes(degree) ? "bg-blue-50/50" : ""
                             }`}
                           >
-                            <span className={`text-sm ${(formData.collegeDegrees || []).includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                            <span className={`text-sm ${(formData.collegeDegrees || []).includes(degree) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                               {degree}
                             </span>
-                            {(formData.collegeDegrees || []).includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
+                            {(formData.collegeDegrees || []).includes(degree) && <span className="text-[#143694] font-bold">✓</span>}
                           </div>
                         ))}
                         
@@ -952,7 +952,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
                               }
                             }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                           />
                           <button
                             type="button"
@@ -960,7 +960,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                               e.stopPropagation();
                               handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
                             }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                           >
                             Add
                           </button>
@@ -977,10 +977,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                               (formData.collegeStreams || []).includes(stream) ? "bg-blue-50/50" : ""
                             }`}
                           >
-                            <span className={`text-sm ${(formData.collegeStreams || []).includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                            <span className={`text-sm ${(formData.collegeStreams || []).includes(stream) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                               {stream}
                             </span>
-                            {(formData.collegeStreams || []).includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+                            {(formData.collegeStreams || []).includes(stream) && <span className="text-[#143694] font-bold">✓</span>}
                           </div>
                         ))}
                         
@@ -1006,7 +1006,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       onClick={() => handleMultiSelect('collegeCategories', category)} 
                       className={`px-3 py-2 text-sm border rounded-lg transition-colors flex items-center justify-center min-h-[38px] ${
                         (formData.collegeCategories || []).includes(category) 
-                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+                          ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                           : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-gray-300'
                       }`}
                     >
@@ -1029,7 +1029,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value="Everyone"
                       checked={formData.broadcastType === 'Everyone'}
                       onChange={handleChange}
-                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                      className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                     />
                     <span className="ml-2 text-sm text-gray-700 font-medium">Global (All Colleges)</span>
                   </label>
@@ -1040,7 +1040,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value="Location"
                       checked={formData.broadcastType === 'Location'}
                       onChange={handleChange}
-                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                      className="h-4 w-4 text-[#143694] border-gray-300 focus:ring-[#143694]"
                     />
                     <span className="ml-2 text-sm text-gray-700 font-medium">Local (Match by Venue)</span>
                   </label>
@@ -1056,8 +1056,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 2: Job & Position Details */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Briefcase className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job & Position Details</h3>
               </div>
@@ -1074,7 +1074,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           key={mode} 
                           type="button" 
                           onClick={() => handleMultiSelect('workMode', mode)} 
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${(formData.workMode || []).includes(mode) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${(formData.workMode || []).includes(mode) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                         >
                           {mode}
                         </button>
@@ -1091,7 +1091,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           key={type} 
                           type="button" 
                           onClick={() => handleMultiSelect('employmentType', type)} 
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${(formData.employmentType || []).includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${(formData.employmentType || []).includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                         >
                           {type}
                         </button>
@@ -1111,7 +1111,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         onClick={() => setFormData(prev => ({ ...prev, preferredHiringMode: mode }))} 
                         className={`px-3 py-2 text-sm border rounded-lg transition-colors flex items-center justify-center min-h-[38px] ${
                           formData.preferredHiringMode === mode 
-                            ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+                            ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' 
                             : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -1159,7 +1159,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                     handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
                                   }
                                 }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
                               />
                               <button
                                 type="button"
@@ -1167,7 +1167,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   e.stopPropagation();
                                   handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
                                 }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                                className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
                                 Add
                               </button>
@@ -1184,10 +1184,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   (formData.jobRoles || []).includes(role) ? "bg-blue-50/50" : ""
                                 }`}
                               >
-                                <span className={`text-sm ${(formData.jobRoles || []).includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                <span className={`text-sm ${(formData.jobRoles || []).includes(role) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
                                   {role}
                                 </span>
-                                {(formData.jobRoles || []).includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+                                {(formData.jobRoles || []).includes(role) && <span className="text-[#143694] font-bold">✓</span>}
                               </div>
                             ))}
                             
@@ -1214,7 +1214,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       styles={{
                         control: (base, state) => ({
                           ...base,
-                          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+                          borderColor: state.isFocused ? '#143694' : '#e5e7eb',
                           minHeight: '44px',
                           height: '44px',
                           fontSize: '14px',
@@ -1285,8 +1285,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 3: Job Description & Requirements */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Target className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Target className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Description & Requirements</h3>
               </div>
@@ -1300,7 +1300,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     value={formData.criteria || ''} 
                     onChange={handleChange} 
                     placeholder="e.g., Minimum 60%, no backlogs..." 
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
+                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
                     required
                   />
                 </div>
@@ -1313,7 +1313,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     value={formData.description || ''}
                     onChange={handleChange}
                     placeholder="Provide job description..."
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
+                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
                     maxLength={500}
                     required
                   />
@@ -1329,8 +1329,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 4: Skills & Competencies */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Award className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Award className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Skills & Competencies</h3>
               </div>
@@ -1340,7 +1340,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                {/* Skills & Competencies Section */}
 <div ref={skillsRef} className="relative pt-2 col-span-1 md:col-span-2">
   <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
-    <Award className="w-4 h-4 text-[#667eea]" />
+    <Award className="w-4 h-4 text-[#143694]" />
     Required Skills <span className="text-red-500">*</span>
   </label>
 
@@ -1348,13 +1348,13 @@ const handleSelectOrAddSkill = async (skillName) => {
     group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
     bg-gradient-to-r from-gray-50 to-white 
     border rounded-xl transition-all duration-300
-    ${isSkillDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+    ${isSkillDropdownOpen ? 'border-[#143694] ring-2 ring-[#143694]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
   `}>
     {/* Selected Tags */}
     {formData.skills.map((skill) => (
       <div 
         key={skill} 
-        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
       >
         {skill}
         <button 
@@ -1398,11 +1398,11 @@ const handleSelectOrAddSkill = async (skillName) => {
             <button
               key={index}
               type="button"
-              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
               onClick={() => handleSelectOrAddSkill(skill)}
             >
               <span>{skill}</span>
-              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
             </button>
           ))}
 
@@ -1410,12 +1410,12 @@ const handleSelectOrAddSkill = async (skillName) => {
         {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
           <button
             type="button"
-            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
             onClick={() => handleSelectOrAddSkill(customSkillSearch)}
           >
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                <Target size={16} className="text-[#764ba2]" />
+                <Target size={16} className="text-[#1e4ed8]" />
               </div>
               <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
             </div>
@@ -1452,8 +1452,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                       {tagsOptions.map(tag => (
                         <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${(formData.tags || []).includes(tag) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${(formData.tags || []).includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
-                            {(formData.tags || []).includes(tag) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${(formData.tags || []).includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{tag}</span>
+                            {(formData.tags || []).includes(tag) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -1466,8 +1466,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 5: Compensation & Benefits */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <IndianRupee className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Compensation & Benefits</h3>
               </div>
@@ -1482,7 +1482,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         name="currency"
                         value={formData.packageDetails?.currency || 'INR'}
                         onChange={handlePackageDetailsChange}
-                        className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                        className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none"
                       >
                         <option value="INR">INR</option>
                         <option value="USD">USD</option>
@@ -1496,7 +1496,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails?.totalCTC || ''}
                       onChange={handlePackageDetailsChange}
                       placeholder="Total CTC"
-                      className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                       required
                     />
                   </div>
@@ -1507,7 +1507,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails?.fixedPay || ''}
                       onChange={handlePackageDetailsChange}
                       placeholder="Fixed Pay"
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     />
                     <input
                       type="number"
@@ -1515,7 +1515,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.packageDetails?.joiningBonus || ''}
                       onChange={handlePackageDetailsChange}
                       placeholder="Variable Pay"
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     />
                   </div>
                 </div>
@@ -1542,8 +1542,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                       {benefitsOptions.map(benefit => (
                         <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${(formData.benefits || []).includes(benefit) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
-                            <span className={`text-sm ${(formData.benefits || []).includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
-                            {(formData.benefits || []).includes(benefit) && <span className="text-[#667eea]">✓</span>}
+                            <span className={`text-sm ${(formData.benefits || []).includes(benefit) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{benefit}</span>
+                            {(formData.benefits || []).includes(benefit) && <span className="text-[#143694]">✓</span>}
                           </div>
                         </div>
                       ))}
@@ -1557,8 +1557,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 6: Hiring Timeline */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Clock className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <Clock className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Hiring Timeline</h3>
               </div>
@@ -1576,7 +1576,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'placementStartDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Start date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           required
                           wrapperClassName="w-full"
                         />
@@ -1591,7 +1591,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'placementEndDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="End date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           required
                           wrapperClassName="w-full"
                         />
@@ -1613,7 +1613,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'onlineTestDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Test date"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -1629,7 +1629,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'start')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="Interview start"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -1643,7 +1643,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                             onChange={(date) => handleInterviewDateChange(date, 'end')}
                             dateFormat="dd-MM-yyyy"
                             placeholderText="Interview end"
-                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -1659,7 +1659,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Offer rollout"
-                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
@@ -1678,7 +1678,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         name="numberOfRounds" 
                         value={formData.numberOfRounds || ''} 
                         onChange={handleChange} 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
                         required
                       >
                         <option value="" disabled>Select rounds</option>
@@ -1717,7 +1717,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                                   onClick={() => handleMultiSelect('selectionProcess', process)}
                                   className={`text-sm cursor-pointer ${
                                     isSelected
-                                      ? "text-[#667eea] font-medium"
+                                      ? "text-[#143694] font-medium"
                                       : "text-gray-700"
                                   }`}
                                 >
@@ -1751,8 +1751,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             {/* SECTION 7: Contact Information */}
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <MessageSquare className="h-4 w-4 text-[#667eea]" />
+                <div className="p-1.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+                  <MessageSquare className="h-4 w-4 text-[#143694]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Contact Information</h3>
               </div>
@@ -1769,7 +1769,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                       value={formData.contactPerson?.name || ''} 
                       onChange={handleContactChange} 
                       placeholder="Full name" 
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                       required 
                     />
                   </div>
@@ -1826,7 +1826,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value={formData.contactPerson?.email || ''} 
                         onChange={handleContactChange} 
                         placeholder="example@company.com" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         required 
                       />
                     </div>
@@ -1843,7 +1843,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value={formData.contactPerson?.mobile || ''} 
                         onChange={handleContactChange} 
                         placeholder="10-digit number" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         required 
                       />
                     </div>
@@ -1863,7 +1863,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value={formData.contactPerson?.linkedin || ''} 
                         onChange={handleContactChange} 
                         placeholder="linkedin.com/in/username" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                       />
                     </div>
                   </div>
@@ -1876,7 +1876,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         name="minStudents" 
                         value={formData.minStudents || ''} 
                         onChange={handleChange} 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
                         required
                       >
                         <option value="" disabled>Select minimum</option>
@@ -1901,7 +1901,7 @@ const handleSelectOrAddSkill = async (skillName) => {
               <button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Submitting...' : 'Register'}
               </button>

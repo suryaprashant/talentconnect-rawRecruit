@@ -217,7 +217,7 @@ const InternJobsListingPage = () => {
                         <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
                             <div className="flex flex-wrap gap-2 mb-4 sm:mb-0">
                                 {activeFilters.length > 0 && activeFilters.map((filter, index) => (
-                                    <div key={index} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full py-1 px-3 text-sm">
+                                    <div key={index} className="inline-flex items-center bg-blue-50 text-[#143694] rounded-full py-1 px-3 text-sm">
                                         <span className="mr-1">{filter.value}</span>
                                         <button
                                             onClick={() => {
@@ -229,7 +229,7 @@ const InternJobsListingPage = () => {
                                                     }
                                                 }
                                             }}
-                                            className="text-blue-500 hover:text-blue-700"
+                                            className="text-[#1e4ed8] hover:text-[#143694]"
                                             aria-label={`Remove filter: ${filter.value}`}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -246,7 +246,7 @@ const InternJobsListingPage = () => {
                                     id="sort"
                                     value={sortBy}
                                     onChange={handleSortChange}
-                                    className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-[#1e4ed8] focus:border-[#1e4ed8] sm:text-sm"
                                 >
                                     <option value="newest">Newest</option>
                                     <option value="oldest">Oldest</option>
@@ -279,7 +279,7 @@ const InternJobsListingPage = () => {
                                     <p className="mt-1 text-gray-500">There are no internships matching your criteria at the moment.</p>
                                     <button
                                         onClick={() => handleClearFilters()}
-                                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+                                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-[#143694] focus:outline-none"
                                     >
                                         Clear all filters
                                     </button>

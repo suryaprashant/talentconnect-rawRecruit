@@ -405,10 +405,10 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
     return '';
   };
 
-  const inputClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
+  const inputClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
     isEditing ? 'bg-white' : 'bg-gradient-to-r from-gray-50 to-white text-gray-700'
   }`;
-  const selectClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
+  const selectClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
     isEditing ? 'bg-white' : 'bg-gradient-to-r from-gray-50 to-white text-gray-700'
   }`;
 
@@ -418,12 +418,12 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
       ...base,
       borderRadius: '0.75rem',
       borderWidth: '1px',
-      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      borderColor: state.isFocused ? '#143694' : '#e5e7eb',
       padding: '2px 4px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(102, 126, 234, 0.5)' : 'none',
       backgroundColor: isEditing ? 'white' : 'linear-gradient(to right, #f9fafb, white)',
       '&:hover': {
-        borderColor: '#667eea'
+        borderColor: '#143694'
       }
     }),
     menu: (base) => ({
@@ -433,7 +433,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
     }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isSelected ? '#667eea' : state.isFocused ? '#f3f4f6' : 'white',
+      backgroundColor: state.isSelected ? '#143694' : state.isFocused ? '#f3f4f6' : 'white',
       color: state.isSelected ? 'white' : '#374151',
       '&:hover': {
         backgroundColor: '#f3f4f6'
@@ -442,7 +442,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
   };
 
   return (
-    <div className="flex flex-col w-full bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 min-h-screen">
+    <div className="flex flex-col w-full bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 min-h-screen">
       <div className="container mx-auto py-6 px-4">
         {/* Success/Error Messages */}
         {success && (
@@ -479,7 +479,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
           <div className="p-8">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-6">
               {profileData ? 'Edit Employer Profile' : 'Create Employer Profile'}
             </h2>
 
@@ -487,8 +487,8 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
               {/* Employer Details */}
               <div className="mb-8">
                 <div className="flex items-center mb-6">
-                  <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" className="w-5 h-5">
+                  <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#143694" className="w-5 h-5">
                       <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
                     </svg>
                   </div>
@@ -565,7 +565,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
                     <label htmlFor="linkedIn" className="block mb-1 text-sm font-medium text-gray-700">LinkedIn Profile URL</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <Linkedin size={16} className="text-blue-700" />
+                        <Linkedin size={16} className="text-[#143694]" />
                       </div>
                       <input
                         type="url"
@@ -856,7 +856,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                      className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                       disabled={loading}
                     >
                       {loading ? (
@@ -876,7 +876,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
                   <button
                     type="button"
                     onClick={handleEditClick}
-                    className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                   >
                     <Edit size={18} />
                     Edit Profile

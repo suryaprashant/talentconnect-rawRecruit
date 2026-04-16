@@ -3,7 +3,10 @@ import { MapPin, Users, Clock, IndianRupee } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-
+import CompanyJobCard from "../home/jobCards/CompanyJobCard";
+import CollegeJobCard from "../home/jobCards/CollegeJobCard";
+import ReferralJobCard from "../home/jobCards/ReferralJobCard";
+import InternshipJobCard from "../home/jobCards/InternshipJobCard";
 // ROLES
 const roleFilters = ["Company", "College", "Student", "Freshers"];
 
@@ -217,153 +220,81 @@ const LiveJobs = () => {
           <p className="text-center col-span-3">No jobs found</p>
         ) : (
           [...jobs]
-  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-  .slice(0, 3)
-  .map((job, i) => {
-    const title = job.jobRoles?.[0] || job.jobTitle || job.collegePosted.collegeUniversityDetails.collegeName ||"Role not specified";
+            .filter((job) => {
+              const deadline =
+                job.endDate ||
+                job.proposedSchedule?.endDate ||
+                job.interviewWindow?.end;
 
-    const company =
-      job.companyName ||
-      job.candidatePosted?.currentCompany ||
-      job.companyPosted?.companyDetails?.companyName ||
-      job.degreeType ||
-      "Not Mentioned";
-    console.log(job);
-    console.log(job.candidatePosted?.currentCompany);
-    const location =
-      job.companyPosted?.hiringPreferences?.hiringLocations?.[0] ||
-      (Array.isArray(job.location) && job.location.length > 0
-        ? job.location[0]
-        : null) ||
-      job.collegePosted?.collegeUniversityDetails?.collegeLocation ||
-      "Location not specified";
+              if (!deadline) return true; // keep if no deadline
 
-    const salary = job.packageDetails?.totalCTC
-      ? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-      : "Not disclosed";
+              const daysLeft = Math.ceil(
+                (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+              );
 
-    const employmentType = job.employmentType?.[0] || job.jobType || "N/A";
-    const workMode = job.workMode?.[0] || job.jobType || "N/A";
+              return daysLeft > 0; //  remove closed jobs
+            })
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3)
+            .map((job, i) => {
+              if (activeRole === "Company") {
+                return (
+                  <CollegeJobCard
+                    key={job._id || i}
+                    job={job}
+                    i={i}
+                    activeType={activeType}
+                    handleApply={handleApply}
+                  />
+                );
+              }
 
-    const skills = job.skills || [];
-    const visibleSkills = skills.slice(0, 2);
-    const extraSkills = skills.length - 2;
+              if (activeRole === "College") {
+                return (
+                  <CompanyJobCard
+                    key={job._id || i}
+                    job={job}
+                    i={i}
+                    activeType={activeType}
+                    handleApply={handleApply}
+                  />
+                );
+              }
 
-    const tag = job.tags?.[0]; // only first tag
-    const deadline = job.endDate || job.proposedSchedule?.endDate || job.interviewWindow?.end;
+              if (activeType === "Referral") {
+                return (
+                  <ReferralJobCard
+                    key={job._id || i}
+                    job={job}
+                    i={i}
+                    activeType={activeType}
+                    handleApply={handleApply}
+                  />
+                );
+              }
 
-    const daysLeft = deadline
-      ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
-      : null;
+              if (activeType === "Internship") {
+                return (
+                  <InternshipJobCard
+                    key={job._id || i}
+                    job={job}
+                    i={i}
+                    activeType={activeType}
+                    handleApply={handleApply}
+                  />
+                );
+              }
 
-    const startDate = job.startDate;
-    const duration = job.internshipDuration;
-
-    return (
-      <motion.div
-        key={job._id || i}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.08 }}
-        className="relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
-      >
-        {/* TOP RIGHT STACK */}
-        {activeType !== "Internship" && (
-          <div className="absolute top-6 right-3 flex flex-col items-end gap-1">
-
-            {tag && (
-              <span className="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                {tag}
-              </span>
-            )}
-
-            {daysLeft !== null && (
-              <span
-                className={`text-[10px] px-2 py-1 mt-1 rounded-full font-medium ${
-                  daysLeft > 3
-                    ? "bg-blue-100 text-blue-600"
-                    : daysLeft > 0
-                    ? "bg-orange-100 text-orange-600"
-                    : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                {daysLeft > 0 ? `${daysLeft} days left` : "Closed"}
-              </span>
-            )}
-
-          </div>
-        )}
-
-        {activeType === "Internship" && (
-          <div className="absolute top-6 right-3 flex flex-col items-end gap-1">
-
-            {job.startDate && (
-              <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-medium">
-                📅 Starts {new Date(job.startDate).toLocaleDateString()}
-              </span>
-            )}
-
-            {job.internshipDuration && (
-              <span className="text-[10px] bg-purple-100 text-purple-600 px-2 py-1 rounded-full font-medium">
-                ⏱ {job.internshipDuration}
-              </span>
-            )}
-
-          </div>
-        )}
-
-        {/* HEADER */}
-        <div className="mb-4">
-          <h3 className="font-semibold text-gray-900 text-lg">
-            {title}
-          </h3>
-          <p className="text-sm text-gray-500">{company}</p>
-        </div>
-
-        {/* META */}
-        <div className="space-y-2 mb-4 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5" /> {location}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <IndianRupee className="w-3.5 h-3.5" /> {salary}
-          </div>
-
-          <div className="flex gap-3 text-xs text-gray-500">
-            <span>{employmentType}</span>
-            <span>•</span>
-            <span>{workMode}</span>
-          </div>
-        </div>
-
-        {/* SKILLS */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          {visibleSkills.map((skill, idx) => (
-            <span
-              key={idx}
-              className="text-xs bg-gray-100 px-2 py-1 rounded-md"
-            >
-              {skill}
-            </span>
-          ))}
-
-          {extraSkills > 0 && (
-            <span className="text-xs bg-gray-200 px-2 py-1 rounded-md">
-              +{extraSkills} more
-            </span>
-          )}
-        </div>
-
-        <button
-          onClick={handleApply}
-          className="w-full bg-primaryBrand text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition"
-        >
-          Apply Now
-        </button>
-      </motion.div>
-    );
-  })
+              return (
+                  <CompanyJobCard
+                    key={job._id || i}
+                    job={job}
+                    i={i}
+                    activeType={activeType}
+                    handleApply={handleApply}
+                  />
+                );
+            })
         )}
       </div>
 

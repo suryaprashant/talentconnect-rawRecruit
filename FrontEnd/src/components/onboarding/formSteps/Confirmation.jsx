@@ -157,12 +157,12 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
         {/* Pastel blur background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#143694]/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
@@ -170,10 +170,10 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
             {/* Header with gradient */}
             <div className="text-center mb-8">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-10 h-10 text-[#667eea]" />
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#143694]/20 to-[#1e4ed8]/20 flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-10 h-10 text-[#143694]" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">
                 Almost There!
               </h1>
               <p className="text-gray-600 mb-4">
@@ -185,7 +185,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
             <div className="mb-8 p-6 bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] border border-gray-200 rounded-xl">
               <div className="flex items-start gap-4">
                 <div className={`mt-1 flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center cursor-pointer ${agreed
-                  ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent"
+                  ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent"
                   : "border-gray-300 bg-white"
                   }`} onClick={handleCheckboxChange}>
                   {agreed && (
@@ -199,7 +199,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
                     <button
                       type="button"
                       onClick={handleTermsClick}
-                      className="mx-1 text-[#667eea] hover:text-[#764ba2] font-medium hover:underline transition-all duration-200"
+                      className="mx-1 text-[#143694] hover:text-[#1e4ed8] font-medium hover:underline transition-all duration-200"
                     >
                       Terms & Conditions and Privacy Policy
                     </button>
@@ -235,7 +235,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
                 onClick={handleSubmit}
                 disabled={!agreed}
                 className={`flex items-center justify-center px-8 py-3 rounded-xl transition-all duration-200 font-medium ${agreed
-                  ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30"
+                  ? "bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white hover:shadow-lg hover:shadow-purple-500/30"
                   : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-500 cursor-not-allowed"
                   }`}
                 type="submit"

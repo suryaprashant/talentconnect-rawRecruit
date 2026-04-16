@@ -313,7 +313,7 @@ const CareerGoals = () => {
         <div className="mt-2 text-right">
           <button
             type="button"
-            className="text-blue-500 hover:underline"
+            className="text-[#1e4ed8] hover:underline"
             disabled={!editMode.careerGoals}
           >
             Add experience

@@ -239,7 +239,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const renderInputField = (section, field, label, type = 'text', placeholder = '', options = [], isRequired = false) => {
     const value = formData[section]?.[field] || '';
     const inputProps = {
-      className: "w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200",
+      className: "w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200",
       value: value,
       onChange: (e) => handleChange(e, section, field),
       readOnly: !isEditing,
@@ -280,7 +280,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                 selectedValues.map((val) => {
                   const optionLabel = options.find(opt => opt.value === val)?.label || val;
                   return (
-                    <span key={val} className="flex items-center bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-3 py-1 rounded-full text-sm font-medium">
+                    <span key={val} className="flex items-center bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] px-3 py-1 rounded-full text-sm font-medium">
                       {optionLabel}
                       {isEditing && (
                         <button type="button" onClick={() => handleChange({ target: { value: val, type: 'checkbox', checked: false } }, section, field)} className="ml-2 text-gray-600 hover:text-gray-800">
@@ -310,7 +310,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
           <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
           <div className="flex gap-2">
             {options.map((opt) => (
-              <button key={opt.value} type="button" className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${activeValue === opt.value ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={() => isEditing && handleChange({ target: { value: opt.value } }, section, field)} disabled={!isEditing}>
+              <button key={opt.value} type="button" className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${activeValue === opt.value ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={() => isEditing && handleChange({ target: { value: opt.value } }, section, field)} disabled={!isEditing}>
                 {opt.label}
               </button>
             ))}
@@ -324,7 +324,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
           <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
           <div className="flex flex-wrap gap-2">
             {options.map((opt) => (
-              <label key={opt.value} className={`flex items-center px-4 py-2 text-sm rounded-xl cursor-pointer transition-all duration-200 ${currentValues.includes(opt.value) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}>
+              <label key={opt.value} className={`flex items-center px-4 py-2 text-sm rounded-xl cursor-pointer transition-all duration-200 ${currentValues.includes(opt.value) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}>
                 <input type="checkbox" value={opt.value} checked={currentValues.includes(opt.value)} onChange={(e) => handleChange(e, section, field)} className="hidden" disabled={!isEditing} />
                 {opt.label}
               </label>
@@ -338,7 +338,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
           <label className="block mb-1 text-sm font-medium text-gray-700"> {label} {isRequired && <span className="text-red-500">*</span>} </label>
           <div className="relative">
             {(label.includes('Number') || label.includes('Phone')) && (<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><Phone size={16} className="text-gray-500" /></div>)}
-            {label.includes('LinkedIn') && (<div className="absolute inset-y-0 left-0 flex items-center pl-3"><Linkedin size={16} className="text-blue-700" /></div>)}
+            {label.includes('LinkedIn') && (<div className="absolute inset-y-0 left-0 flex items-center pl-3"><Linkedin size={16} className="text-[#143694]" /></div>)}
             {label.includes('Website') && (<div className="absolute inset-y-0 left-0 flex items-center pl-3"><Globe size={16} className="text-gray-700" /></div>)}
             <input type={type} {...inputProps} placeholder={placeholder} className={`${inputProps.className} ${label.includes('Number') || label.includes('Phone') || label.includes('LinkedIn') || label.includes('Website') ? 'pl-10' : ''}`} />
           </div>
@@ -366,11 +366,11 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const employmentTypeOptions = [ { value: 'part-time', label: 'Part-time' }, { value: 'full-time', label: 'Full-time' }, { value: 'contract', label: 'Contract' }];
 
   return (
-    <div className="flex flex-col w-full bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 min-h-screen">
+    <div className="flex flex-col w-full bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10 min-h-screen">
       <div className="container mx-auto py-6 px-4">
         <div className="mb-6 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">About</h2>
-          <p className="text-gray-600 mb-6 break-words p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl"> 
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent mb-2">About</h2>
+          <p className="text-gray-600 mb-6 break-words p-4 bg-gradient-to-r from-[#143694]/5 to-transparent rounded-xl"> 
             {formData.companyDetails.description || 'No description provided.'} 
           </p>
         </div>
@@ -381,8 +381,8 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
             <div className="grid md:grid-cols-12 gap-4 p-6">
               <div className="md:col-span-3">
                 <div className="flex items-center mb-4">
-                  <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" className="w-5 h-5">
+                  <div className="p-3 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#143694" className="w-5 h-5">
                       <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
                     </svg>
                   </div>
@@ -411,7 +411,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     {isEditing ? (
                       <div>
                           <label className="block mb-1 text-sm font-medium text-gray-700">Country</label>
-                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" value={formData.companyDetails.country} onChange={(e) => {
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none" value={formData.companyDetails.country} onChange={(e) => {
                            handleChange(e, 'companyDetails', 'country');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'state');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'city');
@@ -425,7 +425,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     {isEditing ? (
                       <div>
                           <label className="block mb-1 text-sm font-medium text-gray-700">State</label>
-                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.state} disabled={!formData.companyDetails.country || states.length === 0} onChange={(e) => {
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.state} disabled={!formData.companyDetails.country || states.length === 0} onChange={(e) => {
                            handleChange(e, 'companyDetails', 'state');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'city');
                           }}>
@@ -438,7 +438,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     {isEditing ? (
                       <div>
                           <label className="block mb-1 text-sm font-medium text-gray-700">City</label>
-                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.city} disabled={!formData.companyDetails.state || cities.length === 0} onChange={(e) => handleChange(e, 'companyDetails', 'city')}>
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.city} disabled={!formData.companyDetails.state || cities.length === 0} onChange={(e) => handleChange(e, 'companyDetails', 'city')}>
                             <option value="">Select City</option>
                             {cityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                           </select>
@@ -452,7 +452,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
             </div>
             <div className="flex justify-end p-4 border-t border-gray-100">
               <button 
-                className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                 onClick={isEditing ? handleSubmit : handleEditToggle}
               >
                 {isEditing ? (
@@ -493,8 +493,8 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     {renderInputField('hiringPreferences', 'jobRoles', 'Job Roles You Hire For', 'custom-multiselect', 'Select roles...', jobRoleOptions)}
                     {isEditing && (
                       <div className="flex items-center gap-2 mt-2">
-                        <input type="text" placeholder="Add other job role..." value={customJobRole} onChange={(e) => setCustomJobRole(e.target.value)} className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomItem('hiringPreferences', 'jobRoles', customJobRole, setCustomJobRole); } }}/>
-                        <button type="button" onClick={() => handleAddCustomItem('hiringPreferences', 'jobRoles', customJobRole, setCustomJobRole)} className="px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-md whitespace-nowrap">Add</button>
+                        <input type="text" placeholder="Add other job role..." value={customJobRole} onChange={(e) => setCustomJobRole(e.target.value)} className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomItem('hiringPreferences', 'jobRoles', customJobRole, setCustomJobRole); } }}/>
+                        <button type="button" onClick={() => handleAddCustomItem('hiringPreferences', 'jobRoles', customJobRole, setCustomJobRole)} className="px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-md whitespace-nowrap">Add</button>
                       </div>
                     )}
                   </div>
@@ -502,8 +502,8 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     {renderInputField('hiringPreferences', 'hiringLocations', 'Preferred Hiring Locations', 'custom-multiselect', 'Select locations...', staticLocationOptions)}
                     {isEditing && (
                       <div className="flex items-center gap-2 mt-2">
-                        <input type="text" placeholder="Add other location..." value={customHiringLocation} onChange={(e) => setCustomHiringLocation(e.target.value)} className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomItem('hiringPreferences', 'hiringLocations', customHiringLocation, setCustomHiringLocation); } }}/>
-                        <button type="button" onClick={() => handleAddCustomItem('hiringPreferences', 'hiringLocations', customHiringLocation, setCustomHiringLocation)} className="px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-md whitespace-nowrap">Add</button>
+                        <input type="text" placeholder="Add other location..." value={customHiringLocation} onChange={(e) => setCustomHiringLocation(e.target.value)} className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomItem('hiringPreferences', 'hiringLocations', customHiringLocation, setCustomHiringLocation); } }}/>
+                        <button type="button" onClick={() => handleAddCustomItem('hiringPreferences', 'hiringLocations', customHiringLocation, setCustomHiringLocation)} className="px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-md whitespace-nowrap">Add</button>
                       </div>
                     )}
                   </div>
@@ -516,7 +516,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
             </div>
             <div className="flex justify-end p-4 border-t border-gray-100">
               <button 
-                className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                 onClick={isEditing ? handleSubmit : handleEditToggle}
               >
                 {isEditing ? (
@@ -554,10 +554,10 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                 <div className="space-y-4">
                   <div>
                     <label className="block mb-1 text-sm font-medium text-gray-700">Upload Verification Documents (Choose any one for verification)</label>
-                    <div className={`w-full border border-gray-200 p-3 rounded-xl flex justify-between items-center transition-all duration-200 ${isEditing ? 'cursor-pointer hover:border-[#667eea] bg-gradient-to-r from-gray-50 to-white' : 'cursor-not-allowed bg-gradient-to-r from-gray-50/50 to-white/50'}`} onClick={() => isEditing && kycFileInputRef.current.click()}>
+                    <div className={`w-full border border-gray-200 p-3 rounded-xl flex justify-between items-center transition-all duration-200 ${isEditing ? 'cursor-pointer hover:border-[#143694] bg-gradient-to-r from-gray-50 to-white' : 'cursor-not-allowed bg-gradient-to-r from-gray-50/50 to-white/50'}`} onClick={() => isEditing && kycFileInputRef.current.click()}>
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
-                          <Upload size={20} className="text-[#667eea]" />
+                        <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                          <Upload size={20} className="text-[#143694]" />
                         </div>
                         <div>
                           <span className="font-medium text-gray-700">{kycFiles.length > 0 ? `${kycFiles.length} file(s) selected` : 'Upload Document'}</span>
@@ -612,7 +612,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
             </div>
             <div className="flex justify-end p-4 border-t border-gray-100">
               <button 
-                className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                 onClick={isEditing ? handleSubmit : handleEditToggle}
               >
                 {isEditing ? (
@@ -652,13 +652,13 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                   <div>
                     <label className="flex items-center gap-2 mb-1 text-sm font-medium text-gray-700">
                       <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg">
-                        <Linkedin size={16} className="text-blue-700" />
+                        <Linkedin size={16} className="text-[#143694]" />
                       </div>
                       LinkedIn
                     </label>
                     <div className="flex">
                       
-                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.linkedin.com/company/your-company" value={formData.companyDetails.companyLinkedin || ''} onChange={(e) => handleChange(e, 'companyDetails', 'companyLinkedin')} readOnly={!isEditing} disabled={!isEditing} />
+                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none" placeholder="www.linkedin.com/company/your-company" value={formData.companyDetails.companyLinkedin || ''} onChange={(e) => handleChange(e, 'companyDetails', 'companyLinkedin')} readOnly={!isEditing} disabled={!isEditing} />
                     </div>
                   </div>
                   <div>
@@ -670,7 +670,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     </label>
                     <div className="flex">
                      
-                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.yourcompany.com" value={formData.companyDetails.websiteUrl || ''} onChange={(e) => handleChange(e, 'companyDetails', 'websiteUrl')} readOnly={!isEditing} disabled={!isEditing} />
+                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none" placeholder="www.yourcompany.com" value={formData.companyDetails.websiteUrl || ''} onChange={(e) => handleChange(e, 'companyDetails', 'websiteUrl')} readOnly={!isEditing} disabled={!isEditing} />
                     </div>
                   </div>
                 </div>
@@ -678,7 +678,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
             </div>
             <div className="flex justify-end p-4 border-t border-gray-100">
               <button 
-                className="px-6 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/30 transition-all duration-300 flex items-center gap-2"
                 onClick={isEditing ? handleSubmit : handleEditToggle}
               >
                 {isEditing ? (

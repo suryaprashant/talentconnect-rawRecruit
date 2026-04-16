@@ -73,7 +73,7 @@ const JobTracker = () => {
               <input
                 type="text"
                 placeholder="Search"
-                className="pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -81,7 +81,7 @@ const JobTracker = () => {
             </div>
             <div className="relative">
               <select
-                className="pl-3 pr-8 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -139,8 +139,8 @@ const JobTracker = () => {
 
                     return (
                       <div key={idx} className="flex flex-col items-center text-xs" style={{ width: `${100 / statusSteps.length}%` }}>
-                        <div className={`w-4 h-4 rounded-full mb-1 ${isActive ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
-                        <span className={`text-center ${isActive ? 'text-blue-500 font-medium' : 'text-gray-500'}`}>
+                        <div className={`w-4 h-4 rounded-full mb-1 ${isActive ? 'bg-[#1e4ed8]' : 'bg-gray-300'}`}></div>
+                        <span className={`text-center ${isActive ? 'text-[#1e4ed8] font-medium' : 'text-gray-500'}`}>
                           {step}
                         </span>
                         <span className="text-gray-400 text-xs">{idx === 0 ? selectedJob.date : ''}</span>
@@ -150,7 +150,7 @@ const JobTracker = () => {
                 </div>
                 <div className="h-1 bg-gray-200 absolute left-0 right-0 top-2">
                   <div
-                    className="h-1 bg-blue-500"
+                    className="h-1 bg-[#1e4ed8]"
                     style={{
                       width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
                     }}
@@ -200,7 +200,7 @@ const JobTracker = () => {
                 </div> */}
 
                 <div className="mt-4">
-                  <Link to={`/professional-dashboard/Job-listing/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
+                  <Link to={`/professional-dashboard/Job-listing/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-[#1e4ed8] text-sm font-medium">View full description</Link>
                 </div>
               </div>
 

@@ -178,9 +178,9 @@ export default function InternshipListing() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
             <div className="container mx-auto px-4 pt-8">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
 
                     {/* Header */}
                     <div className="flex items-center gap-3 mb-4">
@@ -230,37 +230,57 @@ export default function InternshipListing() {
             </div>
             <div className="container mx-auto px-4 py-8 pt-22">
                 {/* Header Section */}
-                <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                        <div className="mb-4 md:mb-0">
-                            <div className="flex items-center mb-2">
-                                <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                                    <Building2 className="h-5 w-5 text-[#667eea]" />
-                                </div>
-                                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                    Accepted Internship Applications
-                                </h1>
-                            </div>
-                            <p className="text-gray-600">
-                                Track Your Internship Listings and Manage Accepted Candidate Applications
-                            </p>
-                        </div>
-                        
-                        {/* Search Bar */}
-                        <div className="relative w-full md:w-96">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-gray-400" />
-                            </div>
-                            <input
-                                type="text"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                                placeholder="Search by job title, work mode, or location"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3 mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg">
+          <Building2 className="h-5 w-5 text-[#143694]" />
+        </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+          Accepted Internship Applications
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Track your internship listings and manage accepted candidate applications.
+      </p>
+
+    </div>
+
+    {/* RIGHT - Search */}
+    {/* <div className="relative w-full md:w-80">
+      
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <Search className="h-4 w-4 text-gray-400" />
+      </div>
+
+      <input
+        type="text"
+        className="
+          w-full pl-10 pr-4 py-2.5 
+          bg-gray-50 border border-gray-200 rounded-xl
+          focus:ring-2 focus:ring-[#143694]/30 
+          focus:border-[#143694] focus:outline-none
+          transition-all duration-200
+        "
+        placeholder="Search by job title, work mode, or location"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
+    </div> */}
+
+  </div>
+
+</div>
 
                 {/* Error Display */}
                 {error && (
@@ -293,7 +313,7 @@ export default function InternshipListing() {
                     <div className="divide-y divide-gray-100">
                         {loading ? (
                             <div className="p-12 text-center">
-                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#143694]"></div>
                                 <p className="mt-4 text-gray-600">Loading accepted internships...</p>
                             </div>
                         ) : currentJobs?.length === 0 ? (
@@ -321,7 +341,7 @@ export default function InternshipListing() {
                                                     onClick={() => navigate(`/company-dashboard/Internship/${job._id}?isApplied=true`)}
                                                     className="group cursor-pointer"
                                                 >
-                                                    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
+                                                    <h3 className="font-semibold text-gray-900 group-hover:text-[#143694] transition-colors break-words whitespace-normal">
                                                         {title}
                                                     </h3>
                                                     <div className="flex items-center gap-2 mt-1">
@@ -361,7 +381,7 @@ export default function InternshipListing() {
 
                                             {/* Views - Original layout */}
                                             <div className="col-span-1 text-center">
-                                                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                                                     {job?.views || 0}
                                                 </span>
                                             </div>
@@ -381,7 +401,7 @@ export default function InternshipListing() {
                                                 <div className="flex items-center justify-center gap-2">
                                                     <button
                                                         onClick={() => handleViewApplications(job)}
-                                                        className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                                                        className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                                                         title="View Applications"
                                                     >
                                                         <Eye size={16} />
@@ -421,7 +441,7 @@ export default function InternshipListing() {
                                         onClick={() => setCurrentPage(page)}
                                         className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                                             currentPage === page 
-                                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30' 
                                                 : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                                         }`}
                                     >

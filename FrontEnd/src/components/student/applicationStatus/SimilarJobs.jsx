@@ -45,7 +45,7 @@ const SimilarJobs = ({
           <input
             type="text"
             placeholder="Search"
-            className="w-full border border-gray-300 rounded-md py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-md py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -53,7 +53,7 @@ const SimilarJobs = ({
         </div>
         <div className="relative">
           <select
-            className="border border-gray-300 rounded-md py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-md py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]"
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
           >
@@ -86,8 +86,8 @@ const SimilarJobs = ({
               <Bookmark
                 className="w-5 h-5 transition-all"
                 strokeWidth={2}
-                stroke={bookmarkedJobs.has(job.id) ? "#3B82F6" : "#9CA3AF"} // Tailwind's blue-500 and gray-400
-                fill={bookmarkedJobs.has(job.id) ? "#3B82F6" : "none"}
+                stroke={bookmarkedJobs.has(job.id) ? "#1e4ed8" : "#9CA3AF"} // Tailwind's [#1e4ed8] and gray-400
+                fill={bookmarkedJobs.has(job.id) ? "#1e4ed8" : "none"}
               />
             </button>
 
