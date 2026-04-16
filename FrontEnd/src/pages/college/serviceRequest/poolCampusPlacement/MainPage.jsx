@@ -8,6 +8,8 @@ import {
   FileText
 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const serviceData = [
   {
     id: 1,
@@ -45,6 +47,7 @@ const serviceData = [
 ];
 
 export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
+  const navigate = useNavigate();
   return (
     <>
       {/* Meta Title and Description */}
@@ -57,7 +60,55 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 overflow-hidden">
+<div className="container mx-auto px-4 pt-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
+                Service Request
+              </h2>
+            </div>
 
+            {/* Tabs */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-gray-200 pb-2">
+              <button 
+                onClick={() => navigate('/service-request/campus-placement')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                Campus Placement
+              </button>
+
+              {/* PoolCampus is ACTIVE here */}
+              <button 
+                onClick={() => navigate('/service-request/poolcampus-placement')}
+                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+              >
+                PoolCampus Placement
+              </button>
+
+              <button 
+                onClick={() => navigate('/service-request/student-training-programs')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                Student Training Programs
+              </button>
+
+              <button 
+                onClick={() => navigate('/service-request/seminars')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                Seminars
+              </button>
+
+              <button 
+                onClick={() => navigate('/service-request/campus-branding')}
+                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+              >
+                Campus Branding
+              </button>
+            </div>
+          </div>
+        </div>
         {/* Background Blobs */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />

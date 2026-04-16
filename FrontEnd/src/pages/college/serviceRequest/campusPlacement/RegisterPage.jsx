@@ -34,13 +34,14 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
-        rounds: Array.from({ length: 3 }, (_, i) => ({
-            id: i + 1,
-            degree: '',   // plain string label for the table rows (keep simple select)
-            stream: '',
-            students: '',
-            skills: ''
-        })),
+    rounds: Array.from({ length: 3 }, (_, i) => ({
+    id: i + 1,
+    degree: '',
+    stream: '',
+    students: '',
+    skills: '',
+    _auto: false,
+})),
         collegeLocation: null,
         coordinatorName: '',
         coordinatorDesignation: '',
@@ -202,45 +203,106 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
     }, [selectedDegreeIds]);
     
     
-    useEffect(() => {
-        if (!formData.degree.length || !formData.stream.length) return;
+//    useEffect(() => {
+//     const combinations = [];
 
-        const combinations = [];
+//     formData.degree.forEach((deg) => {
+//         formData.stream.forEach((str) => {
+//             combinations.push({
+//                 degree: deg.label,
+//                 stream: str.label,
+//             });
+//         });
+//     });
 
-        formData.degree.forEach((deg) => {
-            formData.stream.forEach((str) => {
+//     setFormData(prev => {
+//         const manualRows = prev.rounds.filter(r => !r._auto);
+
+//         let nextId = Math.max(0, ...prev.rounds.map(r => r.id)) + 1;
+//         const autoRows = combinations.map((c, i) => ({
+//             id: nextId + i,
+//             degree: c.degree,
+//             stream: c.stream,
+//             students: '',
+//             skills: '',
+//             _auto: true,
+//         }));
+
+//         return {
+//             ...prev,
+//             rounds: [...autoRows, ...manualRows],
+//         };
+//     });
+
+// }, [formData.degree, formData.stream]);
+
+    // ─── Helpers ───────────────────────────────────────────────────────────────
+    
+useEffect(() => {
+    const combinations = [];
+
+    formData.degree.forEach((deg) => {
+        formData.stream.forEach((str) => {
             combinations.push({
                 degree: deg.label,
-                stream: str.label
-            });
+                stream: str.label,
             });
         });
+    });
 
-        setFormData(prev => {
-            const existing = prev.rounds.map(r => `${r.degree}-${r.stream}`);
+    setFormData(prev => {
+        let rows = [...prev.rounds];
 
-            const newRows = combinations
-            .filter(c => !existing.includes(`${c.degree}-${c.stream}`))
-            .map((c, i) => ({
-                id: prev.rounds.length + i + 1,
-                degree: c.degree,
-                stream: c.stream,
-                students: "",
-                skills: ""
-            }));
-
+        // 1. Remove auto rows whose combination no longer exists
+        rows = rows.map(r => {
+            if (!r._auto) return r; // keep manual rows as-is
+            const stillExists = combinations.some(
+                c => c.degree === r.degree && c.stream === r.stream
+            );
+            if (stillExists) return r;
+            // Reset this slot back to blank instead of removing
             return {
-            ...prev,
-            // rounds: [...prev.rounds, ...newRows]
-            rounds: [...newRows, ...prev.rounds]
+                ...r,
+                degree: '',
+                stream: '',
+                _auto: false,
             };
         });
 
-        }, [formData.degree, formData.stream]);
-    // ─── Reset stream when degree changes ─────────────────────────────────────
-    // (handled inline in onChange — no separate useEffect needed)
+        // 2. Fill combinations into empty slots
+        combinations.forEach((c) => {
+            const alreadyExists = rows.some(
+                r => r.degree === c.degree && r.stream === c.stream
+            );
+            if (alreadyExists) return;
 
-    // ─── Helpers ───────────────────────────────────────────────────────────────
+            const emptyIndex = rows.findIndex(r => !r.degree);
+
+            if (emptyIndex !== -1) {
+                rows[emptyIndex] = {
+                    ...rows[emptyIndex],
+                    degree: c.degree,
+                    stream: c.stream,
+                    _auto: true,
+                };
+            } else {
+                const newId = Math.max(...rows.map(r => r.id)) + 1;
+                rows.push({
+                    id: newId,
+                    degree: c.degree,
+                    stream: c.stream,
+                    students: '',
+                    skills: '',
+                    _auto: true,
+                });
+            }
+        });
+
+        return { ...prev, rounds: rows };
+    });
+
+}, [formData.degree, formData.stream]);
+    
     const validateProposedSchedule = () => {
         const newErrors = {};
         const { startDate, endDate, preferredMode } = formData.proposedSchedule;
@@ -314,7 +376,8 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
             : 1;
         setFormData(prev => ({
             ...prev,
-            rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '' }]
+           // rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '' }]
+           rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '', _auto: false }]
         }));
     };
 
