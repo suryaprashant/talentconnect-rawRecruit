@@ -9,54 +9,141 @@ const openai = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1", // This tells the SDK to talk to Groq
 });
 
+
+// export const getAlumniPostedJobs = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     // 1. Get current student's college
+//     const myProfile = await Onboarding.findOne({ userId });
+
+//     if (!myProfile || !myProfile.college) {
+//       return res.status(404).json({ message: "College info not found in your profile." });
+//     }
+
+//     const myCollege = myProfile.college;
+
+//     // 2. Find jobs where the 'candidatePosted' alum is from the same college
+//     // We use populate to look into the Onboarding details of the poster
+//     const jobs = await JobPostingTable.find({
+//         jobType: "Referral",
+//         approvalStatus:"Approved",
+//       candidatePosted: { $exists: true, $ne: null }
+//     })
+//     .populate({
+//       path: 'candidatePosted',
+//       match: { college: myCollege }, // Only include posters from my college
+//       select: 'name college profileImage'
+//     })
+//     .sort({ createdAt: -1 });
+
+//     // 3. Filter out the nulls (jobs that didn't match the college filter in populate)
+//     // and exclude jobs posted by the user themselves
+//     const alumniJobs = jobs.filter(job => 
+//       job.candidatePosted !== null && 
+//       job.postedByUser?.toString() !== userId.toString()
+//     );
+
+//     res.status(200).json({
+//       success: true,
+//       college: myCollege,
+//       count: alumniJobs.length,
+//       jobs: alumniJobs
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching alumni jobs:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// export const getAlumniPostedJobs = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const { company } = req.params; // Get company from URL params
+
+//     if (!company) {
+//       return res.status(400).json({ message: "Company name is required in params." });
+//     }
+
+//     // 1. Get current user's college
+//     const myProfile = await Onboarding.findOne({ userId });
+
+//     if (!myProfile || !myProfile.college) {
+//       return res.status(404).json({ message: "College info not found in your profile." });
+//     }
+
+//     const myCollege = myProfile.college;
+
+//     // 2. Find professional alumni from same college who work at the given company
+//     const alumni = await Onboarding.find({
+//       college: myCollege,
+//       userId: { $ne: userId },                                                          // Exclude self
+//       profileType: "professional",
+//       currentCompany: { $regex: new RegExp(`^${company}$`, "i") },                     // Case-insensitive company match
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       college: myCollege,
+//       company,
+//       count: alumni.length,
+//       alumni,
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching alumni by company:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 export const getAlumniPostedJobs = async (req, res) => {
   try {
     const userId = req.user._id;
+    const { company } = req.params;
 
-    // 1. Get current student's college
+    if (!company) {
+      return res.status(400).json({ message: "Company name is required in params." });
+    }
+
+    // 1. Get current user's college
     const myProfile = await Onboarding.findOne({ userId });
-
-    if (!myProfile || !myProfile.college) {
+    if (!myProfile?.college) {
       return res.status(404).json({ message: "College info not found in your profile." });
     }
 
-    const myCollege = myProfile.college;
+    // 2. Find professional alumni from same college working at the given company
+    const alumni = await Onboarding.find({
+      college: myProfile.college,
+      userId: { $ne: userId },
+      profileType: "professional",
+      currentCompany: { $regex: new RegExp(`^${company}$`, "i") },
+    }).lean();
 
-    // 2. Find jobs where the 'candidatePosted' alum is from the same college
-    // We use populate to look into the Onboarding details of the poster
-    const jobs = await JobPostingTable.find({
-        jobType: "Referral",
-        approvalStatus:"Approved",
-      candidatePosted: { $exists: true, $ne: null }
-    })
-    .populate({
-      path: 'candidatePosted',
-      match: { college: myCollege }, // Only include posters from my college
-      select: 'name college profileImage'
-    })
-    .sort({ createdAt: -1 });
-
-    // 3. Filter out the nulls (jobs that didn't match the college filter in populate)
-    // and exclude jobs posted by the user themselves
-    const alumniJobs = jobs.filter(job => 
-      job.candidatePosted !== null && 
-      job.postedByUser?.toString() !== userId.toString()
+    // 3. Attach referral metrics (responseRate, referralSuccessRate, etc.) to each alumni
+    const alumniWithMetrics = await Promise.all(
+      alumni.map(async (person) => {
+        const metrics = await fetchProfessionalReferralMetrics(person._id);
+        return {
+          ...person,
+          referralMetrics: metrics,
+        };
+      })
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      college: myCollege,
-      count: alumniJobs.length,
-      jobs: alumniJobs
+      college: myProfile.college,
+      company,
+      count: alumniWithMetrics.length,
+      alumni: alumniWithMetrics,
     });
 
   } catch (error) {
-    console.error("Error fetching alumni jobs:", error);
+    console.error("Error fetching alumni by company:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
  export const ProfileScore = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -248,7 +335,6 @@ export const getCollegeAlumni = async (req, res) => {
   }
 };
 
-// Get all profiles from the same company as the logged-in user
 // export const getCompanyAlumni = async (req, res) => {
 //   try {
 //     const userId = req.user._id;
@@ -275,3 +361,29 @@ export const getCollegeAlumni = async (req, res) => {
 //   }
 // };
 
+export const getCompanyAlumni = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const myProfile = await Onboarding.findOne({ userId });
+    if (!myProfile?.currentCompany) {
+      return res.status(404).json({ success: false, message: "Current company not found in your profile." });
+    }
+
+    const companyAlumni = await Onboarding.find({
+      currentCompany: { $regex: new RegExp(`^${myProfile.currentCompany}$`, "i") },
+      userId: { $ne: userId },
+    });
+    // No .select() — full profile returned
+
+    return res.status(200).json({
+      success: true,
+      company: myProfile.currentCompany,
+      count: companyAlumni.length,
+      companyAlumni,
+    });
+  } catch (error) {
+    console.error("Error fetching company alumni:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};

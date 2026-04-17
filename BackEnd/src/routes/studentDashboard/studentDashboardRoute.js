@@ -5,7 +5,7 @@ import verifyUser from '../../middlewares/verifyUser.js';
 import { getRelevantOffCampusJobs } from '../../controllers/relevantJobContoller.js';
 const router = express.Router();
 
-router.get('/off-campus', verifyUser, getRelevantOffCampusJobs);
+router.get('/off-campus', verifyUser, getRelevantOffCampusJobs);//
 router.get('/on-campus',verifyUser, getOnCampusPostingsForCompany);
 router.get('/on-campus/company/:id', secureRoute, getOnCampusPostingForCompanybyID);
 
@@ -21,10 +21,10 @@ router.get('/pool-campus/company',verifyUser, getPoolCampusForCompany);//
 router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompany);
 
 router.get('/job-postings', secureRoute, getJobPostings);
-router.get('/internship-postings', verifyUser, getInternshipPostings);
+router.get('/internship-postings', verifyUser, getInternshipPostings); //
 router.get('/getInternshipDetail/:id',getIntershipById)
 
-router.get('/referral-jobs', verifyUser, getReferralJobs);
+router.get('/referral-jobs', verifyUser, getReferralJobs); // 
 router.get('/posted-referral-job', secureRoute, getProfessionalReferrals);
 
 

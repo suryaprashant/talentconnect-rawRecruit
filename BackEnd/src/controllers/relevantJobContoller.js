@@ -500,20 +500,57 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       };
     });
 
-    // ── STEP 6: Apply threshold AND broadcast filter ───────────────────────
-    const finalData = scoredJobs
-      .filter((j) => j.matchScore >= visibilityThreshold) // threshold gate
-      .filter((j) => j._broadcastAllowed)                 // broadcast gate
-      .sort((a, b) => b.matchScore - a.matchScore)
-      .map(({ _broadcastAllowed, ...job }) => job);       // strip internal flag
 
-    // ── Summary log ───────────────────────────────────────────────────────
-    const belowThreshold = scoredJobs.filter(
-      (j) => j.matchScore < visibilityThreshold
-    ).length;
-    const broadcastBlocked = scoredJobs.filter(
-      (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
-    ).length;
+    // ── STEP 5.5: Enrich scored jobs with alumni count ────────────────────
+const enrichedJobs = await Promise.all(
+  scoredJobs.map(async (job) => {
+    let alumniCount = 0;
+
+    if (student?.college && job.companyName) {
+      try {
+        alumniCount = await Onboarding.countDocuments({
+          college: student.college,
+          userId: { $ne: userId },
+          profileType: "professional",
+          currentCompany: { $regex: new RegExp(`^${job.companyName}$`, "i") },
+        });
+      } catch (err) {
+        console.error(`[ALUMNI] Failed to count for ${job.companyName}:`, err.message);
+      }
+    }
+
+    return { ...job, alumniCount };
+  })
+);
+    // ── STEP 6: Apply threshold AND broadcast filter ───────────────────────
+    // const finalData = scoredJobs
+    //   .filter((j) => j.matchScore >= visibilityThreshold) // threshold gate
+    //   .filter((j) => j._broadcastAllowed)                 // broadcast gate
+    //   .sort((a, b) => b.matchScore - a.matchScore)
+    //   .map(({ _broadcastAllowed, ...job }) => job);       // strip internal flag
+
+    // // ── Summary log ───────────────────────────────────────────────────────
+    // const belowThreshold = scoredJobs.filter(
+    //   (j) => j.matchScore < visibilityThreshold
+    // ).length;
+    // const broadcastBlocked = scoredJobs.filter(
+    //   (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
+    // ).length;
+    
+// ── STEP 6: Apply threshold AND broadcast filter ───────────────────────
+const finalData = enrichedJobs                               // ← changed
+  .filter((j) => j.matchScore >= visibilityThreshold)
+  .filter((j) => j._broadcastAllowed)
+  .sort((a, b) => b.matchScore - a.matchScore)
+  .map(({ _broadcastAllowed, ...job }) => job);
+
+// ── Summary log (update these two lines too) ──────────────────────────
+const belowThreshold = enrichedJobs.filter(              // ← changed
+  (j) => j.matchScore < visibilityThreshold
+).length;
+const broadcastBlocked = enrichedJobs.filter(            // ← changed
+  (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
+).length;
 
     console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
     console.log(`\x1b[33m║  Total jobs fetched    : ${String(jobs.length).padEnd(24)}\x1b[0m║`);
