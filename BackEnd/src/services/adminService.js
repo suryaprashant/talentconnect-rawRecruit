@@ -318,10 +318,176 @@ export const updateReferralApplicationStatusService = async ({
 
 
 
+// export const getAllProfessionalReferralsService = async (professionalProfileId) => {
+//   try {
+//     const pipeline = [
+//       // ✅ Step 1: Early match on jobType + adminApprovalStatus
+//       {
+//         $match: {
+//           jobType: "Referral",
+//           adminApprovalStatus: "Approved"
+//         }
+//       },
+
+//       // ✅ Step 2: Join job
+//       {
+//         $lookup: {
+//           from: "jobpostingtables",
+//           localField: "job",
+//           foreignField: "_id",
+//           as: "jobInfo"
+//         }
+//       },
+//       { $unwind: "$jobInfo" },
+
+//       // ✅ Step 3: Filter by professional's jobs
+//       {
+//         $match: {
+//           "jobInfo.candidatePosted": new mongoose.Types.ObjectId(professionalProfileId)
+//         }
+//       },
+
+//       // ✅ Step 4: Resolve effectiveApplicantId (same logic as fetchReferralApplicationsService)
+//       {
+//         $addFields: {
+//           effectiveApplicantId: {
+//             $cond: [
+//               {
+//                 $and: [
+//                   { $eq: ["$appliedByType", "employer"] },
+//                   { $ne: ["$appliedForCompany", null] }
+//                 ]
+//               },
+//               "$appliedForCompany",
+//               "$applicant"
+//             ]
+//           }
+//         }
+//       },
+
+//       // ✅ Step 5: All applicant type lookups
+//       {
+//         $lookup: {
+//           from: "onboardings",
+//           localField: "effectiveApplicantId",
+//           foreignField: "_id",
+//           as: "studentApplicant"
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: "companyprofiles",
+//           localField: "effectiveApplicantId",
+//           foreignField: "_id",
+//           as: "companyApplicant"
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: "employerprofiles",
+//           localField: "effectiveApplicantId",
+//           foreignField: "_id",
+//           as: "employerApplicant"
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: "collegeonboardings",
+//           localField: "effectiveApplicantId",
+//           foreignField: "_id",
+//           as: "collegeApplicant"
+//         }
+//       },
+
+//       // ✅ Step 6: Pick correct profile based on applicantType
+//       {
+//         $addFields: {
+//           profileData: {
+//             $switch: {
+//               branches: [
+//                 {
+//                   case: { $in: ["$applicantType", ["student", "fresher", "professional"]] },
+//                   then: { $arrayElemAt: ["$studentApplicant", 0] }
+//                 },
+//                 {
+//                   case: { $eq: ["$applicantType", "company"] },
+//                   then: { $arrayElemAt: ["$companyApplicant", 0] }
+//                 },
+//                 {
+//                   case: { $eq: ["$applicantType", "employer"] },
+//                   then: { $arrayElemAt: ["$employerApplicant", 0] }
+//                 },
+//                 {
+//                   case: { $eq: ["$applicantType", "college"] },
+//                   then: { $arrayElemAt: ["$collegeApplicant", 0] }
+//                 }
+//               ],
+//               default: null
+//             }
+//           }
+//         }
+//       },
+
+//       // ✅ Step 7: Filter out null profiles
+//       { $match: { profileData: { $ne: null } } },
+
+//       // ✅ Step 8: Lookup auth for email
+//       {
+//         $lookup: {
+//           from: "auths",
+//           localField: "profileData.userId",
+//           foreignField: "_id",
+//           as: "authData"
+//         }
+//       },
+//       { $unwind: { path: "$authData", preserveNullAndEmptyArrays: true } },
+
+//       // ✅ Step 9: Project clean output
+//       {
+//         $project: {
+//           _id: 1,
+//           currentStatus: 1,
+//           adminApprovalStatus: 1,
+//           applicantType: 1,
+//           isVisited: 1,
+//           createdAt: 1,
+//           // 🎯 Matches the { job: { _id, jobTitle } } format
+//           job: {
+//             _id: "$jobInfo._id",
+//             jobTitle: "$jobInfo.jobTitle",
+//           },
+//           // 🎯 Matches the { applicant: { ... } } format
+//           applicant: {
+//             _id: "$profileData._id",
+//             fullName: { $ifNull: ["$profileData.fullName", "$profileData.name"] },
+//             email: { $ifNull: ["$authData.email", "N/A"] },
+//             phone: { $ifNull: ["$profileData.phone", "$profileData.phoneNumber", "N/A"] },
+//             skills: { $ifNull: ["$profileData.skills", []] },
+//             academicBackground: {
+//               collegeName: "$profileData.collegeName",
+//               course: "$profileData.course",
+//               graduationYear: "$profileData.graduationYear"
+//             },
+//             summary: "$profileData.summary"
+//           }
+//         }
+//       },
+
+//       { $sort: { createdAt: -1 } }
+//     ];
+
+//     const data = await Application.aggregate(pipeline);
+//     return { success: true, data };
+//   } catch (error) {
+//     console.error("Error in getAllProfessionalReferralsService:", error);
+//     throw error;
+//   }
+// };
+
 export const getAllProfessionalReferralsService = async (professionalProfileId) => {
   try {
     const pipeline = [
-      // ✅ Step 1: Early match on jobType + adminApprovalStatus
+      // 1️⃣ Filter for Referral types that have passed initial admin screening
       {
         $match: {
           jobType: "Referral",
@@ -329,7 +495,7 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
         }
       },
 
-      // ✅ Step 2: Join job
+      // 2️⃣ Join with Job Postings to see who posted the job
       {
         $lookup: {
           from: "jobpostingtables",
@@ -340,23 +506,24 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
       },
       { $unwind: "$jobInfo" },
 
-      // ✅ Step 3: Filter by professional's jobs
+      // 3️⃣ Security Filter: Only get applications for jobs posted by THIS professional
       {
         $match: {
           "jobInfo.candidatePosted": new mongoose.Types.ObjectId(professionalProfileId)
         }
       },
 
-      // ✅ Step 4: Resolve effectiveApplicantId (same logic as fetchReferralApplicationsService)
+      // 4️⃣ Resolve the actual Applicant ID 
+      // (Handles cases where an employer refers a company-linked profile)
       {
         $addFields: {
           effectiveApplicantId: {
             $cond: [
-              {
+              { 
                 $and: [
-                  { $eq: ["$appliedByType", "employer"] },
+                  { $eq: ["$appliedByType", "employer"] }, 
                   { $ne: ["$appliedForCompany", null] }
-                ]
+                ] 
               },
               "$appliedForCompany",
               "$applicant"
@@ -365,61 +532,41 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
         }
       },
 
-      // ✅ Step 5: All applicant type lookups
+      // 5️⃣ Lookups for all possible Applicant Profile types
       {
-        $lookup: {
-          from: "onboardings",
-          localField: "effectiveApplicantId",
-          foreignField: "_id",
-          as: "studentApplicant"
-        }
+        $lookup: { from: "onboardings", localField: "effectiveApplicantId", foreignField: "_id", as: "studentApplicant" }
       },
       {
-        $lookup: {
-          from: "companyprofiles",
-          localField: "effectiveApplicantId",
-          foreignField: "_id",
-          as: "companyApplicant"
-        }
+        $lookup: { from: "companyprofiles", localField: "effectiveApplicantId", foreignField: "_id", as: "companyApplicant" }
       },
       {
-        $lookup: {
-          from: "employerprofiles",
-          localField: "effectiveApplicantId",
-          foreignField: "_id",
-          as: "employerApplicant"
-        }
+        $lookup: { from: "employerprofiles", localField: "effectiveApplicantId", foreignField: "_id", as: "employerApplicant" }
       },
       {
-        $lookup: {
-          from: "collegeonboardings",
-          localField: "effectiveApplicantId",
-          foreignField: "_id",
-          as: "collegeApplicant"
-        }
+        $lookup: { from: "collegeonboardings", localField: "effectiveApplicantId", foreignField: "_id", as: "collegeApplicant" }
       },
 
-      // ✅ Step 6: Pick correct profile based on applicantType
+      // 6️⃣ Select the correct profile document based on applicantType
       {
         $addFields: {
           profileData: {
             $switch: {
               branches: [
-                {
-                  case: { $in: ["$applicantType", ["student", "fresher", "professional"]] },
-                  then: { $arrayElemAt: ["$studentApplicant", 0] }
+                { 
+                  case: { $in: ["$applicantType", ["student", "fresher", "professional"]] }, 
+                  then: { $arrayElemAt: ["$studentApplicant", 0] } 
                 },
-                {
-                  case: { $eq: ["$applicantType", "company"] },
-                  then: { $arrayElemAt: ["$companyApplicant", 0] }
+                { 
+                  case: { $eq: ["$applicantType", "company"] }, 
+                  then: { $arrayElemAt: ["$companyApplicant", 0] } 
                 },
-                {
-                  case: { $eq: ["$applicantType", "employer"] },
-                  then: { $arrayElemAt: ["$employerApplicant", 0] }
+                { 
+                  case: { $eq: ["$applicantType", "employer"] }, 
+                  then: { $arrayElemAt: ["$employerApplicant", 0] } 
                 },
-                {
-                  case: { $eq: ["$applicantType", "college"] },
-                  then: { $arrayElemAt: ["$collegeApplicant", 0] }
+                { 
+                  case: { $eq: ["$applicantType", "college"] }, 
+                  then: { $arrayElemAt: ["$collegeApplicant", 0] } 
                 }
               ],
               default: null
@@ -428,10 +575,10 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
         }
       },
 
-      // ✅ Step 7: Filter out null profiles
+      // 7️⃣ Filter out any applications where the profile might have been deleted
       { $match: { profileData: { $ne: null } } },
 
-      // ✅ Step 8: Lookup auth for email
+      // 8️⃣ Join with Auth collection to get the User's Email
       {
         $lookup: {
           from: "auths",
@@ -442,44 +589,45 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
       },
       { $unwind: { path: "$authData", preserveNullAndEmptyArrays: true } },
 
-      // ✅ Step 9: Project clean output
+      // 9️⃣ Final Projection: Merge all profile fields and format the response
       {
         $project: {
           _id: 1,
-          currentStatus: 1,
-          adminApprovalStatus: 1,
-          applicantType: 1,
-          matchScore: 1,
-          createdAt: 1,
-          isVisited: 1,
-          jobTitle: "$jobInfo.jobTitle",
-          jobId: "$jobInfo._id",
-          applicantName: { $ifNull: ["$profileData.fullName", "$profileData.name"] },
-          applicantEmail: { $ifNull: ["$authData.email", "N/A"] },
-          applicantPhone: { $ifNull: ["$profileData.phone", "$profileData.phoneNumber", "N/A"] },
-          academicBackground: {
-            collegeName: { $ifNull: ["$profileData.collegeName", null] },
-            course: "$profileData.course",
-            graduationYear: "$profileData.graduationYear"
+          applicant: {
+            $mergeObjects: [
+              "$profileData", 
+              { 
+                email: { $ifNull: ["$authData.email", "$profileData.email"] } 
+              }
+            ]
           },
-          skills: { $ifNull: ["$profileData.skills", []] },
-          summary: "$profileData.summary"
+          applicantType: 1,
+          adminApprovalStatus: 1,
+          job: {
+            _id: "$jobInfo._id",
+            jobTitle: "$jobInfo.jobTitle"
+          },
+          currentStatus: 1,
+          createdAt: 1
         }
       },
 
+      // 🔟 Sort by most recent application first
       { $sort: { createdAt: -1 } }
     ];
 
     const data = await Application.aggregate(pipeline);
-    return { success: true, data };
+
+    return {
+      success: true,
+      data: data
+    };
+
   } catch (error) {
     console.error("Error in getAllProfessionalReferralsService:", error);
     throw error;
   }
 };
-
-
-
 export const getCompanyReferralFeedService = async (professionalProfileId) => {
    try {
     const pipeline = [

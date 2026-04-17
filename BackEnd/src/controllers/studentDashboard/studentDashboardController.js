@@ -1556,14 +1556,40 @@ export const getInternshipPostings = async (req, res) => {
       };
     });
 
-    // ── STEP 8: Apply threshold & sort ────────────────────────────────────
-    const belowThreshold = scoredPostings.filter(
-      (j) => j.matchScore < visibilityThreshold
-    ).length;
+   const enrichedPostings = await Promise.all(
+  scoredPostings.map(async (job) => {
+    let alumniCount = 0;
 
-    const finalPostings = scoredPostings
-      .filter((j) => j.matchScore >= visibilityThreshold)
-      .sort((a, b) => b.matchScore - a.matchScore);
+    const companyName =
+      job.companyPosted?.companyDetails?.companyName ||
+      job.companyName ||
+      "Company";
+
+    if (student?.college && companyName && companyName !== "Company") {
+      try {
+        alumniCount = await OnboardingModel.countDocuments({
+          college: student.college,
+          userId: { $ne: userId },
+          profileType: "professional",
+          currentCompany: { $regex: new RegExp(`^${companyName}$`, "i") },
+        });
+      } catch (err) {
+        console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
+      }
+    }
+
+    return { ...job, alumniCount };
+  })
+);
+
+// ── STEP 8: Apply threshold & sort ────────────────────────────────────
+const belowThreshold = enrichedPostings.filter(       // ← changed
+  (j) => j.matchScore < visibilityThreshold
+).length;
+
+const finalPostings = enrichedPostings               // ← changed
+  .filter((j) => j.matchScore >= visibilityThreshold)
+  .sort((a, b) => b.matchScore - a.matchScore);
 
     // ── Summary log ───────────────────────────────────────────────────────
     console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");

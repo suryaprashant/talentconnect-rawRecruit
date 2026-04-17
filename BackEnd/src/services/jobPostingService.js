@@ -295,22 +295,46 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
     scoreJob(job, student, W, i, "Referral Job")
   );
 
+  const enrichedJobs = await Promise.all(
+  scoredJobs.map(async (job) => {
+    let alumniCount = 0;
+
+    const companyName =
+      job.candidatePosted?.currentCompany ||   // referral jobs → poster's company
+      job.companyPosted?.companyDetails?.companyName;   // fallback
+
+    if (student?.college && companyName) {
+      try {
+        alumniCount = await OnboardingModel.countDocuments({
+          college: student.college,
+          userId: { $ne: userId },
+          profileType: "professional",
+          currentCompany: { $regex: new RegExp(`^${companyName}$`, "i") },
+        });
+      } catch (err) {
+        console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
+      }
+    }
+
+    return { ...job, alumniCount };
+  })
+);
+
   // ── STEP 6: Threshold + broadcast filter, sort, strip internal flag ───────
-  const belowThreshold = scoredJobs.filter(
-    (j) => j.matchScore < visibilityThreshold
-  ).length;
- 
+//   const belowThreshold = scoredJobs.filter(
+//     (j) => j.matchScore < visibilityThreshold
+//   ).length;
 
-  const finalData = scoredJobs
-    .filter((j) => j.matchScore >= visibilityThreshold)
-   
-    .sort((a, b) => b.matchScore - a.matchScore)
-    
 
-  // ── Summary log ──────────────────────────────────────────────────────────
- 
+const belowThreshold = enrichedJobs.filter(      // ← changed
+  (j) => j.matchScore < visibilityThreshold
+).length;
 
-  return finalData;
+const finalData = enrichedJobs                   // ← changed
+  .filter((j) => j.matchScore >= visibilityThreshold)
+  .sort((a, b) => b.matchScore - a.matchScore);
+
+return finalData;
 };
 
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {
