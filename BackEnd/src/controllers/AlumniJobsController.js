@@ -3,6 +3,7 @@ import {JobPostingTable}  from "../models/jobPostingsModel.js";
 import OpenAI from "openai";
 import Application from "../models/applicationModel.js";
 import mongoose from "mongoose";
+import { fetchProfessionalReferralMetrics } from "../services/adminService.js"; // adjust import path
 const openai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY, // Ensure this is in your .env file
   baseURL: "https://api.groq.com/openai/v1", // This tells the SDK to talk to Groq
@@ -203,3 +204,74 @@ export const getNewApplications = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+// Get all alumni from the same college as the logged-in user
+
+
+export const getCollegeAlumni = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const myProfile = await Onboarding.findOne({ userId });
+    if (!myProfile?.college) {
+      return res.status(404).json({ success: false, message: "College info not found in your profile." });
+    }
+
+    const alumni = await Onboarding.find({
+      college: myProfile.college,
+      userId: { $ne: userId },
+      profileType: "professional",
+    });
+    // No .select() — full profile returned
+
+    // Attach referral metrics to each alumni in parallel
+    const alumniWithMetrics = await Promise.all(
+      alumni.map(async (person) => {
+        const metrics = await fetchProfessionalReferralMetrics(person._id);
+        return {
+          ...person.toObject(),
+          referralMetrics: metrics,
+        };
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      college: myProfile.college,
+      count: alumniWithMetrics.length,
+      alumni: alumniWithMetrics,
+    });
+  } catch (error) {
+    console.error("Error fetching college alumni:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// Get all profiles from the same company as the logged-in user
+// export const getCompanyAlumni = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     const myProfile = await Onboarding.findOne({ userId });
+//     if (!myProfile?.currentCompany) {
+//       return res.status(404).json({ success: false, message: "Current company not found in your profile." });
+//     }
+
+//     const companyAlumni = await Onboarding.find({
+//       currentCompany: { $regex: new RegExp(`^${myProfile.currentCompany}$`, "i") }, // case-insensitive match
+//       userId: { $ne: userId },
+//     }).select("name profileImage college degree currentCompany jobRoles totalYearsOfExperience linkedin");
+
+//     return res.status(200).json({
+//       success: true,
+//       company: myProfile.currentCompany,
+//       count: companyAlumni.length,
+//       companyAlumni,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching company alumni:", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+

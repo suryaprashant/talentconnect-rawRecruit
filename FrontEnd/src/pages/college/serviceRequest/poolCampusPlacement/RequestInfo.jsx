@@ -41,7 +41,6 @@ export default function PoolCampusHiringForm({ onBackClick }) {
     };
 const [designationOptions, setDesignationOptions] = useState([]);
 const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
-//const [selectedStreams, setSelectedStreams] = useState([]);
 
     const [formData, setFormData] = useState(() => {
         const savedData = localStorage.getItem('pendingPoolCampusRegistration');
@@ -218,20 +217,21 @@ useEffect(() => {
         };
         fetchStreams();
     }, [selectedDegreeIds]);
-
 useEffect(() => {
-    setFormData(prev => {
-        const selectedStreams = prev.stream.map(s => s.label);
+    const selectedStreams = formData.stream.map(s => s.label);
 
+    setFormData(prev => {
         let rows = [...prev.rounds];
 
+        // 1. Reset auto rows whose stream was removed
         rows = rows.map(r => {
             if (!r._auto) return r;
             const stillExists = selectedStreams.includes(r.branch);
-            if (!stillExists) return { ...r, branch: '', _auto: false };
-            return r;
+            if (stillExists) return r;
+            return { ...r, branch: '', _auto: false };
         });
 
+        // 2. Fill selected streams into empty slots
         selectedStreams.forEach((stream) => {
             const alreadyExists = rows.some(r => r.branch === stream);
             if (alreadyExists) return;
@@ -258,7 +258,9 @@ useEffect(() => {
 
         return { ...prev, rounds: rows };
     });
+
 }, [formData.stream]);
+
     // ─── Per-row stream fetch for Section 6 table ─────────────────────────────
     const fetchStreamsForRow = async (degreeLabel) => {
         if (!degreeLabel) return;
