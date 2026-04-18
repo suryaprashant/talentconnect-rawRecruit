@@ -8,8 +8,8 @@ import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
 import { CirclePlay, HelpCircle } from "lucide-react";
-import demoVideo2 from "../../assets/college.mp4";
-import demoVideo from "../../assets/company.mp4";
+// import demoVideo2 from "../../assets/college.mp4";
+// import demoVideo from "../../assets/company.mp4";
 const CountUp = ({ end, suffix = "" }) => {
   const [count, setCount] = useState(0);
 
@@ -229,12 +229,14 @@ export default function HeroSection() {
 
           {/* Video Container */}
           <div className="bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
-            <video
-              src={demoVideo}
-              controls
-              autoPlay
-              className="w-full max-h-[80vh] object-contain"
-            />
+            <iframe
+              className="w-full h-[400px] md:h-[500px] rounded-xl"
+              src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID?autoplay=1"
+              title="Demo Video"
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            ></iframe>
           </div>
         </div>
       </div>
