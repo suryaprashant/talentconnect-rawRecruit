@@ -335,6 +335,8 @@ export const getCollegeAlumni = async (req, res) => {
   }
 };
 
+
+
 // export const getCompanyAlumni = async (req, res) => {
 //   try {
 //     const userId = req.user._id;
@@ -345,9 +347,10 @@ export const getCollegeAlumni = async (req, res) => {
 //     }
 
 //     const companyAlumni = await Onboarding.find({
-//       currentCompany: { $regex: new RegExp(`^${myProfile.currentCompany}$`, "i") }, // case-insensitive match
+//       currentCompany: { $regex: new RegExp(`^${myProfile.currentCompany}$`, "i") },
 //       userId: { $ne: userId },
-//     }).select("name profileImage college degree currentCompany jobRoles totalYearsOfExperience linkedin");
+//     });
+//     // No .select() — full profile returned
 
 //     return res.status(200).json({
 //       success: true,
@@ -366,21 +369,62 @@ export const getCompanyAlumni = async (req, res) => {
     const userId = req.user._id;
 
     const myProfile = await Onboarding.findOne({ userId });
-    if (!myProfile?.currentCompany) {
-      return res.status(404).json({ success: false, message: "Current company not found in your profile." });
+    if (!myProfile) {
+      return res.status(404).json({ success: false, message: "Profile not found." });
     }
 
-    const companyAlumni = await Onboarding.find({
-      currentCompany: { $regex: new RegExp(`^${myProfile.currentCompany}$`, "i") },
-      userId: { $ne: userId },
+    // Collect all companies user has worked at (including current)
+    const allCompanies = [];
+
+    if (myProfile.currentCompany) {
+      allCompanies.push(myProfile.currentCompany);
+    }
+
+    if (myProfile.experiences?.length > 0) {
+      myProfile.experiences.forEach((exp) => {
+        if (exp.company) allCompanies.push(exp.company);
+      });
+    }
+
+    if (allCompanies.length === 0) {
+      return res.status(404).json({ success: false, message: "No companies found in your profile." });
+    }
+
+    // Deduplicate case-insensitively
+    const uniqueCompanies = [...new Map(
+      allCompanies.map((c) => [c.toLowerCase(), c])
+    ).values()];
+
+    // Build $or conditions — one per company for both currentCompany and experiences.company
+    const orConditions = uniqueCompanies.flatMap((company) => {
+      const regex = new RegExp(`^${company}$`, "i");
+      return [
+        { currentCompany: regex },
+        { "experiences.company": regex },
+      ];
     });
-    // No .select() — full profile returned
+
+    const companyAlumni = await Onboarding.find({
+      userId: { $ne: userId },
+      $or: orConditions,
+    });
+
+    // Group alumni by which shared company they belong to
+    const alumniByCompany = {};
+    uniqueCompanies.forEach((company) => {
+      const regex = new RegExp(`^${company}$`, "i");
+      alumniByCompany[company] = companyAlumni.filter(
+        (alumni) =>
+          (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
+          alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
+      );
+    });
 
     return res.status(200).json({
       success: true,
-      company: myProfile.currentCompany,
-      count: companyAlumni.length,
-      companyAlumni,
+      companiesChecked: uniqueCompanies,
+      totalUniqueAlumni: companyAlumni.length,
+      alumniByCompany,
     });
   } catch (error) {
     console.error("Error fetching company alumni:", error);

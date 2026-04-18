@@ -3,9 +3,13 @@ import Search from "./Search";
 import Users from "./Users";
 import { Building2, Users as UsersIcon } from 'lucide-react';
 
-function Left() {
+function Left({ isFloating = false }) {
   return (
-    <div className="w-[30%] min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 text-gray-800 flex flex-col border-r border-gray-200">
+    <div
+      className={`${
+        isFloating ? "w-full h-full" : "w-[30%] min-h-screen"
+      } bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 text-gray-800 flex flex-col border-r border-gray-200`}
+    >
       {/* Header Section */}
       {/* <div className="p-6 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
         <div className="flex items-center">
@@ -22,7 +26,7 @@ function Left() {
       </div> */}
 
       {/* Search Section */}
-      <div className="p-6 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+      <div className={`${isFloating ? "p-3" : "p-6"} border-b border-gray-200 bg-white/90 backdrop-blur-sm`}>
         <div className="mb-4 flex items-center">
           <UsersIcon className="h-5 w-5 text-[#143694] mr-2" />
           <h2 className="font-semibold text-lg text-gray-800">Active Connections</h2>
@@ -31,7 +35,7 @@ function Left() {
       </div>
 
       {/* Users List Section */}
-      <div className="flex-1 overflow-y-auto p-4 bg-white/50 backdrop-blur-sm">
+      <div className={`flex-1 overflow-y-auto ${isFloating ? "p-2" : "p-4"} bg-white/50 backdrop-blur-sm`}>
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-gray-800 text-lg">All Users</h3>

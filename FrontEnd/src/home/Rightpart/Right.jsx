@@ -8,7 +8,7 @@ import useConversation from "../../statemanage/useConversation.js";
 import { useLegacyAuth } from "../../context/AuthProvider.jsx";
 import { CiMenuFries } from "react-icons/ci";
 
-function Right() {
+function Right({ isFloating = false }) {    
     const { selectedConversation } = useConversation();
 
     // Debug log to verify conversation is received
@@ -17,7 +17,9 @@ function Right() {
     }, [selectedConversation]);
 
     return (
-        <div className="w-full bg-white text-gray-800 flex flex-col h-screen">
+        <div className={`w-full bg-white text-gray-800 flex flex-col ${
+        isFloating ? "h-full" : "h-screen"
+        }`}>
             {!selectedConversation ? (
                 <NoChatSelected />
             ) : (
@@ -39,7 +41,9 @@ const NoChatSelected = () => {
     const [authUser] = useLegacyAuth();
 
     return (
-        <div className="relative flex flex-col h-full items-center justify-center bg-blue-100 text-blue-800">
+        <div className={`relative flex flex-col h-full items-center justify-center ${
+        isFloating ? "p-4" : ""
+        } bg-blue-100`}>
             <label
                 htmlFor="my-drawer-2"
                 className="btn btn-ghost drawer-button lg:hidden absolute top-4 left-4"

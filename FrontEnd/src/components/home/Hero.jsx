@@ -8,6 +8,8 @@ import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
 import { CirclePlay, HelpCircle } from "lucide-react";
+// import demoVideo2 from "../../assets/college.mp4";
+// import demoVideo from "../../assets/company.mp4";
 const CountUp = ({ end, suffix = "" }) => {
   const [count, setCount] = useState(0);
 
@@ -15,6 +17,10 @@ const CountUp = ({ end, suffix = "" }) => {
     let start = 0;
     const duration = 2000;
     const step = end / (duration / 16);
+    const currentVideo =
+      hoveredAction === "college"
+        ? demoVideo2
+        : demoVideo; // default = company
 
     const timer = setInterval(() => {
       start += step;
@@ -37,6 +43,7 @@ export default function HeroSection() {
   const { isAuthenticated, role } = useAuth();
   const [hoveredAction, setHoveredAction] = useState("hire");
   const [showModal, setShowModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const handleRoleSelect = (selectedRole) => {
     if (!isAuthenticated) {
       sessionStorage.setItem("tempSelectedRole", selectedRole);
@@ -58,6 +65,24 @@ export default function HeroSection() {
     }
   };
 
+  const contentMap = {
+    hire: {
+      title: "The Fastest Way to",
+      highlight: "Hire Freshers",
+      desc: "Run On-Campus, Pool-Campus, and Off-Campus hiring from one unified platform — connect with colleges, manage drives, and hire freshers faster."
+    },
+    college: {
+      title: "Connect Companies",
+      highlight: "with College",
+      desc: "Run On-Campus and Pool-Campus placement drives from one unified platform — connect with employers and improve student placement outcomes."
+    },
+    apply: {
+      title: "The Only Platform Designed to",
+      highlight: "Launch Your Career",
+      desc: "Access Off-campus, referral job and internship opportunities, apply easily, and track your hiring progress in one place."
+    }
+  };
+
   return (
   <section className="relative overflow-hidden bg-gradient-to-br from-[#eef2ff] via-[#f8fafc] to-[#e0e7ff]">
 
@@ -75,18 +100,21 @@ export default function HeroSection() {
 
         {/* LEFT */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          key={hoveredAction}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.3 }}
         >
 
           <h1 className="font-display text-4xl md:text-5xl lg:text-[56px] font-bold leading-[1.1] text-foreground mb-6">
-            The Fastest Way to{" "}
-            <span className="text-[#143694] text-[54px]">Hire Freshers</span> in India
+            {contentMap[hoveredAction].title}{" "}
+            <span className="text-[#143694]">
+              {contentMap[hoveredAction].highlight}
+            </span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
-            Run On-Campus, Pool-Campus, and Off-Campus hiring from one unified platform — connect with colleges, manage drives, and hire freshers faster.
+            {contentMap[hoveredAction].desc}
           </p>
 
           <div className="flex flex-wrap gap-4 mb-10">
@@ -123,7 +151,7 @@ export default function HeroSection() {
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-500 mt-4">
             <button
-              onClick={() => navigate("/demo")}
+              onClick={() => setShowVideoModal(true)}
               className="flex items-center gap-1 hover:text-[#143694] transition"
             >
             <CirclePlay size={16} />
@@ -136,8 +164,8 @@ export default function HeroSection() {
               onClick={() => setShowModal(true)} 
               className="flex items-center gap-1 hover:text-[#143694] transition"
             >
-              <HelpCircle size={16} />
               Request onboarding support
+              <HelpCircle size={16} />
             </button>
           </div>
         </motion.div>
@@ -186,6 +214,34 @@ export default function HeroSection() {
         </div>
       </div>
     )}
+    {showVideoModal && (
+
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="relative w-full max-w-4xl mx-4">
+          
+          {/* Close Button */}
+          <button
+            onClick={() => setShowVideoModal(false)}
+            className="absolute -top-10 right-0 text-white text-xl hover:scale-110 transition"
+          >
+            ✕
+          </button>
+
+          {/* Video Container */}
+          <div className="bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
+            <iframe
+              className="w-full h-[400px] md:h-[500px] rounded-xl"
+              src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID?autoplay=1"
+              title="Demo Video"
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    )}
+
   </section>
 );
 };

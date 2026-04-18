@@ -1,117 +1,173 @@
 import { motion } from "framer-motion";
 import { MapPin, IndianRupee } from "lucide-react";
 
-const ReferralJobCard = ({ job, i, activeType, handleApply }) => {
-  const title =
-    job.jobRoles?.[0] ||
-    job.jobTitle ||
-    job.collegePosted?.collegeUniversityDetails?.collegeName ||
-    "Role not specified";
+const ReferralJobCard = ({ job, i, handleApply }) => {
+// 🔹 ROLE
+const title =
+job.jobRoles?.[0] ||
+job.jobTitle ||
+"Role not specified";
 
-  const company =
-    job.companyName ||
-    job.candidatePosted?.currentCompany ||
-    job.companyPosted?.companyDetails?.companyName ||
-    job.degreeType ||
-    "Not Mentioned";
+// 🔹 COMPANY
+const company =
+job.companyName ||
+job.candidatePosted?.currentCompany ||
+job.companyPosted?.companyDetails?.companyName ||
+"Not Mentioned";
 
-  const location =
-    job.companyPosted?.hiringPreferences?.hiringLocations?.[0] ||
-    (Array.isArray(job.location) && job.location.length > 0
-      ? job.location[0]
-      : null) ||
-    job.collegePosted?.collegeUniversityDetails?.collegeLocation ||
-    "Location not specified";
+// 🔹 LOCATION
+const location =
+job.companyPosted?.hiringPreferences?.hiringLocations?.[0] ||
+(Array.isArray(job.location) && job.location.length > 0
+? job.location[0]
+: null) ||
+job.candidatePosted?.locations?.[0] ||
+"Location not specified";
 
-  const salary = job.packageDetails?.totalCTC
-    ? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-    : "Not disclosed";
+// 🔹 SALARY
+const salary = job.packageDetails?.totalCTC
+? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
+: "Not disclosed";
 
-  const employmentType = job.employmentType?.[0] || job.jobType || "N/A";
-  const workMode = job.workMode?.[0] || job.jobType || "N/A";
+// 🔹 WORK TYPE
+const employmentType = job.employmentType?.[0] || job.jobType || "N/A";
+const workMode = job.workMode?.[0] || "N/A";
 
-  const skills = job.skills || [];
-  const visibleSkills = skills.slice(0, 2);
-  const extraSkills = skills.length - 2;
+// 🔹 NOTICE PERIOD
+const noticePeriod =
+job.candidatePosted?.noticePeriod || "Not specified";
 
-  const tag = job.tags?.[0];
-  const deadline =
-    job.endDate ||
-    job.proposedSchedule?.endDate ||
-    job.interviewWindow?.end;
+// 🔹 STREAMS (optional fallback from candidate)
+const streams =
+job.studentStreams?.length > 0
+? job.studentStreams
+: job.candidatePosted?.specialization
+? [job.candidatePosted.specialization]
+: [];
 
-  const daysLeft = deadline
-    ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
-    : null;
+// 🔹 SKILLS
+const skills =
+job.skills?.length > 0
+? job.skills
+: job.candidatePosted?.skills || [];
 
-  return (
-    <motion.div
-      key={job._id || i}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: i * 0.08 }}
-      className="relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
-    >
-      {/* TAG + DEADLINE */}
-      <div className="absolute top-6 right-3 flex flex-col items-end gap-1">
-        {tag && (
-          <span className="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-            {tag}
-          </span>
-        )}
+const visibleSkills = skills.slice(0, 2);
+const extraSkills = skills.length - 2;
+let experienceLevel = "Fresher";
 
-        {daysLeft !== null && (
-          <span className="text-[10px] px-2 py-1 mt-1 rounded-full font-medium bg-blue-100 text-blue-600">
-            {daysLeft > 0 ? `${daysLeft} days left` : "Closed"}
-          </span>
-        )}
+if (job.yearsOfExperience) {
+  experienceLevel = job.yearsOfExperience;
+} else if (job.minYearofExperience) {
+  experienceLevel = `${job.minYearofExperience}+ yrs`;
+} else if (job.candidatePosted?.experiences?.length > 0) {
+  experienceLevel = `${job.candidatePosted.experiences.length} yrs exp`;
+}
+return (
+<motion.div
+key={job._id || i}
+initial={{ opacity: 0, y: 20 }}
+whileInView={{ opacity: 1, y: 0 }}
+transition={{ delay: i * 0.08 }}
+className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition flex flex-col h-full"
+> <div className="flex-grow">
+
+
+    {/* 🔹 HEADER */}
+    <div className="mb-3">
+      <h3 className="font-semibold text-gray-900 text-lg">
+        {title}
+      </h3>
+      <p className="text-sm text-gray-500">{company}</p>
+    </div>
+
+    {/* 🔹 LOCATION */}
+    <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+      <MapPin className="w-4 h-4" />
+      {location}
+    </div>
+
+    {/* 🔹 NOTICE PERIOD (like badge row in other cards) */}
+    <div className="flex gap-3 flex-wrap mb-3">
+      <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
+        Notice Period: {noticePeriod}
       </div>
-
-      {/* HEADER */}
-      <div className="mb-4">
-        <h3 className="font-semibold text-gray-900 text-lg">{title}</h3>
-        <p className="text-sm text-gray-500">{company}</p>
+      <div className="text-xs bg-purple-100 px-3 py-1 rounded-md">
+        Exp: {experienceLevel}
       </div>
+    </div>
 
-      {/* META */}
-      <div className="space-y-2 mb-4 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
-          <MapPin className="w-3.5 h-3.5" /> {location}
+    {/* 🔹 PACKAGE */}
+    <div className="flex justify-between text-sm text-gray-700 mb-3">
+      <span>Package</span>
+      <span className="font-medium flex items-center gap-1">
+        <IndianRupee className="w-4 h-4" />
+        {salary}
+      </span>
+    </div>
+
+    {/* 🔹 WORK MODE */}
+    <div className="text-xs text-gray-500 mb-3">
+      {employmentType} • {workMode}
+    </div>
+
+    {/* 🔹 STREAMS */}
+    {streams.length > 0 && (
+      <div className="mb-3">
+        <div className="text-sm font-medium mb-2">
+          Relevant Background
         </div>
 
-        <div className="flex items-center gap-2">
-          <IndianRupee className="w-3.5 h-3.5" /> {salary}
-        </div>
-
-        <div className="flex gap-3 text-xs text-gray-500">
-          <span>{employmentType}</span>
-          <span>•</span>
-          <span>{workMode}</span>
+        <div className="flex flex-wrap gap-2">
+          {streams.slice(0, 3).map((s, idx) => (
+            <span
+              key={idx}
+              className="text-xs bg-blue-100 px-2 py-1 rounded-md"
+            >
+              {s}
+            </span>
+          ))}
         </div>
       </div>
+    )}
 
-      {/* SKILLS */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        {visibleSkills.map((skill, idx) => (
-          <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded-md">
-            {skill}
-          </span>
-        ))}
-        {extraSkills > 0 && (
-          <span className="text-xs bg-gray-200 px-2 py-1 rounded-md">
-            +{extraSkills} more
-          </span>
-        )}
+    {/* 🔹 SKILLS */}
+    {skills.length > 0 && (
+      <div>
+        <div className="text-sm font-medium mb-2">
+          Skills Required
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {visibleSkills.map((skill, idx) => (
+            <span
+              key={idx}
+              className="text-xs bg-gray-100 px-2 py-1 rounded-md"
+            >
+              {skill}
+            </span>
+          ))}
+
+          {extraSkills > 0 && (
+            <span className="text-xs bg-gray-200 px-2 py-1 rounded-md">
+              +{extraSkills} more
+            </span>
+          )}
+        </div>
       </div>
+    )}
 
-      <button
-        onClick={handleApply}
-        className="w-full bg-primaryBrand text-white py-3 rounded-xl font-medium"
-      >
-        Apply Now
-      </button>
-    </motion.div>
-  );
+  </div>
+
+  {/* 🔹 BUTTON */}
+  <button
+    onClick={handleApply}
+    className="mt-4 w-full bg-primaryBrand text-white py-3 rounded-xl font-medium"
+  >
+    Apply Now
+  </button>
+</motion.div>
+
+);
 };
 
 export default ReferralJobCard;
