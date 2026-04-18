@@ -1,140 +1,161 @@
 import { motion } from "framer-motion";
-import { MapPin, IndianRupee, Users, CalendarDays } from "lucide-react";
+import {
+MapPin,
+IndianRupee,
+Users,
+CalendarDays,
+Hourglass,
+} from "lucide-react";
 
 const CollegeJobCard = ({ job, i, handleApply }) => {
-  const collegeName =
-    job.collegePosted?.collegeUniversityDetails?.collegeName ||
-    "Unknown College";
+const college = job.collegePosted?.collegeUniversityDetails;
 
-  const city = job.collegePosted?.collegeUniversityDetails?.city;
-  const state = job.collegePosted?.collegeUniversityDetails?.state;
-  const location =
-    [city, state].filter(Boolean).join(", ") || "Location not specified";
+const collegeName = college?.collegeName || "Unknown College";
 
-  const salary = job.packageDetails?.totalCTC
-    ? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-    : "Not disclosed";
+const location =
+[college?.city, college?.state].filter(Boolean).join(", ") ||
+"Location not specified";
 
-  const employmentType = job.employmentType?.join(", ") || "N/A";
+const salary = job.packageDetails?.totalCTC
+? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
+: "Not disclosed";
 
-  const skills = job.skills || [];
-  const visibleSkills = skills.slice(0, 2);
-  const extraSkills = skills.length - 2;
+const students = job.noOfplacedStudents || "N/A";
 
-  const students = job.noOfplacedStudents || "N/A";
+const startDate = job.proposedSchedule?.startDate
+? new Date(job.proposedSchedule.startDate).toLocaleDateString()
+: null;
 
-  const startDate = job.proposedSchedule?.startDate
-    ? new Date(job.proposedSchedule.startDate).toLocaleDateString()
-    : null;
+const endDate = job.proposedSchedule?.endDate
+? new Date(job.proposedSchedule.endDate).toLocaleDateString()
+: null;
 
-  const endDate = job.proposedSchedule?.endDate
-    ? new Date(job.proposedSchedule.endDate).toLocaleDateString()
-    : null;
+const degree = job.degree?.join(", ") || "N/A";
 
-  const degree = job.degree?.join(", ") || "N/A";
+const employmentType = job.employmentType?.[0] || "N/A";
 
-  const streams = job.studentStreams?.slice(0, 2) || [];
-  const extraStreams = (job.studentStreams?.length || 0) - 2;
+const streams = job.studentStreams || [];
+const studentCounts = job.numberOfStudent || [];
 
-  return (
-    <motion.div
-      key={job._id || i}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: i * 0.08 }}
-      className="relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition flex flex-col h-full"
-    >
-      
-      {/* 🔵 TOP RIGHT BADGES */}
-      <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+const streamData = streams.map((stream, idx) => ({
+  stream,
+  count: studentCounts[idx] ?? "N/A",
+}));
+const amenities = job.amenitiesRequired || [];
+return (
+<motion.div
+key={job._id || i}
+initial={{ opacity: 0, y: 20 }}
+whileInView={{ opacity: 1, y: 0 }}
+transition={{ delay: i * 0.08 }}
+className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 flex flex-col justify-between"
+>
+{/* HEADER */} <div> <h3 className="font-semibold text-gray-900 text-lg">
+{collegeName} </h3>
 
-        {/* Students */}
-        <div className="flex items-center gap-1 text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
-          <Users className="w-3 h-3" />
-          {students}
-        </div>
 
-        {/* Dates */}
-        {startDate && endDate && (
-          <div className="flex items-center gap-1 text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-            <CalendarDays className="w-3 h-3" />
-            {startDate} → {endDate}
+    <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+      <MapPin className="w-4 h-4" />
+      {location}
+    </div>
+
+    {/* TAG */}
+    {/* <div className="mt-3 inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+      {job.jobType}
+    </div> */}
+  </div>
+
+  {/* STATS */}
+  <div className="flex gap-6 mt-4 flex-wrap">
+    {startDate && (
+      <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
+        <CalendarDays className="w-4 h-4 inline-block mr-1" />
+        {startDate}
+      </div>
+    )}
+    {endDate && (
+      <div className="text-xs bg-orange-100 px-3 py-1 rounded-md">
+        <Hourglass className="w-4 h-4 inline-block mr-1" />
+        {endDate}
+      </div>
+    )}
+    <div className="text-xs bg-blue-100 px-3 py-1 rounded-md">
+      <Users className="w-4 h-4 inline-block mr-1" />
+      {students} Students
+    </div>
+  </div>
+
+  {/* INFO */}
+  <div className="mt-4 space-y-2 text-sm text-gray-700">
+    <div className="flex justify-between">
+      <span>Min. Expected Package</span>
+      <span className="font-medium flex items-center gap-1">
+        <IndianRupee className="w-4 h-4" />
+        {salary}
+      </span>
+    </div>
+
+    {/* <div className="flex justify-between">
+      <span>Employment Type</span>
+      <span className="font-medium">{employmentType}</span>
+    </div> */}
+  </div>
+
+  {/* STREAMS */}
+  {streamData.length > 0 && (
+    <div className="mt-4 bg-gray-50 p-3 rounded-xl">
+      <div className="text-sm font-medium mb-2">
+        Eligible Students
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {streamData.slice(0, 6).map((item, idx) => (
+          <div
+            key={idx}
+            className="text-xs bg-white px-3 py-2 rounded-md border flex justify-between"
+          >
+            <span>{item.stream}</span>
+            <span className="font-medium">{item.count}</span>
           </div>
-        )}
-      </div>
-      <div className="flex-grow">
-      {/* HEADER */}
-      <div className="mb-4">
-        <h3 className="font-semibold text-gray-900 text-lg">
-          {collegeName}
-        </h3>
-        <p className="text-sm text-gray-500">
-          Hiring for: {degree}
-        </p>
-      </div>
-
-      {/* META */}
-      <div className="space-y-2 mb-4 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
-          <MapPin className="w-3.5 h-3.5" />
-          {location}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <IndianRupee className="w-3.5 h-3.5" />
-          Min Package: {salary}
-        </div>
-
-        <div className="text-xs text-gray-500">
-          {employmentType}
-        </div>
-      </div>
-
-      {/* STREAMS */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        {streams.map((stream, idx) => (
-          <span
-            key={idx}
-            className="text-xs bg-blue-100 px-2 py-1 rounded-md"
-          >
-            {stream}
-          </span>
         ))}
+      </div>
+    </div>
+  )}
 
-        {extraStreams > 0 && (
-          <span className="text-xs bg-blue-200 px-2 py-1 rounded-md">
-            +{extraStreams} more
-          </span>
-        )}
+  {amenities.length > 0 && (
+    <div className="mt-4">
+      <div className="text-sm font-medium mb-2">
+        Facilities Provided
       </div>
 
-      {/* SKILLS */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        {visibleSkills.map((skill, idx) => (
-          <span
+      <div className="grid grid-cols-2 gap-2">
+        {amenities.slice(0, 4).map((item, idx) => (
+          <div
             key={idx}
-            className="text-xs bg-gray-100 px-2 py-1 rounded-md"
+            className="text-xs flex items-center gap-2 text-gray-700"
           >
-            {skill}
-          </span>
+            <span className="text-green-600">✔</span>
+            {item}
+          </div>
         ))}
+      </div>
+    </div>
+  )}  
 
-        {extraSkills > 0 && (
-          <span className="text-xs bg-gray-200 px-2 py-1 rounded-md">
-            +{extraSkills} more
-          </span>
-        )}
-      </div>
-      </div>
-      {/* BUTTON */}
-      <button
-        onClick={handleApply}
-        className="w-full bg-primaryBrand text-white py-3 rounded-xl font-medium"
-      >
-        Apply Now
-      </button>
-    </motion.div>
-  );
+  {/* FOOTER */}
+  <div className="flex gap-3 mt-5">
+
+    <button
+      onClick={handleApply}
+      className="flex-1 bg-primaryBrand text-white rounded-xl py-2 text-sm font-medium"
+    >
+      Apply Now
+    </button>
+  </div>
+</motion.div>
+
+
+);
 };
 
 export default CollegeJobCard;

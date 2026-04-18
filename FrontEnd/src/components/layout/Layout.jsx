@@ -2,13 +2,24 @@ import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 // import bgImage from "../../assets/bg_image.webp";
+import FloatingMessenger from '../../home/FloatingMessenger'
+import { useLegacyAuth } from '../../context/AuthProvider'
+import { useLocation } from 'react-router-dom'
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [profileOpen, setProfileOpen] = useState(false)
-  
+  const [authUser] = useLegacyAuth()
+  const location = useLocation()
+
+  const showFloatingChat =
+    authUser && location.pathname !== "/chat-application"
+
+  console.log("authUser:", authUser);
+  console.log("pathname:", location.pathname);
+  console.log("showFloatingChat:", showFloatingChat);
   return (
-    <div className="flex h-full bg-gray-50">
+    <div className="flex h-full bg-gray-50 relative">
       {/* Sidebar */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       
@@ -42,6 +53,8 @@ function Layout({ children }) {
           {children}
         </main>
       </div>
+      {/* FLOATING CHAT */}
+      {showFloatingChat && <FloatingMessenger />}
     </div>
   )
 }

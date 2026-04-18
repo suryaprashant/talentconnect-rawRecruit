@@ -213,7 +213,7 @@ const LiveJobs = () => {
       </motion.div>
 
       {/* JOB GRID */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
         {loading ? (
           <p className="text-center col-span-3">Loading jobs...</p>
         ) : jobs.length === 0 ? (
