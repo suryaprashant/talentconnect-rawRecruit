@@ -403,10 +403,10 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
-      <div className="container mx-auto px-4 py-8 pt-22">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
-          {/* Header */}
+    <>
+      <div className="container mx-auto px-0 py-0">
+        {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+          // Header 
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-2xl font-bold text-[#00153d]">
               College Hiring Requests
@@ -417,100 +417,100 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
             </span>
           </div>
 
-          {/* Tabs */}
-          <div className="flex items-center gap-6 border-gray-200 pb-2">
+        </div> */}
+        {/* --- END OF NEW SECTION --- */}
+        {/* Header Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
 
-            {/* Active Tab */}
-            <button 
-              className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-            >
-              On-Campus
-            </button>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
-            {/* Inactive Tab */}
-            <button 
-              onClick={() => navigate('/company-dashboard/Pool-campus')}
-              className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
-            >
-              Pool-Campus
-            </button>
+            {/* LEFT */}
+            <div>
+
+              <div className="flex items-center gap-3 mb-2">
+                
+                <div className="p-2 bg-[#143694]/10 rounded-lg">
+                  <Building2 className="h-5 w-5 text-[#143694]" />
+                </div>
+
+                <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                  Colleges Posting for On-Campus
+                </h1>
+
+              </div>
+
+              <p className="text-gray-600 text-sm md:text-base">
+                Discover and connect with colleges posting for on-campus opportunities.
+              </p>
+
+              {/* Tabs */}
+              <div className="flex items-center gap-6 border-gray-200 mt-4">
+
+                {/* Active Tab */}
+                <button 
+                  className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  On-Campus
+                </button>
+
+                {/* Inactive Tab */}
+                <button 
+                  onClick={() => navigate('/company-dashboard/Pool-campus')}
+                  className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+                >
+                  Pool-Campus
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* RIGHT - Actions */}
+            <div className="flex items-center gap-3 w-full md:w-auto">
+
+              {/* Sort */}
+              <div className="relative w-full md:w-auto">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="
+                    w-full md:w-auto
+                    px-4 py-2.5 pr-10 
+                    bg-gray-50 border border-gray-200 rounded-xl
+                    text-sm text-gray-700
+                    focus:ring-2 focus:ring-[#143694]/30 
+                    focus:border-[#143694] focus:outline-none
+                    appearance-none transition-all duration-200
+                  "
+                >
+                  <option value="newest">Sort: Newest</option>
+                  <option value="oldest">Sort: Oldest</option>
+                  <option value="a-z">Sort: A-Z</option>
+                </select>
+
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              {/* Clear Filters */}
+              <button
+                onClick={clearAllFilters}
+                disabled={getActiveFiltersCount() === 0}
+                className="
+                  px-4 py-2.5 text-sm font-medium 
+                  text-gray-600 bg-gray-50 border border-gray-200 rounded-xl
+                  hover:bg-gray-100 hover:text-gray-900
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-all duration-200
+                "
+              >
+                Clear all
+              </button>
+
+            </div>
 
           </div>
 
         </div>
-{/* --- END OF NEW SECTION --- */}
-        {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
-
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-
-    {/* LEFT */}
-    <div>
-
-      <div className="flex items-center gap-3 mb-2">
-        
-        <div className="p-2 bg-[#143694]/10 rounded-lg">
-          <Building2 className="h-5 w-5 text-[#143694]" />
-        </div>
-
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
-          Colleges Posting for On-Campus
-        </h1>
-
-      </div>
-
-      <p className="text-gray-600 text-sm md:text-base">
-        Discover and connect with colleges posting for on-campus opportunities.
-      </p>
-
-    </div>
-
-    {/* RIGHT - Actions */}
-    <div className="flex items-center gap-3 w-full md:w-auto">
-
-      {/* Sort */}
-      <div className="relative w-full md:w-auto">
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="
-            w-full md:w-auto
-            px-4 py-2.5 pr-10 
-            bg-gray-50 border border-gray-200 rounded-xl
-            text-sm text-gray-700
-            focus:ring-2 focus:ring-[#143694]/30 
-            focus:border-[#143694] focus:outline-none
-            appearance-none transition-all duration-200
-          "
-        >
-          <option value="newest">Sort: Newest</option>
-          <option value="oldest">Sort: Oldest</option>
-          <option value="a-z">Sort: A-Z</option>
-        </select>
-
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-      </div>
-
-      {/* Clear Filters */}
-      <button
-        onClick={clearAllFilters}
-        disabled={getActiveFiltersCount() === 0}
-        className="
-          px-4 py-2.5 text-sm font-medium 
-          text-gray-600 bg-gray-50 border border-gray-200 rounded-xl
-          hover:bg-gray-100 hover:text-gray-900
-          disabled:opacity-50 disabled:cursor-not-allowed
-          transition-all duration-200
-        "
-      >
-        Clear all
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 
         {/* Stats Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -946,7 +946,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
   )}
 </div>
       </div>
-    </div>
+    </>
   );
 };
 

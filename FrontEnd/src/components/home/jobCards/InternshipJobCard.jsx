@@ -74,19 +74,32 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
 
     {/* 🔹 DATE + DURATION (SAME ROW) */}
     {(startDate || duration) && (
-      <div className="flex gap-3 flex-wrap mb-3">
+      <div className={`grid ${startDate && duration ? "grid-cols-2" : "grid-cols-1"} gap-2 mb-3`}>
+
+        {/* START DATE */}
         {startDate && (
-          <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
-            <CalendarDays className="w-4 h-4 inline-block mr-1" />
-            {startDate}
+          <div className="bg-gray-100 rounded-xl py-1 text-center">
+            <p className="text-[10px] text-gray-500 leading-none">
+              Start Date
+            </p>
+            <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
+              {startDate}
+            </p>
           </div>
         )}
+
+        {/* DURATION */}
         {duration && (
-          <div className="text-xs bg-purple-100 px-3 py-1 rounded-md">
-            <Clock className="w-4 h-4 inline-block mr-1" />
-            {duration}
+          <div className="bg-purple-100 rounded-xl py-1 text-center">
+            <p className="text-[10px] text-gray-500 leading-none">
+              Duration
+            </p>
+            <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
+              {duration}
+            </p>
           </div>
         )}
+
       </div>
     )}
 

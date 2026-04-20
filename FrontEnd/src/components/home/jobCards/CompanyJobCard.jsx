@@ -62,21 +62,35 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
 
   {/* DATES (LIKE COLLEGE CARD) */}
   {(startDate || endDate) && (
-  <div className="flex gap-3 mt-4 flex-wrap">
-    {startDate && (
-      <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
-        <CalendarDays className="w-4 h-4 inline-block mr-1" />
-        {startDate}
-      </div>
-    )}
-    {endDate && (
-      <div className="text-xs bg-orange-100 px-3 py-1 rounded-md">
-        <Hourglass className="w-4 h-4 inline-block mr-1" />
-        {endDate}
-      </div>
-    )}
-  </div>
-)}
+    <div className="grid grid-cols-2 gap-2 mt-4">
+
+      {/* START DATE */}
+      {startDate && (
+        <div className="bg-gray-100 rounded-xl px-0 py-1 text-center">
+          <p className="text-[10px] text-gray-600 leading-none">
+            Start Date
+          </p>
+          <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
+            {startDate}
+          </p>
+        </div>
+      )}
+
+      {/* END DATE */}
+      {endDate && (
+        <div className="bg-orange-100 rounded-xl px-0
+         py-1 text-center">
+          <p className="text-[10px] text-gray-600 leading-none">
+            End Date
+          </p>
+          <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
+            {endDate}
+          </p>
+        </div>
+      )}
+
+    </div>
+  )}
 
   {/* INFO */}
   <div className="mt-4 space-y-2 text-sm text-gray-700">

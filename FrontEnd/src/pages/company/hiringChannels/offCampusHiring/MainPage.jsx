@@ -53,7 +53,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
-      <div className="container mx-auto px-4 pt-8 max-w-6xl">
+        {/* <div className="container mx-auto px-4 pt-8 max-w-6xl">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
             <div className="flex items-center gap-3 mb-3">
               <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
@@ -74,7 +74,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                 Pool Campus Hiring
               </button>
 
-              {/* Off-campus: Active Highlight */}
+              {/* Off-campus: Active Highlight 
               <button 
                 className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
               >
@@ -89,19 +89,54 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
 
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
-              Off-Campus Recruitment for Companies
-            </h1>
+            {/* Top Section */}
+            <div className="mb-4">
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                Off-Campus Recruitment
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Flexible fresher hiring beyond campuses through open recruitment channels
+              </p>
+            </div>
 
-            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Flexible fresher hiring beyond campuses through open recruitment channels.
-            </h2>
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-gray-200">
+
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                On-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Pool Campus
+              </button>
+
+              {/* Active */}
+              <button 
+                className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm"
+              >
+                Off-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/post-an-internship')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Internship
+              </button>
+
+            </div>
 
           </header>
 

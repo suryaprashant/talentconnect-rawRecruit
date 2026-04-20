@@ -430,13 +430,13 @@ if (compact) {
 }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
-            <div className="container mx-auto px-4 py-8 pt-22">
-                {/* --- NEW CAMPUS TOGGLE HEADER --- */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+        <>
+            <div className="container mx-auto">
+                {/* --- NEW CAMPUS TOGGLE HEADER  ---- */}
+                {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6"> */}
 
                     {/* Header */}
-                    <div className="flex items-center gap-3 mb-4">
+                    {/* <div className="flex items-center gap-3 mb-4">
                         <h2 className="text-2xl font-bold text-[#00153d]">
                         College Hiring Requests
                         </h2>
@@ -444,29 +444,9 @@ if (compact) {
                         <span className="flex items-center justify-center w-7 h-7 bg-[#143694] text-white text-xs font-bold rounded-full">
                         {postings.length}
                         </span>
-                    </div>
+                    </div> */}
 
-                    {/* Tabs */}
-                    <div className="flex items-center gap-6 border-gray-200 pb-2">
-
-                        {/* Inactive Tab */}
-                        <button 
-                        onClick={() => navigate('/company-dashboard/On-campus')}
-                        className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
-                        >
-                        On-Campus
-                        </button>
-                        
-                        {/* Active Tab */}
-                        <button 
-                        className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-                        >
-                        Pool-Campus
-                        </button>
-
-                    </div>
-
-                    </div>
+                    {/* </div> */}
 {/* --- END OF NEW HEADER --- */}
                 {/* Header Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
@@ -491,7 +471,25 @@ if (compact) {
       <p className="text-gray-600 text-sm md:text-base">
         Explore pool-campus drives posted by various colleges.
       </p>
+{/* Tabs */}
+                    <div className="flex items-center gap-6 border-gray-200 mt-2">
 
+                        {/* Inactive Tab */}
+                        <button 
+                        onClick={() => navigate('/company-dashboard/On-campus')}
+                        className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+                        >
+                        On-Campus
+                        </button>
+                        
+                        {/* Active Tab */}
+                        <button 
+                        className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                        >
+                        Pool-Campus
+                        </button>
+
+                    </div>
     </div>
 
     {/* RIGHT - Actions */}
@@ -1003,7 +1001,7 @@ if (compact) {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

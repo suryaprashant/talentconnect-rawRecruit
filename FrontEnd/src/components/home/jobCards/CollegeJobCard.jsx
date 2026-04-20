@@ -66,23 +66,32 @@ className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 
   </div>
 
   {/* STATS */}
-  <div className="flex gap-6 mt-4 flex-wrap">
-    {startDate && (
-      <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
-        <CalendarDays className="w-4 h-4 inline-block mr-1" />
-        {startDate}
-      </div>
-    )}
-    {endDate && (
-      <div className="text-xs bg-orange-100 px-3 py-1 rounded-md">
-        <Hourglass className="w-4 h-4 inline-block mr-1" />
-        {endDate}
-      </div>
-    )}
-    <div className="text-xs bg-blue-100 px-3 py-1 rounded-md">
-      <Users className="w-4 h-4 inline-block mr-1" />
-      {students} Students
+  <div className="mt-4 flex gap-2 flex-wrap">
+  
+    {/* START DATE */}
+    <div className="flex-1 min-w-[90px] bg-gray-100 rounded-xl px-3 py-2 text-center">
+      <p className="text-[10px] text-gray-500">Start Date</p>
+      <p className="text-sm font-semibold text-gray-800">
+        {startDate || "-"}
+      </p>
     </div>
+
+    {/* END DATE */}
+    <div className="flex-1 min-w-[90px] bg-orange-100 rounded-xl px-3 py-2 text-center">
+      <p className="text-[10px] text-gray-500">Tentative Date</p>
+      <p className="text-sm font-semibold text-gray-800">
+        {endDate || "-"}
+      </p>
+    </div>
+
+    {/* STUDENTS */}
+    <div className="flex-1 min-w-[90px] bg-blue-100 rounded-xl px-3 py-2 text-center">
+      <p className="text-[10px] text-gray-500">Students</p>
+      <p className="text-sm font-semibold text-gray-800">
+        {students}
+      </p>
+    </div>
+
   </div>
 
   {/* INFO */}
@@ -95,10 +104,10 @@ className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 
       </span>
     </div>
 
-    {/* <div className="flex justify-between">
+    <div className="flex justify-between">
       <span>Employment Type</span>
       <span className="font-medium">{employmentType}</span>
-    </div> */}
+    </div>
   </div>
 
   {/* STREAMS */}
