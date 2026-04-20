@@ -646,62 +646,73 @@ const extractDegree = (job) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
-      <div className="container mx-auto px-4 pt-8">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
-        <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-bold text-[#00153d]">Your Application Status</h2>
-          <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
-            {poolJobs.length}
-          </span>
+      {/* <div className="container mx-auto px-4 pt-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-2xl font-bold text-[#00153d]">Your Application Status</h2>
+            <span className="flex items-center justify-center w-6 h-6 bg-[#1a3a8a] text-white text-xs font-bold rounded-full">
+              {poolJobs.length}
+            </span>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-6 border-gray-200 pb-1">
-          {/* Navigation Button */}
-          <button 
-            onClick={() => navigate('/company/application-status/oncampus')}
-            className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-          >
-            On-Campus
-          </button>
-
-          {/* Active Button */}
-          <button 
-            className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
-          >
-            Pool-Campus
-          </button>
-        </div>
-      </div>
-    </div>
+      </div> */}
       <div className="container mx-auto px-4 py-6">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
-              <Users className="h-5 w-5 text-[#143694]" />
+
+          {/* Top Section */}
+          <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
+
+            {/* Left: Title */}
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                <Users className="h-5 w-5 text-[#143694]" />
+              </div>
+
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
+                  Pool Campus College Applications
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {poolJobs.length} college application(s) found
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
-                Pool Campus College Applications
-              </h1>
-              <p className="text-sm text-gray-600">
-                {poolJobs.length} college application(s) found
-              </p>
+
+            {/* Right: Search */}
+            <div className="relative w-full sm:w-80">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                <Search className="h-5 w-5 text-[#143694]" />
+              </div>
+
+              <input
+                type="text"
+                placeholder="Search by college name, degree, or location..."
+                className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#1e4ed8] rounded-xl focus:ring-2 focus:ring-[#143694] focus:outline-none text-sm placeholder:text-gray-400"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
-          
-          {/* Search - Update placeholder */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by college name, degree, or location..."
-              className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none text-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+
+          {/* Bottom Tabs */}
+          <div className="flex items-center gap-4 border-gray-200 pt-0">
+
+            {/* Navigate */}
+            <button 
+              onClick={() => navigate('/company/application-status/oncampus')}
+              className="px-6 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+            >
+              On-Campus
+            </button>
+
+            {/* Active */}
+            <button 
+              className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm shadow-md"
+            >
+              Pool-Campus
+            </button>
+
           </div>
         </div>
 

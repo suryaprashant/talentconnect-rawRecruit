@@ -54,7 +54,7 @@ const CollegeCard = ({ college, onClick }) => {
   const endDate = college.proposedSchedule?.endDate
     ? new Date(college.proposedSchedule.endDate).toLocaleDateString()
     : null;
-
+  const employmentType = college.employmentType?.[0] || "N/A";
   const streams = college.studentStreams || [];
   const counts = college.numberOfStudent || [];
 
@@ -126,7 +126,7 @@ const CollegeCard = ({ college, onClick }) => {
 
         {/* STATUS + SAVE */}
         <div className="flex justify-between mb-3">
-          <span className="text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600">
+          <span className="text-xs px-3 py-3 rounded-full bg-gray-200 text-gray-600">
             {collegeStatus.status}
           </span>
 
@@ -166,31 +166,47 @@ const CollegeCard = ({ college, onClick }) => {
         </div>
 
         {/* DATES + STUDENTS */}
-        <div className="flex gap-2 flex-wrap mb-3">
-          {startDate && (
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-              <CalendarDays className="inline w-3 h-3 mr-1" />
-              {startDate}
-            </span>
-          )}
+        {(startDate || endDate || students) && (
+          <div className="grid grid-cols-3 gap-2 mb-3">
 
-          {endDate && (
-            <span className="text-xs bg-orange-100 px-2 py-1 rounded">
-              <Hourglass className="inline w-3 h-3 mr-1" />
-              {endDate}
-            </span>
-          )}
+            <div className="bg-gray-100 rounded-xl py-1 px-1 text-center">
+              <p className="text-[10px] text-gray-500 leading-none">
+                Start Date
+              </p>
+              <p className="text-xs font-semibold leading-tight mt-0.5">
+                {startDate || "-"}
+              </p>
+            </div>
 
-          <span className="text-xs bg-blue-100 px-2 py-1 rounded">
-            <Users className="inline w-3 h-3 mr-1" />
-            {students}
-          </span>
-        </div>
+            <div className="bg-orange-100 rounded-xl py-1 px-1 text-center">
+              <p className="text-[10px] text-gray-500 leading-none">
+                End Date
+              </p>
+              <p className="text-xs font-semibold leading-tight mt-0.5">
+                {endDate || "-"}
+              </p>
+            </div>
+
+            <div className="bg-blue-100 rounded-xl py-1 px-1 text-center">
+              <p className="text-[10px] text-gray-500 leading-none">
+                Students
+              </p>
+              <p className="text-xs font-semibold leading-tight mt-0.5">
+                {students}
+              </p>
+            </div>
+
+          </div>
+        )}
 
         {/* PACKAGE */}
-        <div className="text-sm text-gray-700 mb-3 flex justify-between">
+        {/* <div className="text-sm text-gray-700 mb-1 flex justify-between">
           <span>Min Package</span>
           <span className="font-medium">{salary}</span>
+        </div> */}
+        <div className="text-sm text-gray-700 mb-2 flex justify-between">
+          <span>Employment Type</span>
+          <span className="font-medium">{employmentType}</span>
         </div>
 
         {/* STREAMS */}
@@ -220,7 +236,8 @@ const CollegeCard = ({ college, onClick }) => {
             <div className="grid grid-cols-2 gap-1">
               {amenities.slice(0, 4).map((a, i) => (
                 <div key={i} className="text-[10px] flex gap-1">
-                  ✔ {a}
+                  <span className="text-green-600">✔</span> 
+                  {a}
                 </div>
               ))}
             </div>
@@ -231,16 +248,17 @@ const CollegeCard = ({ college, onClick }) => {
       {/* BOTTOM SECTION (UNCHANGED) */}
       <div className="px-5 py-4 bg-white border-t flex justify-between items-center">
         <div>
-          <p className="font-semibold text-sm text-gray-900">
+          <span className="text-xs text-gray-900">Min. Expected Package</span>
+          <p className="font-semibold text-xs text-gray-900">
             {formatPackage()}
           </p>
 
-          {formatLocation() !== "no" && (
+          {/* {formatLocation() !== "no" && (
             <div className="flex text-xs text-gray-600 mt-1">
               <MapPin className="w-4 h-4 mr-1" />
               {formatLocation()}
             </div>
-          )}
+          )} */}
         </div>
 
         <button

@@ -52,55 +52,60 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {4
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
-        <div className="container mx-auto px-4 pt-8 max-w-6xl">
+        {/* <div className="container mx-auto px-4 pt-8 max-w-6xl">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
             <div className="flex items-center gap-3 mb-3">
               <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
             </div>
-            
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-gray-200 pb-1">
+          </div>
+        </div> */}
+        <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
+
+          {/* Header */}
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+
+            {/* Top Section */}
+            <div className="mb-4">
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                Pool-Campus Recruitment
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Multi-college fresher hiring through shared campus recruitment drives
+              </p>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-gray-200 pt-0">
+
               <button 
                 onClick={() => navigate('/hiring-channels/on-campus-hiring')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
               >
-                On-campus Hiring
+                On-campus
               </button>
-              
-              {/* Pool Campus: Active Highlight */}
+
+              {/* Active */}
               <button 
-                className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
+                className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm"
               >
-                Pool Campus Hiring
+                Pool Campus
               </button>
 
               <button 
                 onClick={() => navigate('/hiring-channels/off-campus-hiring')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
               >
-                Off-campus Hiring
+                Off-campus
               </button>
 
               <button 
                 onClick={() => navigate('/hiring-channels/post-an-internship')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
               >
-                Post an Internship
+                Internship
               </button>
+
             </div>
-          </div>
-        </div>
-        <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
-
-          {/* Header */}
-          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
-
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
-              Pool-Campus Recruitment for Companies
-            </h1>
-
-            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Multi-college fresher hiring through shared campus recruitment drives.
-            </h2>
 
           </header>
 
