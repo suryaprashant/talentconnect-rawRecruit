@@ -14,43 +14,135 @@ import mongoose from "mongoose";
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
 
+export const fetchMetricsForJob = async (jobId) => {
+  const [
+    totalApplicationsReceived,
+    totalReferredToCompany,
+    totalAcceptedByCompany,
+  ] = await Promise.all([
+    Application.countDocuments({
+      job: jobId,
+      jobType: "Referral",
+    }),
+
+    Application.countDocuments({
+      job: jobId,
+      jobType: "Referral",
+      adminApprovalStatus: "Approved",
+      currentStatus: { $in: ["Referred To Company", "Accepted"] },
+    }),
+
+    Application.countDocuments({
+      job: jobId,
+      jobType: "Referral",
+      adminApprovalStatus: "Approved",
+      currentStatus: "Accepted",
+    }),
+  ]);
+
+  const responseRate =
+    totalApplicationsReceived > 0
+      ? Math.round((totalReferredToCompany / totalApplicationsReceived) * 100 * 100) / 100
+      : 0;
+
+  const referralSuccessRate =
+    totalReferredToCompany > 0
+      ? Math.round((totalAcceptedByCompany / totalReferredToCompany) * 100 * 100) / 100
+      : 0;
+
+  return {
+    totalApplicationsReceived,
+    totalReferredToCompany,
+    totalAcceptedByCompany,
+    responseRate,
+    referralSuccessRate,
+  };
+};
+
+// export const getProfessionalReferrals = async (req, res) => {
+// console.log(">>> API Request Received <<<");
+//     try {
+//         const authUserId = req.user._id;
+//         console.log("1. Auth User ID:", authUserId);
+
+//         // Step 1: Directly find the student profile in the DB
+//         const studentProfile = await OnboardingModel.findOne({ 
+//             userId: new mongoose.Types.ObjectId(authUserId) 
+//         }).lean();
+
+//         if (!studentProfile) {
+//             console.log("2. ❌ No student profile found for this Auth ID");
+//             return res.status(404).json({ message: "Student profile not found" });
+//         }
+
+//         const profileId = studentProfile._id;
+//         console.log("2.  Found Student Profile ID:", profileId);
+
+//         // Step 2: Directly find the jobs matching that profile ID
+//         const referrals = await JobPostingTable.find({
+//             candidatePosted: profileId,
+//             jobType: "Referral"
+//         }).sort({ createdAt: -1 }).lean();
+
+//         console.log(`3.  Referrals Found: ${referrals.length}`);
+
+//         return res.status(200).json({
+//             success: true,
+//             count: referrals.length,
+//             data: referrals
+//         });
+
+//     } catch (error) {
+//         console.error("4.  Error:", error.message);
+//         return res.status(500).json({ success: false, error: error.message });
+//     }
+// };
+
 export const getProfessionalReferrals = async (req, res) => {
-console.log(">>> API Request Received <<<");
-    try {
-        const authUserId = req.user._id;
-        console.log("1. Auth User ID:", authUserId);
+  console.log(">>> API Request Received <<<");
+  try {
+    const authUserId = req.user._id;
+    console.log("1. Auth User ID:", authUserId);
 
-        // Step 1: Directly find the student profile in the DB
-        const studentProfile = await OnboardingModel.findOne({ 
-            userId: new mongoose.Types.ObjectId(authUserId) 
-        }).lean();
+    const studentProfile = await OnboardingModel.findOne({
+      userId: new mongoose.Types.ObjectId(authUserId),
+    }).lean();
 
-        if (!studentProfile) {
-            console.log("2. ❌ No student profile found for this Auth ID");
-            return res.status(404).json({ message: "Student profile not found" });
-        }
-
-        const profileId = studentProfile._id;
-        console.log("2. ✅ Found Student Profile ID:", profileId);
-
-        // Step 2: Directly find the jobs matching that profile ID
-        const referrals = await JobPostingTable.find({
-            candidatePosted: profileId,
-            jobType: "Referral"
-        }).sort({ createdAt: -1 }).lean();
-
-        console.log(`3. 📊 Referrals Found: ${referrals.length}`);
-
-        return res.status(200).json({
-            success: true,
-            count: referrals.length,
-            data: referrals
-        });
-
-    } catch (error) {
-        console.error("4. ❌ Error:", error.message);
-        return res.status(500).json({ success: false, error: error.message });
+    if (!studentProfile) {
+      console.log("2. ❌ No student profile found for this Auth ID");
+      return res.status(404).json({ message: "Student profile not found" });
     }
+
+    const profileId = studentProfile._id;
+    console.log("2. ✅ Found Student Profile ID:", profileId);
+
+    const referrals = await JobPostingTable.find({
+      candidatePosted: profileId,
+      jobType: "Referral",
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    console.log(`3. ✅ Referrals Found: ${referrals.length}`);
+
+    // Attach per-job metrics to every referral in parallel
+    const referralsWithMetrics = await Promise.all(
+      referrals.map(async (job) => {
+        const metrics = await fetchMetricsForJob(job._id);
+        return { ...job, metrics };
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: referrals.length,
+      data: referralsWithMetrics,
+    });
+
+  } catch (error) {
+    console.error("4. ❌ Error:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 };
 
 export const getOffCampusPostings = async (req, res) => {
