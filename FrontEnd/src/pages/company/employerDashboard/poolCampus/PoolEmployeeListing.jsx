@@ -541,7 +541,7 @@ if (compact) {
 </div>
 
                 {/* Stats Cards Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                     <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
                         <div className="flex items-center justify-between">
                             <div>
@@ -590,6 +590,20 @@ if (compact) {
                                 <Calendar className="w-5 h-5 text-[#10b981]" />
                             </div>
                         </div>
+                    </div>
+
+                    <div 
+                    onClick={() => setShowMainFilter(!showMainFilter)}
+                    className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-[#143694]/30 transition-all duration-200">
+                        <div>
+                        <p className="text-lg text-gray-600">Filters</p>
+                        </div>
+
+                        <button
+                        className="p-2 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg"
+                        >
+                        <Filter className="w-5 h-5 text-[#143694]" />
+                        </button>
                     </div>
                 </div>
 
@@ -673,7 +687,7 @@ if (compact) {
 
                     {/* Main Filter Button and Dropdown Container */}
                     <div className="relative">
-                        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
+                        {/* <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
                             <button
                                 onClick={() => setShowMainFilter(!showMainFilter)}
                                 className={`flex items-center gap-2 px-4 py-2.5 bg-white border ${showMainFilter ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-gray-300'} rounded-xl transition-all duration-200`}
@@ -687,7 +701,7 @@ if (compact) {
                                 )}
                                 <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${showMainFilter ? 'transform rotate-180' : ''}`} />
                             </button>
-                        </div>
+                        </div> */}
 
                         {showMainFilter && (
                             <div className="mt-4 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">

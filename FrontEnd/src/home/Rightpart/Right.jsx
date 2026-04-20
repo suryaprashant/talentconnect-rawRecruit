@@ -37,7 +37,7 @@ function Right({ isFloating = false }) {
 
 export default Right;
 
-const NoChatSelected = () => {
+const NoChatSelected = ({ isFloating }) => {
     const [authUser] = useLegacyAuth();
 
     return (
