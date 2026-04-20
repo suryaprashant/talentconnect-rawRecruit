@@ -54,12 +54,12 @@ const AdminBlogs = () => {
 
       if (editingBlog) {
         await axios.put(
-          `${import.meta.env.VITE_Backend_URL}/api/blogs/${editingBlog._id}`,
+          `${import.meta.env.VITE_Backend_URL}/api/admin/blogs/${editingBlog._id}`,
           formData
         );
         alert("Blog updated successfully ✅");
       } else {
-        await axios.post(`${import.meta.env.VITE_Backend_URL}/api/blogs`, formData);
+        await axios.post(`${import.meta.env.VITE_Backend_URL}/api/admin/blogs`, formData);
         alert("Blog created successfully 🎉");
       }
 
@@ -77,7 +77,7 @@ const AdminBlogs = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_Backend_URL}/api/blogs/${id}`);
+      await axios.delete(`${import.meta.env.VITE_Backend_URL}/api/admin/blogs/${id}`);
       alert("Blog deleted successfully 🗑️");
       fetchBlogs();
     } catch (err) {
