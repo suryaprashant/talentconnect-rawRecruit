@@ -78,11 +78,13 @@ const BlogPage = () => {
                     className="bg-white rounded-2xl shadow-md overflow-hidden"
                 >
                     {/* Cover Image */}
-                    <img
-                    src={blog.coverImage}
-                    alt={blog.title}
-                    className="w-full h-[250px] object-cover"
-                    />
+                    {blog.coverImage && (
+                      <img
+                        src={blog.coverImage}
+                        alt={blog.title}
+                        className="w-full h-[250px] object-cover"
+                      />
+                    )}
 
                     {/* Content */}
                     <div className="p-6 space-y-4">
