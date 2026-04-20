@@ -465,63 +465,66 @@ degree: formData.degree.map(d => d.label),
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
-      <div className="container mx-auto px-4 pt-8 mb-6 max-w-4xl">
+        {/* <div className="container mx-auto px-4 pt-8 mb-6 max-w-4xl">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
             <div className="flex items-center gap-3 mb-2">
               <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
             </div>
             
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-0 border-gray-200 pb-1">
-              <button 
-                onClick={() => navigate('/hiring-channels/on-campus-hiring')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-              >
-                On-campus Hiring
-              </button>
-              <button 
-                onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-              >
-                Pool Campus Hiring
-              </button>
-              
-              <button 
-                onClick={() => navigate('/hiring-channels/off-campus-hiring')}
-                className="px-2 py-2 text-gray-500 hover:text-[#1a3a8a] font-medium text-sm transition-all"
-              >
-                Off-campus Hiring
-              </button>
-
-              {/* Post an Internship: Active Highlight */}
-              <button 
-                className="px-6 py-2 bg-[#1a3a8a] text-white rounded-full font-medium text-sm transition-all shadow-md"
-              >
-                Post an Internship
-              </button>
-
-            </div>
           </div>
-        </div>
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header Section - Compact */}
+        </div> */}
+        <div className="container mx-auto px-4 max-w-4xl">
+          {/* Header Section - Compact */}
         
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6 text-center">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
 
-            <div className="flex items-center justify-center mb-3">
-              
-              <div className="p-2 bg-[#143694]/10 rounded-lg mr-3">
+            {/* Top Section */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-[#143694]/10 rounded-lg">
                 <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
 
-              <h1 className="text-2xl md:text-3xl font-semibold text-[#143694] tracking-tight">
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
                 Create Internship Opportunity
               </h1>
-
             </div>
 
-            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base text-gray-600 mb-4">
               Post a new internship opportunity and connect with talented students. Fill in the details below to create your internship listing.
             </p>
+
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-gray-200 pt-0">
+
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                On-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Pool Campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/off-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Off-campus
+              </button>
+
+              {/* Active */}
+              <button 
+                className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm"
+              >
+                Internship
+              </button>
+
+            </div>
 
           </div>
         
