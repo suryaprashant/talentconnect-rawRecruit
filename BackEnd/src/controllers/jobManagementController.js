@@ -9,7 +9,9 @@ import { getStudentService } from "../services/studentService.js";
 export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
     const userType = req.user.userType;
-    const { jobType, status } = req.query;
+    //const { jobType, status } = req.query;
+    const { jobType, status, active } = req.query; 
+
     if (!jobType || !status) return res.status(404).json({ msg: "parameters missing!" });
 
    
@@ -37,26 +39,44 @@ export const getPostedJobs = async (req, res) => {
         }
 
         const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType, req.user);
-
+     
       
 
         if (!jobs || !jobs.success || !jobs.response) {
             return res.status(404).json({ msg: "Could not find jobs for this profile." });
         }
 
-        const jobsWithApplicationCount = await Promise.all(
-            jobs?.response?.map(async (job) => {
-                const count = await countApplicationsService(job._id, jobType, status);
+        // const jobsWithApplicationCount = await Promise.all(
+        //     jobs?.response?.map(async (job) => {
+        //         const count = await countApplicationsService(job._id, jobType, status);
                
-                const applicationCount = count?.count;
-                return {
-                    ...job,
-                    applicationCount,
-                };
-            })
-        );
+        //         const applicationCount = count?.count;
+        //         return {
+        //             ...job,
+        //             applicationCount,
+        //         };
+        //     })
+        // );
 
         // console.log("Jobs with application count: ", jobsWithApplicationCount); 
+   
+let filteredJobs = jobs.response;
+
+if (active === 'false') {
+   
+    filteredJobs = jobs.response.filter(job => job.inactive === true);
+} else {
+    
+    filteredJobs = jobs.response.filter(job => job.inactive !== true);
+}
+
+        const jobsWithApplicationCount = await Promise.all(
+            filteredJobs.map(async (job) => {
+                const count = await countApplicationsService(job._id, jobType, status);
+                const applicationCount = count?.count;
+                return { ...job, applicationCount };
+            })
+        );
 
         res.status(200).json(jobsWithApplicationCount);
     } catch (error) {

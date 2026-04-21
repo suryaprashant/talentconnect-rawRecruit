@@ -434,10 +434,10 @@ const [activeTab, setActiveTab] = useState('On-Campus');
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Page Header with only search box */}
-        <div className="mb-6 -mt-14">
+        <div className="mb-8 -mt-12">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
-            <div className="relative flex items-center justify-between py-3 px-6">
+            <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
                   Company Dashboard

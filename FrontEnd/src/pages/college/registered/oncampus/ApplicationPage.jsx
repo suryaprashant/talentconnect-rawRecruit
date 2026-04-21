@@ -267,11 +267,11 @@ function ApplicationPage() {
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Header Section */}
         {/* --- START OF SHORTLISTED NAVIGATION --- */}
-          <div className="relative z-10 max-w-10xl mx-auto px-1 pt-8">
+          {/* <div className="relative z-10 max-w-10xl mx-auto px-1 pt-8">
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-5 mb-8">
 
-              {/* Header */}
+              {/* Header *
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
                   Shortlisted Companies
@@ -281,72 +281,55 @@ function ApplicationPage() {
                   {jobs.length}
                 </span>
               </div>
-              
-              {/* Tabs */}
-              <div className="flex items-center gap-6 border-gray-200 pb-2">
-
-                {/* Active */}
-                <button 
-                  className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-                >
-                  On-Campus
-                </button>
-                
-                {/* Inactive */}
-                <button 
-                  onClick={() => navigate('/registered/pool-campus-opportunities')}
-                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-                >
-                  Pool-Campus
-                </button>
-
-              </div>
 
             </div>
 
-          </div>
+          </div> */}
     {/* --- END OF NAVIGATION --- */}
         <div className="mb-12">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8 mt-3">
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+  <div className="flex flex-col gap-4">
 
-              {/* LEFT */}
-              <div className="text-center md:text-left">
-                
-                <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-2">
-                  Manage On-Campus Applications
-                </h1>
+    {/* Top Section */}
+    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
 
-                <p className="text-gray-600 text-base md:text-lg max-w-2xl">
-                  Track your on-campus drives and streamline applications efficiently.
-                </p>
+      <div>
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+          Manage On-Campus Applications
+        </h1>
 
-              </div>
+        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+          Track your on-campus drives and streamline applications efficiently
+        </p>
+      </div>
 
-              {/* RIGHT CTA */}
-              <button className="
-                group flex items-center gap-3 
-                px-6 py-3 
-                bg-[#143694] text-white 
-                rounded-xl font-medium text-sm md:text-base
-                hover:bg-[#1e4ed8] 
-                shadow-sm hover:shadow-md
-                transition-all duration-200
-              ">
-                <Briefcase className="w-5 h-5" />
-                Post a Job
-                <svg 
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200" 
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </button>
+      {/* (Optional CTA can go here later) */}
+    </div>
 
-            </div>
+    {/* Tabs */}
+    <div className="flex items-center gap-3 border-gray-200 pt-0">
 
-          </div>
+      {/* Active */}
+      <button 
+        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+      >
+        On-Campus
+      </button>
+
+      {/* Inactive */}
+      <button 
+        onClick={() => navigate('/registered/pool-campus-opportunities')}
+        className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+      >
+        Pool-Campus
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
           {/* Main Content Card */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">

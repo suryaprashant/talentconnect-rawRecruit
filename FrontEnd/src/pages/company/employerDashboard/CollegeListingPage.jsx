@@ -420,7 +420,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
         </div> */}
         {/* --- END OF NEW SECTION --- */}
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-6">
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
@@ -489,23 +489,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
                 </select>
 
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* Clear Filters */}
-              <button
-                onClick={clearAllFilters}
-                disabled={getActiveFiltersCount() === 0}
-                className="
-                  px-4 py-2.5 text-sm font-medium 
-                  text-gray-600 bg-gray-50 border border-gray-200 rounded-xl
-                  hover:bg-gray-100 hover:text-gray-900
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  transition-all duration-200
-                "
-              >
-                Clear all
-              </button>
-
+              </div> 
             </div>
 
           </div>
@@ -513,7 +497,9 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
         </div>
 
         {/* Stats Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-8 mb-8">
+
+          {/* Total Colleges */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -526,6 +512,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
             </div>
           </div>
 
+          {/* Showing Results */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-pink-100/50 p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -538,6 +525,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
             </div>
           </div>
 
+          {/* Active Filters */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-amber-100/50 p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -552,6 +540,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
             </div>
           </div>
 
+          {/* Last Updated */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-emerald-100/50 p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -563,93 +552,113 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
               </div>
             </div>
           </div>
+
+          {/* ✅ Filter Card (5th item) */}
+          <div 
+          onClick={() => setShowMainFilter(!showMainFilter)}
+          className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-[#143694]/30 transition-all duration-200">
+            <div>
+              <p className="text-lg text-gray-600">Filters</p>
+            </div>
+
+            <button
+              className="p-2 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg"
+            >
+              <Filter className="w-5 h-5 text-[#143694]" />
+            </button>
+          </div>
+
+        </div>
+<div className="mb-8">
+
+  {/* Active Filters Tags */}
+  {getActiveFiltersCount() > 0 && (
+    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-8">
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+        {/* Left: Filters */}
+        <div className="flex items-center flex-wrap gap-2 flex-1">
+          <span className="text-sm font-medium text-gray-700 mr-2">
+            Active filters:
+          </span>
+
+          {filters.degree.map(degree => (
+            <span key={degree} className="inline-flex items-center bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
+              {degree}
+              <button 
+                onClick={() => removeFilter('degree', degree)}
+                className="ml-2 text-[#143694] hover:text-purple-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+          {filters.courses.map(course => (
+            <span key={course} className="inline-flex items-center bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm">
+              {course}
+              <button 
+                onClick={() => removeFilter('courses', course)}
+                className="ml-2 text-green-600 hover:text-green-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+          {filters.employmentType.map(type => (
+            <span key={type} className="inline-flex items-center bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm">
+              {type}
+              <button 
+                onClick={() => removeFilter('employmentType', type)}
+                className="ml-2 text-yellow-600 hover:text-yellow-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+          {Array.isArray(filters.location) &&
+            filters.location.map(loc => (
+              <span key={loc} className="inline-flex items-center bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm">
+                Location: {loc}
+                <button
+                  onClick={() => removeFilter('location', loc)}
+                  className="ml-2 text-red-600 hover:text-red-800"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
         </div>
 
-        {/* Filter Section */}
-        <div className="mb-6">
-          {/* Active Filters Tags */}
-          {getActiveFiltersCount() > 0 && (
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-4">
-              <div className="flex items-center flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
-                
-                {filters.degree.map(degree => (
-                  <span key={degree} className="inline-flex items-center bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
-                    {degree}
-                    <button 
-                      onClick={() => removeFilter('degree', degree)}
-                      className="ml-2 text-[#143694] hover:text-purple-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-                
-                {filters.courses.map(course => (
-                  <span key={course} className="inline-flex items-center bg-gradient-to-r from-green-100 to-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm">
-                    {course}
-                    <button 
-                      onClick={() => removeFilter('courses', course)}
-                      className="ml-2 text-green-600 hover:text-green-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-                
-                {filters.employmentType.map(type => (
-                  <span key={type} className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg text-sm">
-                    {type}
-                    <button 
-                      onClick={() => removeFilter('employmentType', type)}
-                      className="ml-2 text-yellow-600 hover:text-yellow-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-                
-                {Array.isArray(filters.location) &&
-                  filters.location.map(loc => (
-                    <span
-                      key={loc}
-                      className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
-                    >
-                      Location: {loc}
-                      <button
-                        onClick={() => removeFilter('location', loc)}
-                        className="ml-2 text-red-600 hover:text-red-800"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
+        {/* Right: Clear Button */}
+        {getActiveFiltersCount() > 0 && (
+          <div className="shrink-0">
+            <button
+              onClick={clearAllFilters}
+              className="
+                px-4 py-2 text-sm font-medium 
+                text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-lg
+                hover:bg-[#143694] hover:text-white
+                transition-all duration-200
+              "
+            >
+              Clear all
+            </button>
+          </div>
+        )}
 
-              </div>
-            </div>
-          )}
+      </div>
 
-          {/* Main Filter Button and Dropdown Container */}
-          <div className="relative">
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
-              <button
-                onClick={() => setShowMainFilter(!showMainFilter)}
-                className={`flex items-center gap-2 px-4 py-2.5 bg-white border ${showMainFilter ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-gray-300'} rounded-xl transition-all duration-200`}
-              >
-                <Filter className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Filter</span>
-                {getActiveFiltersCount() > 0 && (
-                  <span className="px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
-                    {getActiveFiltersCount()}
-                  </span>
-                )}
-                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${showMainFilter ? 'transform rotate-180' : ''}`} />
-              </button>
-            </div>
+    </div>
+  )}
 
-            {showMainFilter && (
-              <div className="mt-4 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  {/* Dropdown */}
+  {showMainFilter && (
+    <div className="mt-4 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* Degree Filter */}
                   <div className="relative">
                     <div className="flex items-center justify-between mb-3">
@@ -897,10 +906,346 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
                     )}
                   </div>
                 </div>
+    </div>
+  )}
+
+</div>
+        {/* Filter Section */}
+        {/* <div className="mb-6">
+          {/* Active Filters Tags 
+          {getActiveFiltersCount() > 0 && (
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-4">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
+                
+                {filters.degree.map(degree => (
+                  <span key={degree} className="inline-flex items-center bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
+                    {degree}
+                    <button 
+                      onClick={() => removeFilter('degree', degree)}
+                      className="ml-2 text-[#143694] hover:text-purple-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.courses.map(course => (
+                  <span key={course} className="inline-flex items-center bg-gradient-to-r from-green-100 to-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm">
+                    {course}
+                    <button 
+                      onClick={() => removeFilter('courses', course)}
+                      className="ml-2 text-green-600 hover:text-green-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.employmentType.map(type => (
+                  <span key={type} className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg text-sm">
+                    {type}
+                    <button 
+                      onClick={() => removeFilter('employmentType', type)}
+                      className="ml-2 text-yellow-600 hover:text-yellow-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {Array.isArray(filters.location) &&
+                  filters.location.map(loc => (
+                    <span
+                      key={loc}
+                      className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
+                    >
+                      Location: {loc}
+                      <button
+                        onClick={() => removeFilter('location', loc)}
+                        className="ml-2 text-red-600 hover:text-red-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+
+              </div>
+            </div>
+          )}
+
+          {/* Main Filter Button and Dropdown Container 
+          <div className="relative">
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
+              <button
+                onClick={() => setShowMainFilter(!showMainFilter)}
+                className={`flex items-center gap-2 px-4 py-2.5 bg-white border ${showMainFilter ? 'border-[#143694] ring-2 ring-[#143694]/10' : 'border-gray-200 hover:border-gray-300'} rounded-xl transition-all duration-200`}
+              >
+                <Filter className="h-4 w-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">Filter</span>
+                {getActiveFiltersCount() > 0 && (
+                  <span className="px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
+                    {getActiveFiltersCount()}
+                  </span>
+                )}
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${showMainFilter ? 'transform rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            {showMainFilter && (
+              <div className="mt-4 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Degree Filter 
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <GraduationCap className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-gray-700">Degree</span>
+                        {filters.degree.length > 0 && (
+                          <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
+                            {filters.degree.length}
+                          </span>
+                        )}
+                      </div>
+                      {filters.degree.length > 0 && (
+                        <button
+                          onClick={() => clearFilterSection('degree')}
+                          className="text-xs text-[#143694] hover:text-[#1e4ed8]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleSubDropdown('degree')}
+                      className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                    >
+                      <span className="text-sm text-gray-700">Select Degree</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.degree ? 'transform rotate-180' : ''}`} />
+                    </button>
+                    
+                    {openSubDropdowns.degree && (
+                      <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-60 overflow-y-auto">
+                        <div className="space-y-2">
+                          {filterOptions.degree.map((option, index) => (
+                            <div key={option.label + index} className="flex items-center p-2 hover:bg-white rounded transition-all duration-200">
+                              <input
+                                type="checkbox"
+                                id={`degree-${option.label}-${index}`}
+                                checked={filters.degree.includes(option.label)}
+                                onChange={() => handleFilterChange('degree', option.label)}
+                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
+                              />
+                              <label 
+                                htmlFor={`degree-${option.label}-${index}`}
+                                className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Courses Filter 
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <BookOpen className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-gray-700">Courses</span>
+                        {filters.courses.length > 0 && (
+                          <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
+                            {filters.courses.length}
+                          </span>
+                        )}
+                      </div>
+                      {filters.courses.length > 0 && (
+                        <button
+                          onClick={() => clearFilterSection('courses')}
+                          className="text-xs text-[#143694] hover:text-[#1e4ed8]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleSubDropdown('courses')}
+                      className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                    >
+                      <span className="text-sm text-gray-700">Select Courses</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.courses ? 'transform rotate-180' : ''}`} />
+                    </button>
+                    
+                    {openSubDropdowns.courses && (
+                      <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-60 overflow-y-auto">
+                        <div className="space-y-2">
+                          {filterOptions.courses.map((option, index) => (
+                            <div key={option.label + index} className="flex items-center p-2 hover:bg-white rounded transition-all duration-200">
+                              <input
+                                type="checkbox"
+                                id={`course-${option.label}-${index}`}
+                                checked={filters.courses.includes(option.label)}
+                                onChange={() => handleFilterChange('courses', option.label)}
+                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
+                              />
+                              <label 
+                                htmlFor={`course-${option.label}-${index}`}
+                                className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Employment Type Filter 
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <Briefcase className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-gray-700">Employment Type</span>
+                        {filters.employmentType.length > 0 && (
+                          <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
+                            {filters.employmentType.length}
+                          </span>
+                        )}
+                      </div>
+                      {filters.employmentType.length > 0 && (
+                        <button
+                          onClick={() => clearFilterSection('employmentType')}
+                          className="text-xs text-[#143694] hover:text-[#1e4ed8]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleSubDropdown('employmentType')}
+                      className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                    >
+                      <span className="text-sm text-gray-700">Select Employment Type</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.employmentType ? 'transform rotate-180' : ''}`} />
+                    </button>
+                    
+                    {openSubDropdowns.employmentType && (
+                      <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-60 overflow-y-auto">
+                        <div className="space-y-2">
+                          {filterOptions.employmentType.map((option, index) => (
+                            <div key={option.label + index} className="flex items-center p-2 hover:bg-white rounded transition-all duration-200">
+                              <input
+                                type="checkbox"
+                                id={`employmentType-${option.label}-${index}`}
+                                checked={filters.employmentType.includes(option.label)}
+                                onChange={() => handleFilterChange('employmentType', option.label)}
+                                className="h-4 w-4 text-[#143694] focus:ring-[#143694]/50 border-gray-300 rounded"
+                              />
+                              <label 
+                                htmlFor={`employmentType-${option.label}-${index}`}
+                                className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location Filter 
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-gray-700">Location</span>
+                        {Array.isArray(filters.location) && filters.location.length > 0 && (
+                          <span className="ml-2 px-2 py-0.5 bg-[#143694] text-white text-xs rounded-full">
+                            {filters.location.length}
+                          </span>
+                        )}
+                      </div>
+                      {Array.isArray(filters.location) && filters.location.length > 0 && (
+                        <button
+                          onClick={() => handleFilterChange('location', [])}
+                          className="text-xs text-[#143694] hover:text-[#1e4ed8]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleSubDropdown('location')}
+                      className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                    >
+                      <span className="text-sm text-gray-700">Select Location</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.location ? 'transform rotate-180' : ''}`} />
+                    </button>
+                    
+                    {openSubDropdowns.location && (
+                      <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <CreatableSelect
+                          isMulti
+                          options={cityOptions}
+                          value={safeLocation.map(loc => ({ value: loc, label: loc }))}
+                          onChange={handleLocationMultiChange}
+                          placeholder="Select or type locations..."
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderColor: '#e5e7eb',
+                              minHeight: '38px',
+                              fontSize: '14px',
+                              borderRadius: '0.75rem',
+                              backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                              backgroundImage:
+                                'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                            }),
+                            menu: (base) => ({
+                              ...base,
+                              borderRadius: '0.5rem',
+                              fontSize: '14px',
+                              border: '1px solid #e5e7eb',
+                            }),
+                            menuPortal: (base) => ({
+                              ...base,
+                              zIndex: 9999,
+                            }),
+                            multiValue: (base) => ({
+                              ...base,
+                              fontSize: '12px',
+                              backgroundColor: '#f3f4f6',
+                              borderRadius: '9999px',
+                            }),
+                            multiValueRemove: (base) => ({
+                              ...base,
+                              fontSize: '12px',
+                              color: '#6b7280',
+                              ':hover': {
+                                backgroundColor: '#e5e7eb',
+                                color: '#374151',
+                              },
+                            }),
+                          }}
+                        />                         
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* College Cards Grid */}
         {/* College Cards Grid */}

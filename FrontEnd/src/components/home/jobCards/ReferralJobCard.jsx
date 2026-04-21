@@ -87,13 +87,16 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
     </div>
 
     {/* 🔹 NOTICE PERIOD (like badge row in other cards) */}
-    <div className="flex gap-3 flex-wrap mb-3">
-      <div className="text-xs bg-gray-100 px-3 py-1 rounded-md">
+    <div className="grid grid-cols-2 gap-3 mb-3">
+  
+      <div className="text-xs bg-gray-100 px-1 py-1 rounded-md text-center border border-gray-200">
         Notice Period: {noticePeriod}
       </div>
-      <div className="text-xs bg-purple-100 px-3 py-1 rounded-md">
+
+      <div className="text-xs bg-purple-100 px-1 py-1 rounded-md text-center border border-purple-200">
         Exp: {experienceLevel}
       </div>
+
     </div>
 
     {/* 🔹 PACKAGE */}
@@ -105,10 +108,24 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
       </span>
     </div>
 
-    {/* 🔹 WORK MODE */}
-    <div className="text-xs text-gray-500 mb-3">
-      {employmentType} • {workMode}
+    <div className="flex justify-between text-sm text-gray-700 mb-3">
+      <span>Employment Type</span>
+      <span className="font-medium flex items-center gap-1">
+        {employmentType}
+      </span>
     </div>
+
+    <div className="flex justify-between text-sm text-gray-700 mb-3">
+      <span>Work Mode</span>
+      <span className="font-medium flex items-center gap-1">
+        {workMode}
+      </span>
+    </div>
+
+    {/* 🔹 WORK MODE */}
+    {/* <div className="text-xs text-gray-500 mb-3">
+      {employmentType} • {workMode}
+    </div> */}
 
     {/* 🔹 STREAMS */}
     {streams.length > 0 && (

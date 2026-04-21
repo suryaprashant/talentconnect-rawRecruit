@@ -147,36 +147,60 @@ const JobCard = ({ job, onClick }) => {
 
         {/* DATES */}
         {(startDate || endDate) && (
-          <div className="flex gap-2 flex-wrap mb-2">
+          <div className="grid grid-cols-2 gap-3 mb-2">
+
+            {/* START DATE */}
             {startDate && (
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {startDate}
-              </span>
+              <div className="bg-gray-100 rounded-xl px-1 py-1 text-center border border-gray-200">
+                <p className="text-[10px] text-gray-900 mb-0">
+                  Start Date
+                </p>
+                <p className="text-xs font-semibold text-gray-900">
+                  {startDate}
+                </p>
+              </div>
             )}
+
+            {/* END DATE */}
             {endDate && (
-              <span className="text-xs bg-orange-100 px-2 py-1 rounded">
-                {endDate}
-              </span>
+              <div className="bg-orange-100 rounded-xl px-1 py-1 text-center border border-orange-200">
+                <p className="text-[10px] text-gray-900 mb-0">
+                  End Date
+                </p>
+                <p className="text-xs font-semibold text-gray-900">
+                  {endDate}
+                </p>
+              </div>
             )}
+
           </div>
         )}
 
         {/* INFO */}
         <div className="text-sm text-gray-700 space-y-1 mb-2">
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <span>Package</span>
             <span className="font-medium">{salary}</span>
-          </div>
+          </div> */}
 
           <div className="flex justify-between">
             <span>Min Students</span>
             <span className="font-medium">{minStudents}</span>
           </div>
 
-          <div className="text-xs text-gray-500">
+          <div className="flex justify-between">
+            <span>Employment Type</span>
+            <span className="font-medium">{job.employmentType?.join(", ") || "N/A"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Work Mode</span>
+            <span className="font-medium">{job.workMode?.join(", ") || "N/A"}</span>
+          </div>
+
+          {/* <div className="text-xs text-gray-500">
             {job.employmentType?.join(", ") || "N/A"} •{" "}
             {job.workMode?.join(", ") || "N/A"}
-          </div>
+          </div> */}
         </div>
 
         {/* STREAMS */}

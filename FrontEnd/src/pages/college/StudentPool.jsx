@@ -47,37 +47,39 @@ const StudentDirectory = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 font-sans text-slate-900">
+    <div className="min-h-screen p-8 font-sans text-slate-900 bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       <div className="max-w-6xl mx-auto">
         <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
 
-          <div className="flex items-center justify-between">
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
-            <div>
-              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
-                Student Pool
-              </h1>
+    {/* Left: Title */}
+    <div>
+      <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+        Student Pool
+      </h1>
 
-              <p className="text-gray-500 text-sm mt-1">
-                {students.length} total students enrolled
-              </p>
-            </div>
+      <p className="text-gray-500 text-sm mt-1">
+        {students.length} total students enrolled
+      </p>
+    </div>
 
-          </div>
+    {/* Right: Search */}
+    <div className="relative w-full sm:w-72">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#143694]" />
 
-        </header>
+      <input 
+        type="text"
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+        placeholder="Search by student name..." 
+        className="w-full pl-10 pr-4 py-2 border border-[#1e4ed8] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] placeholder:text-gray-400 bg-white"
+      />
+    </div>
 
-        {/* Search Bar - Strictly for Name */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input 
-            type="text"
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Search by student name..." 
-            className="w-full max-w-md pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1e4ed8]/20 focus:border-[#1e4ed8] bg-white shadow-sm transition-all" 
-          />
-        </div>
+  </div>
+
+</header>
 
         {error && <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-200">{error}</div>}
 

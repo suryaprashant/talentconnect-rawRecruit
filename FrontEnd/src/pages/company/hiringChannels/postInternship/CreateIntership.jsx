@@ -473,10 +473,10 @@ degree: formData.degree.map(d => d.label),
             
           </div>
         </div> */}
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-4 px-0 max-w-4xl">
           {/* Header Section - Compact */}
         
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
 
             {/* Top Section */}
             <div className="flex items-center gap-3 mb-3">

@@ -60,55 +60,18 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 overflow-hidden">
-<div className="container mx-auto px-4 pt-8">
+        {/* <div className="container mx-auto px-4 pt-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
-            {/* Header */}
+            {/* Header 
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
                 Service Request
               </h2>
             </div>
 
-            {/* Tabs */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-gray-200 pb-2">
-              <button 
-                onClick={() => navigate('/service-request/campus-placement')}
-                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-              >
-                Campus Placement
-              </button>
-
-              {/* PoolCampus is ACTIVE here */}
-              <button 
-                onClick={() => navigate('/service-request/poolcampus-placement')}
-                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-              >
-                PoolCampus Placement
-              </button>
-
-              <button 
-                onClick={() => navigate('/service-request/student-training-programs')}
-                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-              >
-                Student Training Programs
-              </button>
-
-              <button 
-                onClick={() => navigate('/service-request/seminars')}
-                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-              >
-                Seminars
-              </button>
-
-              <button 
-                onClick={() => navigate('/service-request/campus-branding')}
-                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-              >
-                Campus Branding
-              </button>
-            </div>
+            
           </div>
-        </div>
+        </div> */}
         {/* Background Blobs */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />
@@ -119,17 +82,69 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <div className="relative z-10 container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-8 mt-4 text-center">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8 mt-5">
 
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
-              Pool-Campus Placement Solutions for Colleges
-            </h1>
+  <div className="flex flex-col gap-4">
 
-            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Collaborative multi-college hiring to expand opportunities and improve placement outcomes.
-            </h2>
+    {/* Top Section */}
+    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
 
-          </header>
+      <div>
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+          Pool-Campus Placement Solutions
+        </h1>
+
+        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+          Collaborative multi-college hiring to expand opportunities and improve placement outcomes
+        </p>
+      </div>
+
+    </div>
+
+    {/* Tabs */}
+    <div className="flex flex-wrap items-center gap-2 border-gray-200 pt-0">
+
+      <button 
+        onClick={() => navigate('/service-request/campus-placement')}
+        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+      >
+        Campus Placement
+      </button>
+
+      {/* Active */}
+      <button 
+        onClick={() => navigate('/service-request/poolcampus-placement')}
+        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+      >
+        PoolCampus
+      </button>
+
+      <button 
+        onClick={() => navigate('/service-request/student-training-programs')}
+        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+      >
+        Training Programs
+      </button>
+
+      <button 
+        onClick={() => navigate('/service-request/seminars')}
+        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+      >
+        Seminars
+      </button>
+
+      <button 
+        onClick={() => navigate('/service-request/campus-branding')}
+        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+      >
+        Branding
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
           {/* Services Section - Square Cards with Bullet Points */}
           <section className="mb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -66,7 +66,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
           
           {/* Header */}
-          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
 
             {/* Top Row */}
             <div className="flex items-start justify-between flex-wrap gap-4 mb-4">

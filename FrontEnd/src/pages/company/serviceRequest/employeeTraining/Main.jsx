@@ -77,15 +77,19 @@ export default function MainPage({
         <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
 
           {/* Header */}
-          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-8 mb-10 text-center">
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
 
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-4">
-              Employee Training and Upskilling Programs
-            </h1>
+            <div className="flex flex-col gap-2">
 
-            <h2 className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Structured training solutions to prepare candidates for real-world job performance.
-            </h2>
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                Employee Training & Upskilling
+              </h1>
+
+              <p className="text-gray-600 text-sm md:text-base max-w-2xl">
+                Structured training solutions to prepare candidates for real-world job performance
+              </p>
+
+            </div>
 
           </header>
           {/* Services Section - Square Cards */}

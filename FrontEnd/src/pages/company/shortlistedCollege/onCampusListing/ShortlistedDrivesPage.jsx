@@ -293,9 +293,9 @@ export default function OnCampusJobManagement() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
-      <div className="container mx-auto px-4 pt-8">
+      {/* <div className="container mx-auto px-4 pt-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
-          {/* Header */}
+          {/* Header 
           <div className="flex items-center gap-3 mb-2">
             <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
               Shortlisted Colleges / Candidates
@@ -306,94 +306,92 @@ export default function OnCampusJobManagement() {
             </span>
           </div>
 
-          {/* Tabs */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pb-2">
+        </div>
+      </div> */}
+      <div className="container mx-auto px-4 py-8 pt-22">
+        {/* Header Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-1 mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            {/* LEFT */}
+            <div>
 
-            {/* Active */}
-            <button 
-              className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-            >
-              On-Campus
-            </button>
-            
-            {/* Others */}
-            <button 
-              onClick={() => navigate('/shortlisted/pool-campus-listings')}
-              className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-            >
-              Pool Campus
-            </button>
+              <div className="flex items-center gap-3 mb-2">
+                
+                <div className="p-2 bg-[#143694]/10 rounded-lg">
+                  <Building2 className="h-5 w-5 text-[#143694]" />
+                </div>
 
-            <button 
-              onClick={() => navigate('/shortlisted/Off-campus')}
-              className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-            >
-              Off-Campus
-            </button>
+                <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                  Shortlisted On-Campus Drives
+                </h1>
 
-            <button 
-              onClick={() => navigate('/shortlisted/internship-listings')}
-              className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-            >
-              Internship
-            </button>
+              </div>
+
+              <p className="text-gray-600 text-sm md:text-base">
+                Track your shortlisted on-campus drives and college applications.
+              </p>
+
+              {/* Tabs */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
+
+                {/* Active */}
+                <button 
+                  className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  On-Campus
+                </button>
+                
+                {/* Others */}
+                <button 
+                  onClick={() => navigate('/shortlisted/pool-campus-listings')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Pool Campus
+                </button>
+
+                <button 
+                  onClick={() => navigate('/shortlisted/Off-campus')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Off-Campus
+                </button>
+
+                <button 
+                  onClick={() => navigate('/shortlisted/internship-listings')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Internship
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* RIGHT (optional search) */}
+            {/*
+            <div className="relative w-full md:w-80">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                className="
+                  w-full pl-10 pr-4 py-2.5 
+                  bg-gray-50 border border-gray-200 rounded-xl
+                  focus:ring-2 focus:ring-[#143694]/30 
+                  focus:border-[#143694] focus:outline-none
+                  transition-all duration-200
+                "
+                placeholder="Search by job role or location"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            */}
 
           </div>
 
         </div>
-      </div>
-      <div className="container mx-auto px-4 py-8 pt-22">
-        {/* Header Section */}
-       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
-
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-
-    {/* LEFT */}
-    <div>
-
-      <div className="flex items-center gap-3 mb-2">
-        
-        <div className="p-2 bg-[#143694]/10 rounded-lg">
-          <Building2 className="h-5 w-5 text-[#143694]" />
-        </div>
-
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
-          Shortlisted On-Campus Drives
-        </h1>
-
-      </div>
-
-      <p className="text-gray-600 text-sm md:text-base">
-        Track your shortlisted on-campus drives and college applications.
-      </p>
-
-    </div>
-
-    {/* RIGHT (optional search) */}
-    {/*
-    <div className="relative w-full md:w-80">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search className="h-4 w-4 text-gray-400" />
-      </div>
-      <input
-        type="text"
-        className="
-          w-full pl-10 pr-4 py-2.5 
-          bg-gray-50 border border-gray-200 rounded-xl
-          focus:ring-2 focus:ring-[#143694]/30 
-          focus:border-[#143694] focus:outline-none
-          transition-all duration-200
-        "
-        placeholder="Search by job role or location"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-    </div>
-    */}
-
-  </div>
-
-</div>
 
         {/* Error Display */}
         {error && (

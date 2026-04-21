@@ -275,7 +275,7 @@ export default function OncampusApplicationStatus() {
       </div> */}
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mb-6">
+        <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mt-3 mb-8">
 
           {/* Top Section */}
           <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">

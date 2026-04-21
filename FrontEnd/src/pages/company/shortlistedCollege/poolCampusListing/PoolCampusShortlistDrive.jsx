@@ -282,9 +282,9 @@ export default function PoolCampusJobManagement() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
-      <div className="container mx-auto px-4 pt-8">
+              {/* <div className="container mx-auto px-4 pt-8">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-0">
-                {/* Header */}
+                {/* Header 
                 <div className="flex items-center gap-3 mb-4">
                     <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
                     Shortlisted Colleges / Candidates
@@ -295,8 +295,37 @@ export default function PoolCampusJobManagement() {
                     </span>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pb-2">
+                
+
+                </div>
+              </div> */}
+      <div className="container mx-auto px-4 py-8 pt-22">
+        {/* Header Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-1 mb-8">
+
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3 mb-2">
+        
+        <div className="p-2 bg-[#143694]/10 rounded-lg">
+          <Building2 className="h-5 w-5 text-[#143694]" />
+        </div>
+
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+          Shortlisted Pool-Campus Drives
+        </h1>
+
+      </div>
+
+      <p className="text-gray-600 text-sm md:text-base">
+        Track your shortlisted pool-campus drives and college applications.
+      </p>
+
+      {/* Tabs */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
                     
                     {/* Others */}
                     <button 
@@ -330,33 +359,6 @@ export default function PoolCampusJobManagement() {
                     
 
                 </div>
-
-                </div>
-            </div>
-      <div className="container mx-auto px-4 py-8 pt-22">
-        {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
-
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-
-    {/* LEFT */}
-    <div>
-
-      <div className="flex items-center gap-3 mb-2">
-        
-        <div className="p-2 bg-[#143694]/10 rounded-lg">
-          <Building2 className="h-5 w-5 text-[#143694]" />
-        </div>
-
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
-          Shortlisted Pool-Campus Drives
-        </h1>
-
-      </div>
-
-      <p className="text-gray-600 text-sm md:text-base">
-        Track your shortlisted pool-campus drives and college applications.
-      </p>
 
     </div>
 

@@ -46,7 +46,9 @@ const CollegeCard = ({ college, onClick }) => {
     : "Not disclosed";
 
   const students = college.noOfplacedStudents || "N/A";
-
+  const lastDateToApply = college.endDate
+    ? new Date(college.endDate).toLocaleDateString()
+    : "N/A";   
   const startDate = college.proposedSchedule?.startDate
     ? new Date(college.proposedSchedule.startDate).toLocaleDateString()
     : null;
@@ -166,33 +168,26 @@ const CollegeCard = ({ college, onClick }) => {
         </div>
 
         {/* DATES + STUDENTS */}
-        {(startDate || endDate || students) && (
-          <div className="grid grid-cols-3 gap-2 mb-3">
+        {(startDate || endDate || lastDateToApply) && (
+          <div className="mb-2 grid grid-cols-3 gap-3">
 
-            <div className="bg-gray-100 rounded-xl py-1 px-1 text-center">
-              <p className="text-[10px] text-gray-500 leading-none">
-                Start Date
+            {/* LEFT */}
+            <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
+              <p className="text-[10px] text-gray-900 mb-0">
+                Last Date
               </p>
-              <p className="text-xs font-semibold leading-tight mt-0.5">
-                {startDate || "-"}
+              <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+                {lastDateToApply || "-"}
               </p>
             </div>
 
-            <div className="bg-orange-100 rounded-xl py-1 px-1 text-center">
-              <p className="text-[10px] text-gray-500 leading-none">
-                End Date
+            {/* RIGHT */}
+            <div className="col-span-2 bg-orange-100 rounded-xl px-1 py-1 border border-orange-200 flex flex-col items-center justify-center text-center">
+              <p className="text-[10px] text-gray-900 mb-0">
+                Tentative Dates
               </p>
-              <p className="text-xs font-semibold leading-tight mt-0.5">
-                {endDate || "-"}
-              </p>
-            </div>
-
-            <div className="bg-blue-100 rounded-xl py-1 px-1 text-center">
-              <p className="text-[10px] text-gray-500 leading-none">
-                Students
-              </p>
-              <p className="text-xs font-semibold leading-tight mt-0.5">
-                {students}
+              <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+                {startDate || "-"} → {endDate || "-"}
               </p>
             </div>
 
@@ -204,6 +199,10 @@ const CollegeCard = ({ college, onClick }) => {
           <span>Min Package</span>
           <span className="font-medium">{salary}</span>
         </div> */}
+        <div className="text-sm text-gray-700 mb-2 flex justify-between">
+          <span>Min Hiring Commitment</span>
+          <span className="font-medium">{students}</span>
+        </div>
         <div className="text-sm text-gray-700 mb-2 flex justify-between">
           <span>Employment Type</span>
           <span className="font-medium">{employmentType}</span>

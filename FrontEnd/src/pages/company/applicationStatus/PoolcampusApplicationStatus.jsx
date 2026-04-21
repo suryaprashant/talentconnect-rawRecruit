@@ -658,7 +658,7 @@ const extractDegree = (job) => {
       </div> */}
       <div className="container mx-auto px-4 py-6">
         {/* Header Section */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-6">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-8 mt-3">
 
           {/* Top Section */}
           <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
