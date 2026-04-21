@@ -165,6 +165,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
     const query = {
       jobType: "Off-campus",
       jobStatus: { $in: ["Open", "Pending"] },
+      inactive: { $ne: true },
     };
     if (userId && appliedJobIds.length > 0) {
       query._id = { $nin: appliedJobIds };

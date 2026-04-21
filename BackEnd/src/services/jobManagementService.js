@@ -100,7 +100,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
     const target = targetMap[key] || "";
 
     try {
-        const response = await JobPostingTable.aggregate([
+        let response = await JobPostingTable.aggregate([
             {
                 $match: {
                     collegePosted: new mongoose.Types.ObjectId(collegeId),
@@ -155,11 +155,11 @@ collegeAddress: {
             {
                 $project: {
                     jobApplications: 0,
-                    collegeInfo: 0 // Remove the raw join data after extracting what we need
+                    collegeInfo: 0 
                 }
             }
         ]);
-
+      response= response.filter(post=>post.inactive!==true)
         return { success: true, response };
     } catch (error) {
         console.error("Aggregation Error:", error);
@@ -167,63 +167,93 @@ collegeAddress: {
     }
 };
 
+// export const deleteJobPostingService = async (jobId, collegeId) => {
+//     try {
+        
+//         if (!mongoose.Types.ObjectId.isValid(jobId)) {
+//             throw new Error("Invalid job ID");
+//         }
+
+//         if (!mongoose.Types.ObjectId.isValid(collegeId)) {
+//             throw new Error("Invalid college ID");
+//         }
+
+//         const job = await JobPostingTable.findOne({
+//             _id: new mongoose.Types.ObjectId(jobId),
+//             collegePosted: new mongoose.Types.ObjectId(collegeId)
+//         });
+
+//         if (!job) {
+//             throw new Error("Job not found or you don't have permission to delete it");
+//         }
+
+//         const session = await mongoose.startSession();
+//         session.startTransaction();
+
+//         try {
+            
+//             const deleteApplicationsResult = await Application.deleteMany(
+//                 { job: new mongoose.Types.ObjectId(jobId) },
+//                 { session }
+//             );
+
+            
+//             const deleteJobResult = await JobPostingTable.deleteOne(
+//                 { _id: new mongoose.Types.ObjectId(jobId) },
+//                 { session }
+//             );
+
+//             await session.commitTransaction();
+//             session.endSession();
+
+//             return {
+//                 success: true,
+//                 message: "Job and associated applications deleted successfully",
+//                 data: {
+//                     jobDeleted: deleteJobResult.deletedCount,
+//                     applicationsDeleted: deleteApplicationsResult.deletedCount
+//                 }
+//             };
+
+//         } catch (transactionError) {
+         
+//             await session.abortTransaction();
+//             session.endSession();
+//             throw transactionError;
+//         }
+
+//     } catch (error) {
+//         console.error("Error in deleteJobPostingService:", error);
+//         throw new Error(error.message || "Failed to delete job posting");
+//     }
+// };
+
+
 export const deleteJobPostingService = async (jobId, collegeId) => {
     try {
-        
-        if (!mongoose.Types.ObjectId.isValid(jobId)) {
-            throw new Error("Invalid job ID");
-        }
-
-        if (!mongoose.Types.ObjectId.isValid(collegeId)) {
-            throw new Error("Invalid college ID");
-        }
-
-        const job = await JobPostingTable.findOne({
-            _id: new mongoose.Types.ObjectId(jobId),
-            collegePosted: new mongoose.Types.ObjectId(collegeId)
-        });
+        // Atomic update: finds the job belonging to THIS college and marks inactive
+        const job = await JobPostingTable.findOneAndUpdate(
+            { 
+                _id: jobId, 
+                collegePosted: collegeId, // Ensure ownership
+                inactive: { $ne: true }   // Only update if not already inactive
+            },
+            { $set: { inactive: true } },
+            { new: true }
+        );
 
         if (!job) {
-            throw new Error("Job not found or you don't have permission to delete it");
+            throw new Error("Job not found or unauthorized to delete");
         }
 
-        const session = await mongoose.startSession();
-        session.startTransaction();
-
-        try {
-            
-            const deleteApplicationsResult = await Application.deleteMany(
-                { job: new mongoose.Types.ObjectId(jobId) },
-                { session }
-            );
-
-            
-            const deleteJobResult = await JobPostingTable.deleteOne(
-                { _id: new mongoose.Types.ObjectId(jobId) },
-                { session }
-            );
-
-            await session.commitTransaction();
-            session.endSession();
-
-            return {
-                success: true,
-                message: "Job and associated applications deleted successfully",
-                data: {
-                    jobDeleted: deleteJobResult.deletedCount,
-                    applicationsDeleted: deleteApplicationsResult.deletedCount
-                }
-            };
-
-        } catch (transactionError) {
-         
-            await session.abortTransaction();
-            session.endSession();
-            throw transactionError;
-        }
+        return { 
+            success: true, 
+            msg: "Job marked as inactive successfully",
+            data: job 
+        };
 
     } catch (error) {
-        console.error("Error in deleteJobPostingService:", error);
-        throw new Error(error.message || "Failed to delete job posting");
+        console.error("Service Error - deleteJobPosting:", error.message);
+        throw error;
     }
 };

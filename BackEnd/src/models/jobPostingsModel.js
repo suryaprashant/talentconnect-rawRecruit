@@ -170,6 +170,12 @@ cgpa: {
         type: String,
     }],
 
+    inactive:{
+        type:Boolean,
+        default:false,
+
+    }
+
 }, { timestamps: true });
 
 // Ensure virtuals are included when converting to JSON

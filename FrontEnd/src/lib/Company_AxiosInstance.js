@@ -86,14 +86,21 @@ export function postInternship(payload) {
 }
 
 // jobmanagement
-export function getPostedJobs(jobType, status) {
-  return axiosClient
-    .get(`/company/jobmanagement`, {
-      params: { jobType: jobType, status: status },
-    })
-    .then((response) => response)
-    .catch((error) => error);
-}
+// export function getPostedJobs(jobType, status) {
+//   return axiosClient
+//     .get(`/company/jobmanagement`, {
+//       params: { jobType: jobType, status: status },
+//     })
+//     .then((response) => response)
+//     .catch((error) => error);
+// }
+// In Company_AxiosInstance.js
+export const getPostedJobs = (jobType, status, active) => {
+    const params = { jobType, status };
+    if (active !== undefined) params.active = active;
+    return axiosClient.get('/company/jobmanagement', { params });
+};
+
 export function getEmployerJobs(jobType) {
   return axiosClient
     .get(`/company/jobmanagement/employer/${jobType}`)

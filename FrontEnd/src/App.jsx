@@ -278,6 +278,9 @@ import DeleteAccount from "./pages/DeleteAccount";
 import CompanyNewJobs from "./pages/company/CompanyNewJob"
 import StudentPool from "./pages/college/StudentPool";
 import BlogPage from "./pages/BlogPage";
+//import InActivejob from "./pages/company/";
+import InactiveJobManagement from "./pages/company/Inactivejobmanagement";
+import CollegeInactiveJob from "./pages/college/CollegeInactiveJob";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -555,6 +558,7 @@ function AppRoutes() {
               <Route path="/job-management/Off-campus" element={<OffCampusJobManagement />} />
               <Route path="/job-management/Job-listings" element={<JobListingJobManagement />} />
               <Route path="/job-management/Internship" element={<InternshipListing />} />
+              <Route path="/inactive-jobs/company" element={<InactiveJobManagement />} />
 
 
               {/* Accepted college / candidates  */}
@@ -707,6 +711,7 @@ function AppRoutes() {
               <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied" /> </JobProvider>} />
               {/* <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} /> */}
               <Route path="/company/employerDashboard/college-detail/:id" element={<CollegeDetailPage />} />
+              <Route path="/college/inactive-job" element={<CollegeInactiveJob />} />
 
               <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementForPool /></JobProvider>} />
               <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool status="Applied" /> </JobProvider>} />
