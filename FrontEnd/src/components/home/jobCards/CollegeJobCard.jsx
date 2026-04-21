@@ -21,7 +21,9 @@ const salary = job.packageDetails?.totalCTC
 : "Not disclosed";
 
 const students = job.noOfplacedStudents || "N/A";
-
+const lastDateToApply = job.endDate
+? new Date(job.endDate).toLocaleDateString()
+: "N/A";
 const startDate = job.proposedSchedule?.startDate
 ? new Date(job.proposedSchedule.startDate).toLocaleDateString()
 : null;
@@ -66,29 +68,25 @@ className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 
   </div>
 
   {/* STATS */}
-  <div className="mt-4 flex gap-2 flex-wrap">
-  
-    {/* START DATE */}
-    <div className="flex-1 min-w-[90px] bg-gray-100 rounded-xl px-3 py-2 text-center">
-      <p className="text-[10px] text-gray-500">Start Date</p>
-      <p className="text-sm font-semibold text-gray-800">
-        {startDate || "-"}
+  <div className="mt-4 grid grid-cols-3 gap-3">
+
+    {/* LEFT */}
+    <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Last Date
+      </p>
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {lastDateToApply || "-"}
       </p>
     </div>
 
-    {/* END DATE */}
-    <div className="flex-1 min-w-[90px] bg-orange-100 rounded-xl px-3 py-2 text-center">
-      <p className="text-[10px] text-gray-500">Tentative Date</p>
-      <p className="text-sm font-semibold text-gray-800">
-        {endDate || "-"}
+    {/* RIGHT */}
+    <div className="col-span-2 bg-orange-100 rounded-xl px-1 py-1 border border-orange-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Tentative Dates
       </p>
-    </div>
-
-    {/* STUDENTS */}
-    <div className="flex-1 min-w-[90px] bg-blue-100 rounded-xl px-3 py-2 text-center">
-      <p className="text-[10px] text-gray-500">Students</p>
-      <p className="text-sm font-semibold text-gray-800">
-        {students}
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {startDate || "-"} → {endDate || "-"}
       </p>
     </div>
 
@@ -103,7 +101,10 @@ className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 
         {salary}
       </span>
     </div>
-
+    <div className="flex justify-between">
+      <span>Min Hiring Commitment</span>
+      <span className="font-medium">{students} students</span>
+    </div>
     <div className="flex justify-between">
       <span>Employment Type</span>
       <span className="font-medium">{employmentType}</span>

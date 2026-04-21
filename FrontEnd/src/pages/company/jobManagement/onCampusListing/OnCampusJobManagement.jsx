@@ -324,7 +324,7 @@ export default function OnCampusJobManagement() {
         {/* Header Section */}
         
           
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-1 mb-8">
 
               <div className="flex items-center mb-2">
                 

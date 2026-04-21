@@ -184,7 +184,7 @@ export default function OffCampusJobManagement() {
     </div> */}
       <div className="container mx-auto px-4 py-8 pt-22">
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-1 mb-8">
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             

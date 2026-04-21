@@ -668,11 +668,11 @@ export default function OnCampusJobManagement() {
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Header Section */}
         {/* --- START OF ACCEPTED NAVIGATION --- */}
-        <div className="relative z-10 max-w-7xl mx-auto px-1 pt-8">
+        {/* <div className="relative z-10 max-w-7xl mx-auto px-1 pt-8">
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
 
-            {/* Header */}
+            {/* Header *
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
                 Accepted Companies
@@ -683,50 +683,55 @@ export default function OnCampusJobManagement() {
               </span>
             </div>
             
-            {/* Tabs */}
-            <div className="flex items-center gap-6 border-gray-200 pb-2">
-
-              {/* Active */}
-              <button 
-                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-              >
-                On-Campus
-              </button>
-              
-              {/* Inactive */}
-              <button 
-                onClick={() => navigate('/accepted/pool-campus-request')}
-                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-              >
-                Pool-Campus
-              </button>
-
-            </div>
+            
 
           </div>
 
-        </div>
+        </div> */}
         {/* --- END OF NAVIGATION --- */}
         <div className="mb-12">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-8">
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+  <div className="flex flex-col gap-4">
 
-              <div className="text-center md:text-left">
-                
-                <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-2">
-                  Accepted On-Campus Drives
-                </h1>
+    {/* Top Section */}
+    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
 
-                <p className="text-gray-600 text-base md:text-lg max-w-2xl">
-                  Track your accepted on-campus drives efficiently.
-                </p>
+      <div>
+        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+          Accepted On-Campus Drives
+        </h1>
 
-              </div>
+        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+          Track your accepted on-campus drives efficiently
+        </p>
+      </div>
 
-            </div>
+    </div>
 
-          </div>
+    {/* Tabs */}
+    <div className="flex items-center gap-3 border-gray-200 pt-0">
+
+      {/* Active */}
+      <button 
+        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+      >
+        On-Campus
+      </button>
+
+      {/* Inactive */}
+      <button 
+        onClick={() => navigate('/accepted/pool-campus-request')}
+        className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+      >
+        Pool-Campus
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
           {/* Main Content Card */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">

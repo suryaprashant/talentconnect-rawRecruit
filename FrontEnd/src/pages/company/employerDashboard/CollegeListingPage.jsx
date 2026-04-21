@@ -420,7 +420,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
         </div> */}
         {/* --- END OF NEW SECTION --- */}
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-6">
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
@@ -489,23 +489,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
                 </select>
 
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* Clear Filters */}
-              {getActiveFiltersCount() > 0 && (
-        <button
-          onClick={clearAllFilters}
-          className="
-            px-4 py-2.5 text-sm font-medium 
-            text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-xl
-            hover:bg-[#143694] hover:text-white
-            transition-all duration-200
-          "
-        >
-          Clear all
-        </button>
-      )}
-
+              </div> 
             </div>
 
           </div>
@@ -513,7 +497,7 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
         </div>
 
         {/* Stats Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-8 mb-8">
 
           {/* Total Colleges */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
@@ -585,65 +569,89 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
           </div>
 
         </div>
-<div className="mb-6">
+<div className="mb-8">
 
   {/* Active Filters Tags */}
   {getActiveFiltersCount() > 0 && (
-    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-4">
-      <div className="flex items-center flex-wrap gap-2">
-        <span className="text-sm font-medium text-gray-700 mr-2">
-          Active filters:
-        </span>
+    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-8">
 
-        {filters.degree.map(degree => (
-          <span key={degree} className="inline-flex items-center bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
-            {degree}
-            <button 
-                      onClick={() => removeFilter('degree', degree)}
-                      className="ml-2 text-[#143694] hover:text-purple-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+        {/* Left: Filters */}
+        <div className="flex items-center flex-wrap gap-2 flex-1">
+          <span className="text-sm font-medium text-gray-700 mr-2">
+            Active filters:
           </span>
-        ))}
 
-        {filters.courses.map(course => (
-          <span key={course} className="inline-flex items-center bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm">
-            {course}
-            <button 
-                      onClick={() => removeFilter('courses', course)}
-                      className="ml-2 text-green-600 hover:text-green-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-          </span>
-        ))}
-
-        {filters.employmentType.map(type => (
-          <span key={type} className="inline-flex items-center bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm">
-            {type}
-            <button 
-                      onClick={() => removeFilter('employmentType', type)}
-                      className="ml-2 text-yellow-600 hover:text-yellow-800"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-          </span>
-        ))}
-
-        {Array.isArray(filters.location) &&
-          filters.location.map(loc => (
-            <span key={loc} className="inline-flex items-center bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm">
-              Location: {loc}
-              <button
-                        onClick={() => removeFilter('location', loc)}
-                        className="ml-2 text-red-600 hover:text-red-800"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
+          {filters.degree.map(degree => (
+            <span key={degree} className="inline-flex items-center bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
+              {degree}
+              <button 
+                onClick={() => removeFilter('degree', degree)}
+                className="ml-2 text-[#143694] hover:text-purple-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
             </span>
           ))}
+
+          {filters.courses.map(course => (
+            <span key={course} className="inline-flex items-center bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm">
+              {course}
+              <button 
+                onClick={() => removeFilter('courses', course)}
+                className="ml-2 text-green-600 hover:text-green-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+          {filters.employmentType.map(type => (
+            <span key={type} className="inline-flex items-center bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm">
+              {type}
+              <button 
+                onClick={() => removeFilter('employmentType', type)}
+                className="ml-2 text-yellow-600 hover:text-yellow-800"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+          {Array.isArray(filters.location) &&
+            filters.location.map(loc => (
+              <span key={loc} className="inline-flex items-center bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm">
+                Location: {loc}
+                <button
+                  onClick={() => removeFilter('location', loc)}
+                  className="ml-2 text-red-600 hover:text-red-800"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+        </div>
+
+        {/* Right: Clear Button */}
+        {getActiveFiltersCount() > 0 && (
+          <div className="shrink-0">
+            <button
+              onClick={clearAllFilters}
+              className="
+                px-4 py-2 text-sm font-medium 
+                text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-lg
+                hover:bg-[#143694] hover:text-white
+                transition-all duration-200
+              "
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
       </div>
+
     </div>
   )}
 

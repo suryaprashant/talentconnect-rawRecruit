@@ -505,7 +505,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
         <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
       </div> */}
 
-      <div className="relative z-10 container mx-auto px-4 py-6">
+      <div className="relative z-10 container mx-auto px-4 mt-3 py-6">
         {/* Header Section */}
         <div className="mb-8">
           {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8 -mt-10">
@@ -540,17 +540,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
         </p>
       </div>
 
-      {/* Right: Clear Button */}
-      <div className="flex justify-end">
-        <button
-          onClick={clearAllFilters}
-          disabled={getActiveFiltersCount() === 0}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium shadow-sm"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Clear filters
-        </button>
-      </div>
+      
     </div>
 
     {/* Tabs */}
@@ -647,6 +637,10 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
           {/* Active Filters Tags */}
           {activeFiltersDisplay.length > 0 && (
             <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-4 mb-4">
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+              {/* Left: Filters */}
               <div className="flex items-center flex-wrap gap-2">
                 <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
                 
@@ -686,6 +680,18 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
                     </span>
                   );
                 })}
+              </div>
+              {/* Right: Clear Button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={clearAllFilters}
+                  disabled={getActiveFiltersCount() === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium shadow-sm"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Clear filters
+                </button>
+              </div>
               </div>
             </div>
           )}

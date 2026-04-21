@@ -449,7 +449,7 @@ if (compact) {
                     {/* </div> */}
 {/* --- END OF NEW HEADER --- */}
                 {/* Header Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-6">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-6">
 
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
@@ -518,22 +518,6 @@ if (compact) {
 
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
       </div>
-
-      {/* Clear Filters (only when needed) */}
-      {getActiveFiltersCount() > 0 && (
-        <button
-          onClick={clearAllFilters}
-          className="
-            px-4 py-2.5 text-sm font-medium 
-            text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-xl
-            hover:bg-[#143694] hover:text-white
-            transition-all duration-200
-          "
-        >
-          Clear all
-        </button>
-      )}
-
     </div>
 
   </div>
@@ -541,7 +525,7 @@ if (compact) {
 </div>
 
                 {/* Stats Cards Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-8 mb-8">
                     <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
                         <div className="flex items-center justify-between">
                             <div>
@@ -608,11 +592,15 @@ if (compact) {
                 </div>
 
                 {/* Filter Section */}
-                <div className="mb-6">
+                <div className="mb-8">
                     {/* Active Filters Tags */}
                     {getActiveFiltersCount() > 0 && (
-                        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-4">
-                            <div className="flex items-center flex-wrap gap-2">
+                        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-8 mt-8 ">
+
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+                                {/* LEFT: Filters */}
+                                <div className="flex items-center flex-wrap gap-2 flex-1">
                                 <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
                                 
                                 {filters.degree.map(degree => (
@@ -682,6 +670,21 @@ if (compact) {
                                     </span>
                                 ))}
                             </div>
+                            {/* Clear Filters (only when needed) */}
+                            {getActiveFiltersCount() > 0 && (
+                                <button
+                                onClick={clearAllFilters}
+                                className="
+                                    px-4 py-2.5 text-sm font-medium 
+                                    text-[#143694] bg-[#143694]/10 border border-[#143694]/20 rounded-xl
+                                    hover:bg-[#143694] hover:text-white
+                                    transition-all duration-200
+                                "
+                                >
+                                Clear all
+                                </button>
+                            )}
+                        </div>
                         </div>
                     )}
 

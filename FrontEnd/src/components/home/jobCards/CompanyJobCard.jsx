@@ -107,9 +107,21 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
         {minStudents}
       </span>
     </div>
-    <div className="text-xs text-gray-500">
-      {employmentType} • {workMode}
+    <div className="flex justify-between">
+      <span>Employment Type</span>
+      <span className="font-medium flex items-center gap-1">
+        {employmentType}
+      </span>
     </div>
+    <div className="flex justify-between">
+      <span>Work Mode</span>
+      <span className="font-medium flex items-center gap-1">
+        {workMode}
+      </span>
+    </div>
+    {/* <div className="text-xs text-gray-500">
+      {employmentType} • {workMode}
+    </div> */}
   </div>
 
   {/* STREAMS */}

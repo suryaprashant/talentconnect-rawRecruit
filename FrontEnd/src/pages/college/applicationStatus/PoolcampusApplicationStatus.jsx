@@ -272,10 +272,10 @@ export default function PoolCampusApplicationStatus() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
-            <div className="container mx-auto px-4 pt-8">
+            {/* <div className="container mx-auto px-4 pt-8">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-1">
 
-                {/* Header */}
+                {/* Header 
                 <div className="flex items-center gap-3 mb-3">
                     <h2 className="text-2xl md:text-[26px] font-semibold text-[#143694] tracking-tight">
                     Your Application Status
@@ -286,60 +286,69 @@ export default function PoolCampusApplicationStatus() {
                     </span>
                 </div>
                 
-                {/* Tabs */}
-                <div className="flex items-center gap-6 border-gray-200 pb-2">
-
-                    {/* Inactive */}
-                    <button 
-                    onClick={() => navigate('/application-status/oncampus')}
-                    className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
-                    >
-                    On-Campus
-                    </button>
-                    
-                    {/* Active */}
-                    <button 
-                    className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-                    >
-                    Pool-Campus
-                    </button>
+                
 
                 </div>
-
-                </div>
-    </div>
+            </div> */}
             <div className="container mx-auto px-4 py-6">
                 {/* Header */}
-                <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mb-6">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mt-3 mb-6">
+
+                    {/* Top Row */}
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+
+                        {/* Left: Title */}
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
-                                <Award className="h-5 w-5 text-[#1e4ed8]" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
-                                    Pool Campus Application Status
-                                </h1>
-                                <p className="text-sm text-gray-600">
-                                    {poolcampusJobs.length} application(s) found
-                                </p>
-                            </div>
+                        <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                            <Award className="h-5 w-5 text-[#1e4ed8]" />
                         </div>
-                    </div>
-                    
-                    {/* Search */}
-                    <div className="relative">
-                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                            <Search className="h-4 w-4 text-gray-400" />
+
+                        <div>
+                            <h1 className="text-xl font-semibold text-[#143694]">
+                            Pool Campus Application Status
+                            </h1>
+                            <p className="text-sm text-gray-600">
+                            {poolcampusJobs.length} application(s) found
+                            </p>
                         </div>
+                        </div>
+
+                        {/* Right: Search */}
+                        <div className="relative w-full sm:w-72">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                            <Search className="h-4 w-4 text-[#143694]" />
+                        </div>
+
                         <input
                             type="text"
-                            placeholder="Search pool applications..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl focus:ring-2 focus:ring-[#143694] focus:border-transparent focus:outline-none text-sm"
+                            placeholder="Search applications..."
+                            className="w-full pl-10 pr-4 py-2 bg-white border border-[#1e4ed8] rounded-lg focus:ring-2 focus:ring-[#143694] focus:outline-none text-sm placeholder:text-gray-400"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        </div>
                     </div>
+
+                    {/* Tabs */}
+                    <div className="flex items-center gap-3 border-gray-200 pt-0">
+
+                        {/* Inactive */}
+                        <button 
+                        onClick={() => navigate('/application-status/oncampus')}
+                        className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+                        >
+                        On-Campus
+                        </button>
+
+                        {/* Active */}
+                        <button 
+                        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                        >
+                        Pool-Campus
+                        </button>
+
+                    </div>
+
                 </div>
 
                 {/* Main Layout */}

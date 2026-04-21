@@ -43,6 +43,7 @@ const duration = job.internshipDuration || null;
 
 // 🔹 STREAMS
 const streams = job.studentStreams || [];
+const visibleStreams = streams.slice(0, 4);
 
 // 🔹 SKILLS
 const skills = job.skills || [];
@@ -111,27 +112,33 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
         {stipend}
       </span>
     </div>
+    <div className="flex justify-between text-sm text-gray-700 mb-3">
+      <span>Work Mode</span>
+      <span className="font-medium flex items-center gap-1">
+        {workMode}
+      </span>
+    </div>
 
     {/* 🔹 WORK MODE */}
-    <div className="text-xs text-gray-500 mb-3">
+    {/* <div className="text-xs text-gray-500 mb-3">
       <span>Work Mode </span>
       {workMode}
-    </div>
+    </div> */}
 
     {/* 🔹 STREAMS */}
     {streams.length > 0 && (
-      <div className="mb-3">
+      <div className="mt-4 bg-gray-50 p-3 rounded-xl">
         <div className="text-sm font-medium mb-2">
           Eligible Streams
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {streams.slice(0, 3).map((s, idx) => (
+          {visibleStreams.map((stream, idx) => (
             <span
               key={idx}
-              className="text-xs bg-blue-100 px-2 py-1 rounded-md"
+              className="text-xs bg-white px-2 py-1 rounded-md border"
             >
-              {s}
+              {stream}
             </span>
           ))}
         </div>
