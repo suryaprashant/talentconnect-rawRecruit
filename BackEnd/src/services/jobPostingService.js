@@ -579,6 +579,34 @@ export const deleteJobByIdService = async (jobId, companyId) => {
     }
 };
 
+export const deleteReferralJobByIdService = async (jobId, professionalProfileId) => {
+    try {
+        const job = await JobPostingTable.findOne({
+            _id: jobId,
+            candidatePosted: professionalProfileId,
+            jobType: "Referral"
+        });
+
+        if (!job) throw { status: 404, message: "Referral job not found" };
+        if (String(job.candidatePosted) !== String(professionalProfileId)) 
+            throw { status: 403, message: "Unauthorized" };
+        if (job.inactive) 
+            return { success: false, status: 400, msg: "Job is already inactive" };
+
+        await JobPostingTable.findByIdAndUpdate(
+            jobId,
+            { inactive: true },
+            { new: true }
+        );
+
+        return { success: true, msg: "Referral job marked as inactive successfully" };
+
+    } catch (error) {
+        console.error("Delete Referral Job Service Error:", error.message);
+        throw error;
+    }
+};
+
 // export const deleteJobByIdService = async (jobId, companyId) => {
 //     const session = await mongoose.startSession();
 

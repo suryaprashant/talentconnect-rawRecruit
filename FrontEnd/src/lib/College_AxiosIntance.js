@@ -103,12 +103,15 @@ export function getPoolCampusJobById(id) {
 }
 
 // job management 
-export function getCollegePostedJobs(jobType,key) {
-  return axiosClient.get(`/college/jobmanagement/${key}/${jobType}`)
+export function getCollegePostedJobs(jobType, key, active) {
+  const params = {};
+  if (active !== undefined && active !== null) {
+    params.active = active.toString(); // ✅ explicitly convert to string "false"
+  }
+  return axiosClient.get(`/college/jobmanagement/${key}/${jobType}`, { params })
     .then(response => response)
     .catch(error => error);
 }
-
 export function getApplicationByJobOfManagement(jobId, jobType, targetStatus,isVisited) {
   return axiosClient.get(`application/manage/college`, {
     params: {

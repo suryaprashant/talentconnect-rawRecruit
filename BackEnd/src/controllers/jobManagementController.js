@@ -2,9 +2,9 @@ import { fetchReferralApplicationsService } from "../services/adminService.js";
 import { countApplicationsService } from "../services/applicationService.js";
 import { getCollegeService } from "../services/collegeService.js";
 import { getCompanyService, getEmployerService } from "../services/companyService.js";
-import { deleteJobByIdService, getJobPostedByCompanyService } from "../services/jobPostingService.js";
+import { deleteJobByIdService, getJobPostedByCompanyService, deleteReferralJobByIdService} from "../services/jobPostingService.js";
 import { getStudentService } from "../services/studentService.js";
-
+import Onboarding from "../models/studentonboardingModel.js"; // adjust path as per your project structure
 
 export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
@@ -102,6 +102,37 @@ export const deleteJob = async (req, res) => {
         res.status(500).json({ msg: error.message || "Internal server error" });
     }
 }
+
+export const deleteReferralJob = async (req, res) => {
+    const { jobId } = req.params;
+    const userId = req.user._id;
+
+    try {
+        // Fetch professional profile using userId from Auth
+        const professionalProfile = await Onboarding.findOne({ 
+            userId,
+            profileType: "professional"
+        });
+
+        if (!professionalProfile) 
+            return res.status(404).json({ error: "Professional profile not found" });
+
+        const response = await deleteReferralJobByIdService(jobId, professionalProfile._id);
+
+        if (!response.success) 
+            return res.status(response.status || 400).json({ msg: response.msg });
+
+        return res.status(200).json({ msg: response.msg });
+
+    } catch (error) {
+        console.error("Delete Referral Job Controller Error:", error);
+
+        if (error.status === 404) return res.status(404).json({ msg: error.message });
+        if (error.status === 403) return res.status(403).json({ msg: error.message });
+
+        res.status(500).json({ msg: error.message || "Internal server error" });
+    }
+};
 
 // ============= Employer =====================
 

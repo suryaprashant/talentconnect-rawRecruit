@@ -4,7 +4,9 @@ import { getCollegeService } from "../services/collegeService.js";
 export const getCollegePostedJobs = async (req, res) => {
     const collegeId = req.user._id;
     const { jobType,key } = req.params;//
-    const { active } = req.query; // ✅ add this
+    const { active } = req.query; 
+   // const { active } = req.query;
+console.log("active param:", active, "| type:", typeof active);
     
     if (!jobType) return res.status(404).json({ msg: "job not found!" });
     // console.log("companyid: ", companyId);   
@@ -14,8 +16,14 @@ export const getCollegePostedJobs = async (req, res) => {
             return res.status(404).json({ error: "College profile not found" });
         }
 
-        let response = await getJobPostedByCollegeService(collegeProfile.data[0]._id, jobType, key);
-      
+      //  let response = await getJobPostedByCollegeService(collegeProfile.data[0]._id, jobType, key);
+      let response = await getJobPostedByCollegeService(
+            collegeProfile.data[0]._id, 
+            jobType, 
+            key,
+            undefined, // isVisited
+            active     // ✅
+        );
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
@@ -25,7 +33,7 @@ export const getCollegePostedJobs = async (req, res) => {
 }
 
 
-export const deleteCollegeJob = async (req, res) => {
+export const inActiveCollegeJob = async (req, res) => {
     const { jobId } = req.params;
     const collegeUserId = req.user._id;
 

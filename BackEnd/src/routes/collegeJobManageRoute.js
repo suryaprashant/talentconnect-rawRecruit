@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteCollegeJob, getCollegePostedJobs } from "../controllers/collegeJobManagementController.js";
+import {  getCollegePostedJobs, inActiveCollegeJob } from "../controllers/collegeJobManagementController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -7,5 +7,5 @@ const router = express.Router();
 
 router.get('/:key/:jobType', secureRoute, getCollegePostedJobs);
 
-router.delete('/delete/:jobId' , secureRoute , deleteCollegeJob)
+router.delete('/delete/:jobId' , secureRoute , inActiveCollegeJob)
 export default router; 
