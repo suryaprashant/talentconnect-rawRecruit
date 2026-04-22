@@ -128,35 +128,43 @@ export default function HeroSection() {
 
           <div className="flex flex-wrap gap-4 mb-10">
 
-            <button
-              onClick={() => handleRoleSelect("company")}
-              onMouseEnter={() => setHoveredAction("hire")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              className="px-6 py-3 rounded-xl bg-primaryBrand text-white font-medium shadow-md transition-all duration-300 ease-out
-              hover:shadow-xl hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
-            >
-              Start Hiring
-            </button>
-            <button
-              onMouseEnter={() => setHoveredAction("college")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              onClick={() => handleRoleSelect("college")}
-              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
-              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
-            >
-              Partner as College
-            </button>
-            <button
-              onMouseEnter={() => setHoveredAction("apply")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              onClick={() => handleRoleSelect("candidate")}
-              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
-              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
-            >
-              Apply for Jobs
-            </button>
+  <button
+    onClick={() => handleRoleSelect("company")}
+    onMouseEnter={() => setHoveredAction("hire")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium shadow-md transition-all duration-300 ease-out
+      ${hoveredAction === "hire"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Start Hiring
+  </button>
 
-          </div>
+  <button
+    onClick={() => handleRoleSelect("college")}
+    onMouseEnter={() => setHoveredAction("college")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium transition-all duration-300 ease-out
+      ${hoveredAction === "college"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Partner as College
+  </button>
+
+  <button
+    onClick={() => handleRoleSelect("candidate")}
+    onMouseEnter={() => setHoveredAction("apply")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium transition-all duration-300 ease-out
+      ${hoveredAction === "apply"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Apply for Jobs
+  </button>
+
+</div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-500 mt-4">
             <button
