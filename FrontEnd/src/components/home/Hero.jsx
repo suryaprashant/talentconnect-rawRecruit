@@ -82,7 +82,11 @@ export default function HeroSection() {
       desc: "Access Off-campus, referral job and internship opportunities, apply easily, and track your hiring progress in one place."
     }
   };
-
+  const videoMap = {
+    hire: "4qG45O8zE9g",      // 🔥 company video
+    college: "cO26ecStWTI",   // 🔥 college video
+    apply: "4qG45O8zE9g"      // optional (or fallback)
+  };
   return (
   <section className="relative overflow-hidden bg-gradient-to-br from-[#eef2ff] via-[#f8fafc] to-[#e0e7ff]">
 
@@ -104,7 +108,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{
-            duration: 0.5,
+            duration: 1.5,
             ease: [0.22, 1, 0.36, 1]
           }}
         >
@@ -232,7 +236,6 @@ export default function HeroSection() {
       </div>
     )}
     {showVideoModal && (
-
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="relative w-full max-w-4xl mx-4">
           
@@ -248,7 +251,9 @@ export default function HeroSection() {
           <div className="bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
             <iframe
               className="w-full h-[400px] md:h-[500px] rounded-xl"
-              src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID?autoplay=1"
+              src={`https://www.youtube.com/embed/${
+                videoMap[hoveredAction] || videoMap.hire
+              }?autoplay=1`}
               title="Demo Video"
               frameBorder="0"
               allow="autoplay; encrypted-media"
