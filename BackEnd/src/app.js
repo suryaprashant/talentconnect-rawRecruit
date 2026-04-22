@@ -125,7 +125,7 @@ import CandidateRoute from "./routes/CandidateRoute.js"
 import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
 import adminBlogRoute from "./routes/admin/adminBlogRoute.js";
 import blogRoutes from "./routes/blogRoutes.js";
-
+import deleteJobRoute from "./routes/deleteJobRoute.js";
 
 
 
@@ -197,6 +197,7 @@ app.use('/api/hosting-management', casestudyHostingRoute);
 app.use('/api/hosting-management', workshopHostingRoute);
 app.use('/api/servicerequests', serviceRequests);
 app.use("/api/company-master-data", companyRoute);
+app.use("/api/delete-job", deleteJobRoute);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [

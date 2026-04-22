@@ -308,7 +308,7 @@ export const getCollegeAlumni = async (req, res) => {
     const alumni = await Onboarding.find({
       college: myProfile.college,
       userId: { $ne: userId },
-      profileType: "professional",
+      //profileType: "professional",
     });
     // No .select() — full profile returned
 

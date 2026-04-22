@@ -1,5 +1,5 @@
 import express from 'express';
-import { deleteJob, getEmployerJobs, getPostedJobs, getReferralApplicationsForProfessional } from '../controllers/jobManagementController.js';
+import { deleteJob, getEmployerJobs, getPostedJobs, getReferralApplicationsForProfessional ,deleteReferralJob} from '../controllers/jobManagementController.js';
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 // import { getCollegePostedJobs } from '../controllers/collegeJobManagementController.js';
 
@@ -8,6 +8,7 @@ const router = express.Router();
 // api '../company/jobmanagement'
 
 router.delete('/:jobId',secureRoute,deleteJob);
+router.patch('/referral/:jobId', secureRoute, deleteReferralJob);
 // get jobs
 router.get('/', secureRoute, getPostedJobs);
 

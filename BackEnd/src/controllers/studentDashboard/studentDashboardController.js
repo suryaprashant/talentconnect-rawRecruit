@@ -117,6 +117,7 @@ export const getProfessionalReferrals = async (req, res) => {
     console.log("2. ✅ Found Student Profile ID:", profileId);
 
     const referrals = await JobPostingTable.find({
+       inactive: false,
       candidatePosted: profileId,
       jobType: "Referral",
     })

@@ -88,7 +88,7 @@ export async function getOffCampusJobsService(companyId) {
 //     }
 // };
 
-export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited) => {
+export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited,active) => {
     const targetMap = {
         "campus-placement": "Applied",
         "poolCampus-placement": "Applied",
@@ -102,9 +102,13 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
     try {
         let response = await JobPostingTable.aggregate([
             {
-                $match: {
+               $match: {
                     collegePosted: new mongoose.Types.ObjectId(collegeId),
-                    jobType: jobType
+                    jobType: jobType,
+                    // ✅ active=false → inactive jobs, everything else → active jobs
+                    ...(active === 'false'
+                        ? { inactive: true }
+                        : { inactive: { $ne: true } })
                 }
             },
             // --- NEW: Lookup College Details ---
@@ -159,7 +163,7 @@ collegeAddress: {
                 }
             }
         ]);
-      response= response.filter(post=>post.inactive!==true)
+     
         return { success: true, response };
     } catch (error) {
         console.error("Aggregation Error:", error);

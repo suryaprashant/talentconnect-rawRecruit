@@ -7,7 +7,7 @@ import image1 from "../../assets/companyDashboard.png";
 import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
-import { CirclePlay, HelpCircle } from "lucide-react";
+import { CirclePlay, HelpCircle, Star } from "lucide-react";
 // import demoVideo2 from "../../assets/college.mp4";
 // import demoVideo from "../../assets/company.mp4";
 const CountUp = ({ end, suffix = "" }) => {
@@ -67,22 +67,26 @@ export default function HeroSection() {
 
   const contentMap = {
     hire: {
-      title: "The Fastest Way to",
-      highlight: "Hire Freshers",
+      title: "Hire Fresher Talent",
+      highlight: "Faster",
       desc: "Run On-Campus, Pool-Campus, and Off-Campus hiring from one unified platform — connect with colleges, manage drives, and hire freshers faster."
     },
     college: {
-      title: "Connect Companies",
-      highlight: "with College",
+      title: "Connect with",
+      highlight: "Hiring Companies",
       desc: "Run On-Campus and Pool-Campus placement drives from one unified platform — connect with employers and improve student placement outcomes."
     },
     apply: {
-      title: "The Only Platform Designed to",
-      highlight: "Launch Your Career",
+      title: "Start Your Career with",
+      highlight: "Confidence",
       desc: "Access Off-campus, referral job and internship opportunities, apply easily, and track your hiring progress in one place."
     }
   };
-
+  const videoMap = {
+    hire: "4qG45O8zE9g",      // 🔥 company video
+    college: "cO26ecStWTI",   // 🔥 college video
+    apply: "4qG45O8zE9g"      // optional (or fallback)
+  };
   return (
   <section className="relative overflow-hidden bg-gradient-to-br from-[#eef2ff] via-[#f8fafc] to-[#e0e7ff]">
 
@@ -94,18 +98,27 @@ export default function HeroSection() {
     {/* Optional soft radial highlight */}
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.6),transparent_60%)]"></div>
 
-    <div className="relative container mx-auto px-6 py-14 md:py-16 lg:py-16">
+    <div className="relative container mx-auto px-6 py-6 md:py-8 lg:py-10">
       
       <div className="grid lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT */}
         <motion.div
           key={hoveredAction}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{
+            duration: 1.5,
+            ease: [0.22, 1, 0.36, 1]
+          }}
         >
-
+          <span className="inline-block text-xs md:text-sm font-medium px-4 py-1.5 rounded-full 
+            bg-[#7765DA]/10 text-primaryBrand border border-[#7765DA]/20 backdrop-blur-sm
+            transition-all duration-300 hover:scale-105 mb-2"
+          >
+            <Star size={14} className="inline-block -mt-1 mr-1 text-primaryBrand" />
+            India’s First
+          </span>
           <h1 className="font-display text-4xl md:text-5xl lg:text-[56px] font-bold leading-[1.1] text-foreground mb-6">
             {contentMap[hoveredAction].title}{" "}
             <span className="text-[#143694]">
@@ -119,35 +132,43 @@ export default function HeroSection() {
 
           <div className="flex flex-wrap gap-4 mb-10">
 
-            <button
-              onClick={() => handleRoleSelect("company")}
-              onMouseEnter={() => setHoveredAction("hire")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              className="px-6 py-3 rounded-xl bg-primaryBrand text-white font-medium shadow-md transition-all duration-300 ease-out
-              hover:shadow-xl hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
-            >
-              Start Hiring
-            </button>
-            <button
-              onMouseEnter={() => setHoveredAction("college")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              onClick={() => handleRoleSelect("college")}
-              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
-              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
-            >
-              Partner as College
-            </button>
-            <button
-              onMouseEnter={() => setHoveredAction("apply")}
-              onMouseLeave={() => setHoveredAction("hire")}
-              onClick={() => handleRoleSelect("candidate")}
-              className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
-              hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
-            >
-              Apply for Jobs
-            </button>
+  <button
+    onClick={() => handleRoleSelect("company")}
+    onMouseEnter={() => setHoveredAction("hire")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium shadow-md transition-all duration-300 ease-out
+      ${hoveredAction === "hire"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Start Hiring
+  </button>
 
-          </div>
+  <button
+    onClick={() => handleRoleSelect("college")}
+    onMouseEnter={() => setHoveredAction("college")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium transition-all duration-300 ease-out
+      ${hoveredAction === "college"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Partner as College
+  </button>
+
+  <button
+    onClick={() => handleRoleSelect("candidate")}
+    onMouseEnter={() => setHoveredAction("apply")}
+    className={`px-6 py-3 rounded-xl border-2 font-medium transition-all duration-300 ease-out
+      ${hoveredAction === "apply"
+        ? "bg-primaryBrand text-white border-primaryBrand shadow-md"
+        : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
+      active:scale-95`}
+  >
+    Apply for Jobs
+  </button>
+
+</div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-500 mt-4">
             <button
@@ -215,7 +236,6 @@ export default function HeroSection() {
       </div>
     )}
     {showVideoModal && (
-
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="relative w-full max-w-4xl mx-4">
           
@@ -231,7 +251,9 @@ export default function HeroSection() {
           <div className="bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
             <iframe
               className="w-full h-[400px] md:h-[500px] rounded-xl"
-              src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID?autoplay=1"
+              src={`https://www.youtube.com/embed/${
+                videoMap[hoveredAction] || videoMap.hire
+              }?autoplay=1`}
               title="Demo Video"
               frameBorder="0"
               allow="autoplay; encrypted-media"
