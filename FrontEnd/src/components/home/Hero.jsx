@@ -7,7 +7,7 @@ import image1 from "../../assets/companyDashboard.png";
 import image2 from "../../assets/collegeDashboard.png";
 import image3 from "../../assets/CandidateDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
-import { CirclePlay, HelpCircle } from "lucide-react";
+import { CirclePlay, HelpCircle, Star } from "lucide-react";
 // import demoVideo2 from "../../assets/college.mp4";
 // import demoVideo from "../../assets/company.mp4";
 const CountUp = ({ end, suffix = "" }) => {
@@ -67,18 +67,18 @@ export default function HeroSection() {
 
   const contentMap = {
     hire: {
-      title: "The Fastest Way to",
-      highlight: "Hire Freshers",
+      title: "Hire Fresher Talent",
+      highlight: "Faster",
       desc: "Run On-Campus, Pool-Campus, and Off-Campus hiring from one unified platform — connect with colleges, manage drives, and hire freshers faster."
     },
     college: {
-      title: "Connect Companies",
-      highlight: "with College",
+      title: "Connect with",
+      highlight: "Hiring Companies",
       desc: "Run On-Campus and Pool-Campus placement drives from one unified platform — connect with employers and improve student placement outcomes."
     },
     apply: {
-      title: "The Only Platform Designed to",
-      highlight: "Launch Your Career",
+      title: "Start Your Career with",
+      highlight: "Confidence",
       desc: "Access Off-campus, referral job and internship opportunities, apply easily, and track your hiring progress in one place."
     }
   };
@@ -94,18 +94,27 @@ export default function HeroSection() {
     {/* Optional soft radial highlight */}
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.6),transparent_60%)]"></div>
 
-    <div className="relative container mx-auto px-6 py-14 md:py-16 lg:py-16">
+    <div className="relative container mx-auto px-6 py-6 md:py-8 lg:py-10">
       
       <div className="grid lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT */}
         <motion.div
           key={hoveredAction}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{
+            duration: 0.5,
+            ease: [0.22, 1, 0.36, 1]
+          }}
         >
-
+          <span className="inline-block text-xs md:text-sm font-medium px-4 py-1.5 rounded-full 
+            bg-[#7765DA]/10 text-primaryBrand border border-[#7765DA]/20 backdrop-blur-sm
+            transition-all duration-300 hover:scale-105 mb-2"
+          >
+            <Star size={14} className="inline-block -mt-1 mr-1 text-primaryBrand" />
+            India’s First
+          </span>
           <h1 className="font-display text-4xl md:text-5xl lg:text-[56px] font-bold leading-[1.1] text-foreground mb-6">
             {contentMap[hoveredAction].title}{" "}
             <span className="text-[#143694]">
