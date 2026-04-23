@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
-    Search, Eye, Edit, Users, FileText, Trash,
-    ChevronLeft, ChevronRight, Filter, X, Building2, Calendar, AlertCircle, MapPin
+    Search, Eye, Edit, Users, FileText, Trash2,
+    ChevronLeft, ChevronRight, Filter, X, Building2, Calendar, AlertCircle, MapPin,Ban
 } from 'lucide-react';
 import ApplicantDetails from './internDetails';
-import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob ,permanentDeleteJobById} from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -24,7 +24,19 @@ export default function InternshipListing() {
     const navigate = useNavigate();
 
     const itemsPerPage = 10;
-
+const handlePermanentDelete = async (jobId) => {
+  const confirmed = window.confirm("⚠️ This will PERMANENTLY delete the internship and cannot be undone! Are you sure?");
+  if (confirmed) {
+    try {
+      await permanentDeleteJobById(jobId);
+      await fetchJobs();
+      toast.success("Internship permanently deleted.");
+    } catch (error) {
+      console.error("Error permanently deleting internship:", error);
+      toast.error("Failed to permanently delete internship.");
+    }
+  }
+};
     const fetchJobs = async () => {
         setLoading(true);
         setError(null);
@@ -399,8 +411,15 @@ export default function InternshipListing() {
                                                         className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
                                                         title="Delete Internship"
                                                     >
-                                                        <Trash size={16} />
+                                                       <Ban size={16} />
                                                     </button>
+                                                    <button
+  onClick={() => handlePermanentDelete(job._id)}
+  className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+  title="Permanently Delete Internship"
+>
+  <Trash2 size={16} />
+</button>
                                                 </div>
                                             </div>
                                         </div>

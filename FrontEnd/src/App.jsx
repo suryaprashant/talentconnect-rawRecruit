@@ -281,6 +281,7 @@ import BlogPage from "./pages/BlogPage";
 //import InActivejob from "./pages/company/";
 import InactiveJobManagement from "./pages/company/Inactivejobmanagement";
 import CollegeInactiveJob from "./pages/college/CollegeInactiveJob";
+import InactiveReferralManagement from "./pages/professional/ReferralManagement/Inactivereferralmanagement";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -402,6 +403,7 @@ function AppRoutes() {
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
               <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
               <Route path="/student-dashboard/Referral" element={<ReferralLayout />} />
+              <Route path="/professional-dashboard/inactive-jobs" element={<InactiveReferralManagement />} />
               <Route path="/student-dashboard/Referral/:jobId" element={<StudentRefferalJobDetails />} />
               {/* Student Events Routes */}
               <Route path="/student-events/hackathon" element={<EventList event_name="hackathon" />} />

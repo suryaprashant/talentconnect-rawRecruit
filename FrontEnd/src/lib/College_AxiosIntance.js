@@ -236,6 +236,11 @@ export function getCollegeServiceRequestStatus() {
     .then(response => response)
     .catch(error => error);
 }
+// Permanent delete (hard delete) — DELETE /api/delete-job/:id
+export const permanentDeleteCollegeJob = async (jobId) => {
+  const response = await axiosClient.delete(`/api/delete-job/${jobId}`);
+  return response;
+};
 
 export function deleteCollegeJob(jobId) {
   return axiosClient.delete(`/college/jobmanagement/delete/${jobId}`)

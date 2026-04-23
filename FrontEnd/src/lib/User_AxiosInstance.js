@@ -188,6 +188,22 @@ export function getMyApprovedReferralpost(){
   .then(response => response)
     .catch(error => console.log("Error:", error));
 }
+export const permanentDeleteReferralJob = async (jobId) => {
+  const response = await axiosClient.delete(`/api/delete-job/${jobId}`);
+  return response;
+};
+
+export function makeReferralJobInactive(jobId) {
+  return axiosClient.patch(`/company/jobmanagement/referral/${jobId}`)
+    .then(response => response)
+    .catch(error => console.log("Error:", error));
+}
+
+export function getMyInactiveReferralpost() {
+  return axiosClient.get('/api/student-dashboard/inactive-posted-referral-job')
+    .then(response => response)
+    .catch(error => console.log("Error:", error));
+}
 
 export function getReferralJobListing() {
   return axiosClient.get(`/api/student-dashboard/referral-jobs`)

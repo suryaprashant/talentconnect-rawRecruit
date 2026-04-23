@@ -84,6 +84,7 @@ function ProfessionalSidebar({ activePath }) {
       </SidebarNavGroup>
 
         <SidebarNavItem to="/professional-dashboard/Referral-management" icon={<FiHome />} label="Referral Management" active={activePath === '/professional-dashboard/Referral-management'} />
+        <SidebarNavItem to="/professional-dashboard/inactive-jobs" icon={<FiHome />} label="InActive Referral Jobs" active={activePath === '/professional-dashboard/inactive-jobs'} />
 
 
       <SidebarNavGroup label="Application Status" icon={<FiCheckCircle />} active={activePath.includes('/application-status')}>

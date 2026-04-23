@@ -296,44 +296,44 @@ export const getNewApplications = async (req, res) => {
 // Get all alumni from the same college as the logged-in user
 
 
-export const getCollegeAlumni = async (req, res) => {
-  try {
-    const userId = req.user._id;
+// export const getCollegeAlumni = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
 
-    const myProfile = await Onboarding.findOne({ userId });
-    if (!myProfile?.college) {
-      return res.status(404).json({ success: false, message: "College info not found in your profile." });
-    }
+//     const myProfile = await Onboarding.findOne({ userId });
+//     if (!myProfile?.college) {
+//       return res.status(404).json({ success: false, message: "College info not found in your profile." });
+//     }
 
-    const alumni = await Onboarding.find({
-      college: myProfile.college,
-      userId: { $ne: userId },
-      //profileType: "professional",
-    });
-    // No .select() — full profile returned
+//     const alumni = await Onboarding.find({
+//       college: myProfile.college,
+//       userId: { $ne: userId },
+//       //profileType: "professional",
+//     });
+//     // No .select() — full profile returned
 
-    // Attach referral metrics to each alumni in parallel
-    const alumniWithMetrics = await Promise.all(
-      alumni.map(async (person) => {
-        const metrics = await fetchProfessionalReferralMetrics(person._id);
-        return {
-          ...person.toObject(),
-          referralMetrics: metrics,
-        };
-      })
-    );
+//     // Attach referral metrics to each alumni in parallel
+//     const alumniWithMetrics = await Promise.all(
+//       alumni.map(async (person) => {
+//         const metrics = await fetchProfessionalReferralMetrics(person._id);
+//         return {
+//           ...person.toObject(),
+//           referralMetrics: metrics,
+//         };
+//       })
+//     );
 
-    return res.status(200).json({
-      success: true,
-      college: myProfile.college,
-      count: alumniWithMetrics.length,
-      alumni: alumniWithMetrics,
-    });
-  } catch (error) {
-    console.error("Error fetching college alumni:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       college: myProfile.college,
+//       count: alumniWithMetrics.length,
+//       alumni: alumniWithMetrics,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching college alumni:", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
 
 
 
@@ -363,6 +363,124 @@ export const getCollegeAlumni = async (req, res) => {
 //     return res.status(500).json({ success: false, message: "Internal server error" });
 //   }
 // };
+
+// export const getCompanyAlumni = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     const myProfile = await Onboarding.findOne({ userId });
+//     if (!myProfile) {
+//       return res.status(404).json({ success: false, message: "Profile not found." });
+//     }
+
+//     // Collect all companies user has worked at (including current)
+//     const allCompanies = [];
+
+//     if (myProfile.currentCompany) {
+//       allCompanies.push(myProfile.currentCompany);
+//     }
+
+//     if (myProfile.experiences?.length > 0) {
+//       myProfile.experiences.forEach((exp) => {
+//         if (exp.company) allCompanies.push(exp.company);
+//       });
+//     }
+
+//     if (allCompanies.length === 0) {
+//       return res.status(404).json({ success: false, message: "No companies found in your profile." });
+//     }
+
+//     // Deduplicate case-insensitively
+//     const uniqueCompanies = [...new Map(
+//       allCompanies.map((c) => [c.toLowerCase(), c])
+//     ).values()];
+
+//     // Build $or conditions — one per company for both currentCompany and experiences.company
+//     const orConditions = uniqueCompanies.flatMap((company) => {
+//       const regex = new RegExp(`^${company}$`, "i");
+//       return [
+//         { currentCompany: regex },
+//         { "experiences.company": regex },
+//       ];
+//     });
+
+//     const companyAlumni = await Onboarding.find({
+//       userId: { $ne: userId },
+//       $or: orConditions,
+//     });
+
+//     // Group alumni by which shared company they belong to
+//     const alumniByCompany = {};
+//     uniqueCompanies.forEach((company) => {
+//       const regex = new RegExp(`^${company}$`, "i");
+//       alumniByCompany[company] = companyAlumni.filter(
+//         (alumni) =>
+//           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
+//           alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
+//       );
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       companiesChecked: uniqueCompanies,
+//       totalUniqueAlumni: companyAlumni.length,
+//       alumniByCompany,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching company alumni:", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+export const getCollegeAlumni = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const myProfile = await Onboarding.findOne({ userId });
+    if (!myProfile?.college) {
+      return res.status(404).json({ success: false, message: "College info not found in your profile." });
+    }
+
+    const alumni = await Onboarding.find({
+      college: myProfile.college,
+      userId: { $ne: userId },
+    });
+
+    // Attach referral metrics AND referral jobs to each alumni in parallel
+    const alumniWithMetrics = await Promise.all(
+      alumni.map(async (person) => {
+        const [metrics, referralJobs] = await Promise.all([
+          fetchProfessionalReferralMetrics(person._id),
+          JobPostingTable.find({
+            candidatePosted: person._id,
+            jobType: "Referral",
+            approvalStatus: "Approved",
+            inactive: false,
+          })
+            .sort({ createdAt: -1 })
+            .lean(),
+        ]);
+
+        return {
+          ...person.toObject(),
+          referralMetrics: metrics,
+          referralJobs,
+        };
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      college: myProfile.college,
+      count: alumniWithMetrics.length,
+      alumni: alumniWithMetrics,
+    });
+  } catch (error) {
+    console.error("Error fetching college alumni:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 export const getCompanyAlumni = async (req, res) => {
   try {
@@ -409,11 +527,34 @@ export const getCompanyAlumni = async (req, res) => {
       $or: orConditions,
     });
 
-    // Group alumni by which shared company they belong to
+    // Attach referral metrics AND referral jobs to each alumni
+    const alumniWithMetrics = await Promise.all(
+      companyAlumni.map(async (person) => {
+        const [metrics, referralJobs] = await Promise.all([
+          fetchProfessionalReferralMetrics(person._id),
+          JobPostingTable.find({
+            candidatePosted: person._id,
+            jobType: "Referral",
+            approvalStatus: "Approved",
+            inactive: false,
+          })
+            .sort({ createdAt: -1 })
+            .lean(),
+        ]);
+
+        return {
+          ...person.toObject(),
+          referralMetrics: metrics,
+          referralJobs,
+        };
+      })
+    );
+
+    // Group enriched alumni by which shared company they belong to
     const alumniByCompany = {};
     uniqueCompanies.forEach((company) => {
       const regex = new RegExp(`^${company}$`, "i");
-      alumniByCompany[company] = companyAlumni.filter(
+      alumniByCompany[company] = alumniWithMetrics.filter(
         (alumni) =>
           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
           alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
@@ -423,7 +564,7 @@ export const getCompanyAlumni = async (req, res) => {
     return res.status(200).json({
       success: true,
       companiesChecked: uniqueCompanies,
-      totalUniqueAlumni: companyAlumni.length,
+      totalUniqueAlumni: alumniWithMetrics.length,
       alumniByCompany,
     });
   } catch (error) {

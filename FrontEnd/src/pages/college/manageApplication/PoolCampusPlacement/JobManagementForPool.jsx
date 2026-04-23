@@ -449,11 +449,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
-  Search, Eye, Trash,
-  ChevronLeft, ChevronRight, Filter,
-  Calendar, MapPin, Users, Briefcase, AlertCircle, FileSearch
+  Search, Eye, 
+  ChevronLeft, ChevronRight, Filter,Trash2,
+  Calendar, MapPin, Users, Briefcase, AlertCircle, FileSearch,Ban
 } from 'lucide-react';
-import { getCollegePostedJobs, deleteCollegeJob } from '@/lib/College_AxiosIntance';
+import { getCollegePostedJobs, deleteCollegeJob,permanentDeleteCollegeJob } from '@/lib/College_AxiosIntance';
 
 function JobManagementApplicationForPool() {
   const navigate = useNavigate();
@@ -487,7 +487,27 @@ function JobManagementApplicationForPool() {
       return 'Closed';
     }
   };
+const handlePermanentDelete = async (jobId, e) => {
+  e.stopPropagation();
+  const isConfirmed = window.confirm('⚠️ This will PERMANENTLY delete the job and cannot be undone! Are you sure?');
+  if (!isConfirmed) return;
 
+  try {
+    setDeletingJobId(jobId);
+    await permanentDeleteCollegeJob(jobId);
+    setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
+    alert('Job permanently deleted!');
+    if (currentJobs.length === 1 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+    await fetchJobs();
+  } catch (error) {
+    console.error('Error permanently deleting job:', error);
+    alert('An error occurred while permanently deleting the job.');
+  } finally {
+    setDeletingJobId(null);
+  }
+};
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
       if (job.startDate && job.endDate) {
@@ -942,9 +962,21 @@ function JobManagementApplicationForPool() {
                     {deletingJobId === jobId ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#1e4ed8] border-r-transparent"></div>
                     ) : (
-                      <Trash size={16} />
+                      <Ban size={16} />
                     )}
                   </button>
+                  <button
+  onClick={(e) => handlePermanentDelete(jobId, e)}
+  className={`p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 rounded-lg transition-all duration-200 ${
+    deletingJobId === jobId
+      ? 'opacity-50 cursor-not-allowed'
+      : 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300'
+  }`}
+  title="Permanently Delete Job"
+  disabled={deletingJobId === jobId}
+>
+  <Trash2 size={16} />
+</button>
                 </div>
               </div>
             </div>

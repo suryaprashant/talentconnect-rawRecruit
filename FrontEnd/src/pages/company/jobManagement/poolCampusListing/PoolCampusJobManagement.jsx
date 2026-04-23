@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calendar, Users, FileText, AlertCircle } from 'lucide-react';
+import { Trash2,Ban, Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calendar, Users, FileText, AlertCircle } from 'lucide-react';
 import CollegeRequestDetail from './CollegeRequestDetail';
-import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { permanentDeleteJobById,acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -80,6 +80,19 @@ export default function PoolCampusJobManagement() {
     }
   };
 
+  const handlePermanentDelete = async (jobId) => {
+  const confirmed = window.confirm("⚠️ This will PERMANENTLY delete the job and cannot be undone! Are you sure?");
+  if (confirmed) {
+    try {
+      await permanentDeleteJobById(jobId);
+      toast.success("Job permanently deleted.");
+      fetchJobs();
+    } catch (error) {
+      console.error("Error permanently deleting job:", error);
+      toast.error("Failed to permanently delete job.");
+    }
+  }
+};
 
   const handleUpdateApplicationStatus = async (applicationId, status) => {
     try {
@@ -503,8 +516,15 @@ export default function PoolCampusJobManagement() {
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
                           title="Delete Job"
                         >
-                          <Trash size={16} />
+                         <Ban size={16} />
                         </button>
+                        <button
+  onClick={() => handlePermanentDelete(job._id)}
+  className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+  title="Permanently Delete Job"
+>
+  <Trash2 size={16} />
+</button>
                       </div>
                     </div>
                   </div>
