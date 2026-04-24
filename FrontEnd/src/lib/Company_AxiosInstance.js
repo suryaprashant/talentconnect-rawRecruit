@@ -317,7 +317,10 @@ export function scheduleInterview(payload) {
   });
 }
 
-
+export const permanentDeleteJobById = async (jobId) => {
+  const response = await axiosClient.delete(`/api/delete-job/${jobId}`);
+  return response;
+};
 
 
 // company dashboard

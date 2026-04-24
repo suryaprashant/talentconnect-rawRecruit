@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import {
   Search, Eye, Edit, Users, FileText, Trash,
-  ChevronLeft, ChevronRight, Filter, X, Building2,
-  MapPin, Calendar, Briefcase, Users as UsersIcon, AlertCircle
+  ChevronLeft, ChevronRight, Filter, X, Building2,Trash2,
+  MapPin, Calendar, Briefcase, Users as UsersIcon, AlertCircle,Ban
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs,permanentDeleteJobById } from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 
 
@@ -118,6 +118,19 @@ export default function OffCampusJobManagement() {
       console.log("Error: ", error);
     }
   };
+
+  const handlePermanentDelete = async (jobId) => {
+  const confirmed = window.confirm("⚠️ This will PERMANENTLY delete the job and cannot be undone! Are you sure?");
+  if (confirmed) {
+    try {
+      await permanentDeleteJobById(jobId);
+      fetchJobs();
+      alert("Job permanently deleted.");
+    } catch (error) {
+      console.error("Error permanently deleting job:", error);
+    }
+  }
+};
 
   const handleAcceptDrive = (jobId) => {
     console.log(`Accept drive for job ID: ${jobId}`);
@@ -338,8 +351,15 @@ export default function OffCampusJobManagement() {
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
                           title="Delete Job"
                         >
-                          <Trash size={16} />
+                          <Ban size={16} />
                         </button>
+                        <button
+  onClick={() => handlePermanentDelete(job._id)}
+  className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+  title="Permanently Delete Job"
+>
+  <Trash2 size={16} />
+</button>
                       </div>
                     </div>
                   </div>

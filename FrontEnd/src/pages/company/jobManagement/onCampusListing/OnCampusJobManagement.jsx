@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calendar, Users, FileText, AlertCircle } from 'lucide-react';
+import { Ban,Search, Eye, ChevronLeft, ChevronRight,  Trash2, Building2, MapPin, Calendar, Users, FileText, AlertCircle } from 'lucide-react';
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { Link, useNavigate } from 'react-router-dom'
-import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { permanentDeleteJobById,acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
 export default function OnCampusJobManagement() {
@@ -130,6 +130,22 @@ export default function OnCampusJobManagement() {
       toast.error('Something went wrong!')
     }
   };
+
+  const handlePermanentDelete = async (jobId) => {
+  const confirmed = window.confirm(
+    "⚠️ This will PERMANENTLY delete the job and cannot be undone! Are you sure?"
+  );
+  if (confirmed) {
+    try {
+      await permanentDeleteJobById(jobId);
+      toast.success(`Job permanently deleted.`);
+      fetchJobs();
+    } catch (error) {
+      console.error("Error permanently deleting job:", error);
+      toast.error("Failed to permanently delete job.");
+    }
+  }
+};
 
   const handleDelete = async (jobId) => {
     try {
@@ -501,25 +517,33 @@ export default function OnCampusJobManagement() {
                       </span>
                     </div>
 
-                    {/* Actions */}
-                    <div className="col-span-1">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleViewColleges(job)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
-                          title="View College Applications"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(job._id)}
-                          className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
-                          title="Delete Job"
-                        >
-                          <Trash size={16} />
-                        </button>
-                      </div>
-                    </div>
+                   {/* Actions */}
+<div className="col-span-1">
+  <div className="flex items-center justify-center gap-2">
+    <button
+      onClick={() => handleViewColleges(job)}
+      className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
+      title="View College Applications"
+    >
+      <Eye size={16} />
+    </button>
+    <button
+      onClick={() => handleDelete(job._id)}
+      className="p-2 bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-600 rounded-lg hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 transition-all duration-200"
+      title="Mark as Inactive"
+    >
+      <Ban size={16} />
+    </button>
+    {/* NEW: Permanent delete */}
+    <button
+      onClick={() => handlePermanentDelete(job._id)}
+      className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+      title="Permanently Delete Job"
+    >
+      <Trash2 size={16} />
+    </button>
+  </div>
+</div>
                   </div>
                 </div>
               ))
