@@ -150,19 +150,7 @@ export default function InactiveJobManagement() {
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center">
-              <div className="p-2 bg-[#143694]/10 rounded-lg mr-3">
-                <Archive className="h-5 w-5 text-[#143694]" />
-              </div>
-              <div>
-                <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
-                  Inactive / Expired {JOB_TYPES.find(t => t.value === activeTab)?.label} Jobs
-                </h1>
-                <p className="text-gray-600 text-sm mt-0.5">
-                  Jobs that have been deactivated or expired.
-                </p>
-              </div>
-            </div>
+           
 
             {/* Search */}
             <div className="relative w-full md:w-72">
@@ -260,6 +248,7 @@ export default function InactiveJobManagement() {
                       <div className="flex items-center gap-2">
                         <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                         <span className="text-gray-700 text-sm capitalize truncate">
+                        {console.log(job)}
                           {displayLocations(job.location, job.workLocation)}
                         </span>
                       </div>

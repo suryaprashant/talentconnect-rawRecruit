@@ -80,7 +80,8 @@ const handlePermanentDelete = async (jobId) => {
 
     const handleDelete = async (jobId) => {
         try {
-            const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the internship?");
+           // const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the internship?");
+           const confirmed = window.confirm("Are you sure you want to mark this internship as Inactive? It will no longer be visible to new applicants.");
             if (confirmed) {
                 await deleteJobById(jobId);
                 await fetchJobs();
@@ -409,7 +410,8 @@ const handlePermanentDelete = async (jobId) => {
                                                     <button 
                                                         onClick={() => handleDelete(job._id)}
                                                         className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
-                                                        title="Delete Internship"
+                                                      //  title="Delete Internship"
+                                                      title="Mark as Inactive"
                                                     >
                                                        <Ban size={16} />
                                                     </button>

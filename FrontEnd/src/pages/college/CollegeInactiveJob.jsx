@@ -134,14 +134,7 @@ function CollegeInactiveJobs() {
                 {/* Header Card */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div>
-                            <h1 className="text-3xl md:text-4xl font-semibold text-[#143694] tracking-tight leading-snug mb-2">
-                                Inactive / Expired {activeTab.label} Jobs
-                            </h1>
-                            <p className="text-gray-600 text-base">
-                                Jobs that have been deactivated or have passed their end date.
-                            </p>
-                        </div>
+                      
 
                         {/* Search */}
                         <div className="relative w-full md:w-72">
@@ -174,7 +167,7 @@ function CollegeInactiveJobs() {
 
                 {/* Table */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
-
+{console.log(jobs)}
                     {/* Table Header */}
                     <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">

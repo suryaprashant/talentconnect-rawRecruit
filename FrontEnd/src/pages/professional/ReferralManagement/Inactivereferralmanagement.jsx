@@ -162,6 +162,7 @@ export default function InactiveReferralManagement() {
                       <div className="flex items-center gap-2 text-sm text-gray-700">
                         <MapPin size={14} className="text-gray-400 flex-shrink-0" />
                         <span className="truncate">
+                        {console.log(job)}
                           {Array.isArray(job.location)
                             ? job.location.join(', ')
                             : (job.location || 'Remote')}
