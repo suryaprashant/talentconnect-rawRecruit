@@ -90,7 +90,7 @@ const JobCard = ({ job, onClick }) => {
   const extraSkills = skills.length - 2;
 
   const salary = job.packageDetails?.totalCTC
-    ? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
+    ? `${Number(job.packageDetails.totalCTC).toLocaleString("en-IN")}`
     : "Not disclosed";
 
   const minStudents = job.minimumStudents || "Not Specified";
@@ -151,14 +151,15 @@ const JobCard = ({ job, onClick }) => {
         </div>
 
         {/* DATES */}
-        <div className="mt-4 grid grid-cols-3 gap-1">
+        <div className="mt-0 mb-3 grid grid-cols-3 gap-2">
 
           {/* LEFT */}
-          <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
-            <p className="text-[10px] text-gray-900 mb-0">
-              Last Date to apply
+          <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center leading-tight">
+            <p className="text-[10px] text-gray-600 leading-tight">
+              {/* Application<br />Deadline */}
+              Last Date
             </p>
-            <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+            <p className="text-xs font-semibold text-gray-900">
               {endDate || "-"}
             </p>
           </div>

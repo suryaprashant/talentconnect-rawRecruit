@@ -151,13 +151,14 @@ const JobCard = ({ job, onClick }) => {
         </div>
 
         {/* DATES */}
-        <div className="mt-4 grid grid-cols-3 gap-1">
+        <div className="mt-0  mb-3 grid grid-cols-3 gap-2">
 
     {/* LEFT */}
     <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
-      <p className="text-[10px] text-gray-900 mb-0">
-        Last Date to apply
-      </p>
+      <p className="text-[10px] text-gray-600 leading-tight">
+              {/* Application<br />Deadline */}
+              Last Date
+            </p>
       <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
         {endDate || "-"}
       </p>
