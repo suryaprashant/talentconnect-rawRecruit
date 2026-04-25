@@ -379,7 +379,7 @@ function CollegeSidebar({ activePath }) {
   onHelp={() => handleOpenHelp("serviceRequest")}
 />
           {/* Chats */}
-          <SidebarNavItem
+          {/* <SidebarNavItem
             to="/chat-application"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -389,7 +389,7 @@ function CollegeSidebar({ activePath }) {
             label="Chats"
             active={activePath === '/chats'}
             onHelp={() => handleOpenHelp("chats")}
-          />
+          /> */}
         </div>
       </div>
       <SidebarHelpModal 

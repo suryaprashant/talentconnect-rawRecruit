@@ -29,7 +29,7 @@ function Users() {
   return (
     <div className="rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 bg-gradient-to-r from-white to-white/95 border-b border-gray-200 flex items-center justify-between">
+      {/* <div className="px-6 py-4 bg-gradient-to-r from-white to-white/95 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center">
           <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
             <UsersIcon className="h-5 w-5 text-[#143694]" />
@@ -60,7 +60,7 @@ function Users() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </button>
-      </div>
+      </div> */}
 
       {/* Users Container - Removed fixed height */}
       <div className="bg-gradient-to-b from-white/50 to-gray-50/30">

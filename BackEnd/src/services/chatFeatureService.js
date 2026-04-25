@@ -4,6 +4,7 @@ import Message from "../models/message.model.js";
 import Auth from "../models/authModel.js";
 import mongoose from "mongoose";
 import { notifyOnNewChatMessage } from "./notificationService.js";
+import Onboarding from "../models/studentonboardingModel.js";
 
 
 export const createMessage = async ({ senderId, receiverId, message }) => {
@@ -132,45 +133,99 @@ export const getUnreadMessageCounts = async ({ userId }) => {
 };
 
 export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
-   
-    const allOtherUsers = await Auth.find({
-        _id: { $ne: loggedInUserId }
-    }).select("-password");
-
+    // 1. Get conversations with at least 1 message
     const conversations = await Conversation.find({
-        members: { $in: [loggedInUserId] }
-    })
-    .populate('messages')
-    .sort({ updatedAt: -1 });
+        members: { $in: [loggedInUserId] },
+        messages: { $exists: true, $ne: [] }
+    }).sort({ updatedAt: -1 });
 
-    const userLastInteraction = new Map();
-
-    conversations.forEach(conversation => {
-        const otherUser = conversation.members.find(
-            (member) => member._id.toString() !== loggedInUserId.toString()
+    // 2. Extract other user IDs
+    const userIds = conversations.map(conversation => {
+        const otherUserId = conversation.members.find(
+            member => member.toString() !== loggedInUserId.toString()
         );
+        return otherUserId?.toString();
+    }).filter(Boolean);
 
-        if (otherUser) {
-            const lastMessage = conversation.messages[conversation.messages.length - 1];
-            userLastInteraction.set(otherUser._id.toString(), {
-                lastInteraction: lastMessage ? lastMessage.createdAt : conversation.updatedAt
-            });
-        }
+    // 3. Remove duplicates
+    const uniqueUserIds = [...new Set(userIds)];
+    console.log("USER IDS:", uniqueUserIds);
+    // 4. Fetch users from BOTH collections
+    const authUsers = await Auth.find({ _id: { $in: uniqueUserIds } })
+        .select("-password");
+
+    let candidateUsers = [];
+    try {
+        const Onboarding = mongoose.model("Onboarding"); // avoid crash if not imported
+        candidateUsers = await Onboarding.find({ _id: { $in: uniqueUserIds } });
+    } catch (err) {
+        // if Onboarding model not present, ignore
+    }
+
+    // 5. Merge + preserve order
+    const allUsers = [...authUsers, ...candidateUsers];
+
+    // ✅ Normalize all users to SAME shape
+    const normalizedUsers = allUsers.map(user => ({
+        _id: user._id.toString(),   // 🔥 important
+        name: user.name,
+        email: user.email,
+        profileImage: user.profileImage,
+        userType: user.userType || "candidate"
+    }));
+
+    // ✅ Preserve order (very important)
+    const userMap = new Map();
+    normalizedUsers.forEach(user => {
+        userMap.set(user._id, user);
     });
 
-    const sortedUsers = allOtherUsers.sort((a, b) => {
-        const aInteraction = userLastInteraction.get(a._id.toString());
-        const bInteraction = userLastInteraction.get(b._id.toString());
+    const orderedUsers = uniqueUserIds
+        .map(id => userMap.get(id))
+        .filter(Boolean);
 
-        if (aInteraction && bInteraction) {
-            return new Date(bInteraction.lastInteraction) - new Date(aInteraction.lastInteraction);
-        }
-        if (aInteraction && !bInteraction) return -1;
-        if (!aInteraction && bInteraction) return 1;
-
-        // Fallback to sorting by creation date if no interaction
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-    return sortedUsers;
+    return orderedUsers;
 };
+// export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
+   
+//     const allOtherUsers = await Auth.find({
+//         _id: { $ne: loggedInUserId }
+//     }).select("-password");
+
+//     const conversations = await Conversation.find({
+//         members: { $in: [loggedInUserId] }
+//     })
+//     .populate('messages')
+//     .sort({ updatedAt: -1 });
+
+//     const userLastInteraction = new Map();
+
+//     conversations.forEach(conversation => {
+//         const otherUser = conversation.members.find(
+//             (member) => member._id.toString() !== loggedInUserId.toString()
+//         );
+
+//         if (otherUser) {
+//             const lastMessage = conversation.messages[conversation.messages.length - 1];
+//             userLastInteraction.set(otherUser._id.toString(), {
+//                 lastInteraction: lastMessage ? lastMessage.createdAt : conversation.updatedAt
+//             });
+//         }
+//     });
+
+//     const sortedUsers = allOtherUsers.sort((a, b) => {
+//         const aInteraction = userLastInteraction.get(a._id.toString());
+//         const bInteraction = userLastInteraction.get(b._id.toString());
+
+//         if (aInteraction && bInteraction) {
+//             return new Date(bInteraction.lastInteraction) - new Date(aInteraction.lastInteraction);
+//         }
+//         if (aInteraction && !bInteraction) return -1;
+//         if (!aInteraction && bInteraction) return 1;
+
+//         // Fallback to sorting by creation date if no interaction
+//         return new Date(b.createdAt) - new Date(a.createdAt);
+//     });
+
+//     return sortedUsers;
+// };

@@ -17,8 +17,8 @@ const location =
 "Location not specified";
 
 const salary = job.packageDetails?.totalCTC
-? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-: "Not disclosed";
+  ? `${job.packageDetails.totalCTC.toLocaleString("en-IN")}`
+  : "Not disclosed";
 
 const students = job.noOfplacedStudents || "N/A";
 const lastDateToApply = job.endDate

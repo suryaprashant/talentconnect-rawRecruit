@@ -37,13 +37,13 @@ function Left({ isFloating = false }) {
       {/* Users List Section */}
       <div className={`flex-1 overflow-y-auto ${isFloating ? "p-2" : "p-4"} bg-white/50 backdrop-blur-sm`}>
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+          {/* <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-gray-800 text-lg">All Users</h3>
-            {/* <span className="px-3 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 backdrop-blur-sm rounded-full text-sm border border-[#143694]/20">
+             <span className="px-3 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 backdrop-blur-sm rounded-full text-sm border border-[#143694]/20">
               <span className="font-bold text-[#143694]">24</span> 
               <span className="text-gray-600 ml-1">online</span>
-            </span> */}
-          </div>
+            </span> 
+          </div> */}
           <Users />
         </div>
         

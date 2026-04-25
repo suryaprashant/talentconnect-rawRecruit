@@ -473,8 +473,8 @@ const [authUser] = useLegacyAuth();
             />
           </SidebarNavGroup>
           {/* Quick Actions at Bottom */}
-          <div className="pt-4 mt-4">
-            {/* Removed border-t border-gray-200 */}
+          {/* <div className="pt-4 mt-4">
+            // Removed border-t border-gray-200 
             <SidebarNavItem
               to="/chat-application"
               icon={
@@ -486,7 +486,7 @@ const [authUser] = useLegacyAuth();
               active={activePath === '/chats'}
               onHelp={() => handleOpenHelp("chats")}
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <SidebarHelpModal 

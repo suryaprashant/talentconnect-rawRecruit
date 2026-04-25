@@ -135,6 +135,8 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
           workLocation: backendJob.workLocation || backendJob.location,
           startDate: backendJob.startDate,
           endDate: backendJob.endDate,
+          onlineTestDate: backendJob.onlineTestDate,
+          offerDate: backendJob.offerRolloutDate,
           selectionProcess: backendJob.selectionProcess,
           packageDetails: backendJob.packageDetails,
           jobType: "Pool-campus",

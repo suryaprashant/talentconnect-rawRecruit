@@ -26,9 +26,8 @@ job.candidatePosted?.locations?.[0] ||
 
 // 🔹 SALARY
 const salary = job.packageDetails?.totalCTC
-? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-: "Not disclosed";
-
+  ? `${job.packageDetails.totalCTC.toLocaleString("en-IN")}`
+  : "Not disclosed";
 // 🔹 WORK TYPE
 const employmentType = job.employmentType?.[0] || job.jobType || "N/A";
 const workMode = job.workMode?.[0] || "N/A";
