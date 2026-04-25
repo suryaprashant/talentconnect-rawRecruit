@@ -127,8 +127,8 @@ const CollegeCard = ({ college, onClick }) => {
       <div className="p-5 flex-1 flex flex-col bg-primaryBrand/15">
 
         {/* STATUS + SAVE */}
-        <div className="flex justify-between mb-3">
-          <span className="text-xs px-3 py-3 rounded-full bg-gray-200 text-gray-600">
+        <div className="flex justify-between items-start mb-3">
+          <span className="text-xs px-3 py-1 rounded-full font-medium bg-[#143694]/10 text-[#143694]">
             {collegeStatus.status}
           </span>
 

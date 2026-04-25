@@ -149,7 +149,6 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
 
     // 3. Remove duplicates
     const uniqueUserIds = [...new Set(userIds)];
-    console.log("USER IDS:", uniqueUserIds);
     // 4. Fetch users from BOTH collections
     const authUsers = await Auth.find({ _id: { $in: uniqueUserIds } })
         .select("-password");

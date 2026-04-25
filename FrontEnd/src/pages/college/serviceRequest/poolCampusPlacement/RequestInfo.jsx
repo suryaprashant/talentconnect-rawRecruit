@@ -1131,7 +1131,7 @@ useEffect(() => {
                                                 placeholder="Amount" value={formData.salaryValue || ''}
                                                 onChange={handleChange} min="0" step="1000"
                                             />
-                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                            {/* <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                                                 {formData.salaryRange === 'INR' ? (
                                                     <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
                                                 ) : formData.salaryRange === 'USD' ? (
@@ -1141,7 +1141,7 @@ useEffect(() => {
                                                 ) : (
                                                     <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
                                                 )}
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>
