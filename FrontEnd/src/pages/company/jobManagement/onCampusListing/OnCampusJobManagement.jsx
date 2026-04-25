@@ -149,7 +149,7 @@ export default function OnCampusJobManagement() {
 
   const handleDelete = async (jobId) => {
     try {
-      const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the job?");
+      const confirmed = window.confirm("Are you sure you want to mark this job as Inactive? It will no longer be visible to new applicants.");
       if (confirmed) {
         const response = await deleteJobById(jobId);
         fetchJobs();
@@ -530,7 +530,7 @@ export default function OnCampusJobManagement() {
     <button
       onClick={() => handleDelete(job._id)}
       className="p-2 bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-600 rounded-lg hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 transition-all duration-200"
-      title="Mark as Inactive"
+     title="Mark as Inactive"
     >
       <Ban size={16} />
     </button>

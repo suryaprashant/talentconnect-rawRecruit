@@ -672,8 +672,8 @@ const handlePermanentDelete = async (jobId, e) => {
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
     
-    const isConfirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
-    
+  //  const isConfirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
+    const isConfirmed = window.confirm('Are you sure you want to mark this job as Inactive? It will no longer be visible to new applicants.');
     if (!isConfirmed) {
       return;
     }
@@ -956,7 +956,7 @@ const handlePermanentDelete = async (jobId, e) => {
                         ? 'opacity-50 cursor-not-allowed' 
                         : 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300'
                     }`}
-                    title="Delete Job"
+                    title="Inactive Job"
                     disabled={deletingJobId === jobId}
                   >
                     {deletingJobId === jobId ? (
