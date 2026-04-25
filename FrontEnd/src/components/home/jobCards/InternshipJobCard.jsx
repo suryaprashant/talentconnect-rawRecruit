@@ -24,12 +24,14 @@ job.location?.[0] ||
 "Location not specified";
 
 // 🔹 STIPEND
+// const stipend = job.packageDetails?.totalCTC
+// ? job.packageDetails.totalCTC < 100000
+// ? `${job.packageDetails.totalCTC}/month`
+// : `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
+// : "Not disclosed";
 const stipend = job.packageDetails?.totalCTC
-? job.packageDetails.totalCTC < 100000
-? `${job.packageDetails.totalCTC}/month`
-: `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-: "Not disclosed";
-
+  ? `${job.packageDetails.totalCTC.toLocaleString("en-IN")}`
+  : "Not disclosed";
 // 🔹 WORK MODE
 const workMode = job.workMode?.[0] || "N/A";
 

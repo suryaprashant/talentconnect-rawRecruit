@@ -8,7 +8,7 @@ const JobCard = ({ job, onClick }) => {
   const [imageError, setImageError] = useState(false);
 
   if (!job) return null;
-
+  console.log("JOB SHAPE:", job);
   const companyName =
     job.companyPosted?.companyDetails?.companyName || "Company";
   const logo = job.companyPosted?.profileImageUrl || "";
@@ -76,7 +76,12 @@ const JobCard = ({ job, onClick }) => {
   const endDate = job.endDate
     ? new Date(job.endDate).toLocaleDateString()
     : null;
-
+  const offerDate = job.offerDate
+    ? new Date(job.offerDate).toLocaleDateString()
+    : null;
+  const onlineTestDate = job.onlineTestDate
+    ? new Date(job.onlineTestDate).toLocaleDateString()
+    : null;
   const streams = job.studentStreams || [];
   const visibleStreams = streams.slice(0, 4);
 
@@ -85,7 +90,7 @@ const JobCard = ({ job, onClick }) => {
   const extraSkills = skills.length - 2;
 
   const salary = job.packageDetails?.totalCTC
-    ? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
+    ? `${Number(job.packageDetails.totalCTC).toLocaleString("en-IN")}`
     : "Not disclosed";
 
   const minStudents = job.minimumStudents || "Not Specified";
@@ -146,35 +151,29 @@ const JobCard = ({ job, onClick }) => {
         </div>
 
         {/* DATES */}
-        {(startDate || endDate) && (
-          <div className="grid grid-cols-2 gap-3 mb-2">
+        <div className="mt-4 grid grid-cols-3 gap-1">
 
-            {/* START DATE */}
-            {startDate && (
-              <div className="bg-gray-100 rounded-xl px-1 py-1 text-center border border-gray-200">
-                <p className="text-[10px] text-gray-900">
-                  Start Date
-                </p>
-                <p className="text-xs font-semibold text-gray-900">
-                  {startDate}
-                </p>
-              </div>
-            )}
+    {/* LEFT */}
+    <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Last Date to apply
+      </p>
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {endDate || "-"}
+      </p>
+    </div>
 
-            {/* END DATE */}
-            {endDate && (
-              <div className="bg-orange-100 rounded-xl px-1 py-1 text-center border border-orange-200">
-                <p className="text-[10px] text-gray-900">
-                  End Date
-                </p>
-                <p className="text-xs font-semibold text-gray-900">
-                  {endDate}
-                </p>
-              </div>
-            )}
+    {/* RIGHT */}
+    <div className="col-span-2 bg-orange-100 rounded-xl px-1 py-1 border border-orange-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Test Date - Offer Rollout Date
+      </p>
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {onlineTestDate || "-"} → {offerDate || "-"}
+      </p>
+    </div>
 
-          </div>
-        )}
+  </div>
 
         {/* INFO */}
         <div className="text-sm text-gray-700 space-y-1 mb-2">

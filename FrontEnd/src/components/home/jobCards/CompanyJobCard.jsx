@@ -18,9 +18,8 @@ job.workLocation?.[0] ||
 "Location not specified";
 
 const salary = job.packageDetails?.totalCTC
-? `${(job.packageDetails.totalCTC / 100000).toFixed(1)} LPA`
-: "Not disclosed";
-
+  ? `${job.packageDetails.totalCTC.toLocaleString("en-IN")}`
+  : "Not disclosed";
 const employmentType = job.employmentType?.join(", ") || "N/A";
 const workMode = job.workMode?.join(", ") || "N/A";
 
@@ -31,6 +30,12 @@ const startDate = job.startDate
 
 const endDate = job.endDate
 ? new Date(job.endDate).toLocaleDateString()
+: null;
+const offerDate = job.offerRolloutDate
+? new Date(job.offerRolloutDate).toLocaleDateString()
+: null;
+const onlineTestDate = job.onlineTestDate
+? new Date(job.onlineTestDate).toLocaleDateString()
 : null;
 
 // ✅ STREAMS
@@ -61,36 +66,29 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
   </div>
 
   {/* DATES (LIKE COLLEGE CARD) */}
-  {(startDate || endDate) && (
-    <div className="grid grid-cols-2 gap-2 mt-4">
+  <div className="mt-4 grid grid-cols-3 gap-3">
 
-      {/* START DATE */}
-      {startDate && (
-        <div className="bg-gray-100 rounded-xl px-0 py-1 text-center">
-          <p className="text-[10px] text-gray-600 leading-none">
-            Start Date
-          </p>
-          <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
-            {startDate}
-          </p>
-        </div>
-      )}
-
-      {/* END DATE */}
-      {endDate && (
-        <div className="bg-orange-100 rounded-xl px-0
-         py-1 text-center">
-          <p className="text-[10px] text-gray-600 leading-none">
-            End Date
-          </p>
-          <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
-            {endDate}
-          </p>
-        </div>
-      )}
-
+    {/* LEFT */}
+    <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Last Date to apply
+      </p>
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {endDate || "-"}
+      </p>
     </div>
-  )}
+
+    {/* RIGHT */}
+    <div className="col-span-2 bg-orange-100 rounded-xl px-1 py-1 border border-orange-200 flex flex-col items-center justify-center text-center">
+      <p className="text-[10px] text-gray-900 mb-0">
+        Test Date - Offer Rollout Date
+      </p>
+      <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
+        {onlineTestDate || "-"} → {offerDate || "-"}
+      </p>
+    </div>
+
+  </div>
 
   {/* INFO */}
   <div className="mt-4 space-y-2 text-sm text-gray-700">

@@ -105,10 +105,10 @@ export default function HeroSection() {
         {/* LEFT */}
         <motion.div
           key={hoveredAction}
-          initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 1.5,
+            duration: 2,
             ease: [0.22, 1, 0.36, 1]
           }}
         >
