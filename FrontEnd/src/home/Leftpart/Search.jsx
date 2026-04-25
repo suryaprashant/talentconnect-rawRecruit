@@ -3,11 +3,12 @@ import { Search as SearchIcon } from 'lucide-react';
 import useGetAllUsers from "../../context/useGetAllUsers";
 import useConversation from "../../statemanage/useConversation";
 import toast from "react-hot-toast";
+import { useChat } from "@/context/ChatContext";
 
 function Search() {
   const [search, setSearch] = useState("");
   const [allUsers, loading, unreadCounts] = useGetAllUsers();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation } = useChat();
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -4,10 +4,11 @@ import useGetAllUsers from "../../context/useGetAllUsers";
 import Loading from "../../components/Loading";
 import useConversation from "../../statemanage/useConversation";
 import { Users as UsersIcon, MessageSquare, UserPlus } from 'lucide-react';
+import { useChat } from "@/context/ChatContext";
 
 function Users() {
   const [allUsers, loading, unreadCounts, refreshUsers] = useGetAllUsers();
-  const { selectedConversation } = useConversation();
+  const { selectedConversation } = useChat();
 
   useEffect(() => {
     if (selectedConversation) {

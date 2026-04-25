@@ -1,11 +1,13 @@
 import { useState } from "react";
 import JobsListingPage from "@/pages/college/collegeDashboard/onCampusOpportunity/JobListingPage";
 import JobDetailModal from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 const OnCampusLayout = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
+  const location = useLocation();
 
   const handleJobSelect = (job) => {
     console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
@@ -31,7 +33,11 @@ const OnCampusLayout = () => {
     setIsZoomedView(false);
     setSelectedJob(null);
   };
-
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
   /* ======================================================
       ZOOMED VIEW — MODAL + SIDEBAR COMBINED
   ====================================================== */

@@ -2,12 +2,18 @@ import { useState } from "react";
 import OffCampusJobs from "@/pages/students/studentDashboard/offCampusListing/offCampusJobListing";
 import FOffCampusListings from "@/pages/fresher/fresherDashboard/offCampusListing/offCampusJobListing";
 import OffCampusJobDetailModal from "./OffCampusJobDetailModal";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 const OffCampusLayout = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
-
+  const location = useLocation(); 
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
   // Determine which component to use based on route
   const userType = window.location.pathname.includes('fresher-dashboard') ? 'fresher' : 'student';
   const ListingComponent = userType === 'fresher' ? FOffCampusListings : OffCampusJobs;

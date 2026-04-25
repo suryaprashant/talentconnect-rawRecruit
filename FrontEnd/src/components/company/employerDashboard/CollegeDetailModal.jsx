@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useChat } from '@/context/ChatContext';
 import { 
   Send, 
   Calendar, 
@@ -185,6 +186,7 @@ const normalizeCollegeData = (collegeData) => {
 };
 
 const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => {
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
   const normalizedCollege = normalizeCollegeData(college);
   const [showLoginModal, setShowLoginModal] = useState(false);
   console.log("🎯 CollegeDetailModal - Normalized college data:", normalizedCollege);
@@ -210,8 +212,6 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const modalRef = useRef(null);
   const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null);
-  
-  const { setSelectedConversation } = useConversation();  
 
   const handleLoginRedirect = () => {
   
@@ -414,10 +414,11 @@ useEffect(() => {
         };
 
         setSelectedConversation(conversationUser);
-        onClose();
         setTimeout(() => {
-          window.location.href = '/chat-application';
-        }, 100);
+          setShowFloatingChat(true);
+        }, 0);
+        onClose();
+        
 
       } else {
         toast.error('Failed to create conversation');

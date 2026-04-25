@@ -1,11 +1,19 @@
 import { useState } from "react";
 import CollegeListingPage from "@/pages/company/employerDashboard/CollegeListingPage";
 import CollegeDetailModal from "@/components/company/employerDashboard/CollegeDetailModal";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 const CompanyOnCampusLayout = () => {
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleCollegeSelect(location.state.openCollege);
+    }
+  }, [location.state]);
 
   const handleCollegeSelect = (college) => {
     console.log('Opening details for:', college?.collegePosted?.collegeUniversityDetails?.collegeName);

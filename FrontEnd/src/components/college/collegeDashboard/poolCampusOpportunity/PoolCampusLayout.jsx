@@ -1,12 +1,18 @@
 import { useState } from "react";
 import PoolJobListingPage from "@/pages/college/collegeDashboard/poolCampusOpportunity/PoolJobListingPage";
 import PoolJobDetailModal from "./PoolDetailModal";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 const PoolCampusLayout = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
-
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
   const handleJobSelect = (job) => {
     console.log('Opening details for:', job?.companyName || job?.companyPosted?.companyDetails?.companyName);
     setSelectedJob(job);

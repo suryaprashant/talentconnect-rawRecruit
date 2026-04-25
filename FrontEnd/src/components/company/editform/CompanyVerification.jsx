@@ -34,7 +34,7 @@ const CompanyVerification = () => {
         {/* Document Upload */}
         <div>
           <label className="block text-sm font-medium mb-2">
-            Upload Verification Documents (Choose any one for verification)
+            Upload Verification Documents (Choose any one for verification) hi
           </label>
           <div className="flex gap-3 items-center">
             <select

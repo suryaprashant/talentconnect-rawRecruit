@@ -536,136 +536,162 @@ useEffect(() => {
         {/* Service Requests Status & Application Funnel */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Campus Opportunities */}
-<div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
-  {/* Header */}
-  <div className="flex items-center gap-3 mb-5">
-    <h2 className="text-lg font-semibold text-gray-900">Campus Opportunities</h2>
-    <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
-      {collegeOppTab === 'On-Campus' ? onCampusJobs.length : poolCampusJobs.length}
-    </span>
-  </div>
-
-  {/* Tabs */}
-  <div className="flex gap-2 mb-5">
-    {['On-Campus', 'Pool-Campus'].map((tab) => (
-      <button
-        key={tab}
-        onClick={() => setCollegeOppTab(tab)}
-        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-          collegeOppTab === tab
-            ? 'bg-blue-900 text-white'
-            : 'text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        {tab}
-      </button>
-    ))}
-  </div>
-
-  {/* Job Cards */}
-  <div className="grid grid-cols-1 gap-4">
-    {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs)
-      .slice(0, 2)
-      .map((job, index) => {
-        const roles = job.title || 
-                      (Array.isArray(job.jobRoles) ? job.jobRoles.join(', ') : job.jobRoles) || 
-                      job.position || 
-                      'Role Not Specified';
-
-        const degree = Array.isArray(job.degree) ? job.degree.join(', ') : 
-                       Array.isArray(job.studentStreams) ? job.studentStreams.join(', ') :
-                       job.degree || job.studentStreams || 'All Streams';
-
-        const jobSkills = job.skills || [];
-        const displaySkills = jobSkills.slice(0, 2);
-        const remainingSkillsCount = jobSkills.length - 2;
-
-        return (
-          <div
-            key={job._id || index}
-            className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <FiBriefcase className="w-5 h-5 text-[#143694]" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm truncate max-w-[150px]">
-                    {job.companyPosted?.companyDetails?.companyName || 'Unknown Company'}
-                  </h3>
-                  <p className="text-[10px] text-gray-500">
-                    {job.location || (job.workLocation && job.workLocation[0]) || 'Location N/A'}
-                  </p>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider">
-                {collegeOppTab === 'On-Campus' ? 'On Campus' : 'Pool Campus'}
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <h2 className="text-lg font-semibold text-gray-900">Campus Opportunities</h2>
+              <span className="w-6 h-6 rounded-full bg-blue-900 text-white text-xs font-bold flex items-center justify-center">
+                {collegeOppTab === 'On-Campus' ? onCampusJobs.length : poolCampusJobs.length}
               </span>
             </div>
 
-            <div className="space-y-2 mb-4">
-              <p className="text-sm text-gray-700 line-clamp-1">
-                <span className="font-medium text-gray-500">Role:</span>{' '}
-                <span className="font-bold text-blue-900">{roles}</span>
-              </p>
-              
-              <p className="text-xs text-gray-600 line-clamp-1">
-                <span className="font-medium text-gray-400">Degree:</span> {degree}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                <span className="text-[10px] font-medium text-gray-400 mr-1">Skills:</span>
-                {displaySkills.length > 0 ? (
-                  <>
-                    {displaySkills.map((skill, i) => (
-                      <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200">
-                        {skill}
-                      </span>
-                    ))}
-                    {remainingSkillsCount > 0 && (
-                      <span className="text-[10px] bg-blue-100 text-[#143694] px-2 py-0.5 rounded-md font-bold">
-                        +{remainingSkillsCount} more
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-[10px] text-gray-400 italic">See details</span>
-                )}
-              </div>
+            {/* Tabs */}
+            <div className="flex gap-2 mb-5">
+              {['On-Campus', 'Pool-Campus'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setCollegeOppTab(tab)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                    collegeOppTab === tab
+                      ? 'bg-blue-900 text-white'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
 
-            {/* View Details Button with Dynamic Navigation */}
-            <button
-              onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
-              className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
-            >
-              View Details
-            </button>
+            {/* Job Cards */}
+            <div className="grid grid-cols-1 gap-4">
+              {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs)
+              .filter((job) => {
+                        const deadline =
+                          job.endDate ||
+                          job.proposedSchedule?.endDate ||
+                          job.interviewWindow?.end;
+
+                        if (!deadline) return true; // keep if no deadline
+
+                        const daysLeft = Math.ceil(
+                          (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+                        );
+
+                        return daysLeft > 0; //  remove closed jobs
+                      })
+                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 2)
+                .map((job, index) => {
+                  const roles = job.title || 
+                                (Array.isArray(job.jobRoles) ? job.jobRoles.join(', ') : job.jobRoles) || 
+                                job.position || 
+                                'Role Not Specified';
+
+                  const degree = Array.isArray(job.degree) ? job.degree.join(', ') : 
+                                Array.isArray(job.studentStreams) ? job.studentStreams.join(', ') :
+                                job.degree || job.studentStreams || 'All Streams';
+
+                  const jobSkills = job.skills || [];
+                  const displaySkills = jobSkills.slice(0, 2);
+                  const remainingSkillsCount = jobSkills.length - 2;
+
+                  return (
+                    <div
+                      key={job._id || index}
+                      className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                            <FiBriefcase className="w-5 h-5 text-[#143694]" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-gray-900 text-sm truncate max-w-[150px]">
+                              {job.companyPosted?.companyDetails?.companyName || 'Unknown Company'}
+                            </h3>
+                            <p className="text-[10px] text-gray-500">
+                              {job.location || (job.workLocation && job.workLocation[0]) || 'Location N/A'}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider">
+                          {collegeOppTab === 'On-Campus' ? 'On Campus' : 'Pool Campus'}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 mb-4">
+                        <p className="text-sm text-gray-700 line-clamp-1">
+                          <span className="font-medium text-gray-500">Role:</span>{' '}
+                          <span className="font-bold text-blue-900">{roles}</span>
+                        </p>
+                        
+                        <p className="text-xs text-gray-600 line-clamp-1">
+                          <span className="font-medium text-gray-400">Degree:</span> {degree}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          <span className="text-[10px] font-medium text-gray-400 mr-1">Skills:</span>
+                          {displaySkills.length > 0 ? (
+                            <>
+                              {displaySkills.map((skill, i) => (
+                                <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200">
+                                  {skill}
+                                </span>
+                              ))}
+                              {remainingSkillsCount > 0 && (
+                                <span className="text-[10px] bg-blue-100 text-[#143694] px-2 py-0.5 rounded-md font-bold">
+                                  +{remainingSkillsCount} more
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-[10px] text-gray-400 italic">See details</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* View Details Button with Dynamic Navigation */}
+                      <button
+                        onClick={() =>
+                          navigate(
+                            collegeOppTab === 'On-Campus'
+                              ? '/college-dashboard/On-campus'
+                              : '/college-dashboard/Pool-campus',
+                            {
+                              state: {
+                                openCollege: job, // 👈 THIS is the key
+                              },
+                            }
+                          )
+                        }
+                        className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  );
+                })}
+
+              {/* Empty State */}
+              {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs).length === 0 && (
+                <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
+                  <p className="text-sm text-gray-500">No {collegeOppTab} opportunities available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer Button with Dynamic Navigation */}
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
+                className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
+              >
+                See All {collegeOppTab} Opportunities
+              </Button>
+            </div>
           </div>
-        );
-      })}
-
-    {/* Empty State */}
-    {(collegeOppTab === 'On-Campus' ? onCampusJobs : poolCampusJobs).length === 0 && (
-      <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl">
-        <p className="text-sm text-gray-500">No {collegeOppTab} opportunities available</p>
-      </div>
-    )}
-  </div>
-
-  {/* Footer Button with Dynamic Navigation */}
-  <div className="mt-4">
-    <Button
-      variant="outline"
-      size="md"
-      onClick={() => navigate(collegeOppTab === 'On-Campus' ? '/college-dashboard/On-campus' : '/college-dashboard/Pool-campus')}
-      className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
-    >
-      See All {collegeOppTab} Opportunities
-    </Button>
-  </div>
-</div>
 
           {/* Applications Overview */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">

@@ -6,6 +6,7 @@ import { ApplyForPoolcampusOppurtunity, SaveOppurtunity, submitAlternateDates } 
 import { viewed } from '@/lib/User_AxiosInstance';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import toast from 'react-hot-toast';
 import { 
   Send, 
@@ -57,6 +58,7 @@ const formatDateForInput = (dateString) => {
 };
 
 const PoolCampusEmployeeDash = () => {
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -77,7 +79,7 @@ const PoolCampusEmployeeDash = () => {
   // College Details Modal State
   const [showCollegeModal, setShowCollegeModal] = useState(false);
 
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();
 
   const fetchPostingDetails = async () => {
     if (!id) return;
@@ -168,10 +170,9 @@ const PoolCampusEmployeeDash = () => {
         };
 
         setSelectedConversation(conversationUser);
-
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+          setShowFloatingChat(true);
+        }, 0);
 
       } else {
         toast.error('Failed to create conversation');

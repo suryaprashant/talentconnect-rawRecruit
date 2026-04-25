@@ -5,7 +5,12 @@ import { createCompanyProfile, getCompanyProfile, updateCompanyProfile, getCompa
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
-const upload = multer();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+});
 
 // Routes for company profile creation (form-data upload)
 router.post(

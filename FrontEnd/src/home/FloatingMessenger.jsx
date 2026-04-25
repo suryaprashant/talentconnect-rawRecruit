@@ -5,10 +5,12 @@ import Right from "./Rightpart/Right";
 import Left from "./Leftpart/Left";
 import { MessageCircle, ArrowLeft, X, ChevronUp, ChevronDown } from "lucide-react";
 import axios from "axios";
+import { useChat } from "../context/ChatContext";
 
 function FloatingMessenger() {
-  const [open, setOpen] = useState(false);
-  const { selectedConversation, setSelectedConversation } = useConversation();
+  // const [open, setOpen] = useState(false);
+  const { showFloatingChat, setShowFloatingChat } = useChat();
+  const { selectedConversation, setSelectedConversation } = useChat();
   const [authuser] = useLegacyAuth();
   const [profileImage, setProfileImage] = useState(null);
   const [loadingImage, setLoadingImage] = useState(true);
@@ -113,11 +115,11 @@ function FloatingMessenger() {
 
 
   // ✅ CLOSED (LinkedIn bar)
-  if (!open) {
+  if (!showFloatingChat) {
     return (
       <div className="fixed bottom-0 right-6 z-[9999]">
         <div
-          onClick={() => setOpen(true)}
+          onClick={() => setShowFloatingChat(true)}
           className="bg-white border border-gray-300 border-b-0 rounded-t-xl px-4 py-3 w-[260px] flex items-center justify-between shadow-sm cursor-pointer hover:bg-gray-50 transition"
         >
           {/* LEFT */}
@@ -195,7 +197,7 @@ function FloatingMessenger() {
         </div>
 
         {/* RIGHT */}
-        <button onClick={() => setOpen(false)}>
+        <button onClick={() => setShowFloatingChat(false)}>
           <ChevronDown size={20} />
         </button>
       </div>
