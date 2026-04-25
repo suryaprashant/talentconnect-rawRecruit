@@ -106,7 +106,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                         {/* KYC Documents Upload */}
                         <div className="bg-gradient-to-r from-[#143694]/5 to-transparent p-5 rounded-xl border border-gray-100">
                             <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Upload Verification Documents (Choose any one for verification)
+                                Upload Verification Documents (Choose any one for verification) h2
                             </label>
                             <div className="space-y-4">
                                 <div className="relative">

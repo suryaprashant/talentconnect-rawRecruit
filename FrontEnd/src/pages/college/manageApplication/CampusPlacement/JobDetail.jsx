@@ -4,7 +4,7 @@ import { getApplicationByJobOfManagement, conversationWithCollege, rejectCompany
 import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-
+import { useChat } from '@/context/ChatContext';
 const CompanyDetailsModal = ({ isOpen, onClose, company }) => {
   if (!isOpen || !company) return null;
 
@@ -78,7 +78,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -106,10 +106,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         console.log("Setting conversation for direct chat:", conversationUser);
 
         setSelectedConversation(conversationUser);
-
-        setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+        setShowFloatingChat(true);
 
       } else {
         toast.error('Failed to create conversation');

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import useConversation from "../../statemanage/useConversation.js";
+import { useChat } from "../../context/ChatContext";
 import { useSocketContext } from "../../context/SocketContext.jsx";
 import { MessageSquare, Circle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 function User({ user, unreadCount }) {
-  const { selectedConversation, setSelectedConversation } = useConversation();
+  const { selectedConversation, setSelectedConversation } = useChat();
   const isSelected = selectedConversation?._id === user._id;
   const { socket, onlineUsers } = useSocketContext();
   const isOnline = onlineUsers.includes(user._id);

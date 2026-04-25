@@ -9,7 +9,21 @@ import streamifier from 'streamifier';
 import { updateAuthUserService } from '../../services/authService.js';
 
 import { getCompanyService, updateCompanyProfileService } from '../../services/companyService.js'
+import { Readable } from "stream";
 
+const uploadBuffer = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+
+    Readable.from(buffer).pipe(stream); // ✅ FIX
+  });
+};
 const COMPANY_FIELDS = [
   // ── Company Details ───────────────────────────────────────────────────
   { section: "companyDetails", path: "companyName"          },
@@ -227,11 +241,31 @@ export const updateCompanyProfile = async (req, res) => {
         'companyProfileImages'
       )).secure_url;
     }
-
-
     if (files?.kycDocuments) {
       for (const doc of files.kycDocuments) {
-        const uploaded = await streamUpload(doc.buffer, 'kycDocuments');
+        const fileName = doc.originalname.toLowerCase();
+
+        const isDocument =
+          fileName.endsWith(".pdf") ||
+          fileName.endsWith(".doc") ||
+          fileName.endsWith(".docx");
+
+        const uploaded = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "rawrecruit/kycDocuments",
+            resource_type: "image",   // ✅ ensures URL is /image/upload/
+            public_id: `doc_${Date.now()}`,
+            format: "pdf",
+          },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        stream.end(doc.buffer);
+      });
+
         kycDocs.push(uploaded.secure_url);
       }
     }

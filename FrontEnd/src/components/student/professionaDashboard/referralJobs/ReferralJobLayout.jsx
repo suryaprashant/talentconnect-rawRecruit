@@ -1,13 +1,19 @@
 import { useState } from "react";
 import ReferralJobs from "@/pages/professional/dashboard/refferalJobs/RefferalJobListing";
 import ReferralJobDetailModal from "@/components/student/professionaDashboard/referralJobs/ReferralJobDetailModal";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const ReferralLayout = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
-
+  const location = useLocation(); 
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
   const handleJobSelect = (job) => {
   console.log('🔵 Layout received job:', job._id);
 

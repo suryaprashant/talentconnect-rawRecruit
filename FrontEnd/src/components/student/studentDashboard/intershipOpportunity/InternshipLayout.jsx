@@ -3,12 +3,18 @@ import InternJobListings from "@/pages/students/studentDashboard/internshipOppor
 import FInternJobListings from "@/pages/fresher/fresherDashboard/internshipOpportunity/InternJobListing";
 import InternshipDetailModal from "./InternshipDetailModal";
 import { X } from "lucide-react";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 const InternshipLayout = ({ userType = 'student' }) => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
-
+  const location = useLocation(); 
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
   // Determine which listing component to use
   const ListingComponent = userType === 'fresher' ? FInternJobListings : InternJobListings;
 

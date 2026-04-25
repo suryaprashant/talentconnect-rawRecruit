@@ -101,59 +101,40 @@ const LiveJobs = () => {
   }, [activeRole, activeType]);
 
   // APPLY BUTTON
-  const handleApply = () => {
-    
+  const handleApply = (job) => {
+    let path = "/jobs"; // fallback
 
-    // ROLE BASED ROUTING
-    if (activeRole === "Company" && activeType === "On-Campus") {
-      navigate("/company-dashboard/On-campus");
-      return;
-    }
-    if (activeRole === "Company" && activeType === "Pool-Campus") {
-      navigate("/company-dashboard/Pool-Campus");
-      return;
+    // COMPANY
+    if (activeRole === "Company") {
+      if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
+      if (activeType === "Pool-Campus") path = "/company-dashboard/Pool-campus";
     }
 
-    if (activeRole === "Freshers" && activeType === "Off-Campus") {
-      navigate("/fresher-dashboard/Off-campus");
-      return;
+    // COLLEGE
+    else if (activeRole === "College") {
+      if (activeType === "On-Campus") path = "/college-dashboard/On-campus";
+      if (activeType === "Pool-Campus") path = "/college-dashboard/Pool-campus";
     }
 
-    if (activeRole === "Freshers" && activeType === "Internship") {
-      navigate("/fresher-dashboard/Internship");
-      return;
+    // STUDENT
+    else if (activeRole === "Student") {
+      if (activeType === "Off-Campus") path = "/student-dashboard/Off-campus";
+      if (activeType === "Internship") path = "/student-dashboard/Internship";
+      if (activeType === "On-Campus") path = "/student-dashboard/On-campus";
     }
 
-    if (activeRole === "Freshers" && activeType === "Referral") {
-      navigate("/fresher-dashboard/Referral");
-      return;
+    // FRESHERS
+    else if (activeRole === "Freshers") {
+      if (activeType === "Off-Campus") path = "/fresher-dashboard/Off-campus";
+      if (activeType === "Internship") path = "/fresher-dashboard/Internship";
+      if (activeType === "Referral") path = "/fresher-dashboard/Referral";
     }
 
-    if (activeRole === "Student" && activeType === "Off-Campus") {
-      navigate("/student-dashboard/Off-campus");
-      return;
-    }
-    if (activeRole === "Student" && activeType === "On-Campus") {
-      navigate("/student-dashboard/On-campus");
-      return;
-    }
-    if (activeRole === "Student" && activeType === "Internship") {
-      navigate("/student-dashboard/Internship");
-      return;
-    }
-
-    if (activeRole === "College" && activeType === "Pool-Campus") {
-      navigate("/college-dashboard/Pool-Campus");
-      return;
-    }
-
-    if (activeRole === "College" && activeType === "On-Campus") {
-      navigate("/college-dashboard/On-campus");
-      return;
-    }
-
-    // fallback
-    navigate("/jobs");
+    navigate(path, {
+      state: {
+        openCollege: job, // 👈 works for both on-campus & pool
+      },
+    });
   };
 
   return (
@@ -244,7 +225,7 @@ const LiveJobs = () => {
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={handleApply}
+                    handleApply={() => handleApply(job)}
                   />
                 );
               }
@@ -256,7 +237,7 @@ const LiveJobs = () => {
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={handleApply}
+                    handleApply={() => handleApply(job)}
                   />
                 );
               }
@@ -268,7 +249,7 @@ const LiveJobs = () => {
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={handleApply}
+                    handleApply={() => handleApply(job)}
                   />
                 );
               }
@@ -280,7 +261,7 @@ const LiveJobs = () => {
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={handleApply}
+                    handleApply={() => handleApply(job)}
                   />
                 );
               }
@@ -291,7 +272,7 @@ const LiveJobs = () => {
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={handleApply}
+                    handleApply={() => handleApply(job)}
                   />
                 );
             })

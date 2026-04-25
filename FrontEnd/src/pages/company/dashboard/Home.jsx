@@ -865,6 +865,21 @@ const [activeTab, setActiveTab] = useState('On-Campus');
   {/* Vertical Stack Container */}
   <div className="grid grid-cols-1 gap-4">
     {(activeTab === 'On-Campus' ? collegeRequests.onCampus : collegeRequests.poolCampus)
+      .filter((job) => {
+              const deadline =
+                job.endDate ||
+                job.proposedSchedule?.endDate ||
+                job.interviewWindow?.end;
+
+              if (!deadline) return true; // keep if no deadline
+
+              const daysLeft = Math.ceil(
+                (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+              );
+
+              return daysLeft > 0; //  remove closed jobs
+            })
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 2) // Limits to 2 jobs
       .map((job, index) => {
         // Data Extraction based on your shared files
@@ -907,7 +922,18 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             </div>
 
             <button
-              onClick={() => navigate(activeTab === 'On-Campus' ? '/company-dashboard/On-campus' : '/company-dashboard/Pool-campus')}
+              onClick={() =>
+                navigate(
+                  activeTab === 'On-Campus'
+                    ? '/company-dashboard/On-campus'
+                    : '/company-dashboard/Pool-campus',
+                  {
+                    state: {
+                      openCollege: job,
+                    },
+                  }
+                )
+              }
               className="w-full py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors"
             >
               View Details & Apply

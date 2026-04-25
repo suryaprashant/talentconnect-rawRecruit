@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useChat } from '@/context/ChatContext';
 import { 
   Send, 
   Calendar, 
@@ -137,8 +138,8 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   const modalRef = useRef(null);
   const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null);
-  
-  const { setSelectedConversation } = useConversation();  
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
+  // const { setSelectedConversation } = useConversation();  
 
   // Helper function to get college initials (same as CollegeCard)
   const getInitials = (name) => {
@@ -301,10 +302,13 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
         };
 
         setSelectedConversation(conversationUser);
-        onClose();
         setTimeout(() => {
-          window.location.href = '/chat-application';
-        }, 100);
+          setShowFloatingChat(true);
+        }, 0);
+        onClose();
+        // setTimeout(() => {
+        //   window.location.href = '/chat-application';
+        // }, 100);
 
       } else {
         toast.error('Failed to create conversation');

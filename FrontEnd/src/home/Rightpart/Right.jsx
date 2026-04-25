@@ -5,11 +5,12 @@ import Chatuser from "./Chatuser";
 import Messages from "./Messages";
 import Typesend from "./Typesend";
 import useConversation from "../../statemanage/useConversation.js";
+import { useChat } from "../../context/ChatContext";
 import { useLegacyAuth } from "../../context/AuthProvider.jsx";
 import { CiMenuFries } from "react-icons/ci";
 
 function Right({ isFloating = false }) {    
-    const { selectedConversation } = useConversation();
+    const { selectedConversation } = useChat();
 
     // Debug log to verify conversation is received
     useEffect(() => {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useChat } from '@/context/ChatContext';
 import { 
   X, 
   Building2, 
@@ -76,6 +77,7 @@ const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
 };
 
 const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
   const { isAuthenticated, loading: authLoading } = useAuth(); // Added useAuth
   const [showLoginModal, setShowLoginModal] = useState(false);
   const modalRef = useRef(null);
@@ -94,8 +96,6 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
   
   // Add state for image error handling (same as CollegeCard)
   const [imageError, setImageError] = useState(false);
-  
-  const { setSelectedConversation } = useConversation();
 
   // Helper function to get college initials (same as CollegeCard)
   const getInitials = (name) => {
@@ -280,10 +280,11 @@ useEffect(() => {
         };
 
         setSelectedConversation(conversationUser);
-        onClose();
         setTimeout(() => {
-          window.location.href = '/chat-application';
-        }, 100);
+          setShowFloatingChat(true);
+        }, 0);
+        onClose();
+        
       } else {
         toast.error('Failed to create conversation');
       }
