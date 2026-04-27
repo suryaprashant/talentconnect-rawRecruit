@@ -102,7 +102,7 @@ const formatDateForInput = (dateString) => {
   }
 };
 
-const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved }) => {
+const PoolCampusDetailModal = ({ college, isOpen, onClose, parentRef,  isApplied: propIsApplied, isSaved: propIsSaved }) => {
   console.log("🎯 PoolCampusDetailModal - Props received:", {
     isOpen,
     collegeExists: !!college,
@@ -136,10 +136,10 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   const [imageError, setImageError] = useState(false);
 
   const modalRef = useRef(null);
-  const collegeModalRef = useRef(null); // Ref for college details modal
+  // const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null);
   const { setSelectedConversation, setShowFloatingChat } = useChat();  
-  // const { setSelectedConversation } = useConversation();  
+  // const { setSelectedConversation, setShowFloatingChat } = useChat();    
 
   // Helper function to get college initials (same as CollegeCard)
   const getInitials = (name) => {
@@ -219,7 +219,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
       // 🛑 DON'T close main modal if login prompt or other sub-modals are active
       if (showCollegeModal || showAlternateDateModal || showLoginModal) return;
       
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
+      if (parentRef?.current && !parentRef.current.contains(e.target)) {
         onClose();
       }
     };
@@ -396,7 +396,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div 
-          ref={collegeModalRef}
+          // ref={collegeModalRef}
           className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full"
         >
           <div className="flex justify-between items-center mb-6">

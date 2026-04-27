@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiUserPlus, FiFile, FiDownload, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { useChat } from "../../context/ChatContext";
 
 function NotificationsDropdown({ notifications, setNotifications, setUnreadCount }) {
     const navigate = useNavigate();
-
+    const { setSelectedConversation, setShowFloatingChat } = useChat();
     const { user, loading } = useAuth();
 
     if (loading || !user) return null;
@@ -200,7 +201,22 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
 
     // 💬 NEW CHAT MESSAGE — navigate to chat/inbox
     if (notification.type === "NEW_CHAT_MESSAGE") {
-        navigate("/chat-application");
+        const sender = notification.senderId;
+
+        // if (sender && typeof sender === "object") {
+        //     const conversationUser = {
+        //         _id: sender._id,
+        //         name: sender.name,
+        //         email: sender.email || "",
+        //         profileImage: sender.profileImage || "",
+        //         userType: sender.userType,
+        //         fullname: sender.name,
+        //     };
+
+        //     setSelectedConversation(conversationUser);
+        //     setShowFloatingChat(true);
+        // }
+        setShowFloatingChat(true);
         return;
     }
 

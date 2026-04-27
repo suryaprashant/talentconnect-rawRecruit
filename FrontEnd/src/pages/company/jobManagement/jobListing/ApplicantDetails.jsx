@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { Send } from 'lucide-react';
-
+import { useChat } from '@/context/ChatContext';
 
 const ApplicantDetails = ({ job, onClose, isVisited }) => {
   const jobId = job._id;
@@ -13,7 +13,7 @@ const ApplicantDetails = ({ job, onClose, isVisited }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState();
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
@@ -92,8 +92,8 @@ const ApplicantDetails = ({ job, onClose, isVisited }) => {
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

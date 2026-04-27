@@ -9,7 +9,7 @@ import { deleteCollegeJob , conversationWithCollege } from '@/lib/College_AxiosI
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
-
+import { useChat } from '@/context/ChatContext';
 
 export default function OnCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -265,7 +265,7 @@ export default function OnCampusJobManagement() {
     const [showModal, setShowModal] = useState(false);
     
     // Add this line - get setSelectedConversation from the hook
-    const { setSelectedConversation } = useConversation();
+    const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
     if (!companyApplication || !companyApplication.applicant) {
         return null;
@@ -304,7 +304,9 @@ export default function OnCampusJobManagement() {
                 };
 
                 setSelectedConversation(conversationUser);
-                navigate('/chat-application');
+                setTimeout(() => {
+                  setShowFloatingChat(true);
+                }, 0);
             } else {
                 toast.error('Failed to create conversation');
             }

@@ -4,7 +4,7 @@ import { getApplicationByJobOfManagement, conversationWithCollege, rejectCompany
 import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-
+import { useChat } from '@/context/ChatContext';
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
     <div className="w-12 h-12 border-4 border-[#143694] border-t-[#1e4ed8] rounded-full animate-spin"></div>
@@ -13,7 +13,8 @@ const Spinner = () => (
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  // const { setSelectedConversation, setShowFloatingChat } = useChat();  
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -41,8 +42,8 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { 
   Send, User, Mail, Phone, Link, Briefcase, DollarSign, 
@@ -100,7 +100,7 @@ const InternshipDetails = ({ job,
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
  {/* const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
@@ -178,8 +178,8 @@ const InternshipDetails = ({ job,
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

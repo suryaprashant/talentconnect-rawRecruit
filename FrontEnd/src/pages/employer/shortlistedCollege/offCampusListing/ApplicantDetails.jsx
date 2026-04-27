@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { Send, Mail, Phone, MapPin, Briefcase, GraduationCap, DollarSign, Building2, Globe } from 'lucide-react';
 import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
@@ -17,7 +17,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const [showApplicantModal, setShowApplicantModal] = useState(false);
 
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
@@ -78,8 +78,8 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');
@@ -408,7 +408,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
 import { 
@@ -683,7 +683,7 @@ const ApplicantDetails = ({ job, applications, loading, error, isVisited, onRefr
   });
 
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   // Function to extract all unique applicant locations
   const getAllApplicantLocations = () => {
@@ -952,8 +952,8 @@ const ApplicantDetails = ({ job, applications, loading, error, isVisited, onRefr
 
         setSelectedConversation(conversationUser);
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
       } else {
         toast.error('Failed to create conversation');
       }

@@ -5,6 +5,7 @@ import { ApplyForOncampusOppurtunity, SaveOppurtunity, submitAlternateDates } fr
 import toast from 'react-hot-toast';
 import { viewed } from '@/lib/User_AxiosInstance';
 import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { 
   Send, 
@@ -145,7 +146,7 @@ const CollegeDetailPage = () => {
 
   const containerRef = useRef(null);
   
-  const { setSelectedConversation } = useConversation();  
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   // Fetch data properly
   useEffect(() => {
@@ -362,8 +363,8 @@ const CollegeDetailPage = () => {
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

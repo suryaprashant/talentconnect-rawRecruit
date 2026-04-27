@@ -672,7 +672,7 @@ import {
   getPostedJobs
 } from '@/lib/Company_AxiosInstance'; // Assuming all API calls are in this instance
 import toast from 'react-hot-toast';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { 
   Send, 
@@ -693,7 +693,7 @@ const ReferralApplicantDetails = ({ job, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState([]);
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
@@ -776,8 +776,8 @@ const ReferralApplicantDetails = ({ job, onClose }) => {
 
         setSelectedConversation(conversationUser);
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

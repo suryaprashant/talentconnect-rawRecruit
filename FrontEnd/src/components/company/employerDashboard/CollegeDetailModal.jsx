@@ -258,12 +258,23 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   }
 };
 
+  // useEffect(() => {
+  //   if (isOpen && college) {
+  //     fetchPostingDetails();
+  //   }
+  // }, [isOpen, college]);
   useEffect(() => {
-    if (isOpen && college) {
-      fetchPostingDetails();
-    }
-  }, [isOpen, college]);
+    if (!college) return;
 
+    console.log("🔥 MODAL UPDATED:", college?._id);
+
+    const normalized = normalizeCollegeData(college);
+
+    setPosting(normalized);
+    setLoading(false);
+    setError(null);
+
+  }, [college]);
   useEffect(() => {
     if (posting?.proposedSchedule) {
       const startDate = formatDateForInput(posting.proposedSchedule.startDate);
@@ -731,7 +742,7 @@ useEffect(() => {
   return (
     <>
       <div
-        ref={modalRef}
+        // ref={modalRef}
         className="relative w-full h-full bg-white rounded-l-2xl overflow-hidden flex flex-col"
       >
         {/* Modal Header */}

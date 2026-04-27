@@ -12,7 +12,7 @@ import {
   CheckCircle, Clock, AlertCircle, Check,
   IndianRupee
 } from 'lucide-react';
-
+import { useChat } from '@/context/ChatContext';
 // Helper function to extract applicant logo
 const getApplicantLogo = (applicant) => {
   if (!applicant) return null;
@@ -70,7 +70,7 @@ const InternshipDetails = ({
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
  {/* const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
@@ -244,8 +244,8 @@ const InternshipDetails = ({
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

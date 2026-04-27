@@ -325,7 +325,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   );
 };
 
-const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved }) => {
+const PoolJobDetailModal = ({ jobId, isOpen, onClose, parentRef,  isApplied: propIsApplied, isSaved: propIsSaved }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
@@ -405,7 +405,7 @@ useEffect(() => {
       // 🛑 CRITICAL: If login modal is open, ignore clicks outside
       if (showCompanyDetails || showLoginModal) return;
       
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
+      if (parentRef?.current && !parentRef.current.contains(e.target)) {
         onClose();
       }
     };
@@ -567,7 +567,7 @@ useEffect(() => {
       />
 
       <div
-        ref={modalRef}
+        // ref={modalRef}
         className="relative w-full h-full bg-white rounded-l-2xl overflow-hidden flex flex-col"
       >
         {/* Close button */}

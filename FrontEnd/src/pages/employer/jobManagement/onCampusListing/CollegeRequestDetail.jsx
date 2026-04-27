@@ -33,7 +33,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
     const [showCollegeModal, setShowCollegeModal] = useState(false);
     
     const navigate = useNavigate(); // Add this
-    const { setSelectedConversation } = useConversation(); // Add this
+    const { setSelectedConversation, setShowFloatingChat } = useChat();   // Add this
 
     const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
         if (!dateString) return 'Not Specified';

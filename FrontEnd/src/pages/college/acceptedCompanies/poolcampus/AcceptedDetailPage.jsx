@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance.js';
 import toast from 'react-hot-toast';
-
+import { useChat } from '@/context/ChatContext';
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
     
@@ -32,7 +32,8 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
     const [isProcessing, setIsProcessing] = useState(false); // Add this state
     
     const navigate = useNavigate(); // Add this
-    const { setSelectedConversation } = useConversation(); // Add this
+    // const { setSelectedConversation, setShowFloatingChat } = useChat();   // Add this
+    const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
     // Debug logging to see what data we're receiving
     console.log("College Application:", collegeApplication);
@@ -89,8 +90,8 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                 setSelectedConversation(conversationUser);
 
                 setTimeout(() => {
-                    navigate('/chat-application');
-                }, 100);
+                  setShowFloatingChat(true);
+                }, 0);
 
             } else {
                 toast.error('Failed to create conversation');
