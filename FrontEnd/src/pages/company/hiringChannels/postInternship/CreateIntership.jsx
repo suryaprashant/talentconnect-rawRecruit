@@ -17,6 +17,7 @@ export default function PostIntership() {
     workMode: 'On-site',
     startDate: null,
     onlineTestDate: null,
+    endDate: null,
     minPackage: {
       currency: 'INR',
       amount: ''
@@ -410,6 +411,7 @@ const handleSelectOrAdd = async (skillName) => {
         jobType: "Internship",
         broadcastType: formData.broadcastType,
         startDate: formData.startDate,
+        endDate: formData.endDate,
         onlineTestDate: formData.onlineTestDate,
         studentStreams: formData.studentStreams.map(s => s.label),
 degree: formData.degree.map(d => d.label),
@@ -882,7 +884,26 @@ degree: formData.degree.map(d => d.label),
                         />
                       </div>
                     </div>
-
+                    {/* Last date to apply */}
+                    <div>
+                      <label className="block mb-1 text-xs text-gray-600">
+                        Last Date to Apply
+                      </label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.endDate ? new Date(formData.endDate) : null}
+                          onChange={(date) => handleDateChange(date, 'endDate')}
+                          dateFormat="dd-MM-yyyy"
+                          placeholderText="Last Date to Apply"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          wrapperClassName="w-full"
+                        />
+                        <Calendar
+                          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                          size={14}
+                        />
+                      </div>
+                    </div>
                     {/* Online Test Date */}
                     <div>
                       <label className="block mb-1 text-xs text-gray-600">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import JobCard from '@/components/college/collegeDashboard/onCampusOpprtunity/JobCard';
 import { Filter, ChevronDown, ChevronUp, X, Search, Briefcase, Calendar, Users, MapPin, TrendingUp, RefreshCw, AlertCircle, Building, GraduationCap, BookOpen } from 'lucide-react';
 import { getCompanyPostingForOncampus } from '@/lib/College_AxiosIntance';
@@ -117,6 +117,11 @@ const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
 
     let result = [...jobPosted];
     
+    if (selectedJobId) {
+      result = result.filter(
+        job => (job._id || job.id) !== selectedJobId
+      );
+    }
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -218,7 +223,7 @@ const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
     }
 
     setFilteredjobPosted(result);
-  }, [filters, jobPosted, searchQuery, sortBy]);
+  }, [filters, jobPosted,selectedJobId , searchQuery, sortBy]);
 
 const handleJobSelect = (job) => {
   // If parent provided onJobSelect (Zoomed View), let the parent handle it

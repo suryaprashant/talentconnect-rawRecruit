@@ -329,7 +329,13 @@ export default function InternshipListing() {
                                         ? job.jobRoles.join(', ')
                                         : job?.jobTitle || 'N/A';
 
-                                const endDate = calculateEndDate(job?.createdAt);
+                                const endDate = job.endDate
+                                    ? new Date(job.endDate).toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                year: 'numeric'
+                                                            })
+                                    : 'N/A';
                                 return (
                                     <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                                         <div className="grid grid-cols-12 gap-4 items-center">
@@ -366,13 +372,7 @@ export default function InternshipListing() {
                                                 <div className="flex items-center gap-2">
                                                     <Calendar className="h-3 w-3 text-gray-400" />
                                                     <span className="text-gray-700 text-sm">
-                                                        {endDate
-                                                            ? endDate.toLocaleDateString('en-US', {
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                year: 'numeric'
-                                                            })
-                                                            : 'N/A'}
+                                                        {endDate}
                                                     </span>
                                                 </div>
                                             </div>

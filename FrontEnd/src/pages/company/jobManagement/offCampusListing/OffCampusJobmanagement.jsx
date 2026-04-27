@@ -317,7 +317,11 @@ export default function OffCampusJobManagement() {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-gray-400" />
                         <span className="text-gray-700 text-sm">
-                          {new Date(job?.endDate).toUTCString().slice(0, 16)}
+                          {new Date(job?.endDate).toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                year: 'numeric'
+                                                            })}
                         </span>
                       </div>
                     </div>

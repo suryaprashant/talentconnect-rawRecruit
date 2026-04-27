@@ -2,13 +2,13 @@ import { useState } from "react";
 import JobsListingPage from "@/pages/college/collegeDashboard/onCampusOpportunity/JobListingPage";
 import JobDetailModal from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal";
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 const OnCampusLayout = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
   const location = useLocation();
-
+  const modalRef = useRef(null);
   const handleJobSelect = (job) => {
     console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
     setSelectedJob(job);
@@ -51,7 +51,8 @@ const OnCampusLayout = () => {
         />
         
         {/* Modal + Sidebar wrapper */}
-        <div className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto shadow-2xl">
+        <div ref={modalRef}
+        className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto shadow-2xl">
           
           {/* ================= MODAL (Left) ================= */}
           <div className="w-[900px] h-full rounded-l-2xl overflow-hidden bg-white relative">
@@ -59,6 +60,7 @@ const OnCampusLayout = () => {
               jobId={selectedJob._id}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
+              parentRef={modalRef}
               // ✅ Pass the navigation cleanup helper
               onNavigateAway={handleForceCloseForNavigation}
             />
@@ -117,6 +119,7 @@ const OnCampusLayout = () => {
             jobId={selectedJob._id}
             isOpen={isModalOpen}
             onClose={handleCloseModal}
+            parentRef={modalRef}
             onNavigateAway={handleForceCloseForNavigation}
           />
         </div>

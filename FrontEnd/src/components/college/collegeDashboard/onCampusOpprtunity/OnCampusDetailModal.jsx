@@ -427,7 +427,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   );
 };
 
-const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved,onNavigateAway }) => {
+const JobDetailModal = ({ jobId, isOpen, onClose, parentRef, isApplied: propIsApplied, isSaved: propIsSaved,onNavigateAway }) => {
 
   const navigate = useNavigate();
   // Use auth hook
@@ -527,7 +527,11 @@ useEffect(() => {
     // so it doesn't unmount the login button while the user is clicking it.
     if (showLoginModal || showCompanyDetails) return;
     
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
+    if (
+      modalRef.current &&
+      !modalRef.current.contains(e.target) &&
+      (!parentRef || !parentRef.current?.contains(e.target)) // ✅ ADD THIS
+    ) {
       onClose();
     }
   };
