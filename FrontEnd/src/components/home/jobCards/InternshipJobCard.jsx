@@ -39,7 +39,9 @@ const workMode = job.workMode?.[0] || "N/A";
 const startDate = job.startDate
 ? new Date(job.startDate).toLocaleDateString()
 : null;
-
+const endDate = job.endDate
+? new Date(job.endDate).toLocaleDateString()
+: null;
 // 🔹 DURATION
 const duration = job.internshipDuration || null;
 
@@ -76,8 +78,19 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
     </div>
 
     {/* 🔹 DATE + DURATION (SAME ROW) */}
-    {(startDate || duration) && (
-      <div className={`grid ${startDate && duration ? "grid-cols-2" : "grid-cols-1"} gap-2 mb-3`}>
+    {(startDate || duration || endDate) && (
+      <div className={`grid ${startDate && duration && endDate ? "grid-cols-3" : "grid-cols-2"} gap-2 mb-3`}>
+        {/* Last Date to apply */}
+        {endDate && (
+          <div className="bg-gray-100 rounded-xl py-1 text-center">
+            <p className="text-[10px] text-gray-500 leading-none">
+              Registration <br />Deadline
+            </p>
+            <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
+              {endDate}
+            </p>
+          </div>
+        )}
 
         {/* START DATE */}
         {startDate && (

@@ -490,7 +490,7 @@ const ReferralJobDetailModal = ({
   // ── Derived values ────────────────────────────────────────────────────────
   const jobStatus      = getJobStatus();
   const isApplied      = propIsApplied || jobDetail.isApplied || false;
-  const companyName    = jobDetail?.companyName || jobDetail?.companyPosted?.companyDetails?.companyName || 'Company';
+  const companyName    = jobDetail?.candidatePosted?.currentCompany || "Referral"
   const companyLogo    = jobDetail?.companyPosted?.profileImageUrl || null;
   const companyLocation = jobDetail?.companyPosted?.companyDetails?.location || jobDetail?.location || 'Not Specified';
   const workLocation   = formatWorkLocation();

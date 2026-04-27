@@ -482,7 +482,12 @@ export default function PoolCampusJobManagement() {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-gray-400" />
                         <span className="text-gray-700 text-sm">
-                          {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'N/A'}
+                          {job.endDate ? new Date(job.endDate).toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                year: 'numeric'
+                                                            })
+                                    : 'N/A'}
                         </span>
                       </div>
                     </div>

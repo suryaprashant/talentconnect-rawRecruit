@@ -136,6 +136,36 @@ const LiveJobs = () => {
       },
     });
   };
+  // VIEW ALL BUTTON
+  const handleViewAll = (job) => {
+    let path = "/jobs";
+    // COMPANY
+    if (activeRole === "Company") {
+      if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
+      if (activeType === "Pool-Campus") path = "/company-dashboard/Pool-campus";
+    }
+
+    // COLLEGE
+    else if (activeRole === "College") {
+      if (activeType === "On-Campus") path = "/college-dashboard/On-campus";
+      if (activeType === "Pool-Campus") path = "/college-dashboard/Pool-campus";
+    }
+
+    // STUDENT
+    else if (activeRole === "Student") {
+      if (activeType === "Off-Campus") path = "/student-dashboard/Off-campus";
+      if (activeType === "Internship") path = "/student-dashboard/Internship";
+      if (activeType === "On-Campus") path = "/student-dashboard/On-campus";
+    }
+
+    // FRESHERS
+    else if (activeRole === "Freshers") {
+      if (activeType === "Off-Campus") path = "/fresher-dashboard/Off-campus";
+      if (activeType === "Internship") path = "/fresher-dashboard/Internship";
+      if (activeType === "Referral") path = "/fresher-dashboard/Referral";
+    }
+    navigate(path);
+  };
 
   return (
   <section className="py-16 bg-white">
@@ -282,7 +312,7 @@ const LiveJobs = () => {
       {/* CTA */}
       <div className="text-center mt-12">
         <button
-          onClick={handleApply}
+          onClick={handleViewAll}
           className="px-8 py-3 border border-primaryBrand text-primaryBrand rounded-xl hover:bg-primaryBrand hover:text-white transition"
         >
           View All Jobs

@@ -14,7 +14,13 @@ axiosClient.defaults.headers = {
 axiosClient.defaults.timeout = 10000;
 axiosClient.defaults.withCredentials = true;
 
-
+const publicAxios = axios.create({
+  baseURL: import.meta.env.VITE_Backend_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  }
+});
 // student dashboard
 export function viewed(jobId) {
   return axiosClient.post(`/api/hiring-channels/view/${jobId}`)
@@ -206,7 +212,7 @@ export function getMyInactiveReferralpost() {
 }
 
 export function getReferralJobListing() {
-  return axiosClient.get(`/api/student-dashboard/referral-jobs`)
+  return publicAxios.get(`/api/student-dashboard/referral-jobs`)
     .then(response => response)
     .catch(error => console.log("Error:", error));
 }
