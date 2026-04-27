@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { City } from 'country-state-city';
 import { useNavigate } from 'react-router-dom'; // <--- ADD THIS
 
-const PoolEmployeeListing = ({ compact = false, onOpportunitySelect }) => {
+const PoolEmployeeListing = ({ compact = false, onOpportunitySelect, selectedOpportunityId }) => {
     const navigate = useNavigate();
     const [postings, setPostings] = useState([]);
     const [filteredPostings, setFilteredPostings] = useState([]);
@@ -186,7 +186,11 @@ const PoolEmployeeListing = ({ compact = false, onOpportunitySelect }) => {
         }
 
         let result = [...postings];
-
+        if (selectedOpportunityId) {
+            result = result.filter(
+                posting => (posting._id || posting.id) !== selectedOpportunityId
+            );
+        }
         // Apply degree filters
         if (filters.degree.length > 0) {
             result = result.filter(posting =>
@@ -235,7 +239,7 @@ const PoolEmployeeListing = ({ compact = false, onOpportunitySelect }) => {
         }
 
         setFilteredPostings(result);
-    }, [filters, postings, sortBy]);
+    }, [filters, postings, sortBy, selectedOpportunityId]);
 
     const handleFilterChange = (filterType, value) => {
         setFilters(prev => {
@@ -978,18 +982,24 @@ if (compact) {
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 min-h-[600px]">
                     {filteredPostings.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-{filteredPostings.map(posting => (
-  <div 
-    key={posting._id || posting.id} 
-    className="cursor-pointer"
-    onClick={() => handleCardClick(posting)}
-  >
-    <PoolCollegeCard 
-      college={posting}
-      onClick={onOpportunitySelect} 
-    />
-  </div>
-))}
+                        {filteredPostings
+                        .filter(posting =>
+                            selectedOpportunityId
+                            ? (posting._id || posting.id) !== selectedOpportunityId
+                            : true
+                        )
+                        .map(posting => (
+                        <div 
+                            key={posting._id || posting.id} 
+                            className="cursor-pointer"
+                            onClick={() => handleCardClick(posting)}
+                        >
+                            <PoolCollegeCard 
+                            college={posting}
+                            onClick={onOpportunitySelect} 
+                            />
+                        </div>
+                        ))}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-center py-12">

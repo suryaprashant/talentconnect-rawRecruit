@@ -28,7 +28,7 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
   const [showCollegeModal, setShowCollegeModal] = useState(false);
   
   const navigate = useNavigate(); // Add this
-  const { setSelectedConversation } = useConversation(); // Add this
+  const { setSelectedConversation, setShowFloatingChat } = useChat();   // Add this
 
   const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
     if (!dateString) return 'Not Specified';
@@ -77,8 +77,8 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

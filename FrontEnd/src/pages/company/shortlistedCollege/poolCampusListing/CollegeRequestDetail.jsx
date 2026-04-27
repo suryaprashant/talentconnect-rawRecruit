@@ -37,7 +37,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
     const [showCollegeModal, setShowCollegeModal] = useState(false);
     
     const navigate = useNavigate(); // Add this
-    const { setSelectedConversation } = useConversation(); // Add this
+    const { setSelectedConversation, setShowFloatingChat } = useChat();   // Add this
 
     const jobId = driveDetails?._id;
     const jobType = driveDetails?.jobType;

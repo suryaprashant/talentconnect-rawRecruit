@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import CollegeListingPage from "@/pages/company/employerDashboard/CollegeListingPage";
 import CollegeDetailModal from "@/components/company/employerDashboard/CollegeDetailModal";
 import { useLocation } from "react-router-dom";
@@ -8,20 +8,31 @@ const CompanyOnCampusLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
   const location = useLocation();
-
+  const modalRef = useRef(null);
   useEffect(() => {
     if (location.state?.openCollege) {
       handleCollegeSelect(location.state.openCollege);
     }
   }, [location.state]);
 
+  // const handleCollegeSelect = (college) => {
+  //   console.log('Opening details for:', college?.collegePosted?.collegeUniversityDetails?.collegeName);
+  //   setSelectedCollege(college);
+  //   setIsModalOpen(true);
+  //   setIsZoomedView(true);
+  // };
   const handleCollegeSelect = (college) => {
-    console.log('Opening details for:', college?.collegePosted?.collegeUniversityDetails?.collegeName);
-    setSelectedCollege(college);
-    setIsModalOpen(true);
-    setIsZoomedView(true);
-  };
+    console.log("Sidebar click:", college);
 
+    // Force update even if same modal is open
+    setSelectedCollege(null);
+
+    setTimeout(() => {
+      setSelectedCollege(college);
+      setIsModalOpen(true);
+      setIsZoomedView(true);
+    }, 0);
+  };
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCollege(null);
@@ -38,11 +49,12 @@ const CompanyOnCampusLayout = () => {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         
         {/* Modal + Sidebar wrapper - NO backdrop here */}
-        <div className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto">
+        <div ref={modalRef} className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto">
           
           {/* ================= MODAL (Left) ================= */}
           <div className="w-[900px] h-full rounded-l-2xl overflow-hidden shadow-2xl bg-white relative">
             <CollegeDetailModal
+              key={selectedCollege?._id}
               college={selectedCollege}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
@@ -93,6 +105,7 @@ const CompanyOnCampusLayout = () => {
       <div className="h-full overflow-y-auto p-4 md:p-6">
         <CollegeListingPage 
           onCollegeSelect={handleCollegeSelect}
+          selectedCollegeId={selectedCollege?._id}
         />
       </div>
 
@@ -101,6 +114,7 @@ const CompanyOnCampusLayout = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <CollegeDetailModal
+            key={selectedCollege?._id}
             college={selectedCollege}
             isOpen={isModalOpen}
             onClose={handleCloseModal}

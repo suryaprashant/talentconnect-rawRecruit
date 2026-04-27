@@ -4,7 +4,7 @@ import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandi
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
-
+import { useChat } from '@/context/ChatContext';
 import { 
   Calendar, 
   MapPin, 
@@ -389,7 +389,7 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
   });
 
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   const getApplicants = async (targetId, targetType, targetVisited) => {
     setLoading(true);
@@ -605,8 +605,8 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
 
         setSelectedConversation(conversationUser);
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
       } else {
         toast.error('Failed to create conversation');
       }

@@ -76,7 +76,7 @@ const CollegeCard = ({ college, onClick }) => {
   };
 
   const handleCardClick = (e) => {
-    if (e.target.closest("button")) return;
+    // if (e.target.closest("button")) return;
     onClick?.(college);
   };
 

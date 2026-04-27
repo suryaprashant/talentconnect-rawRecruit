@@ -441,12 +441,14 @@ export const getCollegeAlumni = async (req, res) => {
       return res.status(404).json({ success: false, message: "College info not found in your profile." });
     }
 
+    // Step 1: Find only professional alumni from the same college
     const alumni = await Onboarding.find({
       college: myProfile.college,
       userId: { $ne: userId },
+      profileType: "professional", // Only professionals
     });
 
-    // Attach referral metrics AND referral jobs to each alumni in parallel
+    // Step 2: Attach referral metrics AND referral jobs, then filter to only those actively hiring
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person) => {
         const [metrics, referralJobs] = await Promise.all([
@@ -456,6 +458,7 @@ export const getCollegeAlumni = async (req, res) => {
             jobType: "Referral",
             approvalStatus: "Approved",
             inactive: false,
+            //jobStatus: "Open", // Only open/active jobs
           })
             .sort({ createdAt: -1 })
             .lean(),
@@ -465,22 +468,25 @@ export const getCollegeAlumni = async (req, res) => {
           ...person.toObject(),
           referralMetrics: metrics,
           referralJobs,
+          isHiring: referralJobs.length > 0,
         };
       })
     );
 
+    // Step 3: Keep only alumni who are actively hiring (have at least one open referral job)
+    const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+
     return res.status(200).json({
       success: true,
       college: myProfile.college,
-      count: alumniWithMetrics.length,
-      alumni: alumniWithMetrics,
+      count: hiringAlumni.length,
+      alumni: hiringAlumni,
     });
   } catch (error) {
     console.error("Error fetching college alumni:", error);
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 export const getCompanyAlumni = async (req, res) => {
   try {
@@ -491,7 +497,6 @@ export const getCompanyAlumni = async (req, res) => {
       return res.status(404).json({ success: false, message: "Profile not found." });
     }
 
-    // Collect all companies user has worked at (including current)
     const allCompanies = [];
 
     if (myProfile.currentCompany) {
@@ -508,14 +513,13 @@ export const getCompanyAlumni = async (req, res) => {
       return res.status(404).json({ success: false, message: "No companies found in your profile." });
     }
 
-    // Deduplicate case-insensitively
     const uniqueCompanies = [...new Map(
       allCompanies.map((c) => [c.toLowerCase(), c])
     ).values()];
 
-    // Build $or conditions — one per company for both currentCompany and experiences.company
+    // Flexible partial match for DB query
     const orConditions = uniqueCompanies.flatMap((company) => {
-      const regex = new RegExp(`^${company}$`, "i");
+      const regex = new RegExp(company, "i");
       return [
         { currentCompany: regex },
         { "experiences.company": regex },
@@ -524,10 +528,10 @@ export const getCompanyAlumni = async (req, res) => {
 
     const companyAlumni = await Onboarding.find({
       userId: { $ne: userId },
+      profileType: "professional",
       $or: orConditions,
     });
 
-    // Attach referral metrics AND referral jobs to each alumni
     const alumniWithMetrics = await Promise.all(
       companyAlumni.map(async (person) => {
         const [metrics, referralJobs] = await Promise.all([
@@ -537,6 +541,7 @@ export const getCompanyAlumni = async (req, res) => {
             jobType: "Referral",
             approvalStatus: "Approved",
             inactive: false,
+            // jobStatus removed — Approved + inactive:false is sufficient
           })
             .sort({ createdAt: -1 })
             .lean(),
@@ -546,25 +551,32 @@ export const getCompanyAlumni = async (req, res) => {
           ...person.toObject(),
           referralMetrics: metrics,
           referralJobs,
+          isHiring: referralJobs.length > 0,
         };
       })
     );
 
-    // Group enriched alumni by which shared company they belong to
+    const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+
+    // ✅ Fixed: use same flexible regex here too (no ^ and $ anchors)
     const alumniByCompany = {};
     uniqueCompanies.forEach((company) => {
-      const regex = new RegExp(`^${company}$`, "i");
-      alumniByCompany[company] = alumniWithMetrics.filter(
+      const regex = new RegExp(company, "i"); // was `^${company}$` — now fixed
+      const matched = hiringAlumni.filter(
         (alumni) =>
           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
           alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
       );
+
+      if (matched.length > 0) {
+        alumniByCompany[company] = matched;
+      }
     });
 
     return res.status(200).json({
       success: true,
       companiesChecked: uniqueCompanies,
-      totalUniqueAlumni: alumniWithMetrics.length,
+      totalHiringAlumni: hiringAlumni.length,
       alumniByCompany,
     });
   } catch (error) {

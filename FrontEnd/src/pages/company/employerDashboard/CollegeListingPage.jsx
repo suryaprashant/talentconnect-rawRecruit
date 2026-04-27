@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { City } from 'country-state-city';
 
 import { useNavigate } from 'react-router-dom';
-const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
+const CollegeListingPage = ({ compact = false, onCollegeSelect, selectedCollegeId }) => {
   const navigate = useNavigate();
   const [colleges, setColleges] = useState([]);
   const [filteredColleges, setFilteredColleges] = useState([]);
@@ -197,7 +197,9 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
     }
 
     let result = [...colleges];
-
+    if (selectedCollegeId) {
+      result = result.filter(college => (college._id || college.id) !== selectedCollegeId);
+    }
     // Apply degree filters
     if (filters.degree.length > 0) {
       result = result.filter(college =>
@@ -388,7 +390,9 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
     return (
       <div className="p-3 space-y-4">
         {filteredColleges.length > 0 ? (
-          filteredColleges.map((college) => (
+          filteredColleges
+          .filter(college => selectedCollegeId ? (college._id || college.id) !== selectedCollegeId : true)
+          .map((college) => (
             <CollegeCard
               key={college._id || college.id}
               college={college}

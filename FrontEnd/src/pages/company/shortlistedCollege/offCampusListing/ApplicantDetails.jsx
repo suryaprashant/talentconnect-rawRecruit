@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { acceptCandidate, rejectCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
 import { 
@@ -284,7 +284,7 @@ const ApplicantDetails = ({ job, applications, loading, error, onRefresh, onClos
   });
 
   const navigate = useNavigate();
-  const { setSelectedConversation } = useConversation();
+  const { setSelectedConversation, setShowFloatingChat } = useChat();  
 
   // Function to extract all unique applicant locations
   const getAllApplicantLocations = () => {
@@ -553,8 +553,8 @@ const rejectApplicant = async (applicationId) => {
 
         setSelectedConversation(conversationUser);
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
       } else {
         toast.error('Failed to create conversation');
       }

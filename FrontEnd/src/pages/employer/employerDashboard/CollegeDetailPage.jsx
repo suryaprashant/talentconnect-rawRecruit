@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ApplyForOncampusOppurtunity, getCollegeDetail, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { conversationWithCollege} from '@/lib/College_AxiosIntance';
-import useConversation from '@/statemanage/useConversation';
+import { useChat } from '@/context/ChatContext';
 import { Send } from 'lucide-react';
 
 // Utility function to format dates
@@ -93,8 +93,8 @@ const EmployerDetailsPage = () => {
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
-          navigate('/chat-application');
-        }, 100);
+              setShowFloatingChat(true);
+            }, 0);
 
       } else {
         toast.error('Failed to create conversation');

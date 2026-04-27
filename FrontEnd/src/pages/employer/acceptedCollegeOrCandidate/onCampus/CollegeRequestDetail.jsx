@@ -38,7 +38,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
     const [showCollegeModal, setShowCollegeModal] = useState(false);
     
     const navigate = useNavigate(); // Add this
-    const { setSelectedConversation } = useConversation(); // Add this
+    const { setSelectedConversation, setShowFloatingChat } = useChat();   // Add this
 
     // Debug logging to see what data we're receiving
     console.log("College Application:", collegeApplication);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import PoolEmployeeListing from "@/pages/company/employerDashboard/poolCampus/PoolEmployeeListing";
 import PoolCampusDetailModal from "@/components/company/employerDashboard/poolCampus/PoolDetailModal";
 import { useLocation } from "react-router-dom";
@@ -8,7 +8,7 @@ const CompanyPoolCampusLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomedView, setIsZoomedView] = useState(false);
   const location = useLocation();
-
+  const collegeModalRef = useRef(null);
   useEffect(() => {
     if (location.state?.openCollege) {
       handleOpportunitySelect(location.state.openCollege);
@@ -38,7 +38,8 @@ const CompanyPoolCampusLayout = () => {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         
         {/* Modal + Sidebar wrapper - NO backdrop here */}
-        <div className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto">
+        <div ref={collegeModalRef}
+        className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto">
           
           {/* ================= MODAL (Left) ================= */}
           <div className="w-[900px] h-full rounded-l-2xl overflow-hidden shadow-2xl bg-white relative">
@@ -46,6 +47,7 @@ const CompanyPoolCampusLayout = () => {
               college={selectedOpportunity}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
+              parentRef={collegeModalRef}  
             />
           </div>
 
@@ -93,6 +95,7 @@ const CompanyPoolCampusLayout = () => {
       <div className="h-full overflow-y-auto p-4 md:p-6">
         <PoolEmployeeListing 
           onOpportunitySelect={handleOpportunitySelect}
+          selectedOpportunityId={selectedOpportunity?._id}
         />
       </div>
 
@@ -104,6 +107,7 @@ const CompanyPoolCampusLayout = () => {
             college={selectedOpportunity}
             isOpen={isModalOpen}
             onClose={handleCloseModal}
+            parentRef={collegeModalRef}  
           />
         </div>
       )}
