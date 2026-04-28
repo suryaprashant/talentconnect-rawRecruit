@@ -84,7 +84,7 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
         {endDate && (
           <div className="bg-gray-100 rounded-xl py-1 text-center">
             <p className="text-[10px] text-gray-500 leading-none">
-              Registration <br />Deadline
+              Apply By
             </p>
             <p className="text-sm font-semibold text-gray-900 leading-tight mt-0.5">
               {endDate}

@@ -585,13 +585,39 @@ const ReferralJobDetailModal = ({
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
+  
+                      {/* Company Name */}
                       <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-bold text-gray-900 truncate">{companyName}</h1>
+                        <h1 className="text-xl font-bold text-gray-900 truncate">
+                          {companyName}
+                        </h1>
                         <ExternalLink className="h-4 w-4 text-[#143694] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       </div>
-                      <div className="flex items-center text-sm text-gray-600 mt-1">
-                        <MapPin className="h-4 w-4 mr-2 text-[#143694] flex-shrink-0" />
-                        <span className="truncate">{companyLocation}</span>
+
+                      {/* Deadline + Location */}
+                      <div className="flex items-center text-sm text-gray-600 mt-1 gap-4 flex-wrap">
+
+                        {/* Registration Deadline */}
+                        {jobDetail.endDate && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4 text-[#143694]" />
+                            <span>
+                              Apply by{" "}
+                              {new Date(jobDetail.endDate).toLocaleDateString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Location */}
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4 text-[#143694]" />
+                          <span className="truncate">{companyLocation}</span>
+                        </div>
+
                       </div>
                     </div>
                   </button>
@@ -652,7 +678,7 @@ const ReferralJobDetailModal = ({
                       <div className="space-y-4">
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Job Roles</div>
-                          {renderTags(jobDetail.jobRoles)}
+                          {jobDetail.jobTitle}
                         </div>
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Work Location</div>
@@ -674,7 +700,13 @@ const ReferralJobDetailModal = ({
                         </div>
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Experience Level</div>
-                          <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+                          <div className="text-base text-gray-900">{
+                            jobDetail.minYearofExperience && jobDetail.yearsOfExperience
+                              ? `${jobDetail.minYearofExperience}-${jobDetail.yearsOfExperience} yrs.`
+                              : jobDetail.minYearofExperience
+                              ? `${jobDetail.minYearofExperience}+ yrs.`
+                              : "Entry Level"
+                          }</div>
                         </div>
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Notice Period</div>
@@ -702,11 +734,17 @@ const ReferralJobDetailModal = ({
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Eligible Degrees</div>
-                          <div className="text-base text-gray-900">{jobDetail?.degree?.join(' / ') || 'Not Specified'}</div>
+                          <div className="text-base text-gray-900">{jobDetail?.minEducation || 'Not Specified'}</div>
                         </div>
                         <div>
                           <div className="text-sm font-medium text-[#143694] mb-2">Experience Level</div>
-                          <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+                          <div className="text-base text-gray-900">{
+                            jobDetail.minYearofExperience && jobDetail.yearsOfExperience
+                              ? `${jobDetail.minYearofExperience}-${jobDetail.yearsOfExperience} yrs.`
+                              : jobDetail.minYearofExperience
+                              ? `${jobDetail.minYearofExperience}+ yrs.`
+                              : "Entry Level"
+                          }</div>
                         </div>
                       </div>
                       <div>

@@ -121,9 +121,10 @@ export default function InactiveReferralManagement() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gray-50/50">
             <div className="grid grid-cols-12 gap-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-              <div className="col-span-4">Job Info</div>
-              <div className="col-span-3">Location</div>
+              <div className="col-span-3">Job Info</div>
+              <div className="col-span-2">Location</div>
               <div className="col-span-2">Posted Date</div>
+              <div className="col-span-2">Apply By Date</div>
               <div className="col-span-3 text-center">Status</div>
             </div>
           </div>
@@ -148,7 +149,7 @@ export default function InactiveReferralManagement() {
                   <div className="grid grid-cols-12 gap-4 items-center">
 
                     {/* Job Info */}
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <h3 className="font-semibold text-gray-900 truncate">{job.jobTitle}</h3>
                       <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                         <Building2 size={14} />
@@ -158,7 +159,7 @@ export default function InactiveReferralManagement() {
                     </div>
 
                     {/* Location */}
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <div className="flex items-center gap-2 text-sm text-gray-700">
                         <MapPin size={14} className="text-gray-400 flex-shrink-0" />
                         <span className="truncate">
@@ -175,6 +176,12 @@ export default function InactiveReferralManagement() {
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar size={14} className="text-gray-400 flex-shrink-0" />
                         <span>{new Date(job.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Calendar size={14} className="text-gray-400" />
+                        <span>{new Date(job.endDate).toLocaleDateString()}</span>
                       </div>
                     </div>
 

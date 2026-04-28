@@ -157,7 +157,7 @@ const JobCard = ({ job, onClick }) => {
           <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center leading-tight">
             <p className="text-[10px] text-gray-600 leading-tight">
               {/* Application<br />Deadline */}
-              Last Date
+              Apply By
             </p>
             <p className="text-xs font-semibold text-gray-900">
               {endDate || "-"}

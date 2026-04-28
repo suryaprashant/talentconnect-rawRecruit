@@ -142,10 +142,11 @@ const handlePermanentDelete = async (jobId) => {
           {/* Table Header — ✅ CHANGE: col-span-3 → col-span-2 for Applicants to fit new button */}
           <div className="p-4 border-b border-gray-100 bg-gray-50/50">
             <div className="grid grid-cols-12 gap-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-              <div className="col-span-4">Job Info</div>
+              <div className="col-span-3">Job Info</div>
               <div className="col-span-2">Location</div>
               <div className="col-span-2">Posted Date</div>
-              <div className="col-span-4 text-center">Actions</div> {/* ✅ CHANGE: label to "Actions", col-span-4 */}
+              <div className="col-span-2">Apply By Date</div>
+              <div className="col-span-3 text-center">Actions</div> {/* ✅ CHANGE: label to "Actions", col-span-4 */}
             </div>
           </div>
 
@@ -167,7 +168,7 @@ const handlePermanentDelete = async (jobId) => {
                   <div className="grid grid-cols-12 gap-4 items-center">
 
                     {/* Job Info */}
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <h3 className="font-semibold text-gray-900 truncate">{job.jobTitle}</h3>
                       <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                         <Building2 size={14} />
@@ -192,9 +193,14 @@ const handlePermanentDelete = async (jobId) => {
                         <span>{new Date(job.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
-
+                    <div className="col-span-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Calendar size={14} className="text-gray-400" />
+                        <span>{new Date(job.endDate).toLocaleDateString()}</span>
+                      </div>
+                    </div>
                     {/* ✅ ADD: Actions column with 3 buttons — col-span-4 */}
-                  <div className="col-span-4">
+                  <div className="col-span-3">
   <div className="flex items-center justify-end gap-1 flex-wrap">
     <button
       onClick={() => handleViewApplicants(job, 'new')}
