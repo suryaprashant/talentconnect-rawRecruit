@@ -35,7 +35,9 @@ const workMode = job.workMode?.[0] || "N/A";
 // 🔹 NOTICE PERIOD
 const noticePeriod =
 job.candidatePosted?.noticePeriod || "Not specified";
-
+const endDate = job.endDate
+? new Date(job.endDate).toLocaleDateString()
+: null;
 // 🔹 STREAMS (optional fallback from candidate)
 const streams =
 job.studentStreams?.length > 0
@@ -52,15 +54,13 @@ job.skills?.length > 0
 
 const visibleSkills = skills.slice(0, 2);
 const extraSkills = skills.length - 2;
-let experienceLevel = "Fresher";
 
-if (job.yearsOfExperience) {
-  experienceLevel = job.yearsOfExperience;
-} else if (job.minYearofExperience) {
-  experienceLevel = `${job.minYearofExperience}+ yrs`;
-} else if (job.candidatePosted?.experiences?.length > 0) {
-  experienceLevel = `${job.candidatePosted.experiences.length} yrs exp`;
-}
+
+const experienceLevel = job.minYearofExperience && job.yearsOfExperience
+                              ? `${job.minYearofExperience}-${job.yearsOfExperience} yrs.`
+                              : job.minYearofExperience
+                              ? `${job.minYearofExperience}+ yrs.`
+                              : "Entry Level"
 return (
 <motion.div
 key={job._id || i}
@@ -88,13 +88,26 @@ className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shado
     {/* 🔹 NOTICE PERIOD (like badge row in other cards) */}
     <div className="grid grid-cols-2 gap-3 mb-3">
   
-      <div className="text-xs bg-gray-100 px-1 py-1 rounded-md text-center border border-gray-200">
-        Notice Period: {noticePeriod}
-      </div>
-
-      <div className="text-xs bg-purple-100 px-1 py-1 rounded-md text-center border border-purple-200">
-        Exp: {experienceLevel}
-      </div>
+      {endDate && (
+          <div className="bg-gray-100 rounded-xl py-1 text-center">
+            <p className="text-[10px] text-gray-700 leading-none">
+              Apply By
+            </p>
+            <p className="text-sm text-gray-900 leading-tight mt-0.5">
+              {endDate}
+            </p>
+          </div>
+      )}
+      {experienceLevel && (
+          <div className="bg-purple-100 rounded-xl py-1 text-center">
+            <p className="text-[10px] text-gray-700 leading-none">
+              Experience Level
+            </p>
+            <p className="text-sm text-gray-900 leading-tight mt-0.5">
+              {experienceLevel}
+            </p>
+          </div>
+        )}
 
     </div>
 

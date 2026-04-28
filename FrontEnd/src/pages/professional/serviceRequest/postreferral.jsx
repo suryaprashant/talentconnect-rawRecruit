@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import PageHeader from "@/components/dashboard/PageHeader";
 import { postReferralJob, getSkills, addSkill, getMasterDataByType, createMasterData } from '@/lib/User_AxiosInstance';
 import CreatableSelect from 'react-select/creatable';
-import { ChevronDown, X, Briefcase, MapPin, GraduationCap, ChevronRight } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import { ChevronDown, X, Briefcase, Calendar, MapPin, GraduationCap, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
@@ -108,6 +109,7 @@ maxYearsOfExperience: '',
         eligibilityCriteria: '',
         benefits: [],
         tags: [],
+        endDate: null,
         broadcastType: 'Everyone',
     };
 
@@ -386,6 +388,7 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
             },
             numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
             jobType: "Referral",
+            endDate: formData.endDate,
             broadcastType: formData.broadcastType
         };
 
@@ -406,6 +409,12 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
     const handleCancel = () => {
         setFormData(initialState);
         navigate('/professional/service-request');
+    };
+    const handleDateChange = (date, field) => {
+        setFormData(prev => ({
+        ...prev,
+        [field]: date
+        }));
     };
 
     // Chip list renderer
@@ -444,16 +453,45 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-6 py-5">
                     <SectionHeader icon={Briefcase} title="Basic Job Details" subtitle="Provide the core details about this job opportunity." step="1" />
 
-                    {/* Employment Type */}
-                    <div className="mb-5">
-                        <FieldLabel required>Employment Type</FieldLabel>
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                        
+                        {/* Employment Type */}
+                        <div>
+                            <FieldLabel required>Employment Type</FieldLabel>
+                            <div className="flex gap-2 flex-wrap">
                             {['Full-time', 'Part-time', 'Contract'].map(t => (
-                                <PillBtn key={t} label={t} active={formData.employmentType === t} onClick={() => handleOptionSelect('employmentType', t)} />
+                                <PillBtn
+                                key={t}
+                                label={t}
+                                active={formData.employmentType === t}
+                                onClick={() => handleOptionSelect('employmentType', t)}
+                                />
                             ))}
+                            </div>
                         </div>
-                    </div>
 
+                        {/* Last Date to Apply */}
+                        <div>
+                            <FieldLabel>
+                            Last Date to Apply
+                            </FieldLabel>
+                            <div className="relative">
+                            <DatePicker
+                                selected={formData.endDate ? new Date(formData.endDate) : null}
+                                onChange={(date) => handleDateChange(date, 'endDate')}
+                                dateFormat="dd-MM-yyyy"
+                                placeholderText="Last Date to Apply"
+                                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none bg-gradient-to-r from-gray-50 to-white"
+                                wrapperClassName="w-full"
+                            />
+                            <Calendar
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                size={14}
+                            />
+                            </div>
+                        </div>
+
+                        </div>
                     {/* Job Title + Work Mode */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                         <div>

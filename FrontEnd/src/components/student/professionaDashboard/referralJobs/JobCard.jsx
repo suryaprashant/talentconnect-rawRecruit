@@ -397,6 +397,20 @@ const navigate = useNavigate();
           </div>
         )}
 
+        {job.endDate &&(
+          <div className="mb-3">
+            <span className="px-3 py-1 bg-blue-100 text-[#143694] border border-blue-300 rounded-full text-xs font-semibold">
+              {job.endDate
+                ? `Apply by ${new Date(job.endDate).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}`
+                : "No Deadline"}
+            </span>
+          </div>
+        )}
+
         {/* Skills */}
         {job.skills?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">

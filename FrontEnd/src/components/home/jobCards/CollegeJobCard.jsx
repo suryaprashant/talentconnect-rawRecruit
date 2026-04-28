@@ -73,7 +73,7 @@ className="bg-white rounded-2xl border shadow-sm hover:shadow-lg transition p-5 
     {/* LEFT */}
     <div className="col-span-1 bg-gray-100 rounded-xl px-1 py-1 border border-gray-200 flex flex-col items-center justify-center text-center">
       <p className="text-[10px] text-gray-900 mb-0">
-        Last Date
+        Apply By
       </p>
       <p className="text-xs font-semibold text-gray-900 whitespace-nowrap">
         {lastDateToApply || "-"}

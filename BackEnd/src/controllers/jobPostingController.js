@@ -319,6 +319,7 @@ export const createRefferralPosting = async (req, res) => {
             postedByUser: userId,
             candidatePosted: user.data[0]._id,
             jobType: "Referral",
+            endDate: req.body.endDate ? new Date(req.body.endDate) : null,
             // conditional - if paid user then don't put expiresAt
             expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
