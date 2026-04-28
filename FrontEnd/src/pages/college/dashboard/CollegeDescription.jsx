@@ -73,7 +73,7 @@ export default function CollegeDescription({ onboardingData }) {
                     <path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" />
                   </svg>
                 </span>
-                College/University Details
+                College/University Detail
               </h2>
               <p className="text-sm text-gray-600">
                 Information about your institution, its location, and contact details.

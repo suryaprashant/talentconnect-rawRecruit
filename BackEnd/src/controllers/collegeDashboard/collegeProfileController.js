@@ -163,25 +163,20 @@ export const createCollegeProfile = async (req, res) => {
 
 export const getStudentsByCollegeId = async (req, res) => {
   try {
-    console.log('ok',req.user)
-    const collegeId  =  req.user._id;
-    
-
-    const result = await getStudentsByCollegeIdService(collegeId);
-
+    const collegeId    = req.user._id;
+    const { profileType } = req.query; // 'student' | 'fresher' | 'professional'
+ 
+    const result = await getStudentsByCollegeIdService(collegeId, profileType);
+ 
     return res.status(result.status).json({
       success: result.success,
       message: result.message,
-      count: result.count,
-      data: result.data,
+      count:   result.count,
+      data:    result.data,
     });
   } catch (error) {
-    console.error("Controller Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    console.error('Controller Error:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

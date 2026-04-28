@@ -102,7 +102,8 @@ export const getProfessionalReferrals = async (req, res) => {
   console.log(">>> API Request Received <<<");
   try {
     const authUserId = req.user._id;
-    console.log("1. Auth User ID:", authUserId);
+    const { showAll } = req.query; // ?showAll=true → return all, default → active only
+    console.log("1. Auth User ID:", authUserId, "| showAll:", showAll);
 
     const studentProfile = await OnboardingModel.findOne({
       userId: new mongoose.Types.ObjectId(authUserId),
@@ -116,17 +117,18 @@ export const getProfessionalReferrals = async (req, res) => {
     const profileId = studentProfile._id;
     console.log("2. ✅ Found Student Profile ID:", profileId);
 
-    const referrals = await JobPostingTable.find({
-       inactive: false,
+    const query = {
       candidatePosted: profileId,
       jobType: "Referral",
-    })
+      ...(showAll === "true" ? {} : { inactive: false }), // only filter when showAll is not true
+    };
+
+    const referrals = await JobPostingTable.find(query)
       .sort({ createdAt: -1 })
       .lean();
 
     console.log(`3. ✅ Referrals Found: ${referrals.length}`);
 
-    // Attach per-job metrics to every referral in parallel
     const referralsWithMetrics = await Promise.all(
       referrals.map(async (job) => {
         const metrics = await fetchMetricsForJob(job._id);
