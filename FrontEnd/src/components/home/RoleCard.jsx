@@ -107,9 +107,12 @@ const RoleCards = () => {
             key={r.title}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.12 }}
+            whileHover={{ scale: 1.03, y: -4 }}
+            transition={{ type: "spring", stiffness: 120, damping: 18, delay: i * 0.12 }}
             onClick={() => handleRoleSelect(r.roleKey)}
-            className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-full"
+            className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm 
+              hover:shadow-2xl 
+              cursor-pointer flex flex-col justify-between h-full will-change-transform"
           >
 
             {/* TOP CONTENT */}

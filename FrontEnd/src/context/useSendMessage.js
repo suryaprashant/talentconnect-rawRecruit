@@ -30,14 +30,14 @@
 
 // Enhanced useSendMessage hook
 import React, { useState } from "react";
-import useConversation from "../statemanage/useConversation.js";
 import axios from "../lib/axiosInstance.js";
 import toast from "react-hot-toast";
+import { useChat } from "./ChatContext.jsx";
 
 const useSendMessage = () => {
   const [loading, setLoading] = useState(false);
-  const { messages, setMessage, selectedConversation } = useConversation();
-  
+  const { setMessages, selectedConversation } = useChat();
+
   const sendMessages = async (message) => {
     if (!selectedConversation || !selectedConversation._id) {
       toast.error("No conversation selected");
@@ -57,14 +57,19 @@ const useSendMessage = () => {
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
-      
+
       if (res.data && res.data._id) {
-        setMessage([...messages, res.data]);
-        // toast.success("Message sent successfully");
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...res.data,
+            sender: "you", // 👈 FIX
+          },
+        ]);
       } else {
         throw new Error("Invalid response from server");
       }
