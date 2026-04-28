@@ -4,9 +4,8 @@ import axios from "../lib/axiosInstance.js";
 
 const useGetMessage = () => {
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
 
-  const { selectedConversation } = useChat(); 
+  const { selectedConversation, messages, setMessages } = useChat();
 
   useEffect(() => {
     const getMessages = async () => {
@@ -23,7 +22,17 @@ const useGetMessage = () => {
         );
 
         const messagesData = Array.isArray(res.data) ? res.data : [];
-        setMessages(messagesData);
+
+        // 👉 IMPORTANT: format messages here
+        const formattedMessages = messagesData.map((msg) => ({
+          ...msg,
+          sender:
+            String(msg.senderId) === String(selectedConversation._id)
+              ? "them"
+              : "you",
+        }));
+
+        setMessages(formattedMessages);
       } catch (error) {
         console.log("Error in getting messages", error);
         setMessages([]);
@@ -33,7 +42,7 @@ const useGetMessage = () => {
     };
 
     getMessages();
-  }, [selectedConversation]);
+  }, [selectedConversation, setMessages]);
 
   return { loading, messages };
 };

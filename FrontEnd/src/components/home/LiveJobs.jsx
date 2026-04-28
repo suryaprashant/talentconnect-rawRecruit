@@ -243,7 +243,7 @@ const LiveJobs = () => {
                 (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
               );
 
-              return daysLeft > 0; //  remove closed jobs
+              return daysLeft >= 0; //  remove closed jobs
             })
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3)

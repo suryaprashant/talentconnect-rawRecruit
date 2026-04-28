@@ -5,7 +5,7 @@ const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [showFloatingChat, setShowFloatingChat] = useState(false);
-
+  const [messages, setMessages] = useState([]);
   return (
     <ChatContext.Provider
       value={{
@@ -13,6 +13,8 @@ export const ChatProvider = ({ children }) => {
         setSelectedConversation,
         showFloatingChat,
         setShowFloatingChat,
+        messages,
+        setMessages
       }}
     >
       {children}
