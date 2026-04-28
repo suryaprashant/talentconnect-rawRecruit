@@ -26,11 +26,10 @@ export function getCompanyPostingForOncampus() {
 }
 
 
-export function getAllStudentsInCollege() {
-  return axiosClient.get('/api/college/students')
-    .then(response => response)
-    .catch(error => error);
-}
+export const getAllStudentsInCollege = (profileType) => {
+  const params = profileType ? { profileType } : {};
+  return axiosClient.get('/api/college/students', { params });
+};
 
 export function getCompanyPostingForOncampusDetail(jobId) {
   return axiosClient.get(`/api/student-dashboard/oncampus/college/${jobId}`)

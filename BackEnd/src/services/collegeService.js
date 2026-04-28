@@ -44,50 +44,55 @@ export async function updateCollegeProfileService(userId, updates) {
 const normalizeString = (str) =>
   str?.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim();
 
-export const getStudentsByCollegeIdService = async (authUserId) => {
-  //  Fetch college
- const college = await collegeOnboardingModel.findOne({ userId: authUserId }).lean();
+const ALLOWED_PROFILE_TYPES = ['student', 'fresher', 'professional'];
+ 
+const STUDENT_PROJECTION =
+  'name email phone college degree semester specialization cgpa yearOfGraduation profileType skills experiences profileImage about jobRoles linkedin github portfolio lookingFor employmentType industry locations';
 
+const PRO_FRESHER_PROJECTION =
+  'name email phone college degree specialization yearOfGraduation profileType skills experiences currentCompany totalYearsOfExperience profileImage about jobRoles linkedin github portfolio lookingFor employmentType industry locations noticePeriod';
+ 
+export const getStudentsByCollegeIdService = async (authUserId, profileType) => {
+  // 1. Fetch college
+  const college = await collegeOnboardingModel
+    .findOne({ userId: authUserId })
+    .lean();
+ 
   if (!college) {
-    return {
-      success: false,
-      status: 404,
-      message: "College profile not found for this user",
-    };
+    return { success: false, status: 404, message: 'College profile not found for this user' };
   }
-  //  Extract college name
-  const collegeName =
-    college.collegeUniversityDetails?.collegeName || "";
-
+ 
+  const collegeName = college.collegeUniversityDetails?.collegeName || '';
   if (!collegeName) {
-    return {
-      success: false,
-      status: 400,
-      message: "College name missing in record",
-    };
+    return { success: false, status: 400, message: 'College name missing in record' };
   }
-
+ 
   const normalizedCollegeName = normalizeString(collegeName);
-
-  // DB pre-filter (regex)
-  const students = await Onboarding.find(
-    {
-      college: { $regex: collegeName, $options: "i" },
-    },
-    "name email college degree semester specialization yearOfGraduation"
+ 
+  // 2. Build query
+  const query = { college: { $regex: collegeName, $options: 'i' } };
+ 
+  if (profileType && ALLOWED_PROFILE_TYPES.includes(profileType)) {
+    query.profileType = profileType;
+  }
+ 
+  // 3. Pick projection based on type
+  const projection = profileType === 'student'
+    ? STUDENT_PROJECTION
+    : PRO_FRESHER_PROJECTION;
+ 
+  // 4. Fetch
+  const students = await Onboarding.find(query, projection);
+ 
+  // 5. Exact name match after regex pre-filter
+  const matchedStudents = students.filter(
+    s => normalizeString(s.college) === normalizedCollegeName
   );
-
-  //  Normalize + exact match
-  const matchedStudents = students.filter((student) => {
-    return (
-      normalizeString(student.college) === normalizedCollegeName
-    );
-  });
-
+ 
   return {
     success: true,
-    status: 200,
-    data: matchedStudents,
-    count: matchedStudents.length,
+    status:  200,
+    data:    matchedStudents,
+    count:   matchedStudents.length,
   };
 };

@@ -112,7 +112,7 @@ export const getAlumniPostedJobs = async (req, res) => {
       return res.status(404).json({ message: "College info not found in your profile." });
     }
 
-    // 2. Find professional alumni from same college working at the given company
+    
     const alumni = await Onboarding.find({
       college: myProfile.college,
       userId: { $ne: userId },
@@ -120,7 +120,7 @@ export const getAlumniPostedJobs = async (req, res) => {
       currentCompany: { $regex: new RegExp(`^${company}$`, "i") },
     }).lean();
 
-    // 3. Attach referral metrics (responseRate, referralSuccessRate, etc.) to each alumni
+    
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person) => {
         const metrics = await fetchProfessionalReferralMetrics(person._id);
@@ -441,24 +441,24 @@ export const getCollegeAlumni = async (req, res) => {
       return res.status(404).json({ success: false, message: "College info not found in your profile." });
     }
 
-    // Step 1: Find only professional alumni from the same college
+    // Find only professional alumni from the same college
     const alumni = await Onboarding.find({
       college: myProfile.college,
       userId: { $ne: userId },
-      profileType: "professional", // Only professionals
+      profileType: "professional", 
     });
 
-    // Step 2: Attach referral metrics AND referral jobs, then filter to only those actively hiring
+    
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person) => {
         const [metrics, referralJobs] = await Promise.all([
           fetchProfessionalReferralMetrics(person._id),
           JobPostingTable.find({
-            candidatePosted: person._id,
+            candidatePosted: person._id, // only hiring
             jobType: "Referral",
             approvalStatus: "Approved",
             inactive: false,
-            //jobStatus: "Open", // Only open/active jobs
+            //jobStatus: "Open", 
           })
             .sort({ createdAt: -1 })
             .lean(),
@@ -473,7 +473,7 @@ export const getCollegeAlumni = async (req, res) => {
       })
     );
 
-    // Step 3: Keep only alumni who are actively hiring (have at least one open referral job)
+     // Keep only alumni who are actively hiring (have at least one open referral job)
     const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
 
     return res.status(200).json({
@@ -558,10 +558,10 @@ export const getCompanyAlumni = async (req, res) => {
 
     const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
 
-    // ✅ Fixed: use same flexible regex here too (no ^ and $ anchors)
+    // Fixed: use same flexible regex here too (no ^ and $ anchors)
     const alumniByCompany = {};
     uniqueCompanies.forEach((company) => {
-      const regex = new RegExp(company, "i"); // was `^${company}$` — now fixed
+      const regex = new RegExp(company, "i"); 
       const matched = hiringAlumni.filter(
         (alumni) =>
           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
