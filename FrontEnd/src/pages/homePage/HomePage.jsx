@@ -64,6 +64,8 @@ const HomePage = () => {
           content="Hire freshers faster with one unified campus hiring platform."
         />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rawrecruit.in/" />
+        <meta property="og:image" content="https://rawrecruit.in/logo1.png" />
       </Helmet>
       {/* 1. Navbar */}
       <Navbar />

@@ -22,9 +22,16 @@ const ProductDepth = () => {
         </h2>
 
         <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-          Manage on-campus, pool-campus, and off-campus hiring — all from one system.
+          Manage on-campus, pool-campus, and off-campus hiring, internships, and fresher job opportunities from one platform.
         </p>
       </motion.div>
+
+      <div className="sr-only">
+        <h3>Campus Hiring and Job Management Platform</h3>
+        <p>
+          RawRecruit provides tools for companies, colleges, and students to manage hiring, job applications, internships, and placements through one centralized system.
+        </p>
+      </div>
 
       {/* Cards */}
       <div className="grid md:grid-cols-3 gap-8 mb-14">
@@ -41,10 +48,10 @@ const ProductDepth = () => {
 
           <div className="mt-5 space-y-3">
             {[
-              "Track all hiring channels",
-              "Manage job postings",
-              "View candidate pipeline",
-            ].map((item) => (
+                "Track all hiring channels and job postings",
+                "Manage campus hiring and internship listings",
+                "View candidate applications and hiring pipeline"
+              ].map((item) => (
               <div
                 key={item}
                 className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3"
@@ -70,10 +77,10 @@ const ProductDepth = () => {
 
           <div className="mt-5 space-y-3">
             {[
-              "Real-time application tracking",
-              "Shortlist & interview management",
-              "Centralized candidate data",
-            ].map((item) => (
+                "Track job and internship applications in real-time",
+                "Shortlist candidates and manage interviews",
+                "Centralized data for fresher hiring and recruitment"
+              ].map((item) => (
               <div
                 key={item}
                 className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3"
@@ -99,10 +106,10 @@ const ProductDepth = () => {
 
           <div className="mt-5 space-y-3">
             {[
-              "Student Talent Data",
-              "Training & Placement Programs",
-              "Institution Branding"
-            ].map((item) => (
+                "Access student talent and fresher candidate data",
+                "Manage training, placement, and hiring programs",
+                "Improve college placement and recruitment visibility"
+              ].map((item) => (
               <div
                 key={item}
                 className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3"

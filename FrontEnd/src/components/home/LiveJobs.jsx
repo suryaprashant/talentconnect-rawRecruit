@@ -137,8 +137,8 @@ const LiveJobs = () => {
     });
   };
   // VIEW ALL BUTTON
-  const handleViewAll = (job) => {
-    let path = "/jobs";
+  const getJobHref = () => {
+    let path = "/student-dashboard/Off-campus";
     // COMPANY
     if (activeRole === "Company") {
       if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
@@ -164,7 +164,7 @@ const LiveJobs = () => {
       if (activeType === "Internship") path = "/fresher-dashboard/Internship";
       if (activeType === "Referral") path = "/fresher-dashboard/Referral";
     }
-    navigate(path);
+    return(path);
   };
 
   return (
@@ -223,6 +223,22 @@ const LiveJobs = () => {
         </div>
       </motion.div>
 
+      <div className="sr-only">
+        <h2>Latest Jobs and Internships for Freshers in India</h2>
+        <p>
+          Browse off-campus jobs, internships, referral jobs, and campus hiring opportunities for students and freshers across India.
+        </p>
+
+        <h3>Jobs for Companies</h3>
+        <p>Post and manage on-campus and off-campus hiring drives for freshers.</p>
+
+        <h3>Jobs for Colleges</h3>
+        <p>Connect with companies and manage placement opportunities for students.</p>
+
+        <h3>Jobs for Students</h3>
+        <p>Apply to internships, referral jobs, and track your applications easily.</p>
+      </div>
+
       {/* JOB GRID */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
         {loading ? (
@@ -250,60 +266,110 @@ const LiveJobs = () => {
             .map((job, i) => {
               if (activeRole === "Company") {
                 return (
-                  <CollegeJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <CollegeJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               if (activeRole === "College") {
                 return (
-                  <CompanyJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
-                    job={job}
-                    i={i}
-                    activeType={activeType}
-                    handleApply={() => handleApply(job)}
-                  />
+                  >
+                    <CompanyJobCard 
+                      job={job}
+                      i={i}
+                      activeType={activeType}
+                    />
+                  </a>
+                  // <CompanyJobCard
+                  //   key={job._id || i}
+                  //   job={job}
+                  //   i={i}
+                  //   activeType={activeType}
+                  //   handleApply={() => handleApply(job)}
+                  // />
                 );
               }
 
               if (activeType === "Referral") {
                 return (
-                  <ReferralJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <ReferralJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               if (activeType === "Internship") {
                 return (
-                  <InternshipJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <InternshipJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               return (
-                  <CompanyJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <CompanyJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
             })
         )}
@@ -311,12 +377,16 @@ const LiveJobs = () => {
 
       {/* CTA */}
       <div className="text-center mt-12">
-        <button
-          onClick={handleViewAll}
+        <a
+          href={getJobHref()}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(getJobHref());
+          }}
           className="px-8 py-3 border border-primaryBrand text-primaryBrand rounded-xl hover:bg-primaryBrand hover:text-white transition"
         >
           View All Jobs
-        </button>
+        </a>
       </div>
     </div>
   </section>

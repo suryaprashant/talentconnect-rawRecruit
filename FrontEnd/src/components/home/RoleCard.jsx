@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { GraduationCap, Building2, Briefcase, BriefcaseBusiness } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-
+import { Link } from "react-router-dom";
 const roles = [
   {
     roleKey: "company",
@@ -29,7 +29,7 @@ const roles = [
     cta: "Partner as College",
   },
   {
-    roleKey: "candidate",
+    roleKey: "student",
     title: "For Candidates (Job Seekers)",
     icon: GraduationCap,
     points: [
@@ -103,13 +103,16 @@ const RoleCards = () => {
       <div className="grid md:grid-cols-3 gap-10">
 
         {roles.map((r, i) => (
+          <Link
+            to={`/signup?role=${r.roleKey}`}
+            onClick={() => handleRoleSelect(r.roleKey)}
+          >
           <motion.div
             key={r.title}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.03, y: -4 }}
             transition={{ type: "spring", stiffness: 120, damping: 18, delay: i * 0.12 }}
-            onClick={() => handleRoleSelect(r.roleKey)}
             className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm 
               hover:shadow-2xl 
               cursor-pointer flex flex-col justify-between h-full will-change-transform"
@@ -145,11 +148,12 @@ const RoleCards = () => {
             </div>
 
             {/* BUTTON (ALWAYS BOTTOM) */}
-            <button className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition hover:bg-white hover:text-primaryBrand border border-primaryBrand mt-4">
+            <span className="w-full bg-[#143694] text-white py-3 rounded-xl font-medium shadow-md mt-4 block text-center">
               {r.cta}
-            </button>
+            </span>
 
           </motion.div>
+          </Link>
         ))}
 
       </div>

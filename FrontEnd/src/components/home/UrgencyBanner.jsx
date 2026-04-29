@@ -32,20 +32,27 @@ const UrgencyBanner = () => {
         <div className="relative z-10">
 
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
-            Hiring is happening right now — don’t miss out
+            Freshers Jobs & Internship Opportunities Are Open — Start Applying Now
           </h2>
 
           <p className="text-white/80 mb-8 text-lg">
-            Join thousands of students and companies already on RawRecruit
+            Explore job opportunities, internships, and campus hiring roles for students and freshers across India.
           </p>
 
+          <div className="sr-only">
+            <h3>Apply for Jobs and Internships for Freshers</h3>
+            <p>
+              RawRecruit helps students and freshers apply to job opportunities, internships, and campus hiring roles while companies hire candidates efficiently.
+            </p>
+          </div>
+
           {/* Button */}
-          <button
-            onClick={() => navigate("/userselection")}
+          <a
+            href='/signup'            
             className="bg-white text-[#1e3a8a] font-semibold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition"
           >
             Get Started
-          </button>
+          </a>
 
         </div>
 
