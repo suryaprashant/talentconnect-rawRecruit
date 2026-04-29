@@ -27,8 +27,28 @@ const LiveJobs = () => {
 
   const navigate = useNavigate();
   const { isAuthenticated, role } = useAuth();
-
+  const isPrerender =
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "ReactSnap";
   // API MAPPING
+  const fallbackJobs = [
+    {
+      _id: "1",
+      title: "Software Engineer Intern",
+      companyName: "Top Tech Company",
+      location: "India",
+      stipend: "₹20,000/month",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      _id: "2",
+      title: "Frontend Developer (Fresher)",
+      companyName: "Startup India",
+      location: "Remote",
+      stipend: "₹5-8 LPA",
+      createdAt: new Date().toISOString(),
+    },
+  ];
   const getApiEndpoint = (role, type) => {
     // STUDENT
     if (role === "Student") {
@@ -69,7 +89,10 @@ const LiveJobs = () => {
 
     try {
       setLoading(true);
-
+      if (isPrerender) {
+        setJobs(fallbackJobs);
+        return;
+      }
       const res = await fetch(
         `${import.meta.env.VITE_Backend_URL}${endpoint}`
       );
@@ -89,7 +112,8 @@ const LiveJobs = () => {
 
     } catch (err) {
       console.error("Error fetching jobs:", err);
-      setJobs([]);
+      setJobs(fallbackJobs);
+
     } finally {
       setLoading(false);
     }
@@ -244,7 +268,7 @@ const LiveJobs = () => {
         {loading ? (
           <p className="text-center col-span-3">Loading jobs...</p>
         ) : jobs.length === 0 ? (
-          <p className="text-center col-span-3">No jobs found</p>
+          <p className="text-center col-span-3">Explore latest opportunities for freshers and students</p>
         ) : (
           [...jobs]
             .filter((job) => {

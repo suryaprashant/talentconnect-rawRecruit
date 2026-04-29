@@ -2,7 +2,23 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "@/components/home/Navbar";
 import Footer from "@/components/home/Footer";
+import { Helmet } from "react-helmet-async";
 const BlogPage = () => {
+  const isPrerender =
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "ReactSnap";
+  const fallbackBlogs = [
+    {
+      _id: "1",
+      title: "How Campus Hiring Works in India",
+      author: "RawRecruit Team",
+      createdAt: new Date().toISOString(),
+      tags: ["Hiring", "Campus"],
+      content:
+        "Campus hiring is a structured process where companies recruit freshers directly from colleges...",
+      coverImage: "",
+    },
+  ];
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -10,6 +26,12 @@ const BlogPage = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
+
+        if (isPrerender) {
+          setBlogs(fallbackBlogs);
+          setLoading(false);
+          return;
+        }
         const backendUrl = import.meta.env.VITE_Backend_URL;
 
         const res = await axios.get(`${backendUrl}/api/blogs`);
@@ -17,6 +39,7 @@ const BlogPage = () => {
         setBlogs(res.data.data || []);
       } catch (err) {
         console.error(err);
+        setBlogs(fallbackBlogs);
         setError("Failed to fetch blogs");
       } finally {
         setLoading(false);
@@ -52,28 +75,71 @@ const BlogPage = () => {
   }
 
   // 🔴 Error
-  if (error) {
+  if (error && !blogs.length) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-500">
-        {error}
+        Showing latest career insights...
       </div>
     );
   }
 
   // ⚪ Empty
-  if (!blogs.length) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-[#6E6E6E]">
-        No blogs available
-      </div>
-    );
-  }
+  // if (!blogs.length) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center text-[#6E6E6E]">
+  //       No blogs available
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
+        <Helmet>
+          {/* Title */}
+          <title>
+            Career Blogs | Campus Hiring, Internships & Fresher Jobs | RawRecruit
+          </title>
+
+          {/* Meta Description */}
+          <meta
+            name="description"
+            content="Read career blogs on campus hiring, internships, referral jobs, and fresher job opportunities in India. Learn how to get hired faster."
+          />
+
+          {/* Canonical */}
+          <link rel="canonical" href="https://rawrecruit.in/blogs" />
+
+          {/* Open Graph */}
+          <meta
+            property="og:title"
+            content="Career Blogs | Campus Hiring & Fresher Jobs | RawRecruit"
+          />
+          <meta
+            property="og:description"
+            content="Explore blogs on campus hiring, internships, and referral jobs for students in India."
+          />
+          <meta property="og:url" content="https://rawrecruit.in/blogs" />
+          <meta property="og:type" content="website" />
+          <meta
+            property="og:image"
+            content="https://rawrecruit.in/logo1.png"
+          />
+          {/* Twitter */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta
+            name="twitter:title"
+            content="Career Blogs | Campus Hiring & Fresher Jobs"
+          />
+          <meta
+            name="twitter:description"
+            content="Learn about internships, referral jobs, and fresher hiring in India."
+          />
+        </Helmet>
         <Navbar />
         <div className="min-h-screen bg-[#F2F2F2] py-10 px-4">
-        
+          <h1 className="text-3xl font-bold text-[#373737] mb-6">
+            Career Blogs on Hiring, Internships & Fresher Jobs
+          </h1>
         <div className="max-w-5xl mx-auto space-y-8">
             
             {blogs

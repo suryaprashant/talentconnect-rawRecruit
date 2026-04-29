@@ -43,29 +43,31 @@ const HomePage = () => {
   return (
     <div className="bg-background text-foreground">
       <Helmet>
+        {/* Title */}
         <title>
-          Campus Hiring Platform India | Hire Freshers via On-Campus & Off-Campus
+          Hire Freshers in India | Campus, Pool & Off-Campus Hiring Platform
         </title>
 
-        <meta
-          name="description"
-          content="Post hiring requirements, connect with verified colleges, and hire freshers using on-campus, pool-campus, and off-campus recruitment — all in one platform."
+        {/* Meta Description */} <meta
+        name="description"
+        content="Hire freshers through on-campus, pool-campus, and off-campus hiring. Connect with colleges and manage recruitment easily across India."
         />
 
-        <meta
-          name="keywords"
-          content="campus hiring platform India, hire freshers, pool campus hiring, on campus recruitment software, off campus hiring"
-        />
+        {/* Canonical */}
 
-        {/* Open Graph (for sharing) */}
-        <meta property="og:title" content="Campus Hiring Platform India" />
-        <meta
-          property="og:description"
-          content="Hire freshers faster with one unified campus hiring platform."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://rawrecruit.in/" />
-        <meta property="og:image" content="https://rawrecruit.in/logo1.png" />
+          <link rel="canonical" href="https://rawrecruit.in/" />
+
+        {/* Open Graph */} <meta property="og:title" content="Hire Freshers in India | RawRecruit" /> <meta
+        property="og:description"
+        content="Unified platform for campus hiring, internships, and fresher recruitment across India."
+        /> <meta property="og:type" content="website" /> <meta property="og:url" content="https://rawrecruit.in/" /> <meta property="og:image" content="https://rawrecruit.in/logo1.png" />
+
+        {/* Twitter */} <meta name="twitter:card" content="summary_large_image" /> 
+        <meta name="twitter:title" content="Hire Freshers in India | RawRecruit" /> <meta
+        name="twitter:description"
+        content="Find jobs or hire freshers using on-campus, pool-campus, and off-campus hiring."
+        /> 
+        <meta name="twitter:image" content="https://rawrecruit.in/logo1.png" /> 
       </Helmet>
       {/* 1. Navbar */}
       <Navbar />
