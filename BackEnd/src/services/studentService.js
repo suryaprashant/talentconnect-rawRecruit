@@ -122,6 +122,14 @@ export async function updateOnboardingFormService(userId, body, files) {
   });
   updates.userId = userId;
   const result = await handleOnboardingUpdate(updates, files);
+
+  const allowedTypes = ['professional'];
+
+  if (updates.profileType && allowedTypes.includes(updates.profileType)) {
+    await Auth.findByIdAndUpdate(userId, {
+      userType: updates.profileType
+    });
+  }
   return result.updatedOnboarding;
 }
 
