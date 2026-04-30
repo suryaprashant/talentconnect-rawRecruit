@@ -2347,12 +2347,13 @@ function Fresher_Profile() {
                 </div>
               </div>
             </div>
-            {/*<div className="flex items-center gap-2">
+            {/* Switch to proffesional*/}
+            <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Switch to Professional</span>
               <button className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8]' : 'bg-gray-200'}`} role="switch" aria-checked={switchToPro} onClick={() => setSwitchToPro(!switchToPro)}>
                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${switchToPro ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
-            </div>*/}
+            </div>
           </div>
           <div className="flex px-6 mt-4">
             {['overview', 'profile', 'resume'].map((tab) => (
