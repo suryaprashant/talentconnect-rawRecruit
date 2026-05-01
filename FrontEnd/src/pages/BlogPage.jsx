@@ -10,13 +10,67 @@ const BlogPage = () => {
   const fallbackBlogs = [
     {
       _id: "1",
-      title: "How Campus Hiring Works in India",
+      title: "How to Hire Freshers Faster Using RawRecruit: A Step-by-Step Guide for Companies",
       author: "RawRecruit Team",
       createdAt: new Date().toISOString(),
-      tags: ["Hiring", "Campus"],
-      content:
-        "Campus hiring is a structured process where companies recruit freshers directly from colleges...",
+      tags: ["Hiring", "Freshers", "Recruitment"],
       coverImage: "",
+      content: `
+  Hiring freshers is essential for building a strong workforce, but the traditional hiring process can be slow and inefficient. Companies often spend weeks coordinating with colleges, reviewing resumes, and scheduling campus drives. This delay increases hiring costs and reduces productivity.
+
+  Today, companies need a faster and more structured way to recruit entry-level talent. That is where RawRecruit comes in.
+
+  RawRecruit enables companies to run On-Campus, Pool-Campus, Off-Campus, and Internship hiring from one unified platform. Instead of managing multiple tools and communication channels, recruiters can control the entire hiring process in a single system.
+
+  Step 1: Create Your Company Account
+  Sign up on RawRecruit and complete your company profile. Provide details such as company name, hiring locations, job roles, salary package, and number of students to hire.
+
+  Step 2: Choose the Right Hiring Channel
+  Select the appropriate hiring mode: On-Campus Hiring, Pool-Campus Hiring, Off-Campus Hiring, or Internship Hiring.
+
+  Step 3: Access Verified Student Data
+  Recruiters can view student branch, academic performance, skills, and eligibility criteria to shortlist candidates quickly.
+
+  Step 4: Schedule and Conduct Campus Drives
+  Manage drive dates, interview schedules, and candidate selection directly through the platform.
+
+  Step 5: Track Hiring Progress
+  Monitor applications, shortlisted candidates, and final selections from a single dashboard.
+
+  Companies choose RawRecruit because it simplifies campus hiring, reduces recruitment time, and improves hiring decisions.
+      `,
+    },
+    {
+      _id: "2",
+      title: "How Colleges Can Connect with Employers and Improve Placements Using RawRecruit",
+      author: "RawRecruit Team",
+      createdAt: new Date().toISOString(),
+      tags: ["Placements", "Colleges", "Recruitment"],
+      coverImage: "",
+      content: `
+  For colleges, placements are one of the most important indicators of success. Students and parents evaluate institutions based on placement performance.
+
+  Many colleges face challenges in connecting with employers and organizing placement drives efficiently. Manual communication and scattered data often reduce placement opportunities.
+
+  RawRecruit helps colleges connect with employers and manage placements through a centralized platform.
+
+  Step 1: Register Your College and Upload Student Data
+  Add student profiles, course details, academic performance, skills, and placement eligibility.
+
+  Step 2: Post On-Campus and Pool-Campus Placement Requests
+  Include details such as number of eligible students, minimum expected salary, tentative drive date, last date to apply, and facilities provided for the drive.
+
+  Step 3: Connect Directly with Hiring Companies
+  Invite companies, share student data, and coordinate placement drives through the platform.
+
+  Step 4: Manage Placement Drives Efficiently
+  Track student participation, interview schedules, and final selections in one system.
+
+  Step 5: Monitor Placement Performance
+  Analyze company participation, student selection rates, and placement success metrics.
+
+  With structured systems like RawRecruit, colleges can improve placement outcomes and strengthen their reputation.
+      `,
     },
   ];
   const [blogs, setBlogs] = useState([]);
