@@ -94,10 +94,10 @@ const BlogPage = () => {
 
   return (
     <>
-        <Helmet>
+        <Helmet prioritizeSeoTags>
           {/* Title */}
           <title key="blog-title">
-            Career Blogs | Campus Hiring, Internships & Fresher Jobs | RawRecruit
+           Career Blogs | Internships & Fresher Jobs | RawRecruit
           </title>
 
           {/* Meta Description */}

@@ -42,10 +42,10 @@ const HomePage = () => {
 
   return (
     <div className="bg-background text-foreground">
-      <Helmet>
+      <Helmet prioritizeSeoTags>
         {/* Title */}
         <title key="title">
-          Hire Freshers in India | Campus, Pool & Off-Campus Hiring Platform
+          Hire Freshers in India | Campus & Off-Campus Hiring | RawRecruit
         </title>
 
         {/* Meta Description */} 
