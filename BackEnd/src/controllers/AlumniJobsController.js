@@ -432,92 +432,314 @@ export const getNewApplications = async (req, res) => {
 //   }
 // };
 
+// export const getCollegeAlumni = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     const myProfile = await Onboarding.findOne({ userId });
+//     if (!myProfile?.college) {
+//       return res.status(404).json({ success: false, message: "College info not found in your profile." });
+//     }
+
+//     // Find only professional alumni from the same college
+//     const alumni = await Onboarding.find({
+//       college: myProfile.college,
+//       userId: { $ne: userId },
+//       profileType: "professional", 
+//     });
+
+    
+//     const alumniWithMetrics = await Promise.all(
+//       alumni.map(async (person) => {
+//         const [metrics, referralJobs] = await Promise.all([
+//           fetchProfessionalReferralMetrics(person._id),
+//           JobPostingTable.find({
+//             candidatePosted: person._id, // only hiring
+//             jobType: "Referral",
+//             approvalStatus: "Approved",
+//             inactive: false,
+//             //jobStatus: "Open", 
+//           })
+//             .sort({ createdAt: -1 })
+//             .lean(),
+//         ]);
+
+//         return {
+//           ...person.toObject(),
+//           referralMetrics: metrics,
+//           referralJobs,
+//           isHiring: referralJobs.length > 0,
+//         };
+//       })
+//     );
+
+//      // Keep only alumni who are actively hiring (have at least one open referral job)
+//     const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+
+//     return res.status(200).json({
+//       success: true,
+//       college: myProfile.college,
+//       count: hiringAlumni.length,
+//       alumni: hiringAlumni,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching college alumni:", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+// export const getCompanyAlumni = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     const myProfile = await Onboarding.findOne({ userId });
+//     if (!myProfile) {
+//       return res.status(404).json({ success: false, message: "Profile not found." });
+//     }
+
+//     const allCompanies = [];
+
+//     if (myProfile.currentCompany) {
+//       allCompanies.push(myProfile.currentCompany);
+//     }
+
+//     if (myProfile.experiences?.length > 0) {
+//       myProfile.experiences.forEach((exp) => {
+//         if (exp.company) allCompanies.push(exp.company);
+//       });
+//     }
+
+//     if (allCompanies.length === 0) {
+//       return res.status(404).json({ success: false, message: "No companies found in your profile." });
+//     }
+
+//     const uniqueCompanies = [...new Map(
+//       allCompanies.map((c) => [c.toLowerCase(), c])
+//     ).values()];
+
+//     // Flexible partial match for DB query
+//     const orConditions = uniqueCompanies.flatMap((company) => {
+//       const regex = new RegExp(company, "i");
+//       return [
+//         { currentCompany: regex },
+//         { "experiences.company": regex },
+//       ];
+//     });
+
+//     const companyAlumni = await Onboarding.find({
+//       userId: { $ne: userId },
+//       profileType: "professional",
+//       $or: orConditions,
+//     });
+
+//     const alumniWithMetrics = await Promise.all(
+//       companyAlumni.map(async (person) => {
+//         const [metrics, referralJobs] = await Promise.all([
+//           fetchProfessionalReferralMetrics(person._id),
+//           JobPostingTable.find({
+//             candidatePosted: person._id,
+//             jobType: "Referral",
+//             approvalStatus: "Approved",
+//             inactive: false,
+//             // jobStatus removed — Approved + inactive:false is sufficient
+//           })
+//             .sort({ createdAt: -1 })
+//             .lean(),
+//         ]);
+
+//         return {
+//           ...person.toObject(),
+//           referralMetrics: metrics,
+//           referralJobs,
+//           isHiring: referralJobs.length > 0,
+//         };
+//       })
+//     );
+
+//     const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+
+//     // Fixed: use same flexible regex here too (no ^ and $ anchors)
+//     const alumniByCompany = {};
+//     uniqueCompanies.forEach((company) => {
+//       const regex = new RegExp(company, "i"); 
+//       const matched = hiringAlumni.filter(
+//         (alumni) =>
+//           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
+//           alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
+//       );
+
+//       if (matched.length > 0) {
+//         alumniByCompany[company] = matched;
+//       }
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       companiesChecked: uniqueCompanies,
+//       totalHiringAlumni: hiringAlumni.length,
+//       alumniByCompany,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching company alumni:", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
 export const getCollegeAlumni = async (req, res) => {
   try {
     const userId = req.user._id;
+    const jobPostedOnly = req.query.jobPostedOnly === "true";
 
     const myProfile = await Onboarding.findOne({ userId });
-    if (!myProfile?.college) {
-      return res.status(404).json({ success: false, message: "College info not found in your profile." });
+    if (!myProfile) {
+      return res.status(404).json({
+        success: false,
+        errorCode: "PROFILE_NOT_FOUND",
+        message: "Your profile does not exist. Please complete onboarding.",
+        data: null,
+      });
     }
 
-    // Find only professional alumni from the same college
+    if (!myProfile.college) {
+      return res.status(404).json({
+        success: false,
+        errorCode: "COLLEGE_NOT_FOUND",
+        message: "College info not found in your profile. Please update your profile.",
+        data: null,
+      });
+    }
+
     const alumni = await Onboarding.find({
       college: myProfile.college,
       userId: { $ne: userId },
-      profileType: "professional", 
-    });
+      profileType: "professional",
+    }).lean();
 
-    
+    if (!alumni || alumni.length === 0) {
+      return res.status(200).json({
+        success: true,
+        errorCode: null,
+        message: "No alumni found from your college.",
+        college: myProfile.college,
+        jobPostedOnly,
+        count: 0,
+        alumni: [],
+      });
+    }
+
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person) => {
         const [metrics, referralJobs] = await Promise.all([
           fetchProfessionalReferralMetrics(person._id),
           JobPostingTable.find({
-            candidatePosted: person._id, // only hiring
+            candidatePosted: person._id,
             jobType: "Referral",
             approvalStatus: "Approved",
             inactive: false,
-            //jobStatus: "Open", 
           })
             .sort({ createdAt: -1 })
             .lean(),
         ]);
 
         return {
-          ...person.toObject(),
-          referralMetrics: metrics,
-          referralJobs,
+          _id: person._id,
+          userId: person.userId,
+          name: person.name ?? null,
+          email: person.email ?? null,
+          phone: person.phone ?? null,
+          profileImage: person.profileImage ?? null,
+          backgroundImage: person.backgroundImage ?? null,
+          college: person.college ?? null,
+          degree: person.degree ?? null,
+          specialization: person.specialization ?? null,
+          yearOfGraduation: person.yearOfGraduation ?? null,
+          currentCompany: person.currentCompany ?? null,
+          totalYearsOfExperience: person.totalYearsOfExperience ?? null,
+          jobRoles: person.jobRoles ?? [],
+          skills: person.skills ?? [],
+          linkedin: person.linkedin ?? null,
+          github: person.github ?? null,
+          portfolio: person.portfolio ?? null,
+          about: person.about ?? null,
+          referralMetrics: metrics ?? null,
+          referralJobs: referralJobs ?? [],
           isHiring: referralJobs.length > 0,
         };
       })
     );
 
-     // Keep only alumni who are actively hiring (have at least one open referral job)
-    const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+    const filteredAlumni = jobPostedOnly
+      ? alumniWithMetrics.filter((person) => person.isHiring)
+      : alumniWithMetrics;
+
+    if (jobPostedOnly && filteredAlumni.length === 0) {
+      return res.status(200).json({
+        success: true,
+        errorCode: null,
+        message: "No alumni from your college are currently hiring.",
+        college: myProfile.college,
+        jobPostedOnly,
+        count: 0,
+        alumni: [],
+      });
+    }
 
     return res.status(200).json({
       success: true,
+      errorCode: null,
+      message: "Alumni fetched successfully.",
       college: myProfile.college,
-      count: hiringAlumni.length,
-      alumni: hiringAlumni,
+      jobPostedOnly,
+      count: filteredAlumni.length,
+      alumni: filteredAlumni,
     });
+
   } catch (error) {
     console.error("Error fetching college alumni:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      errorCode: "INTERNAL_SERVER_ERROR",
+      message: "Something went wrong. Please try again later.",
+      data: null,
+    });
   }
 };
+
 
 export const getCompanyAlumni = async (req, res) => {
   try {
     const userId = req.user._id;
+    const jobPostedOnly = req.query.jobPostedOnly === "true";
 
     const myProfile = await Onboarding.findOne({ userId });
     if (!myProfile) {
-      return res.status(404).json({ success: false, message: "Profile not found." });
-    }
-
-    const allCompanies = [];
-
-    if (myProfile.currentCompany) {
-      allCompanies.push(myProfile.currentCompany);
-    }
-
-    if (myProfile.experiences?.length > 0) {
-      myProfile.experiences.forEach((exp) => {
-        if (exp.company) allCompanies.push(exp.company);
+      return res.status(404).json({
+        success: false,
+        errorCode: "PROFILE_NOT_FOUND",
+        message: "Your profile does not exist. Please complete onboarding.",
+        data: null,
       });
     }
 
+    const allCompanies = [];
+    if (myProfile.currentCompany) allCompanies.push(myProfile.currentCompany);
+    myProfile.experiences?.forEach((exp) => {
+      if (exp.company) allCompanies.push(exp.company);
+    });
+
     if (allCompanies.length === 0) {
-      return res.status(404).json({ success: false, message: "No companies found in your profile." });
+      return res.status(404).json({
+        success: false,
+        errorCode: "NO_COMPANIES_FOUND",
+        message: "No company info found in your profile. Please update your work experience.",
+        data: null,
+      });
     }
 
     const uniqueCompanies = [...new Map(
       allCompanies.map((c) => [c.toLowerCase(), c])
     ).values()];
 
-    // Flexible partial match for DB query
     const orConditions = uniqueCompanies.flatMap((company) => {
       const regex = new RegExp(company, "i");
       return [
@@ -530,7 +752,19 @@ export const getCompanyAlumni = async (req, res) => {
       userId: { $ne: userId },
       profileType: "professional",
       $or: orConditions,
-    });
+    }).lean();
+
+    if (!companyAlumni || companyAlumni.length === 0) {
+      return res.status(200).json({
+        success: true,
+        errorCode: null,
+        message: "No alumni found from your companies.",
+        companiesChecked: uniqueCompanies,
+        jobPostedOnly,
+        totalAlumni: 0,
+        alumniByCompany: {},
+      });
+    }
 
     const alumniWithMetrics = await Promise.all(
       companyAlumni.map(async (person) => {
@@ -541,33 +775,62 @@ export const getCompanyAlumni = async (req, res) => {
             jobType: "Referral",
             approvalStatus: "Approved",
             inactive: false,
-            // jobStatus removed — Approved + inactive:false is sufficient
           })
             .sort({ createdAt: -1 })
             .lean(),
         ]);
 
         return {
-          ...person.toObject(),
-          referralMetrics: metrics,
-          referralJobs,
+          _id: person._id,
+          userId: person.userId,
+          name: person.name ?? null,
+          email: person.email ?? null,
+          phone: person.phone ?? null,
+          profileImage: person.profileImage ?? null,
+          backgroundImage: person.backgroundImage ?? null,
+          college: person.college ?? null,
+          degree: person.degree ?? null,
+          specialization: person.specialization ?? null,
+          yearOfGraduation: person.yearOfGraduation ?? null,
+          currentCompany: person.currentCompany ?? null,
+          totalYearsOfExperience: person.totalYearsOfExperience ?? null,
+          jobRoles: person.jobRoles ?? [],
+          skills: person.skills ?? [],
+          linkedin: person.linkedin ?? null,
+          github: person.github ?? null,
+          portfolio: person.portfolio ?? null,
+          about: person.about ?? null,
+          referralMetrics: metrics ?? null,
+          referralJobs: referralJobs ?? [],
           isHiring: referralJobs.length > 0,
         };
       })
     );
 
-    const hiringAlumni = alumniWithMetrics.filter((person) => person.isHiring);
+    const filteredAlumni = jobPostedOnly
+      ? alumniWithMetrics.filter((person) => person.isHiring)
+      : alumniWithMetrics;
 
-    // Fixed: use same flexible regex here too (no ^ and $ anchors)
+    if (jobPostedOnly && filteredAlumni.length === 0) {
+      return res.status(200).json({
+        success: true,
+        errorCode: null,
+        message: "No alumni from your companies are currently hiring.",
+        companiesChecked: uniqueCompanies,
+        jobPostedOnly,
+        totalAlumni: 0,
+        alumniByCompany: {},
+      });
+    }
+
     const alumniByCompany = {};
     uniqueCompanies.forEach((company) => {
-      const regex = new RegExp(company, "i"); 
-      const matched = hiringAlumni.filter(
+      const regex = new RegExp(company, "i");
+      const matched = filteredAlumni.filter(
         (alumni) =>
           (alumni.currentCompany && regex.test(alumni.currentCompany)) ||
           alumni.experiences?.some((exp) => exp.company && regex.test(exp.company))
       );
-
       if (matched.length > 0) {
         alumniByCompany[company] = matched;
       }
@@ -575,12 +838,21 @@ export const getCompanyAlumni = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      errorCode: null,
+      message: "Alumni fetched successfully.",
       companiesChecked: uniqueCompanies,
-      totalHiringAlumni: hiringAlumni.length,
+      jobPostedOnly,
+      totalAlumni: filteredAlumni.length,
       alumniByCompany,
     });
+
   } catch (error) {
     console.error("Error fetching company alumni:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      errorCode: "INTERNAL_SERVER_ERROR",
+      message: "Something went wrong. Please try again later.",
+      data: null,
+    });
   }
 };

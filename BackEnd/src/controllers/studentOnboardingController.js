@@ -36,7 +36,7 @@ export const submitOnboardingForm = async (req, res) => {
         error: "Unauthorized: User not authenticated."
       });
     }
-
+  console.log('i am here Mmna')
     const result = await submitOnboardingFormService(
       req.user._id,
       req.body,
