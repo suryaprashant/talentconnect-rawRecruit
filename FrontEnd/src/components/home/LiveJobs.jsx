@@ -33,20 +33,107 @@ const LiveJobs = () => {
   // API MAPPING
   const fallbackJobs = [
     {
-      _id: "1",
-      title: "Software Engineer Intern",
-      companyName: "Top Tech Company",
-      location: "India",
-      stipend: "₹20,000/month",
-      createdAt: new Date().toISOString(),
+      _id: "cmp-1",
+
+      jobRoles: ["Software Engineer Intern"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Bangalore, India"],
+        },
+      },
+
+      workLocation: ["Bangalore, India"],
+
+      packageDetails: {
+        totalCTC: 800000, // ₹8 LPA
+      },
+
+      employmentType: ["Internship"],
+      workMode: ["Hybrid"],
+
+      startDate: "2026-07-01",
+      endDate: "2026-06-25",
+      onlineTestDate: "2026-06-28",
+      offerRolloutDate: "2026-07-05",
+
+      studentStreams: ["CSE", "IT", "ECE"],
+
+      skills: ["React", "JavaScript", "Node.js"],
+
+      minimumStudents: 10,
     },
     {
-      _id: "2",
-      title: "Frontend Developer (Fresher)",
-      companyName: "Startup India",
-      location: "Remote",
-      stipend: "₹5-8 LPA",
-      createdAt: new Date().toISOString(),
+      _id: "cmp-2",
+
+      jobRoles: ["Frontend Developer (Fresher)"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Remote"],
+        },
+      },
+
+      workLocation: ["Remote"],
+
+      packageDetails: {
+        totalCTC: 600000,
+      },
+
+      employmentType: ["Full-Time"],
+      workMode: ["Remote"],
+
+      startDate: "2026-07-10",
+      endDate: "2026-07-01",
+      onlineTestDate: "2026-07-03",
+      offerRolloutDate: "2026-07-12",
+
+      studentStreams: ["CSE", "Design"],
+
+      skills: ["React", "Tailwind CSS", "UI/UX"],
+
+      minimumStudents: 5,
+    },
+
+    {
+      _id: "cmp-3",
+
+      jobRoles: ["Backend Developer"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Hyderabad, India"],
+        },
+      },
+
+      workLocation: ["Hyderabad, India"],
+
+      packageDetails: {
+        totalCTC: 1000000,
+      },
+
+      employmentType: ["Full-Time"],
+      workMode: ["Onsite"],
+
+      startDate: "2026-07-15",
+      endDate: "2026-07-05",
+      onlineTestDate: "2026-07-08",
+      offerRolloutDate: "2026-07-18",
+
+      studentStreams: ["CSE", "IT"],
+
+      skills: ["Node.js", "MongoDB", "Express"],
+
+      minimumStudents: 8,
     },
   ];
   const getApiEndpoint = (role, type) => {
@@ -118,7 +205,12 @@ const LiveJobs = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (isPrerender) {
+      setActiveRole("College");   
+      setActiveType("On-Campus");
+    }
+  }, []);
   // TRIGGER ON CHANGE
   useEffect(() => {
     fetchJobs();

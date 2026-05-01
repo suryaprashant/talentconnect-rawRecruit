@@ -22,7 +22,17 @@ function Fresher_Profile() {
     resumeScore: null,
   });
   const navigate = useNavigate();
+  const formatDate = (date) => {
+    if (!date) return '';
 
+    const d = new Date(date);
+
+    return d.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
   const [profileData, setProfileData] = useState({
     profileImageUrl: '',
     backgroundImageUrl: '',
@@ -190,43 +200,120 @@ function Fresher_Profile() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // const handleProfessionalSwitch = async () => {
+  //   const isConfirmed = window.confirm(
+  //     "Are you sure you want to switch to a professional profile? This will update your user type permanently."
+  //   );
+
+  //   if (!isConfirmed) {
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const backendUrl = import.meta.env.VITE_Backend_URL;
+  //     const token = localStorage.getItem('token');
+  //     const formData = new FormData();
+
+  //     formData.append('profileType', 'professional');
+
+  //     const endpoint = `${backendUrl}/api/onboarding/update`;
+  //     const response = await axios.put(endpoint, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //         Authorization: `Bearer ${token}`
+  //       },
+  //       withCredentials: true,
+  //     });
+
+  //     if (response.data && response.data.data.profileType === 'professional') {
+  //       alert("Success! You have been switched to a professional profile.");
+  //       localStorage.setItem('selectedRole', 'professional');
+  //       navigate('/home');
+  //     } else {
+  //       throw new Error("API did not confirm the profile type update.");
+  //     }
+  //   } catch (err) {
+  //     console.error('Error switching to professional profile:', err.response ? err.response.data : err.message);
+  //     setError(`Failed to switch profile: ${err.response?.data?.details || err.message}`);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleProfessionalSwitch = async () => {
     const isConfirmed = window.confirm(
-      "Are you sure you want to switch to a professional profile? This will update your user type permanently."
+      "Are you sure you want to switch to a professional profile?"
     );
 
-    if (!isConfirmed) {
-      return;
-    }
+    if (!isConfirmed) return;
 
     setLoading(true);
     setError(null);
+
     try {
       const backendUrl = import.meta.env.VITE_Backend_URL;
       const token = localStorage.getItem('token');
+
       const formData = new FormData();
 
+      // ✅ REQUIRED
       formData.append('profileType', 'professional');
 
-      const endpoint = `${backendUrl}/api/onboarding/update`;
-      const response = await axios.put(endpoint, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        },
-        withCredentials: true,
+      // ✅ EXPERIENCES (IMPORTANT: stringify)
+      if (profileData.experiences?.length > 0) {
+        const cleanedExperiences = profileData.experiences.map(exp => {
+          const { experienceCertificateUrl, experienceCertificateFile, ...rest } = exp;
+          return rest;
+        });
+
+        formData.append('experiences', JSON.stringify(cleanedExperiences));
+      }
+
+      // ✅ SALARY FIELDS
+      if (profileData.currentSalaryCurrency)
+        formData.append('currentSalaryCurrency', profileData.currentSalaryCurrency);
+
+      if (profileData.currentSalaryAmount)
+        formData.append('currentSalaryAmount', profileData.currentSalaryAmount);
+
+      if (profileData.expectedSalaryCurrency)
+        formData.append('expectedSalaryCurrency', profileData.expectedSalaryCurrency);
+
+      if (profileData.expectedSalaryAmount)
+        formData.append('expectedSalaryAmount', profileData.expectedSalaryAmount);
+
+      // ✅ EXPERIENCE CERTIFICATE FILES (optional)
+      profileData.experiences.forEach((exp) => {
+        if (exp.experienceCertificateFile) {
+          formData.append('experienceCertificate', exp.experienceCertificateFile);
+        }
       });
 
-      if (response.data && response.data.data.profileType === 'professional') {
-        alert("Success! You have been switched to a professional profile.");
+      const response = await axios.put(
+        `${backendUrl}/api/onboarding/update`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data?.data?.profileType === 'professional') {
+        alert("Success! You have been switched.");
         localStorage.setItem('selectedRole', 'professional');
         navigate('/home');
       } else {
-        throw new Error("API did not confirm the profile type update.");
+        throw new Error("Profile switch failed.");
       }
+
     } catch (err) {
-      console.error('Error switching to professional profile:', err.response ? err.response.data : err.message);
-      setError(`Failed to switch profile: ${err.response?.data?.details || err.message}`);
+      console.error(err);
+      setError(`Failed: ${err.response?.data?.details || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -516,6 +603,7 @@ function Fresher_Profile() {
 
               <div className="space-y-6">
                 {profileData.experiences.map((exp, index) => (
+                  console.log(exp),
                   <div key={index} className="p-4 border border-gray-100 rounded-xl bg-gray-50/50 relative">
                     <h4 className="font-medium text-gray-900 mb-4">Work Experience {index + 1}</h4>
                     {profileData.experiences.length > 1 && (
@@ -562,7 +650,7 @@ function Fresher_Profile() {
                         <input
                           type="date"
                           className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
-                          value={exp.startDate}
+                          value={exp.startDate ? exp.startDate.split('T')[0] : ''}
                           onChange={(e) => handleWorkExperienceChange(index, 'startDate', e.target.value)}
                         />
                       </div>
@@ -573,7 +661,7 @@ function Fresher_Profile() {
                         <input
                           type="date"
                           className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#143694]/30 focus:border-[#143694] bg-white/50"
-                          value={exp.endDate}
+                          value={exp.endDate ? exp.endDate.split('T')[0] : ''}
                           onChange={(e) => handleWorkExperienceChange(index, 'endDate', e.target.value)}
                         />
                       </div>
@@ -987,7 +1075,7 @@ function Fresher_Profile() {
                             profileData.experiences.map((exp, idx) => (
                               <div key={idx} className="mb-4 border-b border-gray-100 pb-2 last:border-b-0">
                                 <p className="font-medium text-gray-900">{exp.role || 'N/A'} at {exp.company || 'N/A'}</p>
-                                <p className="text-sm text-gray-600">{exp.startDate || ''} - {exp.endDate || 'Present'}</p>
+                                <p className="text-sm text-gray-600">{formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}</p>
                                 <p className="text-sm text-gray-700">{exp.description || 'No description provided.'}</p>
                                 {exp.experienceCertificateUrl && (
                                   <p className="text-sm text-[#143694] mt-1">
