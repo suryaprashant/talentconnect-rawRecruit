@@ -96,43 +96,54 @@ const BlogPage = () => {
     <>
         <Helmet>
           {/* Title */}
-          <title>
+          <title key="blog-title">
             Career Blogs | Campus Hiring, Internships & Fresher Jobs | RawRecruit
           </title>
 
           {/* Meta Description */}
           <meta
+            key="blog-description"
             name="description"
             content="Read career blogs on campus hiring, internships, referral jobs, and fresher job opportunities in India. Learn how to get hired faster."
           />
 
           {/* Canonical */}
-          <link rel="canonical" href="https://rawrecruit.in/blogs" />
+          <link key="blog-canonical" rel="canonical" href="https://rawrecruit.in/blogs" />
 
           {/* Open Graph */}
           <meta
+            key="blog-og:title"
             property="og:title"
-            content="Career Blogs | Campus Hiring & Fresher Jobs | RawRecruit"
+            content="Career Blogs | Campus Hiring, Internships & Fresher Jobs | RawRecruit"
           />
           <meta
+            key="blog-og:description"
             property="og:description"
             content="Explore blogs on campus hiring, internships, and referral jobs for students in India."
           />
-          <meta property="og:url" content="https://rawrecruit.in/blogs" />
-          <meta property="og:type" content="website" />
+          <meta key="blog-og:url" property="og:url" content="https://rawrecruit.in/blogs" />
+          <meta key="blog-og:type" property="og:type" content="website" />
           <meta
+            key="blog-og:image"
             property="og:image"
             content="https://rawrecruit.in/logo1.png"
           />
           {/* Twitter */}
-          <meta name="twitter:card" content="summary_large_image" />
+          <meta key="blog-twitter:card" name="twitter:card" content="summary_large_image" />
           <meta
+            key="blog-twitter:title"
             name="twitter:title"
-            content="Career Blogs | Campus Hiring & Fresher Jobs"
+            content="Career Blogs | Campus Hiring, Internships & Fresher Jobs | RawRecruit"
           />
           <meta
+            key="blog-twitter:description"
             name="twitter:description"
             content="Learn about internships, referral jobs, and fresher hiring in India."
+          />
+          <meta
+            key="blog-twitter:image"
+            name="twitter:image"
+            content="https://rawrecruit.in/logo1.png"
           />
         </Helmet>
         <Navbar />
