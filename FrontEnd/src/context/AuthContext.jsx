@@ -7,25 +7,34 @@ export const AuthContextRole = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🔍 Detect prerender
+  const isPrerender =
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "ReactSnap";
+
   // 🔁 Restore auth on page refresh
-  
-    const fetchMe = async () => {
-      try {
-        const res = await axios.get("/api/auth/me", {
-          withCredentials: true,
-        });
-        setUser(res.data.user);
-      } catch (err) {
-        if (err.response?.status === 401) {
-          // User is not logged in → this is OK
-          setUser(null);
-        }
-      } finally {
-        setLoading(false);
+  const fetchMe = async () => {
+    try {
+      const res = await axios.get("/api/auth/me", {
+        withCredentials: true,
+      });
+      setUser(res.data.user);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setUser(null);
       }
-    };
-    
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    // 🚫 Skip API during prerender
+    if (isPrerender) {
+      setLoading(false);
+      return;
+    }
+
     fetchMe();
   }, []);
 

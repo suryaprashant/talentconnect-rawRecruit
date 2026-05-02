@@ -88,7 +88,21 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                         </div>
                     )}
                 </div>
-                
+                {type === 'work' && (
+  <div className="md:col-span-2 flex items-center gap-2">
+    <input
+      type="checkbox"
+      id={`isCurrent-${experience.id}`}
+      checked={experience.isCurrent || false}
+      disabled={!isProfileEditing}
+      onChange={(e) => handleInputChange('isCurrent', e.target.checked)}
+      className="w-4 h-4 accent-blue-600"
+    />
+    <label htmlFor={`isCurrent-${experience.id}`} className="text-sm font-semibold text-gray-700">
+      Currently working here
+    </label>
+  </div>
+)}
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Start Date
@@ -107,24 +121,27 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
                     )}
                 </div>
                 
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        End Date
-                    </label>
-                    {isProfileEditing ? (
-                        <input
-                            type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
-                            value={experience.endDate || ''}
-                            onChange={(e) => handleInputChange('endDate', e.target.value)}
-                        />
-                    ) : (
-                        <div className={displayFieldStyle}>
-                            {experience.endDate || "N/A"}
-                        </div>
-                    )}
-                </div>
-                
+               <div>
+  <label className="block text-sm font-semibold text-gray-700 mb-2">
+    End Date
+  </label>
+  {experience.isCurrent ? (
+    <div className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 italic">
+      Present
+    </div>
+  ) : isProfileEditing ? (
+    <input
+      type="date"
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e4ed8] focus:border-transparent transition-all"
+      value={experience.endDate || ''}
+      onChange={(e) => handleInputChange('endDate', e.target.value)}
+    />
+  ) : (
+    <div className={displayFieldStyle}>
+      {experience.endDate || "Present"}
+    </div>
+  )}
+</div>
                 <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Description
@@ -634,30 +651,59 @@ function ProfProfile() {
         }
     }, []);
 
-    const updateExperience = useCallback((type, id, field, value) => {
-        const updater = (prev) => prev.map(item => item.id === id ? { ...item, [field]: value } : item);
-        switch (type) {
-            case 'work':
-                setWorkExperiences(updater);
-                break;
-            case 'international':
-                setInternationalExperiences(updater);
-                break;
-            case 'leadership':
-                setLeadershipExperiences(updater);
-                break;
-            case 'achievement':
-                setAchievements(updater);
-                break;
-            case 'award':
-                setAwards(updater);
-                break;
-            case 'publication':
-                setPublications(updater);
-                break;
-            default: break;
-        }
-    }, []);
+    // const updateExperience = useCallback((type, id, field, value) => {
+    //     const updater = (prev) => prev.map(item => item.id === id ? { ...item, [field]: value } : item);
+    //     switch (type) {
+    //         case 'work':
+    //             setWorkExperiences(updater);
+    //             break;
+    //         case 'international':
+    //             setInternationalExperiences(updater);
+    //             break;
+    //         case 'leadership':
+    //             setLeadershipExperiences(updater);
+    //             break;
+    //         case 'achievement':
+    //             setAchievements(updater);
+    //             break;
+    //         case 'award':
+    //             setAwards(updater);
+    //             break;
+    //         case 'publication':
+    //             setPublications(updater);
+    //             break;
+    //         default: break;
+    //     }
+    // }, []);
+const updateExperience = useCallback((type, id, field, value) => {
+  if (type === 'work' && field === 'isCurrent' && value === true) {
+    // Only one can be current — unset others, set endDate on previous current
+    setWorkExperiences(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, isCurrent: true, endDate: '' };
+      }
+      // If this item was previously current, stamp today's date
+      if (item.isCurrent) {
+        const today = new Date().toISOString().split('T')[0];
+        return { ...item, isCurrent: false, endDate: today };
+      }
+      return item;
+    }));
+  } else {
+    const updater = (prev) => prev.map(item =>
+      item.id === id ? { ...item, [field]: value } : item
+    );
+    switch (type) {
+      case 'work': setWorkExperiences(updater); break;
+      case 'international': setInternationalExperiences(updater); break;
+      case 'leadership': setLeadershipExperiences(updater); break;
+      case 'achievement': setAchievements(updater); break;
+      case 'award': setAwards(updater); break;
+      case 'publication': setPublications(updater); break;
+      default: break;
+    }
+  }
+}, []);
 
     const handleProjectsHandledChange = (field, value) => {
         setProjectsHandled(prev => ({ ...prev, [field]: value }));
@@ -751,7 +797,8 @@ function ProfProfile() {
                 }
             }
             
-            const cleanArray = (arr) => arr.map(({ id, certificate, ...rest }) => rest);
+           // const cleanArray = (arr) => arr.map(({ id, certificate, ...rest }) => rest);
+           const cleanArray = (arr) => arr.map(({ id, certificate, ...rest }) => rest);
             
             formData.append('experiences', JSON.stringify(cleanArray(workExperiences)));
             formData.append('internationalExperience', JSON.stringify(cleanArray(internationalExperiences)));
@@ -1468,7 +1515,7 @@ function ProfProfile() {
                                 </div>
                             </div>
                         </div>
-
+                     
 
                         <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                             <div className="mb-4">

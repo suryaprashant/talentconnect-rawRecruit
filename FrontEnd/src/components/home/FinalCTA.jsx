@@ -43,7 +43,7 @@ const FinalCTA = () => {
 
         {/* Heading */}
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-          Start Hiring or Get Hired{" "}
+          Start Hiring Freshers or Apply for Jobs & Internships{" "}
           <span className="bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
             Today
           </span>
@@ -51,36 +51,46 @@ const FinalCTA = () => {
 
         {/* Subtext */}
         <p className="text-gray-500 text-lg mb-10 max-w-xl mx-auto">
-          Whether you're looking for talent or your next role, RawRecruit gets you there faster.
+          Find fresher jobs, internships, and campus hiring opportunities or hire top candidates through RawRecruit.
         </p>
+
+        <div className="sr-only">
+          <h3>Join RawRecruit for Jobs, Internships and Campus Hiring</h3>
+          <p>
+            Companies can hire freshers, colleges can manage placements, and students can apply for jobs and internships through RawRecruit.
+          </p>
+        </div>
 
         {/* CTAs */}
         <div className="flex flex-wrap justify-center gap-4">
 
           {/* Primary */}
-          <button
+          <a
+            href='/signup?role=company'
             onClick={() => handleRoleSelect("company")}
             className="px-6 py-3 rounded-xl bg-primaryBrand text-white font-medium shadow-md transition-all duration-300 ease-out
             hover:shadow-xl hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
           >
             Start Hiring
-          </button>
+          </a>
           {/* College */}
-          <button
+          <a
+            href='/signup?role=college'
             onClick={() => handleRoleSelect("college")}
             className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
             hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
           >
             Partner as College
-          </button>
+          </a>
           {/* Student */}
-          <button
+          <a
+            href='/signup?role=student'
             onClick={() => handleRoleSelect("student")}
             className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
             hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
           >
             Apply Now
-          </button>
+          </a>
 
           {/* Ghost */}
           {/* <button

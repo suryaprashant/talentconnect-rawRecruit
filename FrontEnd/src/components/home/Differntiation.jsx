@@ -6,22 +6,22 @@ const items = [
   {
     icon: Building2,
     title: "On-Campus + Pool + Off-Campus",
-    desc: "Run all three hiring modes in one system — no fragmented tools.",
+    desc: "Run on-campus, pool-campus, and off-campus hiring and job recruitment from one unified platform.",
   },
   {
     icon: GraduationCap,
     title: "Direct College Network",
-    desc: "Access verified colleges and students without middle layers.",
+    desc: "Access verified colleges and students for campus hiring and fresher job opportunities without middle layers."
   },
   {
     icon: Zap,
     title: "Structured Hiring Pipeline",
-    desc: "Applications, shortlisting, interviews — all tracked in one flow.",
+    desc: "Manage job applications, shortlisting, interviews, and hiring workflows in one centralized system."
   },
   {
     icon: Users,
     title: "Built for Freshers Only",
-    desc: "No noise. Only entry-level candidates and campus hiring.",
+    desc: "Focused only on campus hirings, freshers, internships, and entry-level job opportunities."
   },
 ];
 
@@ -47,10 +47,15 @@ const Differentiation = () => {
         </h2>
 
         <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-          Not just a job portal — a complete campus recruitment system.
+          A complete platform for campus hiring, internships, and fresher job opportunities across India.
         </p>
       </motion.div>
-
+      <div className="sr-only">
+        <h3>Campus Hiring Platform for Companies, Colleges and Students</h3>
+        <p>
+          RawRecruit helps companies hire freshers, colleges manage placements, and students apply for jobs and internships through one unified recruitment system.
+        </p>
+      </div>
       {/* Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-14">
         {items.map((item, i) => (

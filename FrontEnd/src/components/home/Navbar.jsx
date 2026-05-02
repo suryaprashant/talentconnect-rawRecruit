@@ -3,7 +3,7 @@ import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import heroImage from "../../assets/rawrecruit_transparent.png";
-
+import { Link } from "react-router-dom";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -39,23 +39,25 @@ const Navbar = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         
         {/* Logo */}
-        <button onClick={() => navigate("/")} className="font-display text-xl font-bold text-foreground">
-          <img src={heroImage} alt="TalentConnect" className="h-14" />
-        </button>
+        <Link to="/" className="font-display text-xl font-bold text-foreground">
+          <img src={heroImage} alt="RawRecruit Logo" className="h-14" />
+        </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           
-          <button onClick={() => handleRoleSelect("company")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          <Link to="/signup?role=company" onClick={() => handleRoleSelect("company")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Companies
-          </button>
-          <button onClick={() => handleRoleSelect("college")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          </Link>
+          <Link to="/signup?role=college" onClick={() => handleRoleSelect("college")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Colleges
-          </button>
-          <button onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          </Link>
+          <Link to="/signup?role=student" onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Candidate
-          </button>
-          <button onClick={() => navigate("/blogs")} className="text-sm font-medium text-muted-foreground hover:text-foreground">Blogs</button>
+          </Link>
+          <Link to="/blogs" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            Blogs
+          </Link>
           {/* <button onClick={() => navigate("/help")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Help
           </button> */}

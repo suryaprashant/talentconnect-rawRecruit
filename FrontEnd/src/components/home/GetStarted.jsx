@@ -6,17 +6,17 @@ const steps = [
   {
     icon: UserPlus,
     title: "Choose Your Role",
-    desc: "Sign up as Company, College, or Candidate(Student, Fresher, Professional)."
+    desc: "Sign up as Company, College, or Candidate(Student, Fresher, Professional) to access hiring, internships, and job opportunities."
   },
   {
     icon: FileText,
     title: "Complete Profile",
-    desc: "Add details to unlock full platform features."
+    desc: "Complete your profile to manage campus hiring or apply for jobs and internships efficiently."
   },
   {
     icon: Rocket,
     title: "Start Using Platform",
-    desc: "Hire, apply, or manage placements instantly."
+    desc: "Start hiring freshers, applying to jobs, or managing placements through one unified platform."
   },
 ];
 
@@ -34,7 +34,7 @@ const GettingStarted = () => {
         className="text-center mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Get Started in{" "}
+          Get Started with RawRecruit in{" "}
           <span className="bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
             3 Simple Steps
           </span>
@@ -44,7 +44,12 @@ const GettingStarted = () => {
           From signup to hiring or applying — everything takes just minutes.
         </p>
       </motion.div>
-
+      <div className="sr-only">
+        <h3>How to Start Using RawRecruit</h3>
+        <p>
+          Sign up, complete your profile, and start applying to jobs, internships, or hiring freshers through a centralized campus hiring platform.
+        </p>
+      </div>
       {/* Steps */}
       <div className="grid md:grid-cols-3 gap-12 max-w-4xl mx-auto mb-14 text-center">
         {steps.map((s, i) => (
@@ -79,12 +84,12 @@ const GettingStarted = () => {
 
       {/* CTA */}
       <div className="text-center">
-        <button
-          onClick={() => navigate("/userselection")}
+        <a
+          href="/signup"
           className="px-8 py-3 text-lg rounded-xl bg-primaryBrand text-white font-medium shadow-md hover:shadow-lg transition"
         >
           Get Started Now
-        </button>
+        </a>
       </div>
 
     </div>

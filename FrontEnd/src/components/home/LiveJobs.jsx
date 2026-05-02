@@ -27,8 +27,115 @@ const LiveJobs = () => {
 
   const navigate = useNavigate();
   const { isAuthenticated, role } = useAuth();
-
+  const isPrerender =
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "ReactSnap";
   // API MAPPING
+  const fallbackJobs = [
+    {
+      _id: "cmp-1",
+
+      jobRoles: ["Software Engineer Intern"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Bangalore, India"],
+        },
+      },
+
+      workLocation: ["Bangalore, India"],
+
+      packageDetails: {
+        totalCTC: 800000, // ₹8 LPA
+      },
+
+      employmentType: ["Internship"],
+      workMode: ["Hybrid"],
+
+      startDate: "2026-07-01",
+      endDate: "2026-06-25",
+      onlineTestDate: "2026-06-28",
+      offerRolloutDate: "2026-07-05",
+
+      studentStreams: ["CSE", "IT", "ECE"],
+
+      skills: ["React", "JavaScript", "Node.js"],
+
+      minimumStudents: 10,
+    },
+    {
+      _id: "cmp-2",
+
+      jobRoles: ["Frontend Developer (Fresher)"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Remote"],
+        },
+      },
+
+      workLocation: ["Remote"],
+
+      packageDetails: {
+        totalCTC: 600000,
+      },
+
+      employmentType: ["Full-Time"],
+      workMode: ["Remote"],
+
+      startDate: "2026-07-10",
+      endDate: "2026-07-01",
+      onlineTestDate: "2026-07-03",
+      offerRolloutDate: "2026-07-12",
+
+      studentStreams: ["CSE", "Design"],
+
+      skills: ["React", "Tailwind CSS", "UI/UX"],
+
+      minimumStudents: 5,
+    },
+
+    {
+      _id: "cmp-3",
+
+      jobRoles: ["Backend Developer"],
+
+      companyPosted: {
+        companyDetails: {
+          companyName: "RawRecruit",
+        },
+        hiringPreferences: {
+          hiringLocations: ["Hyderabad, India"],
+        },
+      },
+
+      workLocation: ["Hyderabad, India"],
+
+      packageDetails: {
+        totalCTC: 1000000,
+      },
+
+      employmentType: ["Full-Time"],
+      workMode: ["Onsite"],
+
+      startDate: "2026-07-15",
+      endDate: "2026-07-05",
+      onlineTestDate: "2026-07-08",
+      offerRolloutDate: "2026-07-18",
+
+      studentStreams: ["CSE", "IT"],
+
+      skills: ["Node.js", "MongoDB", "Express"],
+
+      minimumStudents: 8,
+    },
+  ];
   const getApiEndpoint = (role, type) => {
     // STUDENT
     if (role === "Student") {
@@ -69,7 +176,10 @@ const LiveJobs = () => {
 
     try {
       setLoading(true);
-
+      if (isPrerender) {
+        setJobs(fallbackJobs);
+        return;
+      }
       const res = await fetch(
         `${import.meta.env.VITE_Backend_URL}${endpoint}`
       );
@@ -89,12 +199,18 @@ const LiveJobs = () => {
 
     } catch (err) {
       console.error("Error fetching jobs:", err);
-      setJobs([]);
+      setJobs(fallbackJobs);
+
     } finally {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (isPrerender) {
+      setActiveRole("College");   
+      setActiveType("On-Campus");
+    }
+  }, []);
   // TRIGGER ON CHANGE
   useEffect(() => {
     fetchJobs();
@@ -137,8 +253,8 @@ const LiveJobs = () => {
     });
   };
   // VIEW ALL BUTTON
-  const handleViewAll = (job) => {
-    let path = "/jobs";
+  const getJobHref = () => {
+    let path = "/student-dashboard/Off-campus";
     // COMPANY
     if (activeRole === "Company") {
       if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
@@ -164,7 +280,7 @@ const LiveJobs = () => {
       if (activeType === "Internship") path = "/fresher-dashboard/Internship";
       if (activeType === "Referral") path = "/fresher-dashboard/Referral";
     }
-    navigate(path);
+    return(path);
   };
 
   return (
@@ -223,12 +339,28 @@ const LiveJobs = () => {
         </div>
       </motion.div>
 
+      <div className="sr-only">
+        <h2>Latest Jobs and Internships for Freshers in India</h2>
+        <p>
+          Browse off-campus jobs, internships, referral jobs, and campus hiring opportunities for students and freshers across India.
+        </p>
+
+        <h3>Jobs for Companies</h3>
+        <p>Post and manage on-campus and off-campus hiring drives for freshers.</p>
+
+        <h3>Jobs for Colleges</h3>
+        <p>Connect with companies and manage placement opportunities for students.</p>
+
+        <h3>Jobs for Students</h3>
+        <p>Apply to internships, referral jobs, and track your applications easily.</p>
+      </div>
+
       {/* JOB GRID */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
         {loading ? (
           <p className="text-center col-span-3">Loading jobs...</p>
         ) : jobs.length === 0 ? (
-          <p className="text-center col-span-3">No jobs found</p>
+          <p className="text-center col-span-3">Explore latest opportunities for freshers and students</p>
         ) : (
           [...jobs]
             .filter((job) => {
@@ -250,60 +382,110 @@ const LiveJobs = () => {
             .map((job, i) => {
               if (activeRole === "Company") {
                 return (
-                  <CollegeJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <CollegeJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               if (activeRole === "College") {
                 return (
-                  <CompanyJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
-                    job={job}
-                    i={i}
-                    activeType={activeType}
-                    handleApply={() => handleApply(job)}
-                  />
+                  >
+                    <CompanyJobCard 
+                      job={job}
+                      i={i}
+                      activeType={activeType}
+                    />
+                  </a>
+                  // <CompanyJobCard
+                  //   key={job._id || i}
+                  //   job={job}
+                  //   i={i}
+                  //   activeType={activeType}
+                  //   handleApply={() => handleApply(job)}
+                  // />
                 );
               }
 
               if (activeType === "Referral") {
                 return (
-                  <ReferralJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <ReferralJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               if (activeType === "Internship") {
                 return (
-                  <InternshipJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <InternshipJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
               }
 
               return (
-                  <CompanyJobCard
+                  <a
+                    href={getJobHref()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleApply(job);
+                    }}
                     key={job._id || i}
+                  >
+                  <CompanyJobCard
+                    // key={job._id || i}
                     job={job}
                     i={i}
                     activeType={activeType}
-                    handleApply={() => handleApply(job)}
+                    // handleApply={() => handleApply(job)}
                   />
+                  </a>
                 );
             })
         )}
@@ -311,12 +493,16 @@ const LiveJobs = () => {
 
       {/* CTA */}
       <div className="text-center mt-12">
-        <button
-          onClick={handleViewAll}
+        <a
+          href={getJobHref()}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(getJobHref());
+          }}
           className="px-8 py-3 border border-primaryBrand text-primaryBrand rounded-xl hover:bg-primaryBrand hover:text-white transition"
         >
           View All Jobs
-        </button>
+        </a>
       </div>
     </div>
   </section>

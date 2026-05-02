@@ -78,9 +78,9 @@ const HowItWorks = () => {
         whileInView={{ opacity: 1, y: 0 }}
         className="text-center mb-16"
       >
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-          How It Works
-        </h3>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+          How RawRecruit Works
+        </h2>
 
         {/* Tabs */}
         <div className="flex justify-center gap-3 flex-wrap">
@@ -99,7 +99,16 @@ const HowItWorks = () => {
           ))}
         </div>
       </motion.div>
+      <div className="sr-only">
+        <h3>How Companies Hire Freshers</h3>
+        <p>Post jobs, receive applications, and manage hiring processes.</p>
 
+        <h3>How Students Apply for Jobs</h3>
+        <p>Explore internships, referral jobs, and apply to opportunities.</p>
+
+        <h3>How Colleges Manage Placements</h3>
+        <p>Connect with companies and manage campus recruitment drives.</p>
+      </div>
       {/* Steps */}
       <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto text-center">
         {steps.map((s, i) => (
