@@ -1,59 +1,60 @@
-// scripts/dedupe-head.js
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs'
-import { join } from 'path'
+// scripts/dedupe-head.mjs
+import fs from "fs";
+import path from "path";
 
-function dedupeHtmlHead(filePath) {
-  let html = readFileSync(filePath, 'utf-8')
+const distPath = "./dist";
 
-  // Parse out the <head> block
-  const headMatch = html.match(/<head>([\s\S]*?)<\/head>/)
-  if (!headMatch) return
+function cleanHead(filePath) {
+  let html = fs.readFileSync(filePath, "utf-8");
 
-  const headContent = headMatch[1]
-  const lines = headContent.split('\n')
-  
-  const seen = new Set()
-  const deduped = lines.filter(line => {
-    const trimmed = line.trim()
-    if (!trimmed) return true // keep blank lines
-    
-    // Extract the tag signature (tag name + key attributes)
-    const tagMatch = trimmed.match(/<(title|meta|link)[^>]*>/i)
-    if (!tagMatch) return true
-    
-    // For meta tags, use name/property + content as key
-    // For title, just use the tag itself
-    // For link rel=canonical, use rel as key
-    let key = trimmed
-      .replace(/\s+/g, ' ')
-      .replace(/ \/>/g, '>')
-      .toLowerCase()
+  // Step 1: Deduplicate full <title>...</title> blocks — keep the LAST one
+  // (Helmet injects last, so last = correct page title)
+  const titleMatches = [...html.matchAll(/<title>[^<]*<\/title>/gi)];
+  if (titleMatches.length > 1) {
+    console.log(`  Found ${titleMatches.length} <title> tags in ${filePath}, deduplicating...`);
+    let firstRemoved = false;
+    html = html.replace(/<title>[^<]*<\/title>/gi, (match) => {
+      if (!firstRemoved) {
+        firstRemoved = true;
+        return ""; // remove the first (react-snap's snapshot copy)
+      }
+      return match; // keep the last (Helmet's correct one)
+    });
+  }
 
+  // Step 2: Deduplicate self-closing meta/link tags by semantic key
+  const seen = new Set();
+  html = html.replace(/<(meta|link)[^>]*\/?>/gi, (tag) => {
+    let key = "";
+
+    if (tag.includes('name="description"')) key = "description";
+    else if (tag.includes('property="og:')) key = tag.match(/property="([^"]+)"/)?.[1];
+    else if (tag.includes('name="twitter:')) key = tag.match(/name="([^"]+)"/)?.[1];
+    else if (tag.includes('rel="canonical"')) key = "canonical";
+
+    if (!key) return tag; // not an SEO tag, leave it alone
     if (seen.has(key)) {
-      console.log(`Removed duplicate: ${trimmed.substring(0, 80)}`)
-      return false
+      console.log(`  Removed duplicate: ${key}`);
+      return "";
     }
-    seen.add(key)
-    return true
-  })
+    seen.add(key);
+    return tag;
+  });
 
-  const newHead = deduped.join('\n')
-  html = html.replace(headMatch[1], newHead)
-  writeFileSync(filePath, html, 'utf-8')
+  fs.writeFileSync(filePath, html);
 }
 
 function walkDir(dir) {
-  const files = readdirSync(dir)
-  for (const file of files) {
-    const fullPath = join(dir, file)
-    if (statSync(fullPath).isDirectory()) {
-      walkDir(fullPath)
-    } else if (file.endsWith('.html')) {
-      console.log(`Processing: ${fullPath}`)
-      dedupeHtmlHead(fullPath)
+  fs.readdirSync(dir).forEach((file) => {
+    const fullPath = path.join(dir, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      walkDir(fullPath);
+    } else if (file.endsWith(".html")) {
+      console.log(`Processing: ${fullPath}`);
+      cleanHead(fullPath);
     }
-  }
+  });
 }
 
-walkDir('./dist')
-console.log('Done deduplicating head tags.')
+walkDir(distPath);
+console.log("Head tags deduplicated successfully");

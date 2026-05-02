@@ -12,12 +12,12 @@
   },
   "reactSnap": {
     "source": "dist",
-    "include": [
-      "/",
-      "/blogs"
-    ],
+    "include": ["/", "/blogs"],
     "skipThirdPartyRequests": true,
     "crawl": false,
+    "inlineCss": false,
+    "waitUntil": "domcontentloaded",
+    "timeout": 10000,
     "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox"]
   },
   "dependencies": {
