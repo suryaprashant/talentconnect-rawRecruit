@@ -66,6 +66,7 @@ const LiveJobs = () => {
 
       minimumStudents: 10,
     },
+
     {
       _id: "cmp-2",
 

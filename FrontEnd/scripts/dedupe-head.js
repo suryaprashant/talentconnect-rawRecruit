@@ -1,59 +1,51 @@
-// scripts/dedupe-head.js
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs'
-import { join } from 'path'
+// scripts/dedupe-head.mjs  ← rename to .mjs to avoid module issues
+import fs from "fs";
+import path from "path";
 
-function dedupeHtmlHead(filePath) {
-  let html = readFileSync(filePath, 'utf-8')
+const distPath = "./dist";
 
-  // Parse out the <head> block
-  const headMatch = html.match(/<head>([\s\S]*?)<\/head>/)
-  if (!headMatch) return
+function cleanHead(filePath) {
+  let html = fs.readFileSync(filePath, "utf-8");
+  const seen = new Set();
 
-  const headContent = headMatch[1]
-  const lines = headContent.split('\n')
-  
-  const seen = new Set()
-  const deduped = lines.filter(line => {
-    const trimmed = line.trim()
-    if (!trimmed) return true // keep blank lines
-    
-    // Extract the tag signature (tag name + key attributes)
-    const tagMatch = trimmed.match(/<(title|meta|link)[^>]*>/i)
-    if (!tagMatch) return true
-    
-    // For meta tags, use name/property + content as key
-    // For title, just use the tag itself
-    // For link rel=canonical, use rel as key
-    let key = trimmed
-      .replace(/\s+/g, ' ')
-      .replace(/ \/>/g, '>')
-      .toLowerCase()
+  html = html.replace(/<(title|meta|link)[^>]*>/gi, (tag) => {
+    let key = "";
 
-    if (seen.has(key)) {
-      console.log(`Removed duplicate: ${trimmed.substring(0, 80)}`)
-      return false
+    if (tag.startsWith("<title")) {
+      key = "title";
+    } else if (tag.includes('name="description"')) {
+      key = "description";
+    } else if (tag.includes('property="og:')) {
+      key = tag.match(/property="([^"]+)"/)?.[1];
+    } else if (tag.includes('name="twitter:')) {
+      key = tag.match(/name="([^"]+)"/)?.[1];
+    } else if (tag.includes('rel="canonical"')) {
+      key = "canonical";
     }
-    seen.add(key)
-    return true
-  })
 
-  const newHead = deduped.join('\n')
-  html = html.replace(headMatch[1], newHead)
-  writeFileSync(filePath, html, 'utf-8')
+    if (!key) return tag;
+    if (seen.has(key)) {
+      console.log(`  Removed duplicate: ${key}`);
+      return "";
+    }
+    seen.add(key);
+    return tag;
+  });
+
+  fs.writeFileSync(filePath, html);
 }
 
 function walkDir(dir) {
-  const files = readdirSync(dir)
-  for (const file of files) {
-    const fullPath = join(dir, file)
-    if (statSync(fullPath).isDirectory()) {
-      walkDir(fullPath)
-    } else if (file.endsWith('.html')) {
-      console.log(`Processing: ${fullPath}`)
-      dedupeHtmlHead(fullPath)
+  fs.readdirSync(dir).forEach((file) => {
+    const fullPath = path.join(dir, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      walkDir(fullPath);
+    } else if (file.endsWith(".html")) {
+      console.log(`Processing: ${fullPath}`);
+      cleanHead(fullPath);
     }
-  }
+  });
 }
 
-walkDir('./dist')
-console.log('Done deduplicating head tags.')
+walkDir(distPath);
+console.log("Head tags deduplicated successfully");
