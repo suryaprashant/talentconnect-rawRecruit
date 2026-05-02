@@ -20,6 +20,13 @@ if (GA_ID) {
   ReactGA.initialize(GA_ID);
 }
 
+if (typeof window !== 'undefined') {
+  const titles = document.querySelectorAll('title')
+  if (titles.length > 1) {
+    titles.forEach((el, i) => { if (i > 0) el.remove() })
+  }
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <StrictMode>
   <>
