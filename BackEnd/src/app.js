@@ -144,7 +144,7 @@ app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement)
 app.use("/api/admin/servicerequest", serviceRequestManagement);
-app.use("/api/candidate", CandidateRoute);
+//app.use("/api/candidate", CandidateRoute);
 app.use("/api/ticker", LiveTicker);
 
 app.use("/api/meta", CustomDropDown);

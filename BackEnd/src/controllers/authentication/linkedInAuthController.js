@@ -24,6 +24,7 @@ export const redirectToLinkedIn = (req, res) => {
     }
 
     const linkedInAuthUrl = generateLinkedInAuthUrl({ userType });
+        console.log("LinkedIn Auth URL:", linkedInAuthUrl);
     return res.redirect(linkedInAuthUrl);
   } catch (error) {
     console.error("Error redirecting to LinkedIn:", error);
