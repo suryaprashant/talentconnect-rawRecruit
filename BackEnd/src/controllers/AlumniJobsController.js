@@ -1367,12 +1367,6 @@ export const getCompanyAlumni = async (req, res) => {
         success: true,
         errorCode: null,
         message: "No alumni from your companies are currently hiring.",
-        debug: {
-          uniqueCompanies,
-          totalAlumniFound: companyAlumni.length,
-          afterHiringFilter: 0,
-          jobPostedOnly,
-        },
         companiesChecked: uniqueCompanies,
         jobPostedOnly,
         totalAlumni: 0,
