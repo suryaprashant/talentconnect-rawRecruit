@@ -433,7 +433,7 @@ export const handleOnboardingUpdate = async (updateData, files) => {
 
   if (files?.resume?.[0]) {
     const file = files.resume[0];
-    const upload = await streamUpload(file.buffer, "resumes", file.mimetype);
+    const upload = await streamUpload(file.buffer, "resumes");
 
     // existing field (keep it for backward compatibility)
     updateData.resume = upload.secure_url;

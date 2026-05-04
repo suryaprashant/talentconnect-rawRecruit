@@ -258,10 +258,10 @@ function Fresher_Profile() {
 
       const formData = new FormData();
 
-      // ✅ REQUIRED
+      //  REQUIRED
       formData.append('profileType', 'professional');
 
-      // ✅ EXPERIENCES (IMPORTANT: stringify)
+      //  EXPERIENCES (IMPORTANT: stringify)
       if (profileData.experiences?.length > 0) {
         const cleanedExperiences = profileData.experiences.map(exp => {
           const { experienceCertificateUrl, experienceCertificateFile, ...rest } = exp;
@@ -271,7 +271,7 @@ function Fresher_Profile() {
         formData.append('experiences', JSON.stringify(cleanedExperiences));
       }
 
-      // ✅ SALARY FIELDS
+      //  SALARY FIELDS
       if (profileData.currentSalaryCurrency)
         formData.append('currentSalaryCurrency', profileData.currentSalaryCurrency);
 
@@ -283,8 +283,7 @@ function Fresher_Profile() {
 
       if (profileData.expectedSalaryAmount)
         formData.append('expectedSalaryAmount', profileData.expectedSalaryAmount);
-
-      // ✅ EXPERIENCE CERTIFICATE FILES (optional)
+      //  EXPERIENCE CERTIFICATE FILES (optional)
       profileData.experiences.forEach((exp) => {
         if (exp.experienceCertificateFile) {
           formData.append('experienceCertificate', exp.experienceCertificateFile);
