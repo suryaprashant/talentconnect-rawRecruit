@@ -7,6 +7,7 @@ import {
   getMasterData,
   createMasterData,
   getCategorizedSkills,
+  getOnboardingByUserId
 } from "../controllers/studentOnboardingController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js"; 
 import multer from "multer"; 
@@ -60,7 +61,8 @@ router.put(
   ]),
   updateOnboardingForm
 );
-
+// get all the details of the user
+router.get("/onboarding/get-details/:userId", secureRoute, getOnboardingByUserId);
 // Fetch dropdown options
 router.get("/master-data", getMasterData);
 

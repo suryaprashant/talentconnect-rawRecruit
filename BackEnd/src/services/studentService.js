@@ -561,3 +561,18 @@ export const getCategorizedSkillsService = async (userId) => {
     throw error;
   }
 };
+
+// this service gets all the details of the specific user if passed to display in app frontend
+export const getOnboardingByUserIdService = async (userId) => {
+  if (!userId) {
+    throw new Error("UserId is required");
+  }
+
+  const onboardingData = await OnboardingModel.findOne({ userId }).lean();
+
+  if (!onboardingData) {
+    return null;
+  }
+
+  return onboardingData;
+};

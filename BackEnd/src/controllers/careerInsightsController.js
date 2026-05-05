@@ -1,6 +1,8 @@
 import CareerInsights from "../models/careerInsightsModel.js";
 import { calculateHiringScoreService } from "../services/hiringScoreService.js";
 import { updateUserRanking } from "../services/rankingService.js";
+import Onboarding from "../models/studentonboardingModel.js";
+import { categorizeSkillsService } from "../services/skillCategorizationService.js";
 
 export const getCareerInsightsWithHiringScore = async (req, res) => {
   try {
@@ -13,27 +15,48 @@ export const getCareerInsightsWithHiringScore = async (req, res) => {
     const userId = req.user._id;
 
     // 🔹 STEP 1: Fetch insights
-    let insights = await CareerInsights.findOne({ userId })
-      .select(`
-        categorizedSkills
-        resumeScore
-        missingSkills
-        suggestions
-        hiringScore
-        hiringBreakdown
-        hiringInsights
-        lastAnalyzedAt
-        updatedAt
-      `)
-      .lean();
+    const fetchInsights = () =>
+      CareerInsights.findOne({ userId })
+        .select(`
+          categorizedSkills
+          resumeScore
+          missingSkills
+          suggestions
+          hiringScore
+          hiringBreakdown
+          hiringInsights
+          lastAnalyzedAt
+          updatedAt
+        `)
+        .lean();
+
+    let insights = await fetchInsights();
 
     if (!insights) {
-      return res.status(404).json({
-        error: "Career insights not found"
-      });
+      console.log("⚙️ No career insights → generating...");
+
+      // Fetch onboarding data
+      const onboardingData = await Onboarding.findOne({ userId }).lean();
+
+      if (!onboardingData) {
+        return res.status(404).json({
+          error: "Onboarding data not found"
+        });
+      }
+
+      // Generate insights
+      const generated = await categorizeSkillsService(userId, onboardingData);
+
+      if (!generated) {
+        return res.status(500).json({
+          error: "Failed to generate career insights"
+        });
+      }
+
+      insights = await fetchInsights();
     }
 
-    // 🔥 STEP 2: If hiringScore missing → calculate
+    //  STEP 2: If hiringScore missing → calculate
     if (
       insights.hiringScore === undefined ||
       insights.hiringScore === null
@@ -94,7 +117,7 @@ export const getUserRanking = async (req, res) => {
       });
     }
 
-    // 🔥 STEP 2: Ensure hiringScore exists
+    //  STEP 2: Ensure hiringScore exists
     if (
       data.hiringScore === undefined ||
       data.hiringScore === null
@@ -109,7 +132,7 @@ export const getUserRanking = async (req, res) => {
         .lean();
     }
 
-    // 🔥 STEP 3: Ensure ranking exists
+    //  STEP 3: Ensure ranking exists
     if (
       data.rank === undefined ||
       data.rank === null

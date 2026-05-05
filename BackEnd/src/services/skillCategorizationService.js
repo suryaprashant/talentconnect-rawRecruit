@@ -107,6 +107,43 @@
 import axios from "axios";
 import CareerInsights from "../models/careerInsightsModel.js";
 
+const normalizeArray = (field) => {
+  if (!field) return [];
+
+  // already array
+  if (Array.isArray(field)) return field;
+
+  // JSON string case (IMPORTANT)
+  if (typeof field === "string") {
+    try {
+      const parsed = JSON.parse(field);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+
+    // fallback (comma string)
+    return field.split(",").map(s => s.trim());
+  }
+
+  // object like {0: "a", 1: "b"}
+  if (typeof field === "object") {
+    return Object.values(field);
+  }
+
+  return [];
+};
+const parseJSONField = (field, fallback) => {
+  if (!field) return fallback;
+
+  if (typeof field === "string") {
+    try {
+      return JSON.parse(field);
+    } catch {
+      return fallback;
+    }
+  }
+
+  return field;
+};
 export const categorizeSkillsService = async (userId, onboardingData) => {
   const {
     skills = [],
@@ -120,13 +157,20 @@ export const categorizeSkillsService = async (userId, onboardingData) => {
     domainKnowledge = [],
     jobRoles = []
   } = onboardingData;
+
+  const normalizedSkills = normalizeArray(skills);
+  const normalizedTools = normalizeArray(toolsAndPlatforms);
+  const normalizedDomain = normalizeArray(domainKnowledge);
+  const normalizedJobRoles = normalizeArray(jobRoles);
+  const normalizedExperiences = parseJSONField(experiences, []);
+  const normalizedProjects = parseJSONField(projectsHandled, {});
   try {
     if (!process.env.GEMINI_API_KEY) {
       console.warn("⚠️ Gemini API key missing");
       return null;
     }
 
-    if (!skills || skills.length === 0) {
+    if (!normalizedSkills.length) {
       console.warn("⚠️ No skills found in onboardingData");
       return null;
     }
@@ -141,19 +185,19 @@ INPUT DATA
 ========================
 
 Skills:
-${skills.join(", ")}
+${normalizedSkills.join(", ")}
 
 Tools & Platforms:
-${(toolsAndPlatforms || []).join(", ")}
+${(normalizedTools || []).join(", ")}
 
 Domain Knowledge:
-${(domainKnowledge || []).join(", ")}
+${(normalizedDomain || []).join(", ")}
 
 Experience:
-${JSON.stringify(experiences || [])}
+${JSON.stringify(normalizedExperiences)}
 
 Projects:
-${JSON.stringify(projectsHandled || {})}
+${JSON.stringify(normalizedProjects)}
 
 Education:
 Degree: ${degree || ""}
@@ -164,7 +208,7 @@ Total Experience:
 ${totalYearsOfExperience || ""}
 
 Target Job Roles:
-${(jobRoles && jobRoles.length > 0) ? jobRoles.join(", ") : "Not specified"}
+${normalizedJobRoles.length ? normalizedJobRoles.join(", ") : "Not specified"}
 
 ========================
 ROLE SELECTION LOGIC
