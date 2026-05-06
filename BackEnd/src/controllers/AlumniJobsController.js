@@ -258,7 +258,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
 
         // previously worked
         {
-          experience: {
+          experiences: {
             $elemMatch: {
               company: { $regex: companyRegex },
             },
