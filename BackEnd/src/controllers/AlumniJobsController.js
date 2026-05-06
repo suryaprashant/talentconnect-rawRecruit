@@ -237,7 +237,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
               currentCompany: companyRegex.toString(),
             },
             {
-              "experience.company": companyRegex.toString(),
+              "experiences.company": companyRegex.toString(),
             },
           ],
         },
@@ -329,7 +329,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
           person.currentCompany || ""
         );
 
-        const previouslyWorked = person.experience?.some((exp) =>
+        const previouslyWorked = person.experiences?.some((exp) =>
           companyRegex.test(exp.company || "")
         );
 
