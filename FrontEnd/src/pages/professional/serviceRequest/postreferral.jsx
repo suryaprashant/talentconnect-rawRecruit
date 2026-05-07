@@ -87,7 +87,7 @@ function PostReferralJobPage() {
     const navigate = useNavigate();
 
     const initialState = {
-        jobTitle: '',
+        jobTitle: [],
         description: '',
         employmentType: 'Full-time',
         workMode: 'On-site',
@@ -494,16 +494,35 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                         </div>
                     {/* Job Title + Work Mode */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                        <div>
-                            <FieldLabel htmlFor="jobTitle" required>Job Title</FieldLabel>
-                            <input
-                                type="text" id="jobTitle" name="jobTitle"
-                                placeholder="e.g. Senior Frontend Engineer"
-                                className={inputCls}
-                                value={formData.jobTitle}
-                                onChange={handleInputChange}
-                            />
-                        </div>
+                       <div>
+    <FieldLabel htmlFor="jobTitle" required>Job Title</FieldLabel>
+    <div className="p-2.5 border rounded-lg transition-all cursor-text border-gray-200 hover:border-[#143694]/50 bg-white">
+        <ChipList items={formData.jobTitle} field="jobTitle" />
+        <input
+            type="text"
+            placeholder="e.g. Senior Frontend Engineer, React Developer..."
+            className="w-full outline-none text-sm text-gray-800 placeholder:text-gray-400 bg-transparent"
+            onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ',') && e.target.value.trim()) {
+                    e.preventDefault();
+                    const val = e.target.value.replace(/,$/, '').trim();
+                    if (val && !formData.jobTitle.includes(val)) {
+                        setFormData(prev => ({ ...prev, jobTitle: [...prev.jobTitle, val] }));
+                    }
+                    e.target.value = '';
+                }
+            }}
+            onBlur={(e) => {
+                const val = e.target.value.replace(/,$/, '').trim();
+                if (val && !formData.jobTitle.includes(val)) {
+                    setFormData(prev => ({ ...prev, jobTitle: [...prev.jobTitle, val] }));
+                }
+                e.target.value = '';
+            }}
+        />
+    </div>
+    <p className="text-xs text-gray-400 mt-0.5">Press Enter or comma to add each title</p>
+</div>
                         <div>
                             <FieldLabel htmlFor="workMode" required>Work Mode</FieldLabel>
                             <div className="relative">

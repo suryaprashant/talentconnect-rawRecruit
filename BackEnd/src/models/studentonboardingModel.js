@@ -99,7 +99,7 @@ const studentOnboardingSchema = new mongoose.Schema(
         endDate: String,
         description: String,
         experienceCertificate: String,
-         isCurrent: { type: Boolean, default: false },  // ← add this
+         isCurrent: { type: Boolean, default: false },  
       },
     ],
 

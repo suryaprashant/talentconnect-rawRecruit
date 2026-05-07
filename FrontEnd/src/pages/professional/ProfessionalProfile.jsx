@@ -1733,7 +1733,7 @@ const updateExperience = useCallback((type, id, field, value) => {
                                         <input type="text" placeholder="e.g., 30 days" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={profileData.noticePeriod} onChange={(e) => handleProfileDataChange('noticePeriod', e.target.value)} />
                                     ) : (<div className={displayFieldStyle}>{profileData.noticePeriod || "N/A"}</div>)}
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Serving Notice Period?</label>
                                     {isProfileEditing ? (
                                         <div className="flex items-center space-x-4 mt-2">
@@ -1741,7 +1741,47 @@ const updateExperience = useCallback((type, id, field, value) => {
                                             <label><input type="radio" name="servingNotice" value="no" checked={profileData.servingNoticePeriod === false} onChange={() => handleProfileDataChange('servingNoticePeriod', false)} /> No</label>
                                         </div>
                                     ) : (<div className={displayFieldStyle}>{profileData.servingNoticePeriod ? 'Yes' : 'No'}</div>)}
-                                </div>
+                                </div> */}
+                                <div className="md:col-span-2">
+  <p className="text-sm text-gray-500">Serving Notice?</p>
+  {profileData.servingNoticePeriod ? (() => {
+    const start = new Date(profileData.noticePeriodStartDate);
+    const today = new Date();
+    start.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+    const totalDays = parseInt(profileData.noticePeriod) || 0;
+    const daysPassed = Math.min(Math.floor((today - start) / 86400000), totalDays);
+    const daysLeft = Math.max(0, totalDays - daysPassed);
+    const progress = totalDays > 0 ? Math.round((daysPassed / totalDays) * 100) : 0;
+    const isExpired = daysLeft === 0;
+    const lastDay = new Date(start.getTime() + totalDays * 86400000)
+      .toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    return (
+      <div className="mt-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-base font-semibold text-red-600">Yes</span>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${isExpired ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+            {isExpired ? 'Period complete' : `${daysLeft} days left`}
+          </span>
+        </div>
+        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+          <div
+            className={`h-1.5 rounded-full ${isExpired ? 'bg-green-500' : 'bg-orange-400'}`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+          <span>Started: <span className="text-gray-700 font-medium">{profileData.noticePeriodStartDate || 'N/A'}</span></span>
+          <span>Last day: <span className="text-gray-700 font-medium">{lastDay}</span></span>
+          <span>Served: <span className="text-gray-700 font-medium">{daysPassed}/{totalDays} days</span></span>
+        </div>
+      </div>
+    );
+  })() : (
+    <p className="text-base font-semibold text-green-600">No</p>
+  )}
+</div>
                                 {profileData.servingNoticePeriod && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Notice Period Start Date</label>
