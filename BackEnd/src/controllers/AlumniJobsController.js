@@ -1729,6 +1729,211 @@ export const getCompanyAlumni = async (req, res) => {
   }
 };
 
+export const getAlumniHiringNetwork = async (req, res) => {
+  const debugId = `[getCombinedAlumni-${Date.now()}]`;
+
+  try {
+    console.log(`\n${debugId} ===== REQUEST START =====`);
+
+    const userId = req.user?._id;
+    const jobPostedOnly = req.query.jobPostedOnly === "true";
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "userId not found in token. Please re-login.",
+      });
+    }
+
+    // Step 1: Get current user profile
+    const myProfile = await Onboarding.findOne({ userId });
+
+    if (!myProfile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found.",
+      });
+    }
+
+    // =====================================================
+    // STEP 2: FETCH COLLEGE ALUMNI
+    // =====================================================
+
+    let collegeAlumni = [];
+
+    if (myProfile.college) {
+      collegeAlumni = await Onboarding.find({
+        college: myProfile.college,
+        userId: { $ne: userId },
+      }).lean();
+    }
+
+    // =====================================================
+    // STEP 3: FETCH COMPANY ALUMNI
+    // =====================================================
+
+    let companyAlumni = [];
+
+    const allCompanies = [];
+
+    if (myProfile.currentCompany) {
+      allCompanies.push(myProfile.currentCompany);
+    }
+
+    myProfile.experiences?.forEach((exp) => {
+      if (exp.company) {
+        allCompanies.push(exp.company);
+      }
+    });
+
+    const uniqueCompanies = [
+      ...new Map(
+        allCompanies.map((c) => [c.toLowerCase(), c])
+      ).values(),
+    ];
+
+    if (uniqueCompanies.length > 0) {
+      const orConditions = uniqueCompanies.flatMap((company) => {
+        const regex = new RegExp(company, "i");
+
+        return [
+          { currentCompany: regex },
+          { "experiences.company": regex },
+        ];
+      });
+
+      companyAlumni = await Onboarding.find({
+        userId: { $ne: userId },
+        $or: orConditions,
+      }).lean();
+    }
+
+    // =====================================================
+    // STEP 4: MERGE + REMOVE DUPLICATES
+    // =====================================================
+
+    const mergedAlumni = [...collegeAlumni, ...companyAlumni];
+
+    // Remove duplicates using userId
+    const uniqueAlumniMap = new Map();
+
+    mergedAlumni.forEach((person) => {
+      const key = person.userId?.toString();
+
+      if (!uniqueAlumniMap.has(key)) {
+        uniqueAlumniMap.set(key, person);
+      }
+    });
+
+    const uniqueAlumni = Array.from(uniqueAlumniMap.values());
+
+    console.log(
+      `${debugId} Total unique alumni after dedup:`,
+      uniqueAlumni.length
+    );
+
+    // =====================================================
+    // STEP 5: FETCH METRICS + JOBS
+    // =====================================================
+
+    const alumniWithMetrics = await Promise.all(
+      uniqueAlumni.map(async (person) => {
+        let metrics = null;
+        let referralJobs = [];
+
+        try {
+          [metrics, referralJobs] = await Promise.all([
+            fetchProfessionalReferralMetrics(person._id),
+
+            JobPostingTable.find({
+              candidatePosted: person._id,
+              jobType: "Referral",
+              approvalStatus: "Approved",
+              inactive: false,
+            })
+              .sort({ createdAt: -1 })
+              .lean(),
+          ]);
+        } catch (err) {
+          console.error(
+            `${debugId} Error processing alumni ${person._id}:`,
+            err.message
+          );
+        }
+
+        return {
+          _id: person._id,
+          userId: person.userId,
+          name: person.name ?? null,
+          email: person.email ?? null,
+          phone: person.phone ?? null,
+          profileImage: person.profileImage ?? null,
+          backgroundImage: person.backgroundImage ?? null,
+
+          college: person.college ?? null,
+          degree: person.degree ?? null,
+          specialization: person.specialization ?? null,
+          yearOfGraduation: person.yearOfGraduation ?? null,
+
+          currentCompany: person.currentCompany ?? null,
+          totalYearsOfExperience:
+            person.totalYearsOfExperience ?? null,
+
+          jobRoles: person.jobRoles ?? [],
+          skills: person.skills ?? [],
+
+          linkedin: person.linkedin ?? null,
+          github: person.github ?? null,
+          portfolio: person.portfolio ?? null,
+
+          about: person.about ?? null,
+          experiences: person.experiences ?? [],
+
+          referralMetrics: metrics ?? null,
+          referralJobs: referralJobs ?? [],
+
+          isHiring: referralJobs.length > 0,
+        };
+      })
+    );
+
+    // =====================================================
+    // STEP 6: APPLY FILTER
+    // =====================================================
+
+    const filteredAlumni = jobPostedOnly
+      ? alumniWithMetrics.filter((person) => person.isHiring)
+      : alumniWithMetrics;
+
+    // =====================================================
+    // STEP 7: RESPONSE
+    // =====================================================
+
+    return res.status(200).json({
+      success: true,
+      message: "Combined alumni fetched successfully.",
+
+      college: myProfile.college ?? null,
+      companiesChecked: uniqueCompanies,
+
+      jobPostedOnly,
+
+      totalAlumni: filteredAlumni.length,
+
+      alumni: filteredAlumni,
+    });
+
+  } catch (error) {
+    console.error(`[getCombinedAlumni] ERROR:`, error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong.",
+      error: error.message,
+    });
+  }
+};
+
 // export const getCompanyAlumni = async (req, res) => {
 //   try {
 //     const userId = req.user._id;
