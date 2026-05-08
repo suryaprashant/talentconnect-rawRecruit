@@ -1123,11 +1123,21 @@ export async function countApplicationsService(jobId, jobType, targetStatus) {
 export async function ChangeStatusService(applicationId, newStatus) {
     try {
         const existing = await Application.findById(applicationId);
+        const allowedStatuses = [
+          "Applied",
+          "Application Sent",
+          "Referred To Company",
+          "Shortlisted",
+          "Interview Scheduled",
+          "Offer Extended",
+          "Accepted"
+        ];
+
         // console.log("existing response: ", existing);
         if (existing?.currentStatus === newStatus) {
             return { success: false, msg: `Already ${newStatus}` };
         }
-        else if (existing?.currentStatus === "Applied" || existing?.currentStatus === "Shortlisted" || existing?.currentStatus === "Accepted") {
+        else if (allowedStatuses.includes(existing?.currentStatus)) {
             existing.currentStatus = newStatus;
             existing.isVisited = false;
             existing.statusHistory.push({ status: newStatus });

@@ -309,7 +309,7 @@ export const getReferralApplications = (jobId,isVisited) => {
   return axiosClient.get(`/application/my-referral-applications`, {
     params: {
       jobId: jobId,
-      isVisited:isVisited,
+      // isVisited:isVisited,
       adminApprovalStatus: 'Approved'
     }
   });

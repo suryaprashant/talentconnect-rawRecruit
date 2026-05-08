@@ -211,8 +211,205 @@ export const getReferralApplicationsForProfessional = async (req, res, next) => 
     next(error);
   }
 };
+// ==============================
+// FETCH REFERRED CANDIDATES PIPELINE
+// ==============================
 
+export const getReferredCandidatesPipeline = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
 
+    // Resolve professional profile
+    const userProfile = await getStudentService(userId);
+
+    if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found.",
+      });
+    }
+
+    const professionalProfileId = userProfile.data[0]._id;
+
+    // Fetch all jobs posted by this professional
+    const jobs = await JobPostingTable.find({
+      candidatePosted: professionalProfileId, // <-- CHANGE THIS FIELD IF NEEDED
+    }).select("_id");
+
+    const jobIds = jobs.map((job) => job._id);
+
+    // Fetch referral pipeline applications
+    const applications = await Application.find({
+      job: { $in: jobIds },
+      jobType: "Referral",
+      currentStatus: {
+        $in: [
+          "Referred To Company",
+          "Shortlisted",
+          "Interview Scheduled",
+          "Offer Extended",
+          "Accepted",
+          "Rejected",
+        ],
+      },
+    })
+      .populate("job")
+      .sort({ updatedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: applications.length,
+      data: applications,
+    });
+  } catch (error) {
+    console.log("Error fetching referred candidates:", error);
+    next(error);
+  }
+};
+// ==============================
+// UPDATE REFERRAL CANDIDATE STATUS
+// ==============================
+
+export const updateReferralCandidateStatus = async (req, res, next) => {
+  try {
+    const { applicationId } = req.params;
+    const { status, jobRole } = req.body;
+
+    if (!applicationId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "Application ID and status are required.",
+      });
+    }
+
+    // Resolve professional profile
+    const userProfile = await getStudentService(req.user._id);
+
+    if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found.",
+      });
+    }
+
+    const professionalProfileId = userProfile.data[0]._id;
+
+    // Find application with job populated
+    const application = await Application.findById(applicationId).populate({
+      path: "job",
+      select: "candidatePosted jobTitle",
+    });
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found.",
+      });
+    }
+
+    // Authorization check
+    if (
+      application.job.candidatePosted.toString() !==
+      professionalProfileId.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized access.",
+      });
+    }
+
+    // Update status using existing service
+    const response = await ChangeStatusService(applicationId, status);
+
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+
+    // =========================
+    // SEND EMAIL
+    // =========================
+
+    let applicantMail;
+
+    switch (response.data.applicantType) {
+      case "student":
+      case "fresher":
+      case "professional":
+        applicantMail = await getCandidatEmail(response.data.applicant);
+        break;
+
+      case "college":
+        applicantMail = await getCollegeEmail(response.data.applicant);
+        break;
+
+      case "company":
+        applicantMail = await getCompanyEmail(response.data.applicant);
+        break;
+
+      default:
+        break;
+    }
+
+    if (applicantMail?.success) {
+      sendStatusChangeEmail(
+        applicantMail.email,
+        response.data.currentStatus,
+        response.data._id,
+        jobRole
+      ).catch((err) => {
+        console.error("Email sending failed:", err.message);
+      });
+    }
+
+    // =========================
+    // SEND NOTIFICATION
+    // =========================
+
+    try {
+      let recipientAuthId = null;
+
+      // STUDENT / FRESHER / PROFESSIONAL
+      if (
+        response.data.applicantType === "student" ||
+        response.data.applicantType === "fresher" ||
+        response.data.applicantType === "professional"
+      ) {
+        const onboarding = await Onboarding.findById(
+          response.data.applicant
+        ).select("userId");
+
+        recipientAuthId = onboarding?.userId || null;
+      }
+
+      // COLLEGE
+      else if (response.data.applicantType === "college") {
+        const collegeOnboarding = await CollegeOnboarding.findById(
+          response.data.applicant
+        ).select("userId");
+
+        recipientAuthId = collegeOnboarding?.userId || null;
+      }
+
+      if (recipientAuthId) {
+        notifyOnApplicationStatusChange({
+          recipientId: recipientAuthId,
+          senderId: req.user._id,
+          companyName: "Professional Referral",
+          status: response.data.currentStatus,
+          applicationId: response.data._id,
+          jobType: response.data.jobType,
+        });
+      }
+    } catch (err) {
+      console.error("Referral notification failed:", err);
+    }
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log("Error updating referral candidate status:", error);
+    next(error);
+  }
+};
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
     const userId = req.user._id;
