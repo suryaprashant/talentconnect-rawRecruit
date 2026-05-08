@@ -7,7 +7,8 @@ getProfessionalDashboardMetrics,
  getGlobalReferralApplications,
  getReferralsForCompany,
  getProfessionalReferralMetrics,
- getCandidateDashboardStats
+ getCandidateDashboardStats,
+ getReferredCandidatesPipeline, updateReferralCandidateStatus
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -38,6 +39,17 @@ router.post('/candidate/internship', secureRoute, createIntershipApplication);
 
 // referral
 router.post('/candidate/referral', secureRoute, createReferralApplication);
+router.get(
+  "/referrals/referred-by-me",
+  secureRoute,
+  getReferredCandidatesPipeline
+);
+
+router.patch(
+  "/referrals/:applicationId/status",
+  secureRoute,
+  updateReferralCandidateStatus
+);
 
 // company and college-- oncampus poolcampus campus-internship 
 router.post('/oncampus', secureRoute, createOncampusApplication);

@@ -202,14 +202,29 @@ export const notifyOnApplicationStatusChange = async ({
   jobType,
 }) => {
   const statusMessageMap = {
-    Shortlisted: `${companyName} shortlisted your application`,
-    Accepted: `${companyName} accepted your application`,
-    Rejected: `${companyName} rejected your application`,
+    "Shortlisted": `${companyName} shortlisted your application`,
+
+    "Interview Scheduled":
+      `${companyName} scheduled an interview for your application`,
+
+    "Offer Extended":
+      `${companyName} extended an offer for your application`,
+
+    "Accepted":
+      `${companyName} accepted your application`,
+
+    "Rejected":
+      `${companyName} rejected your application`,
+
+    "Referred To Company":
+      `${companyName} referred your application to the company`,
   };
 
   const message = statusMessageMap[status];
-  if (!message) return;
-
+  if (!message){
+    console.error(`No notification message configured for status: ${status}`);
+    return;
+  }
   let finalRecipientAuthId = recipientId;
 
   // 🔍 Check if recipientId is actually Auth ID
@@ -255,7 +270,9 @@ export const notifyOnApplicationStatusChange = async ({
   await sendNotification({
     recipientId: finalRecipientAuthId,
     senderId,
-    type: `APPLICATION_${status.toUpperCase()}`,
+    type: `APPLICATION_${status
+      .toUpperCase()
+      .replace(/\s+/g, "_")}`,
     message,
     referenceId: applicationId,
     jobType,

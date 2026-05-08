@@ -53,13 +53,30 @@ const [isAppModalOpen, setIsAppModalOpen] = useState(false);
   };
 
   // Filtering logic
-  const filteredJobs = jobs.filter(job => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      job.jobTitle?.toLowerCase().includes(searchLower) ||
-      job.companyName?.toLowerCase().includes(searchLower) ||
-      job.location?.some(loc => loc.toLowerCase().includes(searchLower))
-    );
+  const filteredJobs = jobs.filter((job) => {
+    const searchLower = String(searchQuery || "").toLowerCase();
+
+    const titleMatch = String(job.jobTitle || "")
+      .toLowerCase()
+      .includes(searchLower);
+
+    const companyMatch = String(job.companyName || "")
+      .toLowerCase()
+      .includes(searchLower);
+
+    const locationMatch = Array.isArray(job.location)
+      ? job.location.some((loc) =>
+          String(
+            typeof loc === "object" ? loc.city || loc.name || "" : loc
+          )
+            .toLowerCase()
+            .includes(searchLower)
+        )
+      : String(job.location || "")
+          .toLowerCase()
+          .includes(searchLower);
+
+    return titleMatch || companyMatch || locationMatch;
   });
 
   // Pagination logic
