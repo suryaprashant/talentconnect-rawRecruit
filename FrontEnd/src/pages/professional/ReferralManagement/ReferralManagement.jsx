@@ -27,8 +27,15 @@ export default function ReferralManagement() {
     setError(null);
     try {
       const response = await getMyApprovedReferralpost();
+      // const jobsData = response.data?.data || response.data || [];
+      // setJobs(Array.isArray(jobsData) ? jobsData : []);
       const jobsData = response.data?.data || response.data || [];
-      setJobs(Array.isArray(jobsData) ? jobsData : []);
+const normalized = (Array.isArray(jobsData) ? jobsData : []).map(job => ({
+  ...job,
+  companyName: job.companyName || job.candidatePosted?.currentCompany || 'Unknown',
+  endDate: job.endDate || job.hiringEndDate || null,
+}));
+setJobs(normalized);
     } catch (err) {
       console.error("❌ API ERROR:", err);
       setError(err.response?.data?.message || "Failed to fetch approved referrals.");
@@ -75,15 +82,17 @@ const handlePermanentDelete = async (jobId) => {
 };
 
   // Filtering logic
-  const filteredJobs = jobs.filter(job => {
-    const searchLower = searchQuery.toLowerCase();
-    const locationString = Array.isArray(job.location) ? job.location.join(' ') : (job.location || '');
-    return (
-      job.jobTitle?.toLowerCase().includes(searchLower) ||
-      job.companyName?.toLowerCase().includes(searchLower) ||
-      locationString.toLowerCase().includes(searchLower)
-    );
-  });
+const filteredJobs = jobs.filter(job => {
+  const searchLower = searchQuery.toLowerCase();
+  const locationString = Array.isArray(job.location) ? job.location.join(' ') : (job.location || '');
+  const jobTitle = typeof job.jobTitle === 'string' ? job.jobTitle : '';
+  const companyName = typeof job.companyName === 'string' ? job.companyName : '';
+  return (
+    jobTitle.toLowerCase().includes(searchLower) ||
+    companyName.toLowerCase().includes(searchLower) ||
+    locationString.toLowerCase().includes(searchLower)
+  );
+});
 
   // Pagination logic
   const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
