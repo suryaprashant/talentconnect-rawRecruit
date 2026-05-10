@@ -41,7 +41,7 @@ export const redirectToLinkedIn = (req, res) => {
 export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
-    const FRONTEND_URL = process.env.Frontend_URL || "http://localhost:5173";
+    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
     // Handle user cancellation or LinkedIn errors
     if (error) {
