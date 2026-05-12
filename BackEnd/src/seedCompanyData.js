@@ -96,6 +96,7 @@ const jobRoleOptions = [
 
 const seedData = async () => {
   try {
+   
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB Connected ✅");
 

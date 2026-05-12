@@ -12,47 +12,66 @@ export const getAllSkills = async (req, res) => {
 
 // POST a new skill
 // POST a new skill
+// export const addSkill = async (req, res) => {
+//   try {
+//     const { skills } = req.body;
+
+//     if (!skills || !skills.trim()) {
+//       return res.status(400).json({ message: "Skill name is required" });
+//     }
+
+//     // normalize ONCE
+//     const normalizedSkill = skills.trim().toLowerCase();
+
+//     // exact match (FAST + SAFE)
+//     const existing = await SkillsModel.findOne({
+//       skills: normalizedSkill
+//     });
+
+//     if (existing) {
+//       return res.status(409).json({
+//         message: "Skill already exists"
+//       });
+//     }
+
+//     const newSkill = new SkillsModel({
+//       skills: normalizedSkill
+//     });
+
+//     const saved = await newSkill.save();
+//     res.status(201).json(saved);
+
+//   } catch (error) {
+//     if (error.code === 11000) {
+//       return res.status(409).json({ message: "Skill already exists" });
+//     }
+
+//     res.status(500).json({
+//       message: "Error adding skill",
+//       error: error.message
+//     });
+//   }
+// };
+
 export const addSkill = async (req, res) => {
   try {
     const { skills } = req.body;
+    
+    // Save exactly as typed (e.g., "React")
+    const newSkill = new SkillsModel({ skills: skills.trim() });
+    await newSkill.save();
 
-    if (!skills || !skills.trim()) {
-      return res.status(400).json({ message: "Skill name is required" });
-    }
-
-    // normalize ONCE
-    const normalizedSkill = skills.trim().toLowerCase();
-
-    // exact match (FAST + SAFE)
-    const existing = await SkillsModel.findOne({
-      skills: normalizedSkill
-    });
-
-    if (existing) {
-      return res.status(409).json({
-        message: "Skill already exists"
+    res.status(201).json(newSkill);
+  } catch (error) {
+    // 11000 is the code for "Duplicate Key"
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        message: "This skill already exists (case-insensitive check)." 
       });
     }
-
-    const newSkill = new SkillsModel({
-      skills: normalizedSkill
-    });
-
-    const saved = await newSkill.save();
-    res.status(201).json(saved);
-
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(409).json({ message: "Skill already exists" });
-    }
-
-    res.status(500).json({
-      message: "Error adding skill",
-      error: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
-
 export const deleteSkill = async (req, res) => {
     try {
         const { id } = req.params;

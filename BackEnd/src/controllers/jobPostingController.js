@@ -323,7 +323,7 @@ export const createRefferralPosting = async (req, res) => {
             // conditional - if paid user then don't put expiresAt
             expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
-        const newPosting = await createPostingService(postingData);
+       const newPosting = await createPostingService(postingData, userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create referral posting");
         }

@@ -1349,6 +1349,7 @@ export const getCollegeAlumni = async (req, res) => {
           yearOfGraduation: person.yearOfGraduation ?? null,
           currentCompany: person.currentCompany ?? null,
           totalYearsOfExperience: person.totalYearsOfExperience ?? null,
+          experiences: person.experiences ?? [],
           jobRoles: person.jobRoles ?? [],
           skills: person.skills ?? [],
           linkedin: person.linkedin ?? null,

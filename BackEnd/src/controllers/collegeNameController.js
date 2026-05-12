@@ -19,23 +19,50 @@ export const getAllColleges = async (req, res) => {
 };
 
 // Register a new college
+// export const registerCollege = async (req, res) => {
+//   try {
+//     const { name } = req.body;
+
+//     if (!name) return res.status(400).json({ message: "Name is required" });
+
+//     // Case-insensitive check for existing college
+//     const exists = await College.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+//     if (exists) return res.status(400).json({ message: "College already exists" });
+
+//     const newCollege = await College.create({ name });
+    
+//     res.status(201).json({
+//       value: newCollege._id,
+//       label: newCollege.name
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error saving college", error: error.message });
+//   }
+// };
+
+
+
+// Register a new college
 export const registerCollege = async (req, res) => {
   try {
     const { name } = req.body;
 
     if (!name) return res.status(400).json({ message: "Name is required" });
 
-    // Case-insensitive check for existing college
-    const exists = await College.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
-    if (exists) return res.status(400).json({ message: "College already exists" });
-
-    const newCollege = await College.create({ name });
+    // No need for manual findOne check anymore!
+    // The database index handles it.
+    const newCollege = await College.create({ name: name.trim() });
     
     res.status(201).json({
       value: newCollege._id,
       label: newCollege.name
     });
+
   } catch (error) {
+    // Catch the duplicate key error from our new index
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "College already exists" });
+    }
     res.status(500).json({ message: "Error saving college", error: error.message });
   }
 };

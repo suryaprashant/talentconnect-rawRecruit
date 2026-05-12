@@ -95,7 +95,7 @@ const ApplicationSchema = new mongoose.Schema(
             type: Number,
             min: 0,
             max: 100,
-            default: null, 
+            default: 0, 
             }
     },
     { timestamps: true }
