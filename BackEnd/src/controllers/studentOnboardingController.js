@@ -52,23 +52,30 @@ export const submitOnboardingForm = async (req, res) => {
 
     const onboardingData = result.updatedOnboarding;
 
-    let careerInsights = null;
-
-    try {
-      careerInsights = await categorizeSkillsService(
-        req.user._id,
-        onboardingData
-      );
-    } catch (err) {
-      console.error("Career insights generation failed:", err.message);
-    }
+    categorizeSkillsService(req.user._id, onboardingData)
+      .then(() => {
+        console.log("Career insights generated successfully");
+      })
+      .catch((err) => {
+        console.error(
+          "Career insights generation failed:",
+          err.message
+        );
+      });
+    // try {
+    //   careerInsights = await categorizeSkillsService(
+    //     req.user._id,
+    //     onboardingData
+    //   );
+    // } catch (err) {
+    //   console.error("Career insights generation failed:", err.message);
+    // }
 
     res.status(201).json({
       message: "Form submitted successfully!",
       userType: req.user.userType,
       user: result.updatedUser,
       onboarding: result.updatedOnboarding,
-      careerInsights 
     });
 
   } catch (error) {
@@ -193,21 +200,31 @@ export const updateOnboardingForm = async (req, res) => {
       return res.status(404).json({ error: "Entry not found." });
     }
 
-    let careerInsights = null;
+    // let careerInsights = null;
 
-    try {
-      careerInsights = await categorizeSkillsService(
-        req.user._id,
-        updated
-      );
-    } catch (err) {
-      console.error("Career insights generation failed:", err.message);
-    }
+    // try {
+    //   careerInsights = await categorizeSkillsService(
+    //     req.user._id,
+    //     updated
+    //   );
+    // } catch (err) {
+    //   console.error("Career insights generation failed:", err.message);
+    // }
+
+    categorizeSkillsService(req.user._id, updated)
+      .then(() => {
+        console.log("Career insights updated successfully");
+      })
+      .catch((err) => {
+        console.error(
+          "Career insights generation failed:",
+          err.message
+        );
+      });
 
     res.json({
       message: "Form updated successfully.",
       data: updated,
-      careerInsights
     });
 
   } catch (error) {
