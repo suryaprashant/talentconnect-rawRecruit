@@ -4,13 +4,20 @@ const collegeNameSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   }
 }, { timestamps: true });
 
-// CHANGE THIS LINE: 
-// Use 'CollegeName' instead of 'College' to avoid conflict with collegeModel.js
+// Case-insensitive unique index
+collegeNameSchema.index(
+  { name: 1 }, 
+  { 
+    unique: true, 
+    collation: { locale: 'en', strength: 2 },
+    name: "collegename_unique" 
+  }
+);
+
 const CollegeName = mongoose.models.CollegeName || mongoose.model('CollegeName', collegeNameSchema);
 
 export default CollegeName;

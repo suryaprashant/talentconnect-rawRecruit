@@ -253,6 +253,60 @@ export const getMasterData = async (req, res) => {
   }
 };
 
+// export const createMasterData = async (req, res) => {
+//   const { type, value, parent } = req.body;
+//   const userId = req.user._id;
+
+//   if (!type || !value) {
+//     return res.status(400).json({ msg: "Type and value are required" });
+//   }
+
+//   if (type === "STREAM" && !parent) {
+//     return res.status(400).json({
+//       msg: "Parent degree is required for stream"
+//     });
+//   }
+
+//   try {
+//     const existing = await candidateMasterData.findOne({
+//       type,
+//       value: { $regex: `^${value}$`, $options: "i" },
+//       parent: parent || null
+//     });
+
+//     if (existing) {
+//       return res.status(200).json({
+//         success: true,
+//         data: existing
+//       });
+//     }
+
+//     const newEntry = await candidateMasterData.create({
+//       type,
+//       value,
+//       parent: parent || null,
+//       isCustom: true,
+//       createdBy: userId
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       data: newEntry
+//     });
+//   } catch (error) {
+//     console.error("Create Master Data Error:", error);
+
+//     if (error.code === 11000) {
+//       return res.status(200).json({
+//         success: true,
+//         msg: "Value already exists"
+//       });
+//     }
+
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// };
+
 export const createMasterData = async (req, res) => {
   const { type, value, parent } = req.body;
   const userId = req.user._id;
@@ -261,48 +315,29 @@ export const createMasterData = async (req, res) => {
     return res.status(400).json({ msg: "Type and value are required" });
   }
 
-  if (type === "STREAM" && !parent) {
-    return res.status(400).json({
-      msg: "Parent degree is required for stream"
-    });
-  }
-
   try {
-    const existing = await candidateMasterData.findOne({
-      type,
-      value: { $regex: `^${value}$`, $options: "i" },
-      parent: parent || null
-    });
-
-    if (existing) {
-      return res.status(200).json({
-        success: true,
-        data: existing
-      });
-    }
-
+    // We no longer need the manual .findOne({ value: { $regex: ... } })
+    // Just attempt to create it.
     const newEntry = await candidateMasterData.create({
       type,
-      value,
+      value: value.trim(),
       parent: parent || null,
       isCustom: true,
       createdBy: userId
     });
 
-    res.status(201).json({
-      success: true,
-      data: newEntry
-    });
-  } catch (error) {
-    console.error("Create Master Data Error:", error);
+    res.status(201).json({ success: true, data: newEntry });
 
+  } catch (error) {
+    // 11000 handles the case where "SDE" exists and user sends "sde"
     if (error.code === 11000) {
       return res.status(200).json({
         success: true,
-        msg: "Value already exists"
+        msg: "Value already exists (case-insensitive check)"
       });
     }
 
+    console.error("Create Master Data Error:", error);
     res.status(500).json({ msg: "Internal server error" });
   }
 };

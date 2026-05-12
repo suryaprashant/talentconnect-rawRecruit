@@ -87,6 +87,8 @@ function PostReferralJobPage() {
     const navigate = useNavigate();
 
     const initialState = {
+        rounds: '',
+    selectionProcess: [],
         jobTitle: [],
         description: '',
         employmentType: 'Full-time',
@@ -116,6 +118,7 @@ maxYearsOfExperience: '',
     const degreesDropdownRef = useRef(null);
     const [formData, setFormData] = useState(initialState);
     const [isSubmitting, setIsSubmitting] = useState(false);
+const selectionProcessRef = useRef(null);
 
     const [dropdownOpen, setDropdownOpen] = useState({
         skills: false,
@@ -123,6 +126,7 @@ maxYearsOfExperience: '',
         locations: false,
         benefits: false,
         tags: false,
+          selectionProcess: false,
     });
 
     const [skillInput, setSkillInput] = useState('');
@@ -269,6 +273,7 @@ const filteredSkills = fetchedSkills.filter(skill =>
                 locations: locationsDropdownRef,
                 benefits: benefitsDropdownRef,
                 tags: tagsDropdownRef,
+                 selectionProcess: selectionProcessRef,
             };
             for (const key in dropdownRefs) {
                 if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
@@ -378,6 +383,8 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
 
         const payload = {
             ...formData,
+              rounds: formData.rounds ? [formData.rounds] : [],
+            selectionProcess: formData.selectionProcess,  // already an array ✅
             yearsOfExperience: formData.maxYearsOfExperience,
             minYearofExperience: formData.minYearsOfExperience,
             packageDetails: {
@@ -821,8 +828,86 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
 
     </div>
 )}
-                    </div>
 
+                    </div>
+{/* Rounds and Selection Process */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+    {/* Number of Rounds */}
+    <div>
+        <FieldLabel htmlFor="rounds">Number of Rounds</FieldLabel>
+        <div className="relative">
+            <select
+                id="rounds"
+                name="rounds"
+                className={`${inputCls} appearance-none pr-9`}
+                value={formData.rounds}
+                onChange={handleInputChange}
+            >
+                <option value="">Select rounds</option>
+                {['1 Round','2 Rounds','3 Rounds','4 Rounds','5 Rounds','6 Rounds','7+ Rounds'].map(o => (
+                    <option key={o} value={o}>{o}</option>
+                ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+        </div>
+    </div>
+
+    {/* Selection Process */}
+    <div className="relative" ref={selectionProcessRef}>
+        <FieldLabel>Process of Selection</FieldLabel>
+        <DropTrigger
+            label={formData.selectionProcess.length > 0 ? formData.selectionProcess.join(' + ') : 'Select process'}
+            isOpen={dropdownOpen.selectionProcess}
+            onClick={() => toggleDropdown('selectionProcess')}
+        />
+        {dropdownOpen.selectionProcess && (
+            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl max-h-48 overflow-auto">
+                {['Aptitude Test','Case Study','Coding Test','Group Discussion','HR Interview','Online Test','Presentation','Technical Interview'].map(process => {
+                    const isSelected = formData.selectionProcess.some(p => p.startsWith(process));
+                    return (
+                        <div
+                            key={process}
+                            className={`px-4 py-2.5 border-b border-gray-50 ${isSelected ? 'bg-violet-50' : 'hover:bg-gray-50'}`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span
+                                    onClick={() => {
+                                        const count = formData.selectionProcess.filter(p => p.startsWith(process)).length;
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            selectionProcess: [...prev.selectionProcess, `${process} ${count + 1}`]
+                                        }));
+                                    }}
+                                    className={`text-sm cursor-pointer ${isSelected ? 'text-violet-700 font-medium' : 'text-gray-700'}`}
+                                >
+                                    {process}
+                                </span>
+                                {isSelected && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setFormData(prev => {
+                                                const lastIdx = [...prev.selectionProcess]
+                                                    .map((v, i) => ({ v, i }))
+                                                    .filter(item => item.v.startsWith(process))
+                                                    .pop()?.i;
+                                                return {
+                                                    ...prev,
+                                                    selectionProcess: prev.selectionProcess.filter((_, i) => i !== lastIdx)
+                                                };
+                                            });
+                                        }}
+                                        className="text-gray-400 hover:text-red-500 text-xs font-bold"
+                                    >✕</button>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        )}
+    </div>
+</div>
                     {/* Benefits + Tags */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                         <div className="relative" ref={benefitsDropdownRef}>

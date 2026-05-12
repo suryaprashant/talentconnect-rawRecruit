@@ -17,9 +17,22 @@ export const createCompany = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Company name is required' });
     }
 
-    const company = await Company.create({ name });
-    return res.status(201).json({ success: true, message: 'Company created successfully', data: company });
+    // This will now fail if "google" exists and you try to add "Google"
+    const company = await Company.create({ name }); 
+    
+    return res.status(201).json({ 
+      success: true, 
+      message: 'Company created successfully', 
+      data: company 
+    });
+    
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to create company', error: error.message });
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `The company "${req.body.name}" already exists (case-insensitive).` 
+      });
+    }
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };

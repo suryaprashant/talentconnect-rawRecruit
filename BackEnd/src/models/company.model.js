@@ -11,6 +11,14 @@ const companySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Company = mongoose.model('Company', companySchema);
+// Create a case-insensitive unique index
+companySchema.index(
+  { name: 1 }, 
+  { 
+    unique: true, 
+    collation: { locale: 'en', strength: 2 } 
+  }
+);
 
+const Company = mongoose.model('Company', companySchema);
 export default Company;
