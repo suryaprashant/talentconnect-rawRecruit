@@ -85,7 +85,7 @@ export async function fetchReferalOpportunityService(query) {
         const response = await JobPostingTable.find(query)
             .populate({
                 path: 'candidatePosted',
-                select: 'name jobRoles experiences currentCompany'
+                select: 'userId name jobRoles experiences currentCompany'
             })
             .lean();
 
