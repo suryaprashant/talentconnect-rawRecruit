@@ -161,7 +161,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     console.log(`${debugId} req.user:`, JSON.stringify(req.user, null, 2));
 
     const userId = req.user?._id;
-    const { company } = req.params;
+    const { company, postedByUser } = req.params;
 
     console.log(`${debugId} Parsed userId:`, userId);
     console.log(`${debugId} Parsed company param:`, company);
@@ -245,9 +245,15 @@ export const getAlumniWhoCanHelp = async (req, res) => {
         2
       )
     );
+    const excludedUserIds = [userId];
 
+    if (postedByUser) {
+      excludedUserIds.push(postedByUser);
+    }
     const alumni = await Onboarding.find({
-      userId: { $ne: userId },
+      userId: {
+        $nin: excludedUserIds,
+      },
       profileType: "professional",
 
       $or: [
