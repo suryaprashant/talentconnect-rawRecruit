@@ -159,24 +159,36 @@ export const getReferralsForCompany = async (req, res, next) => {
 
 export const getGlobalReferralApplications = async (req, res, next) => {
   try {
-    const userId = req.user._id; // This is the Auth ID
-    
-    // 1. Manually resolve the professional profile if profileId isn't on req.user
-    const userProfile = await getStudentService(userId); 
-    
+    const userId = req.user._id;
+
+    // Resolve professional profile
+    const userProfile = await getStudentService(userId);
+
     if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Professional profile not found for this account." 
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found for this account.",
       });
     }
 
     const professionalProfileId = userProfile.data[0]._id;
 
-    // 2. Call the service with the resolved ID
-    const response = await getAllProfessionalReferralsService(professionalProfileId);
-    
-    return res.status(200).json(response);
+    // Fetch all referrals
+    const response = await getAllProfessionalReferralsService(
+      professionalProfileId
+    );
+
+    // Filter only pending referral-stage applications
+    const filteredApplications = response.data.filter(
+      (application) =>
+        application.currentStatus === "Application Sent"
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: filteredApplications.length,
+      data: filteredApplications,
+    });
   } catch (error) {
     next(error);
   }
