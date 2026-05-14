@@ -1836,37 +1836,90 @@ export const getIntershipById = async (req, res) => {
 }
      */}
 
+// export const getReferralJobs = async (req, res) => {
+//   try {
+//     // 1. Check if user is logged in
+//     if (!req.user) {
+//        // Optional: Return a limited set of jobs for guests to see what's available
+//        const publicData = await JobPostingTable.find({ jobType: "Referral" }).populate("candidatePosted", "currentCompany").lean();
+//        return res.status(200).json({ 
+//          success: true, 
+//          data: publicData, 
+//          isGuest: true,
+//          message: "Login to see all referrals from your college" 
+//        });
+//     }
+
+//     const userId = req.user._id;
+//     const postId = await getStudentService(userId);
+    
+//     if (!postId.data || postId.data.length === 0) {
+//         return res.status(404).json({ message: "Student profile not found" });
+//     }
+
+//     const candidatePostedId = postId.data[0]._id;
+//     const data = await getReferralJobsService(candidatePostedId, userId);
+
+//     res.status(200).json({ success: true, data, isGuest: false });
+//   } catch (err) {
+//     console.error("[getReferralJobs]", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
 export const getReferralJobs = async (req, res) => {
   try {
-    // 1. Check if user is logged in
+    // 1. Guest handling — shows limited public jobs
+  
     if (!req.user) {
-       // Optional: Return a limited set of jobs for guests to see what's available
-       const publicData = await JobPostingTable.find({ jobType: "Referral" }).populate("candidatePosted", "currentCompany").lean();
-       return res.status(200).json({ 
-         success: true, 
-         data: publicData, 
-         isGuest: true,
-         message: "Login to see all referrals from your college" 
-       });
+     
+      const publicData = await JobPostingTable.find({ jobType: "Referral" })
+        .populate("candidatePosted", "currentCompany")
+        .lean();
+
+      return res.status(200).json({
+        success: true,
+        data: publicData.map((job) => ({
+          ...job,
+          matchScore: 0,
+          alumniCount: 0,
+        })),
+        isGuest: true,
+        message: "Login to see all referrals from your college",
+      });
     }
 
-    const userId = req.user._id;
+    const userId = req.user._id;  
+
+    // 2. Get student profile
     const postId = await getStudentService(userId);
-    
-    if (!postId.data || postId.data.length === 0) {
-        return res.status(404).json({ message: "Student profile not found" });
+console.log('in step 2 of controller')
+    if (!postId.data) {
+      return res.status(404).json({ message: "Student profile not found" });
     }
 
-    const candidatePostedId = postId.data[0]._id;
+    // 3. Fixed: getStudentService returns single object, not array
+    const candidatePostedId = postId.data._id;
+
+    // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
     const data = await getReferralJobsService(candidatePostedId, userId);
 
-    res.status(200).json({ success: true, data, isGuest: false });
+    return res.status(200).json({
+      success: true,
+      isGuest: false,
+      total: data.length,
+      data: data.map((job) => ({
+        ...job,
+        matchScore: job.matchScore ?? 0,
+        alumniCount: job.alumniCount ?? 0,
+      })),
+    });
+
   } catch (err) {
     console.error("[getReferralJobs]", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
-
 export const getReferralJobById = async (req, res) => {
     const { id } = req.params;
     try {

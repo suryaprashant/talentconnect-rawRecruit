@@ -145,7 +145,7 @@ const JobCard = ({ job, onClick }) => {
   const { user, loading } = useAuth();
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
   const [imageError, setImageError] = useState(false);
-
+console.log(job)
    const role = user?.userType;
 const navigate = useNavigate();
   // Remove the undefined loading and user variables

@@ -1,7 +1,7 @@
 // import HiringDrive from "../models/hiringChannelOffCampusRegisterModel.js";
 
 import { JobPostingTable } from "../models/jobPostingsModel.js";
-
+import { fetchWeights, scoreJob } from "../utils/relevancyEngine.js"; // adjust path as needed
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
@@ -41,71 +41,43 @@ export async function fetchOpportunityService(query) {
     }
 }
 
-{/*export async function fetchOpportunityService(query) {
-    try {
-        const response = await JobPostingTable.find(query)
-            .populate({
-                path: 'companyPosted',
-                select: 'companyDetails profileImageUrl' // FIXED: Added profileImageUrl
-            })
-            .lean();
 
-        // Calculate status
-        const now = Date.now();
-        const newResponse = response.map(item => {
-            const start = new Date(item.hiringStartDate).getTime();
-            const end = new Date(item.hiringEndDate).getTime();
 
-            return {
-                ...item,
-                status: now >= start && now <= end ? 'Open' : 'Closed'
-            };
-        });
 
-        // Debug log
-        console.log('🔍 Off Campus Service Response:', {
-            count: newResponse.length,
-            firstItem: newResponse[0] ? {
-                hasCompanyPosted: !!newResponse[0].companyPosted,
-                profileImageUrl: newResponse[0].companyPosted?.profileImageUrl,
-                companyName: newResponse[0].companyPosted?.companyDetails?.companyName
-            } : 'No items'
-        });
 
-        return { success: true, data: newResponse };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
+export async function fetchReferalOpportunityService(query, student = null) {
+  try {
+    const job = await JobPostingTable.findOne(query)
+      .populate({
+        path: 'candidatePosted',
+      select: 'userId name jobRoles experiences currentCompany'
+      })
+      .lean();
+
+    if (!job) throw new Error("Job not found");
+
+    // Status calc
+    const now = Date.now();
+    const start = new Date(job.hiringStartDate).getTime();
+    const end   = new Date(job.hiringEndDate).getTime();
+    const enriched = {
+      ...job,
+      status: now >= start && now <= end ? 'Open' : 'Closed',
+    };
+
+    // Score — same algo as list API, no threshold check needed here
+    let matchScore = 0;
+    if (student) {
+      const W = await fetchWeights();
+      const scored = scoreJob(enriched, student, W, 0, "Referral Job Detail");
+      matchScore = scored.matchScore;
     }
-}*/}
 
-
-export async function fetchReferalOpportunityService(query) {
-    try {
-        const response = await JobPostingTable.find(query)
-            .populate({
-                path: 'candidatePosted',
-                select: 'userId name jobRoles experiences currentCompany'
-            })
-            .lean();
-
-        // cal status
-        const now = Date.now();
-        const newResponse = response.map(item => {
-            const start = new Date(item.hiringStartDate).getTime();
-            const end = new Date(item.hiringEndDate).getTime();
-
-            return {
-                ...item,
-                status: now >= start && now <= end ? 'Open' : 'Closed'
-            };
-        });
-
-        return { success: true, data: newResponse };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
-    }
+    return { success: true, data: { ...enriched, matchScore } };
+  } catch (error) {
+    console.error("Error:", error.message);
+    throw new Error("Failed to fetch");
+  }
 }
 
 export async function checkOpportunityService(jobId) {

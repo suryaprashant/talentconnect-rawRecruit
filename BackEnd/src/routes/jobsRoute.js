@@ -8,7 +8,7 @@ import {
     // findOpportunityById
 } from "../controllers/jobController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js";
-
+import verifyUser from "../middlewares/verifyUser.js";
 const router = express.Router();
 
 // api '.../jobs'
@@ -32,7 +32,8 @@ router.get('/jobDetails/joblisting/:jobId', findJobListingOpportunityById);
 // // router.get('/campusopportunity', fetchCampusOpportunities);
 
 //referral
-router.get('/jobDetails/referral/:jobId', findReferalOpportunityById);
+//router.get('/jobDetails/referral/:jobId', findReferalOpportunityById);
+router.get('/jobDetails/referral/:jobId', verifyUser, findReferalOpportunityById);
 
 
 export default router;

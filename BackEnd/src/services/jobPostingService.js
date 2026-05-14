@@ -241,6 +241,7 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
 // }
 
 export const getReferralJobsService = async (candidatePostedId, userId) => {
+    console.log('here')
   // ── STEP 1: Weights & threshold in parallel ──────────────────────────────
   const [W, thresholdConfig] = await Promise.all([
     fetchWeights(),
@@ -294,7 +295,7 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
   const scoredJobs = jobs.map((job, i) =>
     scoreJob(job, student, W, i, "Referral Job")
   );
-
+ 
   const enrichedJobs = await Promise.all(
   scoredJobs.map(async (job) => {
     let alumniCount = 0;

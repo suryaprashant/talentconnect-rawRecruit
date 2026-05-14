@@ -212,7 +212,7 @@ export function getMyInactiveReferralpost() {
 }
 
 export function getReferralJobListing() {
-  return publicAxios.get(`/api/student-dashboard/referral-jobs`)
+  return axiosClient.get(`/api/student-dashboard/referral-jobs`)
     .then(response => response)
     .catch(error => console.log("Error:", error));
 }
