@@ -5,6 +5,7 @@ const ApplicationSchema = new mongoose.Schema(
     {
         applicant: {
             type: mongoose.Schema.Types.ObjectId,
+            ref: "Onboarding", 
             required: true,
         },
         applicantType: {

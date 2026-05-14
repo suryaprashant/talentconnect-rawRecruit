@@ -266,6 +266,10 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
       },
     })
       .populate("job")
+      .populate({
+        path: "applicant", // change if your field name is different
+        select: "name email",
+      })
       .sort({ updatedAt: -1 });
 
     return res.status(200).json({
