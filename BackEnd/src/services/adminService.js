@@ -608,6 +608,7 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
             jobTitle: "$jobInfo.jobTitle"
           },
           currentStatus: 1,
+          matchScore: 1,
           createdAt: 1
         }
       },

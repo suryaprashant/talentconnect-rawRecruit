@@ -5,7 +5,7 @@ import { fetchInternshipByIdService,
     fetchReferalOpportunityService} from "../services/jobService.js";
 
     // import { getStudentService } from "../services/studentService.js";
-
+import onboarding from "../models/studentonboardingModel.js"
 // export async function createJob(req, res) {
 //     // link path: only allowed to company (middleware implemetation)
 
@@ -103,18 +103,24 @@ export async function findJobListingOpportunityById(req, res) {
 }
 
 export async function findReferalOpportunityById(req, res) {
-    const jobId = req.params.jobId;
+  const jobId = req.params.jobId;
 
-    const query = {};
-    query._id = jobId;
-    try {
-        const response = await fetchReferalOpportunityService(query);
-        res.status(200).json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const userId = req.user?._id ?? null;
+
+    // Fetch student profile if logged in
+    let student = null;
+    if (userId) {
+      student = await onboarding.findOne({ userId }).lean();
     }
-}
 
+    const response = await fetchReferalOpportunityService({ _id: jobId }, student);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("[findReferalOpportunityById]", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 export async function findOpportunityById(req, res) {
     const internshipId = req.params.jobId;
 

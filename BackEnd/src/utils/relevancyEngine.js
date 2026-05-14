@@ -101,8 +101,9 @@ export const logConfig = (W, threshold, label = "RELEVANCY ENGINE") => {
   console.log(`\x1b[33m╚══════════════════════════════════════════════╝\x1b[0m\n`);
 };
 
-// ─── Core scoring function (shared by off-campus & referral) ─────────────────
+// ─── Core scoring function (shared by off-campus & referral) ───────
 export const scoreJob = (job, student, W, index, label = "Job") => {
+  process.stdout.write(`[SCOREJOB] Called for: ${JSON.stringify(job.jobTitle)} | student: ${student?.name}\n`);
   const breakdown = {
     skills: 0, roles: 0, experience: 0,
     cgpa: 0, batchYear: 0, location: 0,
