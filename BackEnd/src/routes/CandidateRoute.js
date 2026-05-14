@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/college-alumni', secureRoute, getCollegeAlumni);
 router.get('/company-alumni', secureRoute, getCompanyAlumni);
-router.get('/alumni/:company', secureRoute, getAlumniWhoCanHelp);
+router.get('/alumni/:company/:postedByUser', secureRoute, getAlumniWhoCanHelp);
 router.get('/profile-score',secureRoute,ProfileScore)
 router.get('/new-application',secureRoute,getNewApplications)
 router.get('/hiring-network',secureRoute,getAlumniHiringNetwork)
