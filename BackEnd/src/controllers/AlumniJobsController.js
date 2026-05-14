@@ -2091,3 +2091,38 @@ export const getAlumniHiringNetwork = async (req, res) => {
 //     });
 //   }
 // };
+
+export const getNewUser = async (req, res) => {
+  try {
+    const counts = await Onboarding.aggregate([
+      {
+        $match: {
+          profileType: { $in: ["student", "fresher", "professional"] },
+        },
+      },
+      {
+        $group: {
+          _id: "$profileType",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const result = { student: 0, fresher: 0, professional: 0, total: 0 };
+
+    counts.forEach(({ _id, count }) => {
+      if (_id in result) {
+        result[_id] = count;
+        result.total += count;
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      newUsers: result,
+    });
+  } catch (error) {
+    console.error("getNewUser error:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
