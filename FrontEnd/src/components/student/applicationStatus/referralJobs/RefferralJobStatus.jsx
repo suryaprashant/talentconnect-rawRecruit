@@ -51,8 +51,18 @@ const ReferralStatus = () => {
             });
             
             // Extract company name
-            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+            
+ const companyName =
+  item.referralCompany ||                                          // ← saved on application at apply time
+  jobDetails.companyPosted?.companyDetails?.companyName ||
+  item.referralPosterProfile?.currentCompany ||
+  item.referralPosterProfile?.name ||
+  "Company";
+
+const companyLogo =
+  jobDetails.companyPosted?.profileImageUrl ||
+  item.referralPosterProfile?.profileImage ||
+  null;
             
             // Extract job roles
             let jobRolesText = "Position";
@@ -200,11 +210,19 @@ const ReferralStatus = () => {
     fetchApplication();
   }, []);
 
-  const filteredJobs = referralJobs.filter(job =>
-    (job?.jobTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-    (job?.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-    (job?.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+// AFTER
+const filteredJobs = referralJobs.filter(job => {
+  const title = Array.isArray(job?.jobTitle) ? job.jobTitle.join(', ') : (job?.jobTitle || "");
+  const company = Array.isArray(job?.company) ? job.company.join(', ') : (job?.company || "");
+  const location = Array.isArray(job?.location) ? job.location.join(', ') : (job?.location || "");
+  const term = searchTerm.toLowerCase();
+
+  return (
+    title.toLowerCase().includes(term) ||
+    company.toLowerCase().includes(term) ||
+    location.toLowerCase().includes(term)
   );
+});
 
   // Apply sorting
   const sortedJobs = [...filteredJobs].sort((a, b) => {
@@ -410,11 +428,13 @@ const ReferralStatus = () => {
                   <h2 className="text-base font-semibold text-gray-900">Referrals</h2>
                   <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 text-[#143694] rounded-full">
                     {sortedJobs.length}
+                    console.log(sortedJobs)
                   </span>
                 </div>
               </div>
               
               <div className="flex-1 overflow-y-auto p-2">
+                
                 {sortedJobs.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2">
                     {sortedJobs.map(job => (

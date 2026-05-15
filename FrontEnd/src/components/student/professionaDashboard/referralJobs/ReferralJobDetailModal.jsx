@@ -379,26 +379,50 @@ const ReferralJobDetailModal = ({
     }
   };
 
+  // const handleApply = async () => {
+  //   if (!jobId) return;
+  //   if (!isAuthenticated) { setShowLoginModal(true); return; }
+  //   setIsSubmitting(true);
+  //   try {
+  //     const response = await ApplyForReferral(jobId, matchScore);
+  //     console.log('Apply response:', response);
+  //     if (response?.data?.success === true) {
+  //       toast.success('Application submitted successfully!');
+  //       onClose();
+  //     } else {
+  //       toast.error(response.response?.data?.msg || 'Could not apply.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error applying: ', error);
+  //     toast.error('Something went wrong. Please try again.');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleApply = async () => {
-    if (!jobId) return;
-    if (!isAuthenticated) { setShowLoginModal(true); return; }
-    setIsSubmitting(true);
-    try {
-      const response = await ApplyForReferral(jobId, matchScore);
-      console.log('Apply response:', response);
-      if (response?.data?.success === true) {
-        toast.success('Application submitted successfully!');
-        onClose();
-      } else {
-        toast.error(response.response?.data?.msg || 'Could not apply.');
-      }
-    } catch (error) {
-      console.error('Error applying: ', error);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+  if (!jobId) return;
+  if (!isAuthenticated) { setShowLoginModal(true); return; }
+  setIsSubmitting(true);
+  try {
+    // Pull company name from job detail
+    const referralCompany = jobDetail?.candidatePosted?.currentCompany || null;
+
+    const response = await ApplyForReferral(jobId, matchScore, referralCompany); // added referralCompany
+    console.log('Apply response:', response);
+    if (response?.data?.success === true) {
+      toast.success('Application submitted successfully!');
+      onClose();
+    } else {
+      toast.error(response.response?.data?.msg || 'Could not apply.');
     }
-  };
+  } catch (error) {
+    console.error('Error applying: ', error);
+    toast.error('Something went wrong. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleSave = async () => {
     if (!jobDetail?._id) return;
