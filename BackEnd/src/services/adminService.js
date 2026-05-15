@@ -119,7 +119,9 @@ export async function fetchReferralApplicationsService({
   jobId,
   adminApprovalStatus,
   professionalProfileId, // only for professional dashboard
-   isVisited, // 👈 ADD THIS PARAM
+  isVisited, 
+  currentStatus,
+
 }) {
   try {
     const matchStage = {
@@ -132,6 +134,10 @@ export async function fetchReferralApplicationsService({
 
     if (adminApprovalStatus) {
       matchStage.adminApprovalStatus = adminApprovalStatus;
+    }
+
+    if (currentStatus) {
+      matchStage.currentStatus = currentStatus;
     }
 
       if (typeof isVisited === "boolean") {

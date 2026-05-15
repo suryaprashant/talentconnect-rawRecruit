@@ -29,7 +29,14 @@ export const fetchMetricsForJob = async (jobId) => {
       job: jobId,
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: { $in: ["Referred To Company", "Accepted"] },
+      currentStatus: { $in: [
+        "Referred To Company",
+        "Shortlisted",
+        "Interview Scheduled",
+        "Offer Extended",
+        "Accepted",
+        "Rejected",
+      ], },
     }),
 
     Application.countDocuments({
