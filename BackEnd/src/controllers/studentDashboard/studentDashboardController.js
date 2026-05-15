@@ -1899,7 +1899,7 @@ console.log('in step 2 of controller')
     }
 
     // 3. Fixed: getStudentService returns single object, not array
-    const candidatePostedId = postId.data._id;
+   const candidatePostedId = postId.data[0]._id;
 
     // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
     const data = await getReferralJobsService(candidatePostedId, userId);
