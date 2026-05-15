@@ -1,25 +1,22 @@
 import mongoose from "mongoose";
 
 const skillsSchema = new mongoose.Schema({
-    skills: { 
-        type: String, 
-        required: true,
-        trim: true
-    }
+  skills: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true
+  }
 });
 
-// This is the "Magic" part that prevents "google" vs "Google" duplicates
 skillsSchema.index(
-    { skills: 1 }, 
-    { 
-        unique: true, 
-        collation: { locale: 'en', strength: 2 } 
-    }
+  { skills: 1 },
+  {
+    name: "skills_unique",
+    unique: true
+  }
 );
 
-const SkillsModel = mongoose.model('Skills', skillsSchema);
-
-// This line ensures the index is created immediately on startup
-SkillsModel.createIndexes(); 
+const SkillsModel = mongoose.model("Skills", skillsSchema);
 
 export default SkillsModel;
