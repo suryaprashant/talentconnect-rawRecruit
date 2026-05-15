@@ -207,13 +207,14 @@ export const getReferralApplicationsForProfessional = async (req, res, next) => 
       professionalProfileId,
       jobId,
       adminApprovalStatus: adminApprovalStatus || "Approved",
+      currentStatus: "Application Sent",
       isVisited: isVisitedBool,
     });
 
     // ✅ Mark as visited AFTER fetching new ones
     if (isVisitedBool === false && jobId) {
       await Application.updateMany(
-        { job: jobId, isVisited: false, jobType: "Referral" },
+        { job: jobId, isVisited: false, jobType: "Referral", currentStatus: "Application Sent", },
         { $set: { isVisited: true } }
       );
     }
