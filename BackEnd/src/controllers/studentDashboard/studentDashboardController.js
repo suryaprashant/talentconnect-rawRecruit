@@ -18,6 +18,7 @@ export const fetchMetricsForJob = async (jobId) => {
   const [
     totalApplicationsReceived,
     totalReferredToCompany,
+    totalInterviewScheduled,
     totalAcceptedByCompany,
   ] = await Promise.all([
     Application.countDocuments({
@@ -37,6 +38,14 @@ export const fetchMetricsForJob = async (jobId) => {
         "Accepted",
         "Rejected",
       ], },
+    }),
+
+    // Total interview scheduled
+    Application.countDocuments({
+      job: jobId,
+      jobType: "Referral",
+      adminApprovalStatus: "Approved",
+      "statusHistory.status": "Interview Scheduled",
     }),
 
     Application.countDocuments({
@@ -60,6 +69,7 @@ export const fetchMetricsForJob = async (jobId) => {
   return {
     totalApplicationsReceived,
     totalReferredToCompany,
+    totalInterviewScheduled,
     totalAcceptedByCompany,
     responseRate,
     referralSuccessRate,
