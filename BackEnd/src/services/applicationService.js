@@ -273,42 +273,31 @@ export async function createApplicationService({
   appliedForCompanyId,
   jobId,
   jobType,
-  matchScore, //  added
+  matchScore,
+  referralCompany,
 }) {
-
   console.log("🔍 createApplicationService called with:", {
-    appliedByUserId,
-    appliedByType,
-    appliedForCompanyId,
-    jobId,
-    jobType,
-    matchScore, //  log it
+    appliedByUserId, appliedByType, appliedForCompanyId,
+    jobId, jobType, matchScore, referralCompany,
   });
 
   try {
-    //  EXTRA SAFETY VALIDATION (defense-in-depth)
+    // ── Validate matchScore ───────────────────────────────────────────────
     if (matchScore !== undefined && matchScore !== null) {
-      if (
-        typeof matchScore !== "number" ||
-        matchScore < 0 ||
-        matchScore > 100
-      ) {
-        return {
-          success: false,
-          message: "Invalid match score",
-        };
+      if (typeof matchScore !== "number" || matchScore < 0 || matchScore > 100) {
+        return { success: false, message: "Invalid match score" };
       }
     }
 
-    //  Decide applicant
+    // ── Resolve applicant ID ──────────────────────────────────────────────
     let applicantId;
-
     if (appliedByType === "company") {
       applicantId = appliedForCompanyId;
     } else {
       applicantId = appliedByUserId;
     }
 
+    // ── Referral job approval check ───────────────────────────────────────
     if (jobType === "Referral") {
       const job = await JobPostingTable.findOne({
         _id: jobId,
@@ -318,16 +307,12 @@ export async function createApplicationService({
       if (!job) {
         return { success: false, message: "Referral job not found" };
       }
-
       if (job.approvalStatus !== "Approved") {
-        return {
-          success: false,
-          message: "Referral job not approved by admin yet",
-        };
+        return { success: false, message: "Referral job not approved by admin yet" };
       }
     }
 
-    //  Build SAFE uniqueness condition
+    // ── Build uniqueness match condition ──────────────────────────────────
     const match = {
       job: jobId,
       jobType,
@@ -336,20 +321,14 @@ export async function createApplicationService({
 
     if (appliedForCompanyId) {
       match.appliedForCompany = appliedForCompanyId;
-    } else {
-      match.applicant = applicantId;
     }
 
+    // ── Check for existing application ────────────────────────────────────
     const existing = await Application.findOne(match);
 
     if (existing) {
-      if (
-        ["Shortlisted", "Accepted", "Rejected"].includes(existing.currentStatus)
-      ) {
-        return {
-          success: false,
-          message: `currentStatus: ${existing.currentStatus}`,
-        };
+      if (["Shortlisted", "Accepted", "Rejected"].includes(existing.currentStatus)) {
+        return { success: false, message: `currentStatus: ${existing.currentStatus}` };
       }
 
       if (existing.currentStatus === "Applied") {
@@ -360,18 +339,15 @@ export async function createApplicationService({
         existing.currentStatus = "Applied";
         existing.statusHistory.push({ status: "Applied" });
 
-        //  UPDATE MATCH SCORE ALSO
-        if (matchScore !== undefined) {
-          existing.matchScore = matchScore;
-        }
+        if (matchScore !== undefined) existing.matchScore = matchScore;
+        if (referralCompany !== undefined) existing.refferalCompany = referralCompany; // ✅ inside block
 
         await existing.save();
-
         return { success: true, message: "Application submitted!" };
       }
     }
 
-    //  Create new application
+    // ── Create new application ────────────────────────────────────────────
     const newApplication = new Application({
       applicant: applicantId,
       applicantType: appliedByType,
@@ -381,12 +357,11 @@ export async function createApplicationService({
       jobType,
       statusHistory: [{ status: "Applied" }],
       currentStatus: "Applied",
-
-      matchScore: matchScore ?? null, //  STORE HERE
+      matchScore: matchScore ?? null,
+      referralCompany: referralCompany ?? null, // ✅
     });
 
     await newApplication.save();
-
     return { success: true, message: "Application submitted!" };
 
   } catch (error) {
@@ -394,7 +369,6 @@ export async function createApplicationService({
     throw new Error("Failed to Save");
   }
 }
-
 
 export async function createInternshipApplicationService(userId, userType, jobId, jobType) {
     try {
@@ -762,41 +736,101 @@ export async function fetchApplicationStatusService(userId, jobType, userType, a
 
     console.log("Match stage for aggregation:", matchStage);
 
-    const applicationData = await Application.aggregate([
-      { $match: matchStage },
-      {
-        $lookup: {
-          from: "jobpostingtables",
-          localField: "job",
-          foreignField: "_id",
-          as: "jobDetails",
-        },
-      },
-      { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "companyprofiles",
-          localField: "jobDetails.companyPosted",
-          foreignField: "_id",
-          as: "companyProfile",
-        },
-      },
-      {
-        $lookup: {
-          from: "collegeonboardings",
-          localField: "jobDetails.collegePosted",
-          foreignField: "_id",
-          as: "collegeDetails",
-        },
-      },
-      {
-        $addFields: {
-          companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
-          collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
-        },
-      },
-    ]);
+    // const applicationData = await Application.aggregate([
+    //   { $match: matchStage },
+    //   {
+    //     $lookup: {
+    //       from: "jobpostingtables",
+    //       localField: "job",
+    //       foreignField: "_id",
+    //       as: "jobDetails",
+    //     },
+    //   },
+    //   { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+    //   {
+    //     $lookup: {
+    //       from: "companyprofiles",
+    //       localField: "jobDetails.companyPosted",
+    //       foreignField: "_id",
+    //       as: "companyProfile",
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "collegeonboardings",
+    //       localField: "jobDetails.collegePosted",
+    //       foreignField: "_id",
+    //       as: "collegeDetails",
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
+    //       collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
+    //     },
+    //   },
+    // ]);
+// In fetchApplicationStatusService, update the aggregation pipeline:
 
+const applicationData = await Application.aggregate([
+  { $match: matchStage },
+  {
+    $lookup: {
+      from: "jobpostingtables",
+      localField: "job",
+      foreignField: "_id",
+      as: "jobDetails",
+    },
+  },
+  { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+  {
+    $lookup: {
+      from: "companyprofiles",
+      localField: "jobDetails.companyPosted",
+      foreignField: "_id",
+      as: "companyProfile",
+    },
+  },
+  {
+    $lookup: {
+      from: "collegeonboardings",
+      localField: "jobDetails.collegePosted",
+      foreignField: "_id",
+      as: "collegeDetails",
+    },
+  },
+  {
+    $lookup: {
+      from: "onboardings",
+      localField: "jobDetails.postedBy",
+      foreignField: "_id",
+      as: "referralPosterProfile",
+    },
+  },
+  {
+    $addFields: {
+      companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
+      collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
+      referralPosterProfile: { $arrayElemAt: ["$referralPosterProfile", 0] },
+
+      // ✅ Resolve display company name:
+      // For Referral jobs → use referralCompany stored on the application
+      // For others → fall back to companyProfile name
+      displayCompanyName: {
+        $cond: {
+          if: { $eq: ["$jobType", "Referral"] },
+          then: { $ifNull: ["$referralCompany", "Referral"] },
+          else: {
+            $ifNull: [
+              { $arrayElemAt: ["$companyProfile.companyDetails.companyName", 0] },
+              "Unknown Company"
+            ]
+          }
+        }
+      }
+    },
+  },
+]);
     console.log("🔍 Total applications found:", applicationData.length);
     return { success: true, data: applicationData };
   } catch (error) {

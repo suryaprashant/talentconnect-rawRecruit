@@ -156,8 +156,12 @@ export function ApplyForInternship(internshipId, matchScore) {
     .catch(error => error);
 }
 
-export function ApplyForReferral(referralId, matchScore) {
-  return axiosClient.post(`/application/candidate/referral`, { referralId: referralId, matchScore: matchScore, })
+export function ApplyForReferral(referralId, matchScore, referralCompany) {
+  return axiosClient.post(`/application/candidate/referral`, { 
+    referralId, 
+    matchScore, 
+    referralCompany   // added
+  })
     .then(response => response)
     .catch(error => error);
 }

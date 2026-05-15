@@ -819,28 +819,20 @@ export async function createIntershipApplication(req, res) {
 
 // referral step 3 apply
 export async function createReferralApplication(req, res) {
-  const { referralId, matchScore } = req.body; //  added
+  const { referralId, matchScore, referralCompany } = req.body; // added referralCompany
   const userId = req.user._id;
   const userType = req.user.userType;
 
   try {
     const user = await getStudentService(userId);
-    console.log(user, " ", referralId);
 
     if (!user || !referralId) {
       return res.status(404).json({ msg: "Invalid" });
     }
 
-    //  VALIDATE MATCH SCORE
     if (matchScore !== undefined) {
-      if (
-        typeof matchScore !== "number" ||
-        matchScore < 0 ||
-        matchScore > 100
-      ) {
-        return res.status(400).json({
-          msg: "Invalid match score",
-        });
+      if (typeof matchScore !== "number" || matchScore < 0 || matchScore > 100) {
+        return res.status(400).json({ msg: "Invalid match score" });
       }
     }
 
@@ -852,18 +844,18 @@ export async function createReferralApplication(req, res) {
       appliedForCompanyId: null,
       jobId: referralId,
       jobType: "Referral",
-
-      matchScore: matchScore ?? null, //  SAVE HERE
+      matchScore: matchScore ?? null,
+      referralCompany: referralCompany ?? null, // pass it down
     });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
-    // NEW: Trigger score + ranking calculation (debounced, non-blocking)
+
     scheduleScoreUpdate(userId).catch((err) => {
       console.error("❌ Failed to schedule score update:", err);
     });
-    
+
     res.status(201).json(application);
 
   } catch (error) {
@@ -1243,6 +1235,7 @@ export async function getUserApplicationStatus(req, res) {
       activeCompanyId = req.user.activeCompanyId;
     }
 
+    console.log('this pipeline')
     const response = await fetchApplicationStatusService(
       user.data[0]._id,
       jobType,

@@ -8,16 +8,24 @@ const ApplicationSchema = new mongoose.Schema(
             ref: "Onboarding", 
             required: true,
         },
+
         applicantType: {
             type: String,
             required: true,
         },
+
         appliedForCompany: {
            type: mongoose.Schema.Types.ObjectId,
            ref: "CompanyProfile",
            default: null,
            index: true,
          },
+
+       referralCompany: {   // fixed spelling: refferal → referral
+       type: String,
+       default: null,
+},
+
          appliedByType: {
             type: String,
             enum: ['employer','company','college','student','fresher','professional'],
