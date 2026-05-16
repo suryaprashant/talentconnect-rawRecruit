@@ -96,96 +96,107 @@ import parsedResumeModel from "../models/parsedResumeModel.js";
   }
 };*/}
 
-//python parse resume call
-export const uploadResume = async (req, res) => {
-  try {
-    console.log("📄 Resume upload started");
+  //python parse resume call
+  export const uploadResume = async (req, res) => {
+    try {
+      console.log("📄 Resume upload started");
 
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({
-        message: "Unauthorized: user not authenticated"
-      });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({
-        message: "No resume uploaded"
-      });
-    }
-
-    const userId = req.user._id;
-
-    // Convert buffer → base64 for Cloudinary
-    const base64Data = req.file.buffer.toString("base64");
-    const dataURI = `data:${req.file.mimetype};base64,${base64Data}`;
-
-    // Upload Resume to Cloudinary
-    const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
-      folder: "rawrecruit/resumes",
-      resource_type: "raw",
-      allowed_formats: ["pdf", "doc", "docx"],
-      public_id: `resume_${userId}_${Date.now()}`,
-      transformation: [{ flags: "attachment" }]
-    });
-
-    console.log("☁️ Resume uploaded to Cloudinary");
-
-    // 🔥 CALL PYTHON PARSER SERVICE
-    const parsedData = await parseResumeWithPython(
-      req.file.buffer,
-      req.file.originalname
-    );
-
-    console.log("🤖 Resume parsed successfully");
-
-    // Save resume URL in onboarding (existing logic)
-    await OnboardingModel.findOneAndUpdate(
-      { userId },
-      {
-        $set: {
-          resume: cloudinaryResult.secure_url
-        }
-      },
-      { upsert: true, new: true }
-    );
-
-    console.log("✅ Resume URL saved in onboarding");
-
-    // Save parsed data in separate collection
-    await parsedResumeModel.findOneAndUpdate(
-      { userId },
-      {
-        $set: {
-          userId,
-          resumeUrl: cloudinaryResult.secure_url,
-          parsedData
-        }
-      },
-      {
-        upsert: true,
-        new: true
+      if (!req.user || !req.user._id) {
+        return res.status(401).json({
+          message: "Unauthorized: user not authenticated"
+        });
       }
-    );
 
-    console.log("✅ Parsed data stored in ParsedResume collection");
+      if (!req.file) {
+        return res.status(400).json({
+          message: "No resume uploaded"
+        });
+      }
 
-    res.status(200).json(
-      // success: true,
-      // resumeUrl: cloudinaryResult.secure_url,
-      parsedData
-    );
+      const userId = req.user._id;
 
-  } catch (err) {
+      // Convert buffer → base64 for Cloudinary
+      const base64Data = req.file.buffer.toString("base64");
+      const dataURI = `data:${req.file.mimetype};base64,${base64Data}`;
 
-    console.error("❌ Resume upload failed:", err);
+      // Upload Resume to Cloudinary
+      const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
+        folder: "rawrecruit/resumes",
+        resource_type: "raw",
+        allowed_formats: ["pdf", "doc", "docx"],
+        public_id: `resume_${userId}_${Date.now()}`,
+        transformation: [{ flags: "attachment" }]
+      });
 
-    res.status(500).json({
-      success: false,
-      message: "Resume upload failed"
-    });
+      console.log("☁️ Resume uploaded to Cloudinary");
 
-  }
-};
+      // ✅ ALWAYS SAVE RESUME URL
+      await OnboardingModel.findOneAndUpdate(
+        { userId },
+        {
+          $set: {
+            resume: cloudinaryResult.secure_url
+          }
+        },
+        { upsert: true, new: true }
+      );
+
+      console.log("✅ Resume URL saved in onboarding");
+
+      let parsedData = null;
+
+      // 🔥 PARSER SHOULD NOT BREAK UPLOAD FLOW
+      try {
+
+        parsedData = await parseResumeWithPython(
+          req.file.buffer,
+          req.file.originalname
+        );
+
+        console.log("🤖 Resume parsed successfully");
+
+        // Save parsed data
+        await parsedResumeModel.findOneAndUpdate(
+          { userId },
+          {
+            $set: {
+              userId,
+              resumeUrl: cloudinaryResult.secure_url,
+              parsedData
+            }
+          },
+          {
+            upsert: true,
+            new: true
+          }
+        );
+
+        console.log("✅ Parsed data stored");
+
+      } catch (parserErr) {
+
+        console.error("❌ Resume parsing failed:", parserErr);
+
+      }
+
+      // ✅ Upload succeeds even if parser fails
+      res.status(200).json({
+        success: true,
+        resumeUrl: cloudinaryResult.secure_url,
+        parsedData
+      });
+
+    } catch (err) {
+
+      console.error("❌ Resume upload failed:", err);
+
+      res.status(500).json({
+        success: false,
+        message: "Resume upload failed"
+      });
+
+    }
+  };
 
 export const getParsedResume = async (req, res) => {
   try {
