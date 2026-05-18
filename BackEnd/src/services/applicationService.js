@@ -195,6 +195,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
                 appliedByType: userType, 
                 job: jobId,
                 jobType: jobType,
+                matchScore,
                 statusHistory: [{ status: "Saved" }],
                 currentStatus: "Saved"
             });
@@ -206,6 +207,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
         throw new Error("Failed to Save");
     }
 }
+
 
 // create application
 {/*export async function createApplicationService({appliedByUserId,
