@@ -472,9 +472,9 @@ export async function unsaveJobByUser(req, res) {
     }
 }
 
-// save opportunity
+// save opportunity r
 export async function saveJobByUser(req, res) {
-  const { jobId, jobType } = req.body;
+  const { jobId, jobType, matchScore } = req.body;
   const userId = req.user._id;
   const userType = req.user?.userType;
   try {
@@ -510,7 +510,8 @@ export async function saveJobByUser(req, res) {
       user?.data[0]._id,
       userType,
       jobId,
-      jobType
+      jobType,
+      matchScore
     );
     if (application.success === false)
       return res.status(403).json({ msg: application.message });

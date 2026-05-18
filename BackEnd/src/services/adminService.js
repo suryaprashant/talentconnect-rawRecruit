@@ -749,6 +749,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
     Application.countDocuments({
       job: { $in: jobIds },
       jobType: "Referral",
+      adminApprovalStatus: "Approved",
     }),
  
     // Admin approved AND (referred or accepted)
