@@ -266,6 +266,7 @@ export async function fetchReferralApplicationsService({
           currentStatus: 1,
           adminApprovalStatus: 1,
           createdAt: 1,
+          matchScore: 1,
           job: {
             _id: 1,
             jobTitle: 1,
