@@ -24,6 +24,7 @@ export const fetchMetricsForJob = async (jobId) => {
     Application.countDocuments({
       job: jobId,
       jobType: "Referral",
+      adminApprovalStatus: "Approved",
     }),
 
     Application.countDocuments({
