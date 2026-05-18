@@ -510,8 +510,7 @@ export async function saveJobByUser(req, res) {
       user?.data[0]._id,
       userType,
       jobId,
-      jobType,
-      matchScore
+      jobType
     );
     if (application.success === false)
       return res.status(403).json({ msg: application.message });

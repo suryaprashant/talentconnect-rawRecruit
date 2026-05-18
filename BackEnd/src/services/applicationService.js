@@ -7,7 +7,12 @@ import { getCompanyService } from './companyService.js';
 import { getEmployerService } from './companyService.js';
 import OnboardingModel from "../models/studentonboardingModel.js";
 import InterviewSchedule from "../models/InterviewSchedule.Model.js";
-
+import {
+  fetchWeights,
+  fetchThreshold,
+  scoreJob,
+  logConfig,
+} from "../utils/relevancyEngine.js";
 class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
@@ -113,29 +118,103 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
 //Prathmesh
 export async function getSavedJobsService(userId) {
   try {
+
+    // Student profile
+    const student = await OnboardingModel.findById(userId).lean();
+
+    // Fetch weights
+    const [W] = await Promise.all([
+      fetchWeights(),
+    ]);
+
     const applications = await Application.find({
       currentStatus: "Saved",
       applicant: userId,
-      
     })
-    .populate({
-      path: "job",
-      populate: [
-        {
-          path: "companyPosted",
-          model: "CompanyProfile",
-          select: "companyDetails.companyName profileImageUrl",
-        },
-        {
-          path: "candidatePosted",
-          model: "Onboarding",
-          select: "profileImage currentCompany fullName currentRole",
-        },
-      ],
-    })
-    .lean();
+      .populate({
+        path: "job",
+        populate: [
+          {
+            path: "companyPosted",
+            model: "CompanyProfile",
+            select: "companyDetails.companyName profileImageUrl",
+          },
+          {
+            path: "candidatePosted",
+            model: "Onboarding",
+            select:
+              "profileImage currentCompany fullName currentRole",
+          },
+        ],
+      })
+      .lean();
 
-    return { success: true, data: applications };
+    // Score + alumniCount
+    const enrichedApplications = await Promise.all(
+      applications.map(async (application, i) => {
+
+        let alumniCount = 0;
+        let matchScore = 0;
+
+        // Dynamic match score calculation
+        if (application.job && student) {
+          const scoredJob = scoreJob(
+            application.job,
+            student,
+            W,
+            i,
+            "Saved Job"
+          );
+
+          matchScore = scoredJob?.matchScore ?? 0;
+        }
+
+        // Company name
+        const companyName =
+          application.job?.candidatePosted?.currentCompany ||
+          application.job?.companyPosted?.companyDetails?.companyName;
+
+        // Alumni count
+        if (student?.college && companyName) {
+
+          const escapedCompanyName = companyName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          );
+
+          try {
+            alumniCount = await OnboardingModel.countDocuments({
+              college: student.college,
+              userId: { $ne: student.userId },
+              profileType: "professional",
+              currentCompany: {
+                $regex: new RegExp(
+                  `^${escapedCompanyName}$`,
+                  "i"
+                ),
+              },
+            });
+          } catch (err) {
+            console.error(
+              `[ALUMNI COUNT ERROR] ${companyName}:`,
+              err.message
+            );
+          }
+        }
+
+        return {
+          ...application,
+          matchScore,
+          alumniCount,
+        };
+      })
+    );
+
+    return {
+      success: true,
+      data: enrichedApplications,
+    };
+
   } catch (error) {
     console.error("Error:", error.message);
     throw new Error("Failed to fetch saved jobs");
@@ -195,7 +274,6 @@ export async function saveJobService(userId, userType, jobId, jobType) {
                 appliedByType: userType, 
                 job: jobId,
                 jobType: jobType,
-                matchScore,
                 statusHistory: [{ status: "Saved" }],
                 currentStatus: "Saved"
             });
