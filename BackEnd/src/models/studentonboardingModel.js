@@ -9,13 +9,13 @@ const leadershipSchema = new mongoose.Schema({
   certificate: String, 
 });
 const internationalExperienceSchema = new mongoose.Schema({
-  country: String,     
+  country: String, 
+  organization: String,    
   role: String,     
   startDate: String,
   endDate: String, 
   description: String, 
   certificate: String, 
-
 });
 
 

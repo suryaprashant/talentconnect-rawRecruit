@@ -188,11 +188,11 @@ import parsedResumeModel from "../models/parsedResumeModel.js";
 
     } catch (err) {
 
-      console.error("❌ Resume upload failed:", err);
+      console.error("❌ Resume processing failed:", err);
 
       res.status(500).json({
         success: false,
-        message: "Resume upload failed"
+        message: "Resume processing failed"
       });
 
     }
