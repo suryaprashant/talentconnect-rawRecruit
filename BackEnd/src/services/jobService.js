@@ -50,7 +50,7 @@ export async function fetchReferalOpportunityService(query, student = null) {
     const job = await JobPostingTable.findOne(query)
       .populate({
         path: 'candidatePosted',
-      select: 'userId name jobRoles experiences currentCompany college'
+      select: 'userId name jobRoles experiences currentCompany college profileImage'
       })
       .lean();
 
