@@ -174,7 +174,8 @@ cgpa: {
         type:Boolean,
         default:false,
 
-    }
+    },
+batchYear: [{ type: String }], 
 
 }, { timestamps: true });
 
