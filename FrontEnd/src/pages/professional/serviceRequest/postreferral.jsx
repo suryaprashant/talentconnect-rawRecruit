@@ -86,35 +86,72 @@ const DropTrigger = ({ label, isOpen, onClick }) => (
 function PostReferralJobPage() {
     const navigate = useNavigate();
 
-    const initialState = {
-        rounds: '',
-    selectionProcess: [],
-        jobTitle: [],
-        description: '',
-        employmentType: 'Full-time',
-        workMode: 'On-site',
-        location: [],
-        packageDetails: {
-            currency: 'USD',
-            totalCTC: '',
-            fixedPay: '',
-            joiningBonus: ''
-        },
-        numberOfOpenings: '',
-        minEducation: '',
-      minYearsOfExperience: '',
-maxYearsOfExperience: '',
-        skills: [],
-        certifications: [],
-        workAuthorization: '',
-        studentStreams: [],
-        eligibilityCriteria: '',
-        benefits: [],
-        tags: [],
-        endDate: null,
-        broadcastType: 'Everyone',
-    };
+//     const initialState = {
+//         rounds: '',
+//     selectionProcess: [],
+//         jobTitle: [],
+//         description: '',
+//         employmentType: 'Full-time',
+//         workMode: 'On-site',
+//         location: [],
+//         packageDetails: {
+//             currency: 'USD',
+//             totalCTC: '',
+//             fixedPay: '',
+//             joiningBonus: ''
+//         },
+//         numberOfOpenings: '',
+//         minEducation: '',
+//       minYearsOfExperience: '',
+// maxYearsOfExperience: '',
+//         skills: [],
+//         certifications: [],
+//         workAuthorization: '',
+//         studentStreams: [],
+//         eligibilityCriteria: '',
+//         benefits: [],
+//         tags: [],
+//         endDate: null,
+//         broadcastType: 'Everyone',
+//            jobRoles: [],          // ADD — string[] like ["Software Engineer", "Backend Developer"]
+//          cgpa: '',              // ADD — minimum CGPA required e.g. "7.5"
+//       batchYear: [],         // ADD — e.g. ["2023", "2024"] (graduation years eligible)
+    
+//     };
 
+
+const initialState = {
+    rounds: '',
+    selectionProcess: [],
+    jobTitle: [],
+    description: '',
+    employmentType: 'Full-time',
+    workMode: 'On-site',
+    location: [],
+    packageDetails: {
+        currency: 'USD',
+        totalCTC: '',
+        fixedPay: '',
+        joiningBonus: ''
+    },
+    numberOfOpenings: '',
+    minEducation: '',
+    minYearsOfExperience: '',
+    maxYearsOfExperience: '',
+    skills: [],
+    certifications: [],
+    workAuthorization: '',
+    studentStreams: [],
+    eligibilityCriteria: '',
+    benefits: [],
+    tags: [],
+    endDate: null,
+    broadcastType: 'Everyone',
+
+    // ADD THESE:
+    cgpa: '',
+    batchYear: [],
+};
     const degreesDropdownRef = useRef(null);
     const [formData, setFormData] = useState(initialState);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -381,23 +418,30 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
             }
         }
 
-        const payload = {
-            ...formData,
-              rounds: formData.rounds ? [formData.rounds] : [],
-            selectionProcess: formData.selectionProcess,  // already an array ✅
-            yearsOfExperience: formData.maxYearsOfExperience,
-            minYearofExperience: formData.minYearsOfExperience,
-            packageDetails: {
-                currency: formData.packageDetails.currency,
-                totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
-                fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
-                joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
-            },
-            numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
-            jobType: "Referral",
-            endDate: formData.endDate,
-            broadcastType: formData.broadcastType
-        };
+      const payload = {
+    ...formData,
+    rounds: formData.rounds ? [formData.rounds] : [],
+    selectionProcess: formData.selectionProcess,
+    yearsOfExperience: formData.maxYearsOfExperience,
+    minYearofExperience: formData.minYearsOfExperience,
+    packageDetails: {
+        currency: formData.packageDetails.currency,
+        totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+        fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+        joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0,
+    },
+    numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
+    jobType: "Referral",
+    endDate: formData.endDate,
+    broadcastType: formData.broadcastType,
+
+    // ADD THESE:
+    jobRoles: formData.jobTitle,                                  // scorer reads job.jobRoles[]
+    degree: formData.minEducation ? [formData.minEducation] : [], // scorer reads job.degree[] (array)
+    workLocation: formData.location,                              // scorer reads job.workLocation[] separately
+    cgpa: formData.cgpa ? parseFloat(formData.cgpa) : 0,         // scorer reads job.cgpa (Number)
+    batchYear: formData.batchYear,                                // scorer reads years from description; explicit field for direct use
+};
 
         try {
             const response = await postReferralJob(payload);
@@ -459,7 +503,54 @@ const handleItemInputKeyDown = (e, field, input, setInput) => {
                 {/* ── CARD 1: Basic Job Details ─────────────────────────────── */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-6 py-5">
                     <SectionHeader icon={Briefcase} title="Basic Job Details" subtitle="Provide the core details about this job opportunity." step="1" />
-
+{/* CGPA + Batch Years — ADD THIS BLOCK */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+    <div>
+        <FieldLabel htmlFor="cgpa">Minimum CGPA</FieldLabel>
+        <input
+            type="number"
+            id="cgpa"
+            name="cgpa"
+            placeholder="e.g. 7.5"
+            className={inputCls}
+            value={formData.cgpa}
+            onChange={handleInputChange}
+            min="0"
+            max="10"
+            step="0.1"
+        />
+        <p className="text-xs text-gray-400 mt-0.5">Leave blank if no CGPA requirement</p>
+    </div>
+    <div>
+        <FieldLabel>Eligible Batch Years</FieldLabel>
+        <div className="p-2.5 border rounded-lg transition-all cursor-text border-gray-200 hover:border-[#143694]/50 bg-white">
+            <ChipList items={formData.batchYear} field="batchYear" />
+            <input
+                type="text"
+                placeholder="e.g. 2024, 2025 — Enter to add"
+                className="w-full outline-none text-sm text-gray-800 placeholder:text-gray-400 bg-transparent"
+                onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ',') && e.target.value.trim()) {
+                        e.preventDefault();
+                        const val = e.target.value.replace(/,$/, '').trim();
+                        if (/^\d{4}$/.test(val) && !formData.batchYear.includes(val)) {
+                            setFormData(prev => ({ ...prev, batchYear: [...prev.batchYear, val] }));
+                        }
+                        e.target.value = '';
+                    }
+                }}
+                onBlur={(e) => {
+                    const val = e.target.value.replace(/,$/, '').trim();
+                    if (/^\d{4}$/.test(val) && !formData.batchYear.includes(val)) {
+                        setFormData(prev => ({ ...prev, batchYear: [...prev.batchYear, val] }));
+                    }
+                    e.target.value = '';
+                }}
+            />
+        </div>
+        <p className="text-xs text-gray-400 mt-0.5">4-digit years only</p>
+    </div>
+</div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                         
                         {/* Employment Type */}
