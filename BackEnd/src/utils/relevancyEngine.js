@@ -149,21 +149,23 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
     degree: 0, stream: 0, salary: 0,
   };
 
-  const jobReqSkills  = (job.skills || []).map(norm);
-  const studentNormLocs = (student.locations || []).map(norm);
+  // ── Extract primary education from educations[] ──────────────────────────
+  const primaryEdu =
+    (student.educations || []).find(
+      (e) => e.educationType === "bachelors" || e.educationType === "masters"
+    ) ||
+    student.educations?.[0] ||
+    {};
 
-  // Referral: poster is candidatePosted (Onboarding doc)
-  // Off-campus: poster is companyPosted (CompanyProfile doc)
+  const jobReqSkills    = (job.skills || []).map(norm);
+  const studentNormLocs = (student.locations || []).map(norm);
 
   const posterName =
     job.candidatePosted?.name ||
     job.companyPosted?.companyDetails?.companyName ||
     "Unknown";
 
-  // FIX: jobTitle is [String] in schema — join to a single string before norming
-  const jobTitleRaw = Array.isArray(job.jobTitle)
-    ? job.jobTitle.join(" ")
-    : (job.jobTitle || "");
+  const jobTitleRaw  = Array.isArray(job.jobTitle) ? job.jobTitle.join(" ") : (job.jobTitle || "");
   const jobTitleNorm = normStr(jobTitleRaw);
 
   console.log(
@@ -173,15 +175,15 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`  Job title (norm) : "${jobTitleNorm}"`);
   console.log(`  Poster           : ${posterName}`);
   console.log(`  Student          : ${student?.name || "?"} | ${student?.email || "?"}`);
-
+  console.log(`  Primary edu      : ${JSON.stringify({ degree: primaryEdu.degree, specialization: primaryEdu.specialization, cgpa: primaryEdu.cgpa, yearOfGraduation: primaryEdu.yearOfGraduation })}`);
 
   const fullJobText = (
     (job.description || "") + " " + (job.eligibilityCriteria || "")
   ).toLowerCase();
 
   // ── 1. SKILLS ──────────────────────────────────────────────────────────────
-  const jobSkillsRaw    = job.skills || [];
-  const jobSkillsNorm   = jobSkillsRaw.map(normStr);
+  const jobSkillsRaw      = job.skills || [];
+  const jobSkillsNorm     = jobSkillsRaw.map(normStr);
   const studentSkillsRaw  = student.skills || [];
   const studentSkillsNorm = studentSkillsRaw.map(normStr);
 
@@ -211,7 +213,6 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   const jobRolesRaw      = job.jobRoles || [];
   const jobRolesNorm     = jobRolesRaw.map(normStr);
 
-  // FIX: jobTitle was incorrectly passed as array to norm(); now uses jobTitleNorm (string)
   const allJobRoles = jobTitleNorm
     ? [...new Set([...jobRolesNorm, jobTitleNorm])]
     : jobRolesNorm;
@@ -275,43 +276,38 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`  Effective min (field or description) : ${effectiveMin} yrs`);
   console.log(`  Effective max                        : ${effectiveMax > 0 ? effectiveMax + " yrs" : "not set"}`);
 
-  // FIX: check max-only first, before the "no requirement" branch
-if (effectiveMin === 0 && effectiveMax === 0) {
-    // No requirement at all
+  if (effectiveMin === 0 && effectiveMax === 0) {
     breakdown.experience = W.experience;
     console.log(`  Branch : No requirement → Full credit | ${score(breakdown.experience, W.experience)}`);
-} else if (effectiveMax > 0 && studentExpYears > effectiveMax) {
-    // Overqualified
+  } else if (effectiveMax > 0 && studentExpYears > effectiveMax) {
     const ratio = effectiveMax / studentExpYears;
     breakdown.experience = Math.round(W.experience * Math.max(ratio, 0));
     console.log(`  Branch : Overqualified (${studentExpYears.toFixed(1)}y > max ${effectiveMax}y) | ratio=${ratio.toFixed(2)} | ${score(breakdown.experience, W.experience)}`);
-} else if (effectiveMin === 0 && effectiveMax > 0 && studentExpYears <= effectiveMax) {
-    // No minimum, student is within max — full credit
+  } else if (effectiveMin === 0 && effectiveMax > 0 && studentExpYears <= effectiveMax) {
     breakdown.experience = W.experience;
     console.log(`  Branch : In range (no min, ${studentExpYears.toFixed(1)}y ≤ max ${effectiveMax}y) | ${score(breakdown.experience, W.experience)}`);
-} else if (effectiveMin > 0 && studentExpYears >= effectiveMin) {
-    // Meets minimum
+  } else if (effectiveMin > 0 && studentExpYears >= effectiveMin) {
     breakdown.experience = W.experience;
     console.log(`  Branch : In range (${studentExpYears.toFixed(1)}y ≥ min ${effectiveMin}y) | ${score(breakdown.experience, W.experience)}`);
-} else if (effectiveMin > 0 && studentExpYears >= effectiveMin * 0.7) {
-    // Close to minimum
+  } else if (effectiveMin > 0 && studentExpYears >= effectiveMin * 0.7) {
     const ratio = studentExpYears / effectiveMin;
     breakdown.experience = Math.round(W.experience * ratio);
     console.log(`  Branch : Partial (${studentExpYears.toFixed(1)}y = ${Math.round(ratio * 100)}% of min ${effectiveMin}y) | ${score(breakdown.experience, W.experience)}`);
-} else {
+  } else {
     breakdown.experience = 0;
     console.log(`  Branch : Fail (${studentExpYears.toFixed(1)}y < 70% of min ${effectiveMin}y) | ${score(0, W.experience)}`);
-}
+  }
 
   // ── 4. DEGREE ──────────────────────────────────────────────────────────────
-  const studentDegreeRaw  = student.degree || "";
+  // Read from primaryEdu first, fall back to flat field for legacy data
+  const studentDegreeRaw  = primaryEdu.degree || student.degree || "";
   const studentDegreeNorm = normStr(studentDegreeRaw);
   const jobDegreesRaw     = job.degree || [];
   const jobDegreesNorm    = jobDegreesRaw.map(normStr);
   const degreeKeywords    = ["btech","be","bsc","mtech","mca","mba","bca","bcom","ba","bba"];
 
   console.log(`\n${DIM.DEGREE}`);
-  console.log(`  Student degree (raw)  : "${studentDegreeRaw}"`);
+  console.log(`  Student degree (raw)  : "${studentDegreeRaw}" (from: ${primaryEdu.degree ? "educations[]" : "flat field"})`);
   console.log(`  Student degree (norm) : "${studentDegreeNorm}"`);
   console.log(`  Job degree[] (raw)    : [${jobDegreesRaw.join(", ") || "none"}]`);
   console.log(`  Job degree[] (norm)   : [${jobDegreesNorm.join(", ") || "none"}]`);
@@ -340,7 +336,8 @@ if (effectiveMin === 0 && effectiveMax === 0) {
   }
 
   // ── 5. STREAM ──────────────────────────────────────────────────────────────
-  const studentStreamRaw  = student.specialization || "";
+  // Read from primaryEdu first, fall back to flat field for legacy data
+  const studentStreamRaw  = primaryEdu.specialization || student.specialization || "";
   const studentStreamNorm = normStr(studentStreamRaw);
   const jobStreamsRaw      = job.studentStreams || [];
   const jobStreamsNorm     = jobStreamsRaw.map(normStr);
@@ -354,7 +351,7 @@ if (effectiveMin === 0 && effectiveMax === 0) {
   ];
 
   console.log(`\n${DIM.STREAM}`);
-  console.log(`  Student specialization (raw)  : "${studentStreamRaw}"`);
+  console.log(`  Student specialization (raw)  : "${studentStreamRaw}" (from: ${primaryEdu.specialization ? "educations[]" : "flat field"})`);
   console.log(`  Student specialization (norm) : "${studentStreamNorm}"`);
   console.log(`  Job studentStreams (raw)       : [${jobStreamsRaw.join(", ") || "none"}]`);
   console.log(`  Job studentStreams (norm)      : [${jobStreamsNorm.join(", ") || "none"}]`);
@@ -379,10 +376,10 @@ if (effectiveMin === 0 && effectiveMax === 0) {
   }
 
   // ── 6. CGPA ────────────────────────────────────────────────────────────────
-  const studentCGPARaw = student.cgpa;
+  // Read from primaryEdu first, fall back to flat field for legacy data
+  const studentCGPARaw = primaryEdu.cgpa || student.cgpa;
   const sCGPA          = parseFloat(studentCGPARaw) || 0;
   const requiredCGPA   = parseFloat(job.cgpa) || 0;
-  // Tightened regex: requires decimal or explicit 10-scale to avoid "min 3 rounds" false positive
   const cgpaRegex = /(?:cgpa|cut-off|cutoff|minimum\s+cgpa|min\s+cgpa)\s*[:>=]*\s*([0-9](?:\.[0-9]{1,2})?)\b/i;
   const effectiveCGPA =
     requiredCGPA > 0
@@ -390,7 +387,7 @@ if (effectiveMin === 0 && effectiveMax === 0) {
       : (() => { const m = fullJobText.match(cgpaRegex); return m ? parseFloat(m[1]) : 0; })();
 
   console.log(`\n${DIM.CGPA}`);
-  console.log(`  Student cgpa (raw)         : "${studentCGPARaw}" → parsed: ${sCGPA}`);
+  console.log(`  Student cgpa (raw)         : "${studentCGPARaw}" (from: ${primaryEdu.cgpa ? "educations[]" : "flat field"}) → parsed: ${sCGPA}`);
   console.log(`  Job cgpa field             : ${job.cgpa} (Number)`);
   console.log(`  CGPA from description regex: ${effectiveCGPA > 0 && requiredCGPA === 0 ? effectiveCGPA : "N/A (using field)"}`);
   console.log(`  Effective required CGPA    : ${effectiveCGPA}`);
@@ -407,13 +404,14 @@ if (effectiveMin === 0 && effectiveMax === 0) {
   }
 
   // ── 7. BATCH YEAR ──────────────────────────────────────────────────────────
-  const studentYearRaw  = student.yearOfGraduation || "";
+  // Read from primaryEdu first, fall back to flat field for legacy data
+  const studentYearRaw  = primaryEdu.yearOfGraduation || student.yearOfGraduation || "";
   const studentYearNorm = normStr(studentYearRaw);
   const yearRegex       = /\b(202[0-9]|2030)\b/g;
   const yearMatches     = [...fullJobText.matchAll(yearRegex)].map((m) => m[1]);
 
   console.log(`\n${DIM.BATCH}`);
-  console.log(`  Student yearOfGraduation (raw)  : "${studentYearRaw}"`);
+  console.log(`  Student yearOfGraduation (raw)  : "${studentYearRaw}" (from: ${primaryEdu.yearOfGraduation ? "educations[]" : "flat field"})`);
   console.log(`  Student yearOfGraduation (norm) : "${studentYearNorm}"`);
   console.log(`  Years found in job description  : [${yearMatches.join(", ") || "none"}]`);
 
@@ -432,7 +430,7 @@ if (effectiveMin === 0 && effectiveMax === 0) {
   const studentLocsRaw  = student.locations || [];
   const studentLocsNorm = studentLocsRaw.map(normStr);
   const jobWorkLocsRaw  = job.workLocation || [];
-  const jobLocsRaw      = job.location || [];         // required field
+  const jobLocsRaw      = job.location || [];
   const jobWorkLocsNorm = jobWorkLocsRaw.map(normStr);
   const jobLocsNorm     = jobLocsRaw.map(normStr);
   const allJobLocsNorm  = [...new Set([...jobWorkLocsNorm, ...jobLocsNorm])];
