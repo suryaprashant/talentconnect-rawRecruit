@@ -148,21 +148,13 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
     cgpa: 0, batchYear: 0, location: 0,
     degree: 0, stream: 0, salary: 0,
   };
-  const logs = {};
-
-  const fullJobText = (
-    (job.description || "") + " " + (job.eligibilityCriteria || "")
-  ).toLowerCase();
 
   const jobReqSkills  = (job.skills || []).map(norm);
   const studentNormLocs = (student.locations || []).map(norm);
-  const studentExpYears =
-    parseYearsFromString(student.totalYearsOfExperience) ||
-    calcExperienceYears(student.experiences || []);
 
   // Referral: poster is candidatePosted (Onboarding doc)
   // Off-campus: poster is companyPosted (CompanyProfile doc)
->>>>>>> Stashed changes
+
   const posterName =
     job.candidatePosted?.name ||
     job.companyPosted?.companyDetails?.companyName ||
@@ -182,11 +174,6 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`  Poster           : ${posterName}`);
   console.log(`  Student          : ${student?.name || "?"} | ${student?.email || "?"}`);
 
-  const breakdown = {
-    skills: 0, roles: 0, experience: 0,
-    cgpa: 0, batchYear: 0, location: 0,
-    degree: 0, stream: 0, salary: 0,
-  };
 
   const fullJobText = (
     (job.description || "") + " " + (job.eligibilityCriteria || "")
