@@ -1,5 +1,29 @@
 import mongoose from "mongoose";
 
+const educationSchema = new mongoose.Schema({
+  college: String,
+  degree: String,
+  specialization: String,
+  semester: String,
+  cgpa: String,
+  yearOfGraduation: String,
+  degreeCertificate: String,
+
+  startDate: String,
+  endDate: String,
+
+  educationType: {
+    type: String,
+    enum: ["school", "diploma", "bachelors", "masters", "phd", "certification", "other"],
+    default: "bachelors",
+  },
+
+  isCurrent: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const leadershipSchema = new mongoose.Schema({
   organization: String,
   role: String,
@@ -64,14 +88,15 @@ const studentOnboardingSchema = new mongoose.Schema(
     },
 
     // Education
-    college: String,
-    degree: String,
-    semester: String,
-    specialization: String,
-    cgpa: String,
-    yearOfGraduation: String,
-    degreeCertificate: String, 
+    // college: String,
+    // degree: String,
+    // semester: String,
+    // specialization: String,
+    // cgpa: String,
+    // yearOfGraduation: String,
+    // degreeCertificate: String, 
 
+    educations: [educationSchema],
     
     industry: [String],
     jobRoles: [String],
