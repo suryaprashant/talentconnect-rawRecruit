@@ -16,19 +16,56 @@ export async function getAllOnboardingFormsService() {
 // Get onboarding form for a user
 export async function getOnboardingFormService(userId) {
   try {
-    const entry = await OnboardingModel.findOne({ userId });
+    const entry = await OnboardingModel
+      .findOne({ userId })
+      .lean();
 
-    if (entry && entry.experiences && entry.experiences.length > 0) {
+    if (!entry) return null;
+
+    // =========================
+    // Sort Experiences
+    // =========================
+
+    if (
+      Array.isArray(entry.experiences) &&
+      entry.experiences.length > 0
+    ) {
       entry.experiences.sort((a, b) => {
-        // Handle "Present" or empty strings for current roles
-        const dateA = a.startDate ? new Date(a.startDate) : new Date(0);
-        const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
-        
-        return dateB - dateA; // Sort descending: newer dates first
+        const dateA = a.startDate
+          ? new Date(a.startDate)
+          : new Date(0);
+
+        const dateB = b.startDate
+          ? new Date(b.startDate)
+          : new Date(0);
+
+        return dateB - dateA;
+      });
+    }
+
+    // =========================
+    // Sort Educations
+    // =========================
+
+    if (
+      Array.isArray(entry.educations) &&
+      entry.educations.length > 0
+    ) {
+      entry.educations.sort((a, b) => {
+        const dateA = a.startDate
+          ? new Date(a.startDate)
+          : new Date(0);
+
+        const dateB = b.startDate
+          ? new Date(b.startDate)
+          : new Date(0);
+
+        return dateB - dateA;
       });
     }
 
     return entry;
+
   } catch (error) {
     throw error;
   }
@@ -146,6 +183,10 @@ export async function submitOnboardingFormService(userId, body, files) {
 
   const parseJsonArray = (field) => {
     if (!body[field]) return [];
+
+    // already parsed from controller
+    if (Array.isArray(body[field])) return body[field];
+
     try {
       const parsed = JSON.parse(body[field]);
       return Array.isArray(parsed) ? parsed : [];
@@ -156,6 +197,10 @@ export async function submitOnboardingFormService(userId, body, files) {
 
   const parseJsonObject = (field) => {
     if (!body[field]) return null;
+
+    // already parsed from controller
+    if (typeof body[field] === "object") return body[field];
+
     try {
       return JSON.parse(body[field]);
     } catch {
@@ -163,121 +208,295 @@ export async function submitOnboardingFormService(userId, body, files) {
     }
   };
 
-  // ✅ STEP 1: Parse experiences first
-  const experiences = body.experiences ? JSON.parse(body.experiences) : [];
+  // =========================
+  // Parse Arrays
+  // =========================
 
-  // ✅ STEP 2: Derive currentCompany from experiences if not provided
+  const educations = parseJsonArray("educations");
+  const experiences = parseJsonArray("experiences");
+
+  // =========================
+  // Derive currentCompany
+  // =========================
+
   let currentCompany = body.currentCompany || "";
+
   if (!currentCompany && Array.isArray(experiences)) {
-    const currentExp = experiences.find(e => e.isCurrent === true);
-    if (currentExp?.company) currentCompany = currentExp.company;
+    const currentExp = experiences.find(
+      (e) => e.isCurrent === true
+    );
+
+    if (currentExp?.company) {
+      currentCompany = currentExp.company;
+    }
   }
 
-  // ✅ STEP 3: Build updateData using the already-resolved values
+  // =========================
+  // Build Update Data
+  // =========================
+
   const updateData = {
     userId,
+
     name: body.name,
     email: body.email,
     phone: body.phone,
     profileType: body.profileType,
 
-    college: body.college,
-    degree: body.degree,
-    semester: body.semester,
-    specialization: body.specialization,
-    cgpa: body.cgpa,
-    yearOfGraduation: body.yearOfGraduation,
+    // NEW EDUCATION FIELD
+    educations,
 
     expectedSalaryCurrency: body.expectedSalaryCurrency,
     expectedSalaryAmount: body.expectedSalaryAmount,
+
     currentSalaryCurrency: body.currentSalaryCurrency,
     currentSalaryAmount: body.currentSalaryAmount,
 
     lookingFor: parseJsonArray("lookingFor"),
     employmentType: parseJsonArray("employmentType"),
+
     industry: parseJsonArray("industry"),
     jobRoles: parseJsonArray("jobRoles"),
     locations: parseJsonArray("locations"),
+
     skills: parseJsonArray("skills"),
+
     languagesKnown: parseJsonArray("languagesKnown"),
+
     toolsAndPlatforms: parseJsonArray("toolsAndPlatforms"),
+
     domainKnowledge: parseJsonArray("domainKnowledge"),
+
     openToShift: Array.isArray(body.openToShift)
       ? body.openToShift.join(",")
       : body.openToShift || "",
 
-    education: parseJsonArray("education"),
-    experiences,   // ✅ use pre-parsed value
+    experiences,
 
-    leadership: body.leadership ? JSON.parse(body.leadership) : [],
-    internationalExperience: body.internationalExperience ? JSON.parse(body.internationalExperience) : [],
-    awards: body.awards ? JSON.parse(body.awards) : [],
-    publications: body.publications ? JSON.parse(body.publications) : [],
-    achievements: body.achievements ? JSON.parse(body.achievements) : [],
+    leadership: parseJsonArray("leadership"),
+
+    internationalExperience:
+      parseJsonArray("internationalExperience"),
+
+    awards: parseJsonArray("awards"),
+
+    publications: parseJsonArray("publications"),
+
+    achievements: parseJsonArray("achievements"),
 
     about: body.about,
+
     gender: body.gender,
+
     noticePeriod: body.noticePeriod,
-    servingNoticePeriod: body.servingNoticePeriod === "true",
-    totalYearsOfExperience: body.totalYearsOfExperience,
-    currentCompany,   // ✅ use pre-resolved value
+
+    servingNoticePeriod:
+      body.servingNoticePeriod === "true" ||
+      body.servingNoticePeriod === true,
+
+    totalYearsOfExperience:
+      body.totalYearsOfExperience,
+
+    currentCompany,
+
     companyEmail: body.companyEmail || "",
 
-    emailVerified: body.emailVerified === "true" || body.emailVerified === true,
+    emailVerified:
+      body.emailVerified === "true" ||
+      body.emailVerified === true,
 
     certifications: body.certifications,
+
     linkedin: body.linkedin,
+
     github: body.github,
+
     portfolio: body.portfolio,
+
     referralSource: body.referralSource,
   };
 
   return await handleOnboardingUpdate(updateData, files);
 }
 
-export async function updateOnboardingFormService(userId, body, files) {
+export async function updateOnboardingFormService(
+  userId,
+  body,
+  files
+) {
   const updates = { ...body };
 
-  const fieldsToParse = ['jobRoles', 'locations', 'industry', 'skills', 'languagesKnown', 'toolsAndPlatforms', 'domainKnowledge'];
-  fieldsToParse.forEach(field => {
-    if (updates[field] && typeof updates[field] === 'string') {
-      updates[field] = updates[field].split(',');
-    }
-  });
+  // =========================
+  // Helpers
+  // =========================
 
-  const jsonFields = ['experiences', 'leadership', 'internationalExperience', 'awards', 'publications', 'achievements', 'projectsHandled'];
-  jsonFields.forEach(field => {
-    if (updates[field] && typeof updates[field] === 'string') {
-      updates[field] = JSON.parse(updates[field]);
+  const parseArrayField = (field) => {
+    if (!updates[field]) return;
+
+    // already parsed
+    if (Array.isArray(updates[field])) return;
+
+    if (typeof updates[field] === "string") {
+      try {
+        updates[field] = JSON.parse(updates[field]);
+
+        // fallback for comma separated strings
+        if (!Array.isArray(updates[field])) {
+          updates[field] = updates[field]
+            .split(",")
+            .map((item) => item.trim());
+        }
+
+      } catch {
+        updates[field] = updates[field]
+          .split(",")
+          .map((item) => item.trim());
+      }
     }
-  });
+  };
+
+  const parseJsonField = (field) => {
+    if (!updates[field]) return;
+
+    // already parsed
+    if (typeof updates[field] === "object") return;
+
+    if (typeof updates[field] === "string") {
+      try {
+        updates[field] = JSON.parse(updates[field]);
+      } catch {
+        updates[field] = [];
+      }
+    }
+  };
+
+  // =========================
+  // Simple Array Fields
+  // =========================
+
+  const arrayFields = [
+    "jobRoles",
+    "locations",
+    "industry",
+    "skills",
+    "languagesKnown",
+    "toolsAndPlatforms",
+    "domainKnowledge",
+    "lookingFor",
+    "employmentType"
+  ];
+
+  arrayFields.forEach(parseArrayField);
+
+  // =========================
+  // JSON Fields
+  // =========================
+
+  const jsonFields = [
+    "educations", // ✅ added
+    "experiences",
+    "leadership",
+    "internationalExperience",
+    "awards",
+    "publications",
+    "achievements",
+    "projectsHandled"
+  ];
+
+  jsonFields.forEach(parseJsonField);
+
+  // =========================
+  // Experiences Logic
+  // =========================
 
   if (Array.isArray(updates.experiences)) {
-    // Derive currentCompany from isCurrent experience
-    const currentExp = updates.experiences.find(e => e.isCurrent === true);
+
+    // derive current company
+    const currentExp = updates.experiences.find(
+      (e) => e.isCurrent === true
+    );
+
     if (currentExp?.company) {
       updates.currentCompany = currentExp.company;
     }
 
-    // Strip endDate if isCurrent is true
-    updates.experiences = updates.experiences.map(exp => {
-      if (exp.isCurrent === true) {
-        return { ...exp, endDate: '' };
+    // cleanup current exp endDate
+    updates.experiences = updates.experiences.map(
+      (exp) => {
+        if (exp.isCurrent === true) {
+          return {
+            ...exp,
+            endDate: "",
+          };
+        }
+
+        return exp;
       }
-      return exp;
-    });
-  } // ← this was missing
+    );
+  }
+
+  // =========================
+  // Education Logic
+  // =========================
+
+  if (Array.isArray(updates.educations)) {
+
+    updates.educations = updates.educations.map(
+      (edu) => {
+        if (edu.isCurrent === true) {
+          return {
+            ...edu,
+            endDate: "",
+          };
+        }
+
+        return edu;
+      }
+    );
+  }
+
+  // =========================
+  // Boolean conversions
+  // =========================
+
+  if (updates.servingNoticePeriod !== undefined) {
+    updates.servingNoticePeriod =
+      updates.servingNoticePeriod === true ||
+      updates.servingNoticePeriod === "true";
+  }
+
+  if (updates.emailVerified !== undefined) {
+    updates.emailVerified =
+      updates.emailVerified === true ||
+      updates.emailVerified === "true";
+  }
 
   updates.userId = userId;
-  const result = await handleOnboardingUpdate(updates, files);
 
-  const allowedTypes = ['professional'];
+  // =========================
+  // DB Update
+  // =========================
 
-  if (updates.profileType && allowedTypes.includes(updates.profileType)) {
+  const result = await handleOnboardingUpdate(
+    updates,
+    files
+  );
+
+  // =========================
+  // Update Auth userType
+  // =========================
+
+  const allowedTypes = ["professional"];
+
+  if (
+    updates.profileType &&
+    allowedTypes.includes(updates.profileType)
+  ) {
     await Auth.findByIdAndUpdate(userId, {
-      userType: updates.profileType
+      userType: updates.profileType,
     });
   }
+
   return result.updatedOnboarding;
 }
 
