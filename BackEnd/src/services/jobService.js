@@ -50,13 +50,12 @@ export async function fetchReferalOpportunityService(query, student = null) {
     const job = await JobPostingTable.findOne(query)
       .populate({
         path: 'candidatePosted',
-      select: 'userId name jobRoles experiences currentCompany college'
+        select: 'userId name jobRoles experiences currentCompany college'
       })
       .lean();
 
     if (!job) throw new Error("Job not found");
 
-    // Status calc
     const now = Date.now();
     const start = new Date(job.hiringStartDate).getTime();
     const end   = new Date(job.hiringEndDate).getTime();
@@ -65,7 +64,6 @@ export async function fetchReferalOpportunityService(query, student = null) {
       status: now >= start && now <= end ? 'Open' : 'Closed',
     };
 
-    // Score — same algo as list API, no threshold check needed here
     let matchScore = 0;
     if (student) {
       const W = await fetchWeights();
