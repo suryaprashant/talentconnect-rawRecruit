@@ -1220,8 +1220,8 @@ export const getNewApplications = async (req, res) => {
 
 
 export const getCollegeAlumni = async (req, res) => {
-  const debugId = `[getCollegeAlumni-${Date.now()}]`; // unique per request
-  
+  const debugId = `[getCollegeAlumni-${Date.now()}]`;
+
   try {
     console.log(`\n${debugId} ========== REQUEST START ==========`);
     console.log(`${debugId} Timestamp:`, new Date().toISOString());
@@ -1241,6 +1241,7 @@ export const getCollegeAlumni = async (req, res) => {
 
     if (!userId) {
       console.log(`${debugId} ❌ userId is missing from req.user`);
+
       return res.status(401).json({
         success: false,
         errorCode: "USER_ID_MISSING",
@@ -1251,59 +1252,103 @@ export const getCollegeAlumni = async (req, res) => {
     }
 
     // Step 1: Find own profile
-    console.log(`${debugId} 🔍 Step 1: Finding own profile for userId:`, userId);
+
+    console.log(
+      `${debugId} 🔍 Step 1: Finding own profile for userId:`,
+      userId
+    );
+
     const myProfile = await Onboarding.findOne({ userId });
-    console.log(`${debugId} myProfile found:`, myProfile ? "YES" : "NO");
+
+    console.log(
+      `${debugId} myProfile found:`,
+      myProfile ? "YES" : "NO"
+    );
 
     if (!myProfile) {
-      console.log(`${debugId} ❌ Profile not found for userId:`, userId);
+      console.log(
+        `${debugId} ❌ Profile not found for userId:`,
+        userId
+      );
+
       return res.status(404).json({
         success: false,
         errorCode: "PROFILE_NOT_FOUND",
-        message: "Your profile does not exist. Please complete onboarding.",
-        debug: { userId: userId?.toString() },
+        message:
+          "Your profile does not exist. Please complete onboarding.",
+        debug: {
+          userId: userId?.toString(),
+        },
         data: null,
       });
     }
 
-    console.log(`${debugId} myProfile._id:`, myProfile._id);
-    console.log(`${debugId} myProfile.college:`, myProfile.college);
-    console.log(`${debugId} myProfile.profileType:`, myProfile.profileType);
+    // =========================
+    // NEW EDUCATION LOGIC
+    // =========================
 
-    if (!myProfile.college) {
-      console.log(`${debugId} ❌ College field is empty on profile`);
+    const colleges = [
+      ...new Set(
+        (myProfile.educations || [])
+          .map((edu) => edu.college)
+          .filter(Boolean)
+      ),
+    ];
+
+    console.log(`${debugId} myProfile._id:`, myProfile._id);
+    console.log(`${debugId} myProfile.colleges:`, colleges);
+    console.log(
+      `${debugId} myProfile.profileType:`,
+      myProfile.profileType
+    );
+
+    if (!colleges.length) {
+      console.log(
+        `${debugId} ❌ College field is empty on profile`
+      );
+
       return res.status(404).json({
         success: false,
         errorCode: "COLLEGE_NOT_FOUND",
-        message: "College info not found in your profile. Please update your profile.",
+        message:
+          "College info not found in your profile. Please update your profile.",
         debug: {
           profileId: myProfile._id?.toString(),
-          collegeValue: myProfile.college,
+          collegeValue: colleges,
         },
         data: null,
       });
     }
 
     // Step 2: Find alumni
-    console.log(`${debugId} 🔍 Step 2: Finding alumni for college:`, myProfile.college);
+
+    console.log(
+      `${debugId} 🔍 Step 2: Finding alumni for colleges:`,
+      colleges
+    );
+
     const alumni = await Onboarding.find({
-      college: myProfile.college,
+      "educations.college": { $in: colleges },
       userId: { $ne: userId },
     }).lean();
 
     console.log(`${debugId} Total alumni found:`, alumni.length);
 
     if (!alumni || alumni.length === 0) {
-      console.log(`${debugId} ⚠️ No alumni found for college:`, myProfile.college);
+      console.log(
+        `${debugId} ⚠️ No alumni found for colleges:`,
+        colleges
+      );
+
       return res.status(200).json({
         success: true,
         errorCode: null,
         message: "No alumni found from your college.",
         debug: {
-          college: myProfile.college,
+          colleges,
           jobPostedOnly,
         },
-        college: myProfile.college,
+        colleges,
         jobPostedOnly,
         count: 0,
         alumni: [],
@@ -1311,11 +1356,19 @@ export const getCollegeAlumni = async (req, res) => {
     }
 
     // Step 3: Fetch metrics and jobs for each alumni
-    console.log(`${debugId} 🔍 Step 3: Fetching metrics and referral jobs for ${alumni.length} alumni...`);
+
+    console.log(
+      `${debugId} 🔍 Step 3: Fetching metrics and referral jobs for ${alumni.length} alumni...`
+    );
 
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person, index) => {
-        console.log(`${debugId} Processing alumni [${index + 1}/${alumni.length}] _id:`, person._id, "name:", person.name);
+        console.log(
+          `${debugId} Processing alumni [${index + 1}/${alumni.length}] _id:`,
+          person._id,
+          "name:",
+          person.name
+        );
 
         let metrics = null;
         let referralJobs = [];
@@ -1323,6 +1376,7 @@ export const getCollegeAlumni = async (req, res) => {
         try {
           [metrics, referralJobs] = await Promise.all([
             fetchProfessionalReferralMetrics(person._id),
+
             JobPostingTable.find({
               candidatePosted: person._id,
               jobType: "Referral",
@@ -1333,108 +1387,200 @@ export const getCollegeAlumni = async (req, res) => {
               .lean(),
           ]);
 
-          console.log(`${debugId} Alumni [${index + 1}] metrics:`, JSON.stringify(metrics));
-          console.log(`${debugId} Alumni [${index + 1}] referralJobs count:`, referralJobs.length);
+          console.log(
+            `${debugId} Alumni [${index + 1}] metrics:`,
+            JSON.stringify(metrics)
+          );
+
+          console.log(
+            `${debugId} Alumni [${index + 1}] referralJobs count:`,
+            referralJobs.length
+          );
         } catch (innerError) {
-          console.error(`${debugId} ❌ Error processing alumni [${index + 1}] _id:`, person._id);
-          console.error(`${debugId} Error:`, innerError.message);
-          console.error(`${debugId} Stack:`, innerError.stack);
+          console.error(
+            `${debugId} ❌ Error processing alumni [${index + 1}] _id:`,
+            person._id
+          );
+
+          console.error(
+            `${debugId} Error:`,
+            innerError.message
+          );
+
+          console.error(
+            `${debugId} Stack:`,
+            innerError.stack
+          );
         }
 
         return {
           _id: person._id,
+
           userId: person.userId,
+
           name: person.name ?? null,
+
           email: person.email ?? null,
+
           phone: person.phone ?? null,
+
           profileImage: person.profileImage ?? null,
+
           backgroundImage: person.backgroundImage ?? null,
-          college: person.college ?? null,
-          degree: person.degree ?? null,
-          specialization: person.specialization ?? null,
-          yearOfGraduation: person.yearOfGraduation ?? null,
+
+          // =========================
+          // EDUCATION MAPPING
+          // =========================
+
+          colleges:
+            person.educations
+              ?.map((edu) => edu.college)
+              .filter(Boolean) || [],
+
+          degrees:
+            person.educations
+              ?.map((edu) => edu.degree)
+              .filter(Boolean) || [],
+
+          specializations:
+            person.educations
+              ?.map((edu) => edu.specialization)
+              .filter(Boolean) || [],
+
+          yearOfGraduation:
+            person.educations
+              ?.map((edu) => edu.yearOfGraduation)
+              .filter(Boolean) || [],
+
+          educations: person.educations ?? [],
+
           currentCompany: person.currentCompany ?? null,
-          totalYearsOfExperience: person.totalYearsOfExperience ?? null,
+
+          totalYearsOfExperience:
+            person.totalYearsOfExperience ?? null,
+
           experiences: person.experiences ?? [],
+
           jobRoles: person.jobRoles ?? [],
+
           skills: person.skills ?? [],
+
           linkedin: person.linkedin ?? null,
+
           github: person.github ?? null,
+
           portfolio: person.portfolio ?? null,
+
           about: person.about ?? null,
+
           referralMetrics: metrics ?? null,
+
           referralJobs: referralJobs ?? [],
+
           isHiring: referralJobs.length > 0,
         };
       })
     );
 
-    console.log(`${debugId} ✅ Step 3 complete. Processed ${alumniWithMetrics.length} alumni`);
+    console.log(
+      `${debugId} ✅ Step 3 complete. Processed ${alumniWithMetrics.length} alumni`
+    );
 
     // Step 4: Apply jobPostedOnly filter
-    console.log(`${debugId} 🔍 Step 4: Applying jobPostedOnly filter:`, jobPostedOnly);
+
+    console.log(
+      `${debugId} 🔍 Step 4: Applying jobPostedOnly filter:`,
+      jobPostedOnly
+    );
+
     const filteredAlumni = jobPostedOnly
       ? alumniWithMetrics.filter((person) => person.isHiring)
       : alumniWithMetrics;
 
-    console.log(`${debugId} After filter - alumni count:`, filteredAlumni.length);
+    console.log(
+      `${debugId} After filter - alumni count:`,
+      filteredAlumni.length
+    );
+
     console.log(`${debugId} isHiring breakdown:`, {
-      hiring: alumniWithMetrics.filter(p => p.isHiring).length,
-      notHiring: alumniWithMetrics.filter(p => !p.isHiring).length,
+      hiring: alumniWithMetrics.filter((p) => p.isHiring).length,
+      notHiring: alumniWithMetrics.filter((p) => !p.isHiring)
+        .length,
     });
 
     if (jobPostedOnly && filteredAlumni.length === 0) {
-      console.log(`${debugId} ⚠️ jobPostedOnly=true but no alumni are hiring`);
+      console.log(
+        `${debugId} ⚠️ jobPostedOnly=true but no alumni are hiring`
+      );
+
       return res.status(200).json({
         success: true,
         errorCode: null,
-        message: "No alumni from your college are currently hiring.",
+        message:
+          "No alumni from your college are currently hiring.",
         debug: {
-          college: myProfile.college,
+          colleges,
           totalAlumniFound: alumni.length,
           jobPostedOnly,
         },
-        college: myProfile.college,
+        colleges,
         jobPostedOnly,
         count: 0,
         alumni: [],
       });
     }
 
-    console.log(`${debugId} ✅ Sending success response with ${filteredAlumni.length} alumni`);
-    console.log(`${debugId} ========== REQUEST END ==========\n`);
+    console.log(
+      `${debugId} ✅ Sending success response with ${filteredAlumni.length} alumni`
+    );
+
+    console.log(
+      `${debugId} ========== REQUEST END ==========\n`
+    );
 
     return res.status(200).json({
       success: true,
       errorCode: null,
       message: "Alumni fetched successfully.",
+
       debug: {
-        college: myProfile.college,
+        colleges,
         totalAlumniFound: alumni.length,
         afterFilter: filteredAlumni.length,
         jobPostedOnly,
       },
-      college: myProfile.college,
+
+      colleges,
+
       jobPostedOnly,
+
       count: filteredAlumni.length,
+
       alumni: filteredAlumni,
     });
 
   } catch (error) {
     console.error(`${debugId} ❌ UNHANDLED ERROR`);
+
     console.error(`${debugId} Message:`, error.message);
+
     console.error(`${debugId} Stack:`, error.stack);
+
     console.error(`${debugId} req.user:`, req.user);
+
     console.error(`${debugId} req.query:`, req.query);
 
     return res.status(500).json({
       success: false,
       errorCode: "INTERNAL_SERVER_ERROR",
-      message: "Something went wrong. Please try again later.",
+      message:
+        "Something went wrong. Please try again later.",
+
       debug: {
         error: error.message,
-        stack: error.stack, // ⚠️ remove this in production
+        stack: error.stack,
       },
+
       data: null,
     });
   }
@@ -1753,6 +1899,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
     }
 
     // Step 1: Get current user profile
+
     const myProfile = await Onboarding.findOne({ userId });
 
     if (!myProfile) {
@@ -1768,9 +1915,21 @@ export const getAlumniHiringNetwork = async (req, res) => {
 
     let collegeAlumni = [];
 
-    if (myProfile.college) {
+    // =========================
+    // NEW EDUCATION LOGIC
+    // =========================
+
+    const colleges = [
+      ...new Set(
+        (myProfile.educations || [])
+          .map((edu) => edu.college)
+          .filter(Boolean)
+      ),
+    ];
+
+    if (colleges.length > 0) {
       collegeAlumni = await Onboarding.find({
-        college: myProfile.college,
+        "educations.college": { $in: colleges },
         userId: { $ne: userId },
       }).lean();
     }
@@ -1800,14 +1959,16 @@ export const getAlumniHiringNetwork = async (req, res) => {
     ];
 
     if (uniqueCompanies.length > 0) {
-      const orConditions = uniqueCompanies.flatMap((company) => {
-        const regex = new RegExp(company, "i");
+      const orConditions = uniqueCompanies.flatMap(
+        (company) => {
+          const regex = new RegExp(company, "i");
 
-        return [
-          { currentCompany: regex },
-          { "experiences.company": regex },
-        ];
-      });
+          return [
+            { currentCompany: regex },
+            { "experiences.company": regex },
+          ];
+        }
+      );
 
       companyAlumni = await Onboarding.find({
         userId: { $ne: userId },
@@ -1819,9 +1980,13 @@ export const getAlumniHiringNetwork = async (req, res) => {
     // STEP 4: MERGE + REMOVE DUPLICATES
     // =====================================================
 
-    const mergedAlumni = [...collegeAlumni, ...companyAlumni];
+    const mergedAlumni = [
+      ...collegeAlumni,
+      ...companyAlumni,
+    ];
 
     // Remove duplicates using userId
+
     const uniqueAlumniMap = new Map();
 
     mergedAlumni.forEach((person) => {
@@ -1832,7 +1997,9 @@ export const getAlumniHiringNetwork = async (req, res) => {
       }
     });
 
-    const uniqueAlumni = Array.from(uniqueAlumniMap.values());
+    const uniqueAlumni = Array.from(
+      uniqueAlumniMap.values()
+    );
 
     console.log(
       `${debugId} Total unique alumni after dedup:`,
@@ -1846,6 +2013,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
     const alumniWithMetrics = await Promise.all(
       uniqueAlumni.map(async (person) => {
         let metrics = null;
+
         let referralJobs = [];
 
         try {
@@ -1870,33 +2038,68 @@ export const getAlumniHiringNetwork = async (req, res) => {
 
         return {
           _id: person._id,
+
           userId: person.userId,
+
           name: person.name ?? null,
+
           email: person.email ?? null,
+
           phone: person.phone ?? null,
+
           profileImage: person.profileImage ?? null,
-          backgroundImage: person.backgroundImage ?? null,
 
-          college: person.college ?? null,
-          degree: person.degree ?? null,
-          specialization: person.specialization ?? null,
-          yearOfGraduation: person.yearOfGraduation ?? null,
+          backgroundImage:
+            person.backgroundImage ?? null,
 
-          currentCompany: person.currentCompany ?? null,
+          // =========================
+          // EDUCATION MAPPING
+          // =========================
+
+          colleges:
+            person.educations
+              ?.map((edu) => edu.college)
+              .filter(Boolean) || [],
+
+          degrees:
+            person.educations
+              ?.map((edu) => edu.degree)
+              .filter(Boolean) || [],
+
+          specializations:
+            person.educations
+              ?.map((edu) => edu.specialization)
+              .filter(Boolean) || [],
+
+          yearOfGraduation:
+            person.educations
+              ?.map((edu) => edu.yearOfGraduation)
+              .filter(Boolean) || [],
+
+          educations: person.educations ?? [],
+
+          currentCompany:
+            person.currentCompany ?? null,
+
           totalYearsOfExperience:
             person.totalYearsOfExperience ?? null,
 
           jobRoles: person.jobRoles ?? [],
+
           skills: person.skills ?? [],
 
           linkedin: person.linkedin ?? null,
+
           github: person.github ?? null,
+
           portfolio: person.portfolio ?? null,
 
           about: person.about ?? null,
+
           experiences: person.experiences ?? [],
 
           referralMetrics: metrics ?? null,
+
           referralJobs: referralJobs ?? [],
 
           isHiring: referralJobs.length > 0,
@@ -1909,7 +2112,9 @@ export const getAlumniHiringNetwork = async (req, res) => {
     // =====================================================
 
     const filteredAlumni = jobPostedOnly
-      ? alumniWithMetrics.filter((person) => person.isHiring)
+      ? alumniWithMetrics.filter(
+          (person) => person.isHiring
+        )
       : alumniWithMetrics;
 
     // =====================================================
@@ -1918,9 +2123,12 @@ export const getAlumniHiringNetwork = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Combined alumni fetched successfully.",
 
-      college: myProfile.college ?? null,
+      message:
+        "Combined alumni fetched successfully.",
+
+      colleges,
+
       companiesChecked: uniqueCompanies,
 
       jobPostedOnly,
@@ -1935,7 +2143,9 @@ export const getAlumniHiringNetwork = async (req, res) => {
 
     return res.status(500).json({
       success: false,
+
       message: "Something went wrong.",
+
       error: error.message,
     });
   }

@@ -782,15 +782,69 @@ export const getCategorizedSkillsService = async (userId) => {
 };
 
 // this service gets all the details of the specific user if passed to display in app frontend
-export const getOnboardingByUserIdService = async (userId) => {
+export const getOnboardingByUserIdService = async (
+  userId
+) => {
   if (!userId) {
     throw new Error("UserId is required");
   }
 
-  const onboardingData = await OnboardingModel.findOne({ userId }).lean();
+  const onboardingData = await OnboardingModel
+    .findOne({ userId })
+    .lean();
 
   if (!onboardingData) {
     return null;
+  }
+
+  // =========================
+  // Sort Experiences
+  // =========================
+
+  if (
+    Array.isArray(onboardingData.experiences)
+  ) {
+    onboardingData.experiences.sort((a, b) => {
+
+      // current company first
+      if (a.isCurrent) return -1;
+      if (b.isCurrent) return 1;
+
+      const dateA = a.startDate
+        ? new Date(a.startDate)
+        : new Date(0);
+
+      const dateB = b.startDate
+        ? new Date(b.startDate)
+        : new Date(0);
+
+      return dateB - dateA;
+    });
+  }
+
+  // =========================
+  // Sort Educations
+  // =========================
+
+  if (
+    Array.isArray(onboardingData.educations)
+  ) {
+    onboardingData.educations.sort((a, b) => {
+
+      // current education first
+      if (a.isCurrent) return -1;
+      if (b.isCurrent) return 1;
+
+      const dateA = a.startDate
+        ? new Date(a.startDate)
+        : new Date(0);
+
+      const dateB = b.startDate
+        ? new Date(b.startDate)
+        : new Date(0);
+
+      return dateB - dateA;
+    });
   }
 
   return onboardingData;
