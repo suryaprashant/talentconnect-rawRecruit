@@ -1912,13 +1912,12 @@ export const getReferralJobs = async (req, res) => {
     // 2. Get student profile
     const postId = await getStudentService(userId);
 console.log('in step 2 of controller')
-    if (!postId.data) {
+if (!postId.data || postId.data.length === 0) {
       return res.status(404).json({ message: "Student profile not found" });
     }
 
-    // 3. Fixed: getStudentService returns single object, not array
-   const candidatePostedId = postId.data[0]._id;
-
+    // data is an array from .find(), so use index [0]
+    const candidatePostedId = postId.data[0]._id;
     // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
     const data = await getReferralJobsService(candidatePostedId, userId);
 

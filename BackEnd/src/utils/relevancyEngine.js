@@ -139,10 +139,22 @@ const score = (got, max) =>
     ? `\x1b[33m${got}/${max}\x1b[0m`
     : `\x1b[31m${got}/${max}\x1b[0m`;
 
-// ─── Core scoring function ────────────────────────────────────────────────────
+// ─── Core scoring function (shared by off-campus & referral) ─────────────────
 
 export const scoreJob = (job, student, W, index, label = "Job") => {
-  // ── header ─────────────────────────────────────────────────────────────────
+  process.stdout.write(`[SCOREJOB] Called for: ${JSON.stringify(job.jobTitle)} | student: ${student?.name}\n`);
+  const breakdown = {
+    skills: 0, roles: 0, experience: 0,
+    cgpa: 0, batchYear: 0, location: 0,
+    degree: 0, stream: 0, salary: 0,
+  };
+
+  const jobReqSkills  = (job.skills || []).map(norm);
+  const studentNormLocs = (student.locations || []).map(norm);
+
+  // Referral: poster is candidatePosted (Onboarding doc)
+  // Off-campus: poster is companyPosted (CompanyProfile doc)
+
   const posterName =
     job.candidatePosted?.name ||
     job.companyPosted?.companyDetails?.companyName ||
@@ -162,11 +174,6 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`  Poster           : ${posterName}`);
   console.log(`  Student          : ${student?.name || "?"} | ${student?.email || "?"}`);
 
-  const breakdown = {
-    skills: 0, roles: 0, experience: 0,
-    cgpa: 0, batchYear: 0, location: 0,
-    degree: 0, stream: 0, salary: 0,
-  };
 
   const fullJobText = (
     (job.description || "") + " " + (job.eligibilityCriteria || "")
