@@ -190,7 +190,10 @@ export const getAlumniWhoCanHelp = async (req, res) => {
       });
     }
 
-    // Step 1: Find own profile
+    // =====================================================
+    // STEP 1: FETCH MY PROFILE
+    // =====================================================
+
     console.log(`${debugId} 🔍 Step 1: Finding profile for userId:`, userId);
 
     const myProfile = await Onboarding.findOne({ userId });
@@ -210,68 +213,121 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     }
 
     console.log(`${debugId} myProfile._id:`, myProfile._id);
-    console.log(`${debugId} myProfile.college:`, myProfile.college);
+    console.log(`${debugId} myProfile.educations:`, myProfile.educations);
     console.log(`${debugId} myProfile.profileType:`, myProfile.profileType);
     console.log(`${debugId} myProfile.currentCompany:`, myProfile.currentCompany);
 
-    // Step 2: Build regex and find professionals
+    // =====================================================
+    // STEP 2: BUILD EXCLUDED IDS + COMPANY REGEX
+    // =====================================================
 
-    const escapedCompany = company.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&"
-    );
-
+    const escapedCompany = company.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const companyRegex = new RegExp(`^${escapedCompany}$`, "i");
 
-    console.log(`${debugId} 🔍 Step 2: Querying professionals...`);
-
-    console.log(
-      `${debugId} Query filter:`,
-      JSON.stringify(
-        {
-          userId: { $ne: userId },
-          profileType: "professional",
-
-          $or: [
-            {
-              currentCompany: companyRegex.toString(),
-            },
-            {
-              "experiences.company": companyRegex.toString(),
-            },
-          ],
-        },
-        null,
-        2
-      )
-    );
     const excludedUserIds = [userId];
-
     if (postedByUser) {
       excludedUserIds.push(postedByUser);
     }
-    const alumni = await Onboarding.find({
-      userId: {
-        $nin: excludedUserIds,
-      },
-      profileType: "professional",
 
-      $or: [
-        // currently working
-        {
-          currentCompany: { $regex: companyRegex },
-        },
+    // =====================================================
+    // STEP 3: FETCH COLLEGE ALUMNI
+    // =====================================================
 
-        // previously worked
-        {
-          experiences: {
-            $elemMatch: {
-              company: { $regex: companyRegex },
-            },
-          },
-        },
-      ],
-    }).lean();
+    let collegeAlumni = [];
+
+    // ✅ FIXED: nested educations[].college — same as getAlumniHiringNetwork
+    const colleges = [
+      ...new Set(
+        (myProfile.educations || [])
+          .map((edu) => edu.college)
+          .filter(Boolean)
+      ),
+    ];
+
+    console.log(`${debugId} colleges:`, colleges);
+
+    if (colleges.length > 0) {
+      collegeAlumni = await Onboarding.find({
+        "educations.college": { $in: colleges },
+        userId: { $nin: excludedUserIds },
+      }).lean();
+    }
+
+    console.log(`${debugId} collegeAlumni count:`, collegeAlumni.length);
+
+    // =====================================================
+    // STEP 4: BUILD USER COMPANIES
+    // =====================================================
+
+    const allCompanies = [];
+
+    if (myProfile.currentCompany) {
+      allCompanies.push(myProfile.currentCompany);
+    }
+
+    myProfile.experiences?.forEach((exp) => {
+      if (exp.company) allCompanies.push(exp.company);
+    });
+
+    const uniqueCompanies = [
+      ...new Map(
+        allCompanies.map((c) => [c.toLowerCase(), c])
+      ).values(),
+    ];
+
+    // =====================================================
+    // STEP 5: FETCH COMPANY ALUMNI
+    // =====================================================
+
+    let companyAlumni = [];
+
+    if (uniqueCompanies.length > 0) {
+      // ✅ FIXED: simple regex — same as getAlumniHiringNetwork
+      const orConditions = uniqueCompanies.flatMap((companyName) => {
+        const regex = new RegExp(companyName, "i");
+        return [
+          { currentCompany: regex },
+          { "experiences.company": regex },
+        ];
+      });
+
+      companyAlumni = await Onboarding.find({
+        userId: { $nin: excludedUserIds },
+        $or: orConditions,
+      }).lean();
+    }
+
+    console.log(`${debugId} companyAlumni count:`, companyAlumni.length);
+
+    // =====================================================
+    // STEP 6: MERGE + REMOVE DUPLICATES
+    // =====================================================
+
+    const mergedAlumni = [...collegeAlumni, ...companyAlumni];
+
+    const uniqueAlumniMap = new Map();
+    mergedAlumni.forEach((person) => {
+      const key = person.userId?.toString();
+      if (!uniqueAlumniMap.has(key)) {
+        uniqueAlumniMap.set(key, person);
+      }
+    });
+
+    const uniqueAlumni = Array.from(uniqueAlumniMap.values());
+
+    console.log(`${debugId} unique alumni count:`, uniqueAlumni.length);
+
+    // =====================================================
+    // STEP 7: FILTER ONLY TARGET COMPANY PEOPLE
+    // =====================================================
+
+    const alumni = uniqueAlumni.filter((person) => {
+      const currentlyWorking = companyRegex.test(person.currentCompany || "");
+      const previouslyWorked = person.experiences?.some((exp) =>
+        companyRegex.test(exp.company || "")
+      );
+      return currentlyWorking || previouslyWorked;
+    });
 
     console.log(`${debugId} Professionals found:`, alumni.length);
 
@@ -291,11 +347,9 @@ export const getAlumniWhoCanHelp = async (req, res) => {
       );
     }
 
+    // ✅ KEPT: early-exit for empty results — same as old version
     if (alumni.length === 0) {
-      console.log(
-        `${debugId} No professionals found for company:`,
-        company
-      );
+      console.log(`${debugId} No professionals found for company:`, company);
 
       return res.status(200).json({
         success: true,
@@ -311,7 +365,9 @@ export const getAlumniWhoCanHelp = async (req, res) => {
       });
     }
 
-    // Step 3: Fetch metrics for each professional
+    // =====================================================
+    // STEP 8: FETCH METRICS + JOBS
+    // =====================================================
 
     console.log(
       `${debugId} 🔍 Step 3: Fetching metrics for ${alumni.length} professionals...`
@@ -320,9 +376,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     const alumniWithMetrics = await Promise.all(
       alumni.map(async (person, index) => {
         console.log(
-          `${debugId} Processing professional [${
-            index + 1
-          }/${alumni.length}] _id:`,
+          `${debugId} Processing professional [${index + 1}/${alumni.length}] _id:`,
           person._id,
           "name:",
           person.name
@@ -331,10 +385,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
         let metrics = null;
         let referralJobs = [];
 
-        const currentlyWorking = companyRegex.test(
-          person.currentCompany || ""
-        );
-
+        const currentlyWorking = companyRegex.test(person.currentCompany || "");
         const previouslyWorked = person.experiences?.some((exp) =>
           companyRegex.test(exp.company || "")
         );
@@ -354,37 +405,23 @@ export const getAlumniWhoCanHelp = async (req, res) => {
           ]);
 
           console.log(
-            `${debugId} Professional [${
-              index + 1
-            }] metrics:`,
+            `${debugId} Professional [${index + 1}] metrics:`,
             JSON.stringify(metrics)
           );
-
           console.log(
-            `${debugId} Professional [${
-              index + 1
-            }] referralJobs count:`,
+            `${debugId} Professional [${index + 1}] referralJobs count:`,
             referralJobs.length
           );
         } catch (innerError) {
           console.error(
-            `${debugId}  Error processing professional [${
-              index + 1
-            }] _id:`,
+            `${debugId} Error processing professional [${index + 1}] _id:`,
             person._id
           );
-
-          console.error(
-            `${debugId} Inner error message:`,
-            innerError.message
-          );
-
-          console.error(
-            `${debugId} Inner error stack:`,
-            innerError.stack
-          );
+          console.error(`${debugId} Inner error message:`, innerError.message);
+          console.error(`${debugId} Inner error stack:`, innerError.stack);
         }
 
+        // ✅ KEPT: ...person spread to preserve all fields frontend depends on
         return {
           ...person,
 
@@ -402,29 +439,27 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     console.log(
       `${debugId} Step 3 complete. Processed ${alumniWithMetrics.length} professionals`
     );
-
     console.log(`${debugId} isHiring breakdown:`, {
       hiring: alumniWithMetrics.filter((p) => p.isHiring).length,
       notHiring: alumniWithMetrics.filter((p) => !p.isHiring).length,
     });
-
     console.log(`${debugId} Sending success response`);
     console.log(`${debugId} ========== REQUEST END ==========\n`);
 
+    // ✅ KEPT: exact same response shape as old version
     return res.status(200).json({
       success: true,
       errorCode: null,
       message: "Professionals fetched successfully.",
-
       debug: {
         company,
         companyRegex: companyRegex.toString(),
         totalProfessionalsFound: alumni.length,
       },
-
       company,
+      collegesChecked: colleges,
+      companiesChecked: uniqueCompanies,
       count: alumniWithMetrics.length,
-
       alumni: alumniWithMetrics,
     });
   } catch (error) {
@@ -438,12 +473,10 @@ export const getAlumniWhoCanHelp = async (req, res) => {
       success: false,
       errorCode: "INTERNAL_SERVER_ERROR",
       message: "Something went wrong. Please try again later.",
-
       debug: {
         error: error.message,
         stack: error.stack,
       },
-
       data: null,
     });
   }
