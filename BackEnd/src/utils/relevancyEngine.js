@@ -1,109 +1,58 @@
 // ═════════════════════════════════════════════════════════════════════════════
-//  scoreHelpers.js  —  Match-Score Engine  v4
+//  scoreHelpers.js  —  Match-Score Engine  v5
 //
-//  RULES SUMMARY
-//  ─────────────────────────────────────────────────────────────────────────
+//  KEY CHANGE (v5):  Weights are now fetched from the database instead of
+//  the hardcoded WEIGHTS_PROFESSIONAL / WEIGHTS_STUDENT objects.
 //
-//  SKILL GATE  (evaluated first, before anything else is scored)
-//  ┌─────────────────────┬──────────────────────────────────────────────────┐
-//  │ skill match %       │ effect                                           │
-//  ├─────────────────────┼──────────────────────────────────────────────────┤
-//  │ < 30 %              │ HARD REJECT — return score 0 immediately         │
-//  │ 30 – 49 %           │ PENALTY     — every other dimension score × 0.50 │
-//  │ ≥ 50 %              │ NORMAL      — full scoring for all dimensions     │
-//  └─────────────────────┴──────────────────────────────────────────────────┘
-//  (If job lists no skills, skillMatchPct = 100 → normal path always)
-//
-//  ROLES
-//    • exact match in student.jobRoles ∩ allJobRoles  →  full weight
-//    • skills ≥ 50 % but zero role match              →  50 % of role weight
-//    • skills 30-49 % (penalty zone)                  →  raw × gateMultiplier
-//    • soft match via job title / JD text             →  35 % of role weight × gate
-//
-//  STREAM
-//    • exact match               → full weight
-//    • same related group        → 50 % of weight    (PARTIAL.streamRelated)
-//    • no match                  → 0
-//    • no requirement on job     → full weight
-//
-//  DEGREE
-//    • exact match               → full weight
-//    • same related group        → 50 % of weight    (PARTIAL.degreeRelated)
-//    • no requirement on job     → full weight
-//    • degree keywords in JD but student not matched → 40 % (PARTIAL.degreeInTextOnly)
-//
-//  EXPERIENCE  (range "min-max" or "min+" parsed from job.yearsOfExperience)
-//  ┌──────────────────────────────────────┬──────────────────────────────────┐
-//  │ student exp vs job range             │ score                            │
-//  ├──────────────────────────────────────┼──────────────────────────────────┤
-//  │ within [min, max]                    │ 100 % of W.experience            │
-//  │ above max but within 20 % of max     │  75 %                            │
-//  │ above max by > 20 % of max           │  15 %                            │
-//  │ below min but within 20 % of min     │  75 %                            │
-//  │ below min by > 20 % of min           │  15 %                            │
-//  │ no range specified                   │ 100 %                            │
-//  └──────────────────────────────────────┴──────────────────────────────────┘
-//
-//  SALARY
-//    • job CTC ≥ expected        → full weight
-//    • job CTC < expected        → proportional  (score = W × jobCTC / expected)
-//    • either value missing      → full weight (benefit of doubt)
-//
-//  CGPA & BATCH YEAR
-//    • professionals             → always 0  (weights forced to 0)
-//    • students / freshers       → scored normally
-//
-//  NOTICE PERIOD  — weights default to 0 in both maps; re-enable freely
-//    • serving notice            → full credit
-//    • immediate joiner required → tiered by remaining days
-//    • max notice specified      → proportional
-//    • no requirement            → full credit
-//
-//  WEIGHT MAPS  (two objects at the top — change numbers freely)
-//    WEIGHTS_PROFESSIONAL  : skills=40, stream=15, degree=10, no cgpa/batchYear
-//    WEIGHTS_STUDENT       : skills=40, stream=14, degree=12, includes cgpa + batchYear
+//  • fetchWeights(profileType)  accepts "professional" or "student" (default)
+//    and queries the matching Mongo collection.
+//  • If the DB has no document yet, it falls back to the hardcoded defaults
+//    below — so the engine never breaks on a fresh deployment.
+//  • scoreJob() now receives W as the THIRD argument (same signature as
+//    before) — the caller must await fetchWeights(student.profileType) and
+//    pass the result in.  The internal weight-map selection block has been
+//    removed; W is used directly.
 // ═════════════════════════════════════════════════════════════════════════════
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  WEIGHT CONFIGURATION
-//  ┌─────────────────────────────────────────────────────────────────────────┐
-//  │  Change numbers freely — just keep each map's TOTAL at exactly 100.    │
-//  │  cgpa and batchYear MUST stay 0 in WEIGHTS_PROFESSIONAL.               │
-//  │  noticePeriod / noticePeriodDays default to 0; raise them by reducing  │
-//  │  something else, keeping the total at 100.                             │
-//  └─────────────────────────────────────────────────────────────────────────┘
+//  FALLBACK WEIGHT CONFIGURATION  (used only when DB has no document yet)
+//  Keep these in sync with your Mongoose model defaults.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const WEIGHTS_PROFESSIONAL = {
-  skills:           40,   
-  stream:           13,   
-  degree:            9,   
-  jobRoles:         13,   
-  experience:        9,   
-  salary:            5,   
-  location:          4,   
-  cgpa:              0,   
-  batchYear:         0,  
-  noticePeriod:      4,   
-  noticePeriodDays:  3,   
-  // TOTAL ────────────────────────────────────────────── 100
+const FALLBACK_PROFESSIONAL = {
+  skills:           40,
+  jobRoles:         13,
+  experience:        9,
+  noticePeriod:      4,
+  noticePeriodDays:  3,
+  cgpa:              0,
+  batchYear:         0,
+  location:          4,
+  degree:            9,
+  stream:           13,
+  salary:            5,
 };
 
-export const WEIGHTS_STUDENT = {
-  skills:           38,   
-  stream:           16,   
-  degree:           13,   
-  jobRoles:          7,   
-  experience:        4,   
-  salary:            3,   
-  location:          4,   
-  cgpa:              6,   
-  batchYear:         5,   
-  noticePeriod:      2,   
-  noticePeriodDays:  2,   
-  // TOTAL ────────────────────────────────────────────── 100
+const FALLBACK_STUDENT = {
+  skills:           38,
+  jobRoles:          7,
+  experience:        4,
+  noticePeriod:      2,
+  noticePeriodDays:  2,
+  cgpa:              6,
+  batchYear:         5,
+  location:          4,
+  degree:           13,
+  stream:           16,
+  salary:            3,
 };
+
+// Keys that are valid weight fields (excludes Mongo internals like _id, __v, etc.)
+const WEIGHT_KEYS = [
+  "skills", "jobRoles", "experience", "noticePeriod", "noticePeriodDays",
+  "cgpa", "batchYear", "location", "degree", "stream", "salary",
+];
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -111,84 +60,63 @@ export const WEIGHTS_STUDENT = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PARTIAL = {
-  streamRelated:       0.50,  // related stream  e.g. job=AIML, student=CSE
-  degreeRelated:       0.50,  // related degree  e.g. job=BTech, student=BE
-  roleNoSkillMatch:    0.50,  // skills >= 50% but no role match
-  rolesSoftMatch:      0.35,  // role found only via title / JD text
-  degreeInTextOnly:    0.40,  // degree keywords in JD but no degree[] field
+  streamRelated:       0.50,
+  degreeRelated:       0.50,
+  roleNoSkillMatch:    0.50,
+  rolesSoftMatch:      0.35,
+  degreeInTextOnly:    0.40,
 };
 
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  RELATED GROUPS
-//  Both the student value AND the job requirement must appear in the SAME group
-//  to count as "related".  Add aliases freely.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STREAM_GROUPS = [
-  // CS / IT / BCA / MCA
   [
     "cs", "cse", "it", "computerscience", "informationtechnology",
     "computerapplications", "computerapplication", "bca", "mca",
     "mastersincomputerapplications",
   ],
-  // AI / ML / Data Science — overlaps with CS intentionally
   [
     "ds", "datascience", "ai", "artificialintelligence", "ml", "machinelearning",
     "aids", "aiml", "aiandml", "dataanalytics", "statistics", "appliedmathematics",
     "cse", "cs", "it", "computerscience", "informationtechnology",
   ],
-  // Electronics / Electrical
   [
     "ece", "eee", "ee", "electronics", "electricalengineering", "electrical",
     "vlsi", "embeddedsystems", "instrumentation",
   ],
-  // Mechanical
   [
     "me", "mechanicalengineering", "mechanical", "manufacturing",
     "industrialengineering", "productiontechnology",
   ],
-  // Civil
   [
     "ce", "civilengineering", "civil", "structural", "construction",
     "environmentalengineering",
   ],
-  // Business / Management — MBA and BBA are related
   [
     "mba", "businessadministration", "management", "bba", "commerce",
     "marketing", "finance", "hr", "humanresources", "bbm", "bcom",
   ],
-  // Chemistry / Biotech
   [
     "chem", "chemicalengineering", "chemistry", "biotechnology", "biotech",
     "bioinformatics", "biochemistry",
   ],
-  // Pharma
   ["pharmacy", "pharmaceuticalsciences", "pharma", "pharmacology"],
-  // Law
   ["law", "llb", "legalstudy", "legalstudies", "llm"],
-  // Architecture / Design
   ["architecture", "arch", "urbanplanning", "interiordesign", "bdes", "mdes"],
 ];
 
 const DEGREE_GROUPS = [
-  // UG Engineering / Tech cluster  —  BE, BTech, BCA, BSc IT, BSc CS are all related
   ["btech", "be", "bscit", "bsccs", "bca", "bsccomputerscience", "bscis", "bscelectronics"],
-  // PG Engineering / Tech cluster  —  MTech, ME, MCA, MSc CS are all related
   ["mtech", "me", "mscit", "msccs", "mca", "msccomputerscience", "mscelectronics"],
-  // MBA / PGDM cluster
   ["mba", "pgdm", "mms", "mba(dual)", "executivemba"],
-  // UG Business cluster  —  BBA and BBA variants
   ["bba", "bcom", "bbm", "bbs", "bba(honors)"],
-  // BSc cluster
   ["bsc", "bscphysics", "bscchemistry", "bscmaths", "bscbiology", "bscstatistics"],
-  // MSc cluster
   ["msc", "mscphysics", "mscchemistry", "mscmaths", "mscbiology", "mscstatistics"],
-  // Pharma
   ["bpharm", "mpharm", "pharmd", "dpharma"],
-  // Law
   ["llb", "ballb", "llm", "blegalstudy"],
-  // Arts / Humanities
   ["ba", "bfa", "bdes", "bvoc"],
   ["ma", "mfa", "mdes", "mvoc"],
 ];
@@ -227,20 +155,15 @@ export const parseYearsFromString = (str) => {
   return match ? parseFloat(match[1]) : 0;
 };
 
-// Returns { min, max }  where max = 0 means open-ended ("3+" or plain "3")
 export const parseExpRange = (str) => {
   if (!str) return { min: 0, max: 0 };
   const s = String(str).trim();
-
   const rangeMatch = s.match(/([0-9]+(?:\.[0-9]+)?)\s*(?:-|to)\s*([0-9]+(?:\.[0-9]+)?)/i);
   if (rangeMatch) return { min: parseFloat(rangeMatch[1]), max: parseFloat(rangeMatch[2]) };
-
   const plusMatch = s.match(/([0-9]+(?:\.[0-9]+)?)\s*\+/);
   if (plusMatch) return { min: parseFloat(plusMatch[1]), max: 0 };
-
   const plain = s.match(/([0-9]+(?:\.[0-9]+)?)/);
   if (plain) return { min: parseFloat(plain[1]), max: 0 };
-
   return { min: 0, max: 0 };
 };
 
@@ -262,11 +185,9 @@ const calcRemainingDays = (startDateStr, totalDays) => {
   return Math.max(0, totalDays - elapsed);
 };
 
-// Returns the related-group array that contains normValue, or null
 const findGroup = (normValue, groups) =>
   groups.find((g) => g.includes(normValue)) ?? null;
 
-// True when studentNorm and at least one of jobNorms share the same group
 const sameGroup = (studentNorm, jobNorms, groups) => {
   const grp = findGroup(studentNorm, groups);
   return !!grp && jobNorms.some((j) => grp.includes(j));
@@ -304,7 +225,6 @@ const ss = (got, max) => {
 
 const pad = (s, n = 20) => String(s).padEnd(n);
 
-// Final summary box
 const printSummary = (bd, W, rawTotal, totalScore, profileTag, gateMultiplier) => {
   const capped = rawTotal !== totalScore ? ` → capped 100` : "";
   console.log(`\n${C.bold}  ┌──────────────────────────────────────────────────────────┐`);
@@ -325,16 +245,51 @@ const printSummary = (bd, W, rawTotal, totalScore, profileTag, gateMultiplier) =
 
 // ═════════════════════════════════════════════════════════════════════════════
 //  DB HELPERS
-//  fetchWeights is kept for API-compatibility but weights are now selected
-//  internally from the manual config objects above — no DB fetch needed.
 // ═════════════════════════════════════════════════════════════════════════════
 
 import Auth from "../models/authModel.js";
+import RelevancyWeights from "../models/RelevancyWeightsModel.js";
+import RelevancyWeightsProfessional from "../models/RelevancyWeightsProfessionalModel.js";
 
-export const fetchWeights = async () => ({
-  ...WEIGHTS_STUDENT,
-  _source: "manual-config-v4",
-});
+/**
+ * fetchWeights(profileType?)
+ *
+ * Fetches weights from the correct collection based on profile type.
+ * Falls back to hardcoded defaults if no DB document exists yet.
+ *
+ * @param {"professional" | "student" | string} profileType
+ * @returns {Promise<Record<string, number>>}
+ */
+export const fetchWeights = async (profileType = "student") => {
+  const isProfessional = normStr(profileType) === "professional";
+  const Model    = isProfessional ? RelevancyWeightsProfessional : RelevancyWeights;
+  const fallback = isProfessional ? FALLBACK_PROFESSIONAL       : FALLBACK_STUDENT;
+  const tag      = isProfessional ? "professional"               : "student";
+
+  try {
+    const doc = await Model.findOne().lean();
+
+    if (!doc) {
+      console.warn(
+        `[fetchWeights] No ${tag} weights doc in DB — using hardcoded fallback.`
+      );
+      return { ...fallback, _source: `fallback-${tag}` };
+    }
+
+    // Pick only the valid weight keys to keep the object clean
+    const weights = {};
+    for (const key of WEIGHT_KEYS) {
+      weights[key] = doc[key] ?? fallback[key];
+    }
+
+    console.log(`[fetchWeights] Loaded ${tag} weights from DB (id=${doc._id})`);
+    return { ...weights, _source: `db-${tag}` };
+
+  } catch (err) {
+    console.error(`[fetchWeights] DB error for ${tag}, falling back:`, err.message);
+    return { ...fallback, _source: `fallback-error-${tag}` };
+  }
+};
 
 export const fetchThreshold = async () => {
   try {
@@ -372,7 +327,7 @@ export const logConfig = (W, threshold, label = "RELEVANCY ENGINE") => {
   ];
 
   console.log(`\n${C.yellow}=====================================================${C.reset}`);
-  console.log(`${C.yellow}  ${label}${C.reset}`);
+  console.log(`${C.yellow}  ${label}  [source: ${W._source ?? "?"}]${C.reset}`);
   console.log(`${C.yellow}=====================================================${C.reset}`);
   for (const [name, val] of rows) {
     console.log(`${C.yellow}  ${name.padEnd(14)}: ${String(val + "%").padEnd(10)}${C.reset}`);
@@ -384,22 +339,21 @@ export const logConfig = (W, threshold, label = "RELEVANCY ENGINE") => {
 
 
 // ═════════════════════════════════════════════════════════════════════════════
-//  scoreJob  —  MAIN SCORING FUNCTION
+//  scoreJob  —  MAIN SCORING FUNCTION  (v5)
 //
-//  Weights are selected internally from WEIGHTS_PROFESSIONAL or WEIGHTS_STUDENT
-//  based on student.profileType.  The third argument (_unusedW) is accepted
-//  for drop-in compatibility with v1/v2 callers but is ignored.
+//  W is now passed in by the caller (already fetched from DB).
+//  The internal profile-type detection is kept only to:
+//    • label logs correctly  (PROFESSIONAL / STUDENT)
+//    • skip cgpa / batchYear for professionals (enforced by W values being 0)
 // ═════════════════════════════════════════════════════════════════════════════
 
-export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
+export const scoreJob = (job, student, W, index, label = "Job") => {
 
-  // ── 0. Choose weight map based on profile type ────────────────────────────
   const isProfessional = normStr(student?.profileType) === "professional";
-  const W              = isProfessional ? { ...WEIGHTS_PROFESSIONAL } : { ...WEIGHTS_STUDENT };
   const profileTag     = isProfessional ? "PROFESSIONAL" : "STUDENT/FRESHER";
   console.log(profileTag);
 
-  // Runtime guard: warn if weight map doesn't sum to 100
+  // Runtime guard
   const weightTotal = Object.entries(W)
     .filter(([k]) => k !== "_source")
     .reduce((sum, [, v]) => sum + (Number(v) || 0), 0);
@@ -417,7 +371,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
     noticePeriod: 0, noticePeriodDays: 0,
   };
 
-  // ── Primary education record ──────────────────────────────────────────────
   const primaryEdu =
     (student.educations || []).find(
       (e) => e.educationType === "bachelors" || e.educationType === "masters"
@@ -439,9 +392,8 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
     (job.description || "") + " " + (job.eligibilityCriteria || "")
   ).toLowerCase();
 
-  // ── Header log ────────────────────────────────────────────────────────────
   process.stdout.write(
-    `[SCOREJOB] #${index + 1} | title="${jobTitleRaw}" | student="${student?.name}" | type=${profileTag}\n`
+    `[SCOREJOB] #${index + 1} | title="${jobTitleRaw}" | student="${student?.name}" | type=${profileTag} | weights_source=${W._source ?? "?"}\n`
   );
   console.log(
     `\n${C.bold}${C.cyan}----  ${label} #${index + 1}  [${profileTag}]  ` +
@@ -450,7 +402,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   console.log(`  Title     : ${JSON.stringify(job.jobTitle)}`);
   console.log(`  Poster    : ${posterName}`);
   console.log(`  Student   : ${student?.name || "?"} <${student?.email || "?"}>`);
-  console.log(`  Profile   : ${profileTag}`);
+  console.log(`  Profile   : ${profileTag}  [weights: ${W._source ?? "?"}]`);
   console.log(
     `  Edu       : degree="${primaryEdu.degree}"  spec="${primaryEdu.specialization}"` +
     `  cgpa=${primaryEdu.cgpa}  grad=${primaryEdu.yearOfGraduation}`
@@ -463,12 +415,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  1. SKILLS  +  GATE CALCULATION
-  //
-  //  Gate thresholds:
-  //    skillMatchPct < 30 %       → HARD REJECT (score = 0, return immediately)
-  //    30 % <= skillMatchPct < 50% → PENALTY GATE (gateMultiplier = 0.50)
-  //    skillMatchPct >= 50 %       → NORMAL (gateMultiplier = 1.00)
+  //  1. SKILLS  +  GATE
   // ══════════════════════════════════════════════════════════════════════════
   const jobSkillsRaw      = job.skills || [];
   const jobSkillsNorm     = jobSkillsRaw.map(normStr);
@@ -478,14 +425,11 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   console.log(`  Job skills     (${jobSkillsNorm.length})  : [${jobSkillsRaw.join(", ") || "none"}]`);
   console.log(`  Student skills (${studentSkillsNorm.length}) : [${(student.skills || []).join(", ") || "none"}]`);
 
-  // Default when no skills listed on job → treat as 100 % match
   let skillMatchPct = 100;
   let skillScore    = W.skills;
 
   if (jobSkillsNorm.length > 0) {
-    // Direct match: student explicitly has the skill
-    const matched = jobSkillsNorm.filter((s) => studentSkillsNorm.includes(s));
-    // Soft match: skill keyword appears anywhere in JD text (catches variants)
+    const matched     = jobSkillsNorm.filter((s) => studentSkillsNorm.includes(s));
     const softMatched = jobSkillsNorm.filter(
       (s) => !matched.includes(s) && fullJobText.includes(s)
     );
@@ -503,13 +447,10 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
     console.log(`  No skills listed on job → 100 % match by default`);
   }
 
-  // ── Gate decision ─────────────────────────────────────────────────────────
   console.log(`\n${DIM.GATE}`);
-
   let gateMultiplier;
 
   if (jobSkillsNorm.length > 0 && skillMatchPct < 30) {
-    // HARD REJECT
     console.log(
       `  ${C.red}HARD REJECT: skill match ${skillMatchPct.toFixed(1)}% < 30% → final score = 0${C.reset}`
     );
@@ -525,13 +466,11 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
     };
 
   } else if (jobSkillsNorm.length > 0 && skillMatchPct < 50) {
-    // PENALTY GATE (30% <= match < 50%)
     gateMultiplier = 0.5;
     console.log(
       `  ${C.yellow}PENALTY: skill match ${skillMatchPct.toFixed(1)}% in [30, 50) → all dimensions x0.50${C.reset}`
     );
   } else {
-    // NORMAL (match >= 50% or no skills listed)
     gateMultiplier = 1.0;
     console.log(
       `  ${C.green}PASS: skill match ${skillMatchPct.toFixed(1)}%` +
@@ -545,13 +484,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  2. STREAM  (#2 by importance after skills)
-  //
-  //  • exact match               → full weight
-  //  • same related group        → 50% of weight  (PARTIAL.streamRelated)
-  //    e.g. job=AIML, student=CSE/IT/AIDS → partial
-  //  • no requirement on job     → full weight
-  //  • no match                  → 0
+  //  2. STREAM
   // ══════════════════════════════════════════════════════════════════════════
   const studentStreamNorm = normStr(
     primaryEdu.specialization || student.specialization || ""
@@ -588,17 +521,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  3. DEGREE  (#3 by importance)
-  //
-  //  Related-degree examples:
-  //    UG Eng cluster : BE <-> BTech <-> BCA <-> BSc IT <-> BSc CS
-  //    PG Eng cluster : MTech <-> ME <-> MCA <-> MSc CS
-  //    Business       : MBA <-> BBA <-> BBA(Honors) <-> PGDM
-  //
-  //  • exact match               → full weight
-  //  • same related group        → 50% (PARTIAL.degreeRelated)
-  //  • degree keywords in JD but student not matched → 40% (PARTIAL.degreeInTextOnly)
-  //  • no requirement on job     → full weight
+  //  3. DEGREE
   // ══════════════════════════════════════════════════════════════════════════
   const studentDegreeNorm = normStr(primaryEdu.degree || student.degree || "");
   const jobDegreesNorm    = (job.degree || []).map(normStr);
@@ -648,11 +571,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
   // ══════════════════════════════════════════════════════════════════════════
   //  4. JOB ROLES
-  //
-  //  • exact match in student.jobRoles ∩ allJobRoles → full proportional weight
-  //  • skills >= 50% but zero role match             → 50% of role weight
-  //  • penalty zone (gate=0.5): soft match via title/JD → 35% of role weight x gate
-  //  • penalty zone + no match at all                → 0
   // ══════════════════════════════════════════════════════════════════════════
   const studentRolesNorm = (student.jobRoles || []).map(normStr);
   const jobRolesNorm     = (job.jobRoles     || []).map(normStr);
@@ -669,27 +587,21 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   if (allJobRoles.length === 0) {
     rawRoleScore = W.jobRoles;
     console.log(`  No roles requirement → full credit`);
-
   } else {
     const exactMatched = studentRolesNorm.filter((r) => allJobRoles.includes(r));
 
     if (exactMatched.length > 0) {
-      // Exact match — full proportional credit (capped at W.jobRoles)
       rawRoleScore = Math.min(
         Math.round((exactMatched.length / allJobRoles.length) * W.jobRoles),
         W.jobRoles
       );
       console.log(`  Exact match [${exactMatched.join(", ")}]  ${exactMatched.length}/${allJobRoles.length}`);
-
     } else if (gateMultiplier === 1.0) {
-      // Skills >= 50% but no role match → 50% partial
       rawRoleScore = Math.round(W.jobRoles * PARTIAL.roleNoSkillMatch);
       console.log(
         `  No role match but skills >= 50% → ${PARTIAL.roleNoSkillMatch * 100}% of role weight (${rawRoleScore}/${W.jobRoles})`
       );
-
     } else {
-      // Penalty zone: try soft match via title or JD text
       const softMatch = studentRolesNorm.some(
         (r) => jobTitleNorm.includes(r) || fullJobText.includes(r)
       );
@@ -706,17 +618,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
   // ══════════════════════════════════════════════════════════════════════════
   //  5. EXPERIENCE
-  //
-  //  Job range comes from job.yearsOfExperience (e.g. "1-2", "3+", "5").
-  //  Falls back to scanning description/eligibilityCriteria text.
-  //
-  //  Tiers (symmetric for over/under):
-  //    within [min, max]           → 100%
-  //    above max by <= 20% of max  →  75%
-  //    above max by  > 20% of max  →  15%
-  //    below min by <= 20% of min  →  75%
-  //    below min by  > 20% of min  →  15%
-  //    no range specified          → 100%
   // ══════════════════════════════════════════════════════════════════════════
   const studentExpYears =
     parseYearsFromString(student.totalYearsOfExperience) ||
@@ -725,7 +626,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   const expRangeRaw = job.yearsOfExperience || "";
   let { min: expMin, max: expMax } = parseExpRange(expRangeRaw);
 
-  // Fallback: scan JD text for experience mentions
   if (expMin === 0 && expMax === 0) {
     const rangeInText = fullJobText.match(
       /([0-9]+(?:\.[0-9]+)?)\s*(?:-|to)\s*([0-9]+(?:\.[0-9]+)?)\s*(?:years?|yrs?)/i
@@ -751,13 +651,10 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   if (expMin === 0 && expMax === 0) {
     rawExpScore = W.experience;
     expNote     = "no experience requirement → full credit";
-
   } else if (expMax > 0) {
-    // Bounded range "min-max"
     if (studentExpYears >= expMin && studentExpYears <= expMax) {
       rawExpScore = W.experience;
       expNote     = `within range [${expMin}-${expMax}] → 100%`;
-
     } else if (studentExpYears > expMax) {
       const overPct = ((studentExpYears - expMax) / expMax) * 100;
       if (overPct <= 20) {
@@ -767,9 +664,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
         rawExpScore = Math.round(W.experience * 0.15);
         expNote     = `above max ${expMax} by ${overPct.toFixed(1)}% (>20%) → 15%`;
       }
-
     } else {
-      // studentExpYears < expMin
       const underPct = ((expMin - studentExpYears) / expMin) * 100;
       if (underPct <= 20) {
         rawExpScore = Math.round(W.experience * 0.75);
@@ -779,9 +674,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
         expNote     = `below min ${expMin} by ${underPct.toFixed(1)}% (>20%) → 15%`;
       }
     }
-
   } else {
-    // Open-ended "min+"
     if (studentExpYears >= expMin) {
       rawExpScore = W.experience;
       expNote     = `meets open-ended min ${expMin} → 100%`;
@@ -804,10 +697,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
   // ══════════════════════════════════════════════════════════════════════════
   //  6. SALARY
-  //
-  //  • job CTC >= student expected → full weight
-  //  • job CTC <  student expected → proportional  (W x jobCTC / expected)
-  //  • either value missing        → full weight (benefit of doubt)
   // ══════════════════════════════════════════════════════════════════════════
   const sExpSalary = Number(student.expectedSalaryAmount) || 0;
   const jSalary    = Number(job.packageDetails?.totalCTC)  || 0;
@@ -878,22 +767,16 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  8. CGPA  — STUDENTS / FRESHERS ONLY
-  //  For professionals: W.cgpa = 0 → breakdown stays 0.
-  //
-  //  • student CGPA >= required → full weight
-  //  • student CGPA <  required → 0  (hard cut-off; grade floors matter)
-  //  • no requirement           → full weight
+  //  8. CGPA  — weight is 0 for professionals (enforced in DB/fallback map)
   // ══════════════════════════════════════════════════════════════════════════
   console.log(`\n${DIM.CGPA}`);
 
-  if (isProfessional) {
+  if (isProfessional || W.cgpa === 0) {
     breakdown.cgpa = 0;
-    console.log(`  Skipped — professional profile (W.cgpa = ${W.cgpa})`);
+    console.log(`  Skipped — professional profile or W.cgpa = 0`);
   } else {
     const sCGPA        = parseFloat(primaryEdu.cgpa || student.cgpa) || 0;
     const requiredCGPA = parseFloat(job.cgpa) || 0;
-    // Also parse from free JD text as fallback
     const cgpaRegex    =
       /(?:cgpa|cut-off|cutoff|minimum\s+cgpa|min\s+cgpa)\s*[:>=]*\s*([0-9](?:\.[0-9]{1,2})?)\b/i;
     const effectiveCGPA = requiredCGPA > 0
@@ -919,23 +802,17 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  9. BATCH YEAR  — STUDENTS / FRESHERS ONLY
-  //  For professionals: W.batchYear = 0 → breakdown stays 0.
-  //
-  //  • student grad year in JD year list → full weight
-  //  • no years in JD                    → full weight (no restriction)
-  //  • year in JD but student not listed → 0
+  //  9. BATCH YEAR  — weight is 0 for professionals
   // ══════════════════════════════════════════════════════════════════════════
   console.log(`\n${DIM.BATCH}`);
 
-  if (isProfessional) {
+  if (isProfessional || W.batchYear === 0) {
     breakdown.batchYear = 0;
-    console.log(`  Skipped — professional profile (W.batchYear = ${W.batchYear})`);
+    console.log(`  Skipped — professional profile or W.batchYear = 0`);
   } else {
     const studentYearNorm = normStr(
       primaryEdu.yearOfGraduation || student.yearOfGraduation || ""
     );
-    // Match 4-digit years: 2018-2030
     const yearRegex   = /\b(20[12][0-9]|2030)\b/g;
     const yearMatches = [...fullJobText.matchAll(yearRegex)].map((m) => m[1]);
 
@@ -959,9 +836,7 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
 
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  10. NOTICE PERIOD  (weights = 0 in both maps by default)
-  //  Re-enable by raising noticePeriod/noticePeriodDays in the weight maps,
-  //  reducing another dimension to keep the total at 100.
+  //  10. NOTICE PERIOD
   // ══════════════════════════════════════════════════════════════════════════
   const studentNoticePeriodRaw   = student.noticePeriod || "";
   const isServingNotice          = student.servingNoticePeriod === true;
@@ -1028,7 +903,6 @@ export const scoreJob = (job, student, _unusedW, index, label = "Job") => {
   breakdown.noticePeriod = Math.round(rawNoticeScore * gateMultiplier);
   console.log(`  Notice score (x${gateMultiplier}) : ${ss(breakdown.noticePeriod, W.noticePeriod ?? 0)}`);
 
-  // noticePeriodDays — tiered by effective days remaining
   let rawNoticeDaysScore = 0;
   let noticeDaysTier     = "weight=0, skipped";
 

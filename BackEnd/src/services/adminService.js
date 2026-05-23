@@ -68,7 +68,7 @@ export const updateReferralApprovalStatusService = async (
       {
         new: true,
       }
-    );
+    ).populate("candidatePosted", "userId currentCompany");
 
     return updatedJob;
   } catch (error) {

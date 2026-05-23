@@ -1818,6 +1818,7 @@ export const getCompanyAlumni = async (req, res) => {
           skills: person.skills ?? [],
           linkedin: person.linkedin ?? null,
           github: person.github ?? null,
+          educations: person.educations ?? [],
           portfolio: person.portfolio ?? null,
           about: person.about ?? null,
           experiences: person.experiences ?? [],   // ✅ fix for alumniByCompany grouping bug

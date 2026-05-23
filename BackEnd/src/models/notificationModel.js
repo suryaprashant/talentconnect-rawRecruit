@@ -20,6 +20,8 @@ const notificationSchema = new mongoose.Schema({
     'TEAM_INVITATION',
     'MESSAGE',
     'SYSTEM_UPDATE',
+    "REFERRAL_JOB_APPROVED",
+    "REFERRAL_JOB_REJECTED",
     'FILE_SHARED',
     'EVENT_UPDATE',
     'SERVICE_REQUEST_UPDATE',
