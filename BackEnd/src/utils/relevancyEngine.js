@@ -260,6 +260,7 @@ import RelevancyWeightsProfessional from "../models/RelevancyWeightsProfessional
  * @param {"professional" | "student" | string} profileType
  * @returns {Promise<Record<string, number>>}
  */
+// just for checking
 export const fetchWeights = async (profileType = "student") => {
   const isProfessional = normStr(profileType) === "professional";
   const Model    = isProfessional ? RelevancyWeightsProfessional : RelevancyWeights;
