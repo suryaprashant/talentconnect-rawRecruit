@@ -1,5 +1,5 @@
-import RelevancyWeights from "../models/RelevancyWeightsModel.js";
-import RelevancyWeightsProfessional from "../models/RelevancyWeightsProfessionalModel.js";
+import RelevancyWeights from "../models/Relevancyweightsmodel.js";
+import RelevancyWeightsProfessional from "../models/RelevancyweightsProfessionalmodel.js";
 
 const WEIGHT_KEYS = [
   "skills",
