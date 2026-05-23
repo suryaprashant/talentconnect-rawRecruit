@@ -25,7 +25,7 @@ import mongoose from "mongoose";
  *                    ────
  *   Total            100
  */
-
+// test
 const relevancyWeightsSchema = new mongoose.Schema(
   {
     skills:           { type: Number, default: 38, min: 0, max: 100 },
