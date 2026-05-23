@@ -67,7 +67,7 @@ const GLOBAL_STYLES = `
 /* ─────────────────────────────────────────────
    Relevancy Weights config
 ───────────────────────────────────────────── */
-const WEIGHT_KEYS = ['skills','jobRoles','experience','cgpa','batchYear','location','degree','stream','salary'];
+const WEIGHT_KEYS = ['skills','jobRoles','experience','noticePeriod','noticePeriodDays','cgpa','batchYear','location','degree','stream','salary'];
 
 const WEIGHT_META = {
   skills:     { label: 'Skills',      color: '#6366f1', group: 'core' },
@@ -79,12 +79,15 @@ const WEIGHT_META = {
   batchYear:  { label: 'Batch Year',  color: '#1e4ed8', group: 'academics' },
   degree:     { label: 'Degree',      color: '#ec4899', group: 'academics' },
   stream:     { label: 'Stream',      color: '#f97316', group: 'academics' },
+  noticePeriod:     { label: 'Notice Period',      color: '#0891b2', group: 'availability' },
+noticePeriodDays: { label: 'Notice Period Days', color: '#06b6d4', group: 'availability' },
 };
 
 const DEFAULTS = {
-  skills: 30, jobRoles: 18, experience: 15,
-  cgpa: 5, batchYear: 7, location: 8,
-  degree: 7, stream: 5, salary: 5,
+  skills: 26, jobRoles: 16, experience: 14,
+  noticePeriod: 5, noticePeriodDays: 3,
+  cgpa: 2, batchYear: 7, location: 8,
+  degree: 7, stream: 5, salary: 7,
 };
 
 /* ─────────────────────────────────────────────
@@ -123,6 +126,8 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
             degree:     d.degree     ?? DEFAULTS.degree,
             stream:     d.stream     ?? DEFAULTS.stream,
             salary:     d.salary     ?? DEFAULTS.salary,
+            noticePeriod:     d.noticePeriod     ?? DEFAULTS.noticePeriod,
+noticePeriodDays: d.noticePeriodDays ?? DEFAULTS.noticePeriodDays,
           });
         }
       })
@@ -162,8 +167,9 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const coreKeys      = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'core');
-  const academicsKeys = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'academics');
+  const coreKeys         = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'core');
+const availabilityKeys = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'availability');
+const academicsKeys    = WEIGHT_KEYS.filter(k => WEIGHT_META[k].group === 'academics');
   const academicsSum  = academicsKeys.reduce((s, k) => s + (Number(weights[k]) || 0), 0);
 
   /* colour matching the dashboard purple card */
@@ -223,6 +229,11 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
               {coreKeys.map(key => (
                 <WeightRow key={key} label={WEIGHT_META[key].label} color={WEIGHT_META[key].color} value={weights[key]} onChange={v => handleSlider(key, v)} onInputChange={v => handleInput(key, v)} />
               ))}
+              <SectionLabel label="Availability" style={{ marginTop: '20px' }} />
+{availabilityKeys.map(key => (
+  <WeightRow key={key} label={WEIGHT_META[key].label} color={WEIGHT_META[key].color}
+    value={weights[key]} onChange={v => handleSlider(key, v)} onInputChange={v => handleInput(key, v)} />
+))}
               <SectionLabel label={`Academics  ·  subtotal ${academicsSum}`} style={{ marginTop:'20px' }} />
               {academicsKeys.map(key => (
                 <WeightRow key={key} label={WEIGHT_META[key].label} color={WEIGHT_META[key].color} value={weights[key]} onChange={v => handleSlider(key, v)} onInputChange={v => handleInput(key, v)} />

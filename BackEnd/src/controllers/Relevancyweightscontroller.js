@@ -1,41 +1,37 @@
 import RelevancyWeights from "../models/Relevancyweightsmodel.js";
 
 
-const WEIGHT_KEYS = [
-  "skills",
-  "jobRoles",
-  "experience",
-  "cgpa",
-  "batchYear",
-  "location",
-  "degree",
-  "stream",
-  "salary",
-];
+const WEIGHT_KEYS = ['skills','jobRoles','experience','noticePeriod','noticePeriodDays','cgpa','batchYear','location','degree','stream','salary'];
 
+
+const DEFAULTS = {
+  skills: 26,
+  jobRoles: 16,
+  experience: 14,
+  noticePeriod: 5,
+  noticePeriodDays: 3,
+  cgpa: 2,
+  batchYear: 7,
+  location: 8,
+  degree: 7,
+  stream: 5,
+  salary: 7,
+};
 
 export const getRelevancyWeights = async (req, res) => {
   try {
     let config = await RelevancyWeights.findOne().lean();
 
-    if (!config) {
-      config = {
-        skills: 30,
-        jobRoles: 18,
-        experience: 15,
-        cgpa: 5,
-        batchYear: 7,
-        location: 8,
-        degree: 7,
-        stream: 5,
-        salary: 5,
-        academics: 12, // virtual
-      };
+    // Build a clean response using only valid weight keys,
+    // falling back to DEFAULTS for any missing field
+    const data = {};
+    for (const key of WEIGHT_KEYS) {
+      data[key] = config?.[key] ?? DEFAULTS[key];
     }
 
     return res.status(200).json({
       success: true,
-      data: config,
+      data,
     });
   } catch (error) {
     console.error("[RelevancyWeights] GET Error:", error);
@@ -75,15 +71,19 @@ export const updateRelevancyWeights = async (req, res) => {
     const currentValues = current
       ? current.toObject()
       : {
-          skills: 30,
-          jobRoles: 18,
-          experience: 15,
-          cgpa: 5,
-          batchYear: 7,
-          location: 8,
-          degree: 7,
-          stream: 5,
-          salary: 5,
+          
+  skills: 26,
+  jobRoles: 16,
+  experience: 14,
+  noticePeriod: 5,
+  noticePeriodDays: 3,
+  cgpa: 2,
+  batchYear: 7,
+  location: 8,
+  degree: 7,
+  stream: 5,
+  salary: 7,
+
         };
 
     

@@ -297,28 +297,163 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
   );
  
   const enrichedJobs = await Promise.all(
-  scoredJobs.map(async (job) => {
+ scoredJobs.map(async (job) => {
     let alumniCount = 0;
 
     const companyName =
-      job.candidatePosted?.currentCompany ||   // referral jobs → poster's company
-      job.companyPosted?.companyDetails?.companyName;   // fallback
+    job.candidatePosted?.currentCompany ||
+    job.companyPosted?.companyDetails?.companyName;
 
-    if (student?.college && companyName) {
-      try {
-        alumniCount = await OnboardingModel.countDocuments({
-          college: student.college,
-          userId: { $ne: userId },
-          profileType: "professional",
-          currentCompany: { $regex: new RegExp(`^${companyName}$`, "i") },
+    if (companyName) {
+    try {
+
+        // =====================================================
+        // STUDENT COLLEGES
+        // =====================================================
+
+        const studentColleges = [
+            ...new Set(
+                (student?.educations || [])
+                .map((edu) => edu.college)
+                .filter(Boolean)
+            ),
+        ];
+
+        // =====================================================
+        // STUDENT COMPANIES
+        // =====================================================
+
+        const studentCompanies = [];
+
+        if (student?.currentCompany) {
+        studentCompanies.push(student.currentCompany);
+        }
+
+        student?.experiences?.forEach((exp) => {
+        if (exp.company) {
+            studentCompanies.push(exp.company);
+        }
         });
-      } catch (err) {
-        console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
-      }
+
+        const uniqueStudentCompanies = [
+        ...new Map(
+            studentCompanies.map((c) => [
+            c.toLowerCase(),
+            c,
+            ])
+        ).values(),
+        ];
+
+        // =====================================================
+        // TARGET COMPANY REGEX
+        // =====================================================
+
+        const companyRegex = new RegExp(
+        `^${companyName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+        )}$`,
+        "i"
+        );
+
+        // =====================================================
+        // SHARED COMPANY CONDITIONS
+        // =====================================================
+
+        const sharedCompanyConditions =
+        uniqueStudentCompanies.flatMap(
+            (company) => {
+            const regex = new RegExp(
+                `^${company.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+                )}$`,
+                "i"
+            );
+
+            return [
+                {
+                currentCompany: regex,
+                },
+                {
+                "experiences.company": regex,
+                },
+            ];
+            }
+        );
+
+        // =====================================================
+        // FINAL COUNT
+        // =====================================================
+
+        alumniCount =
+        await OnboardingModel.countDocuments({
+            userId: { $ne: userId },
+
+            profileType: "professional",
+
+            $and: [
+            // -------------------------------------------------
+            // MUST SHARE COLLEGE OR COMPANY WITH USER
+            // -------------------------------------------------
+
+            {
+                $or: [
+                // shared college
+                {
+                    educations: {
+                        $elemMatch: {
+                        college: {
+                            $in: studentColleges.map(
+                            (college) =>
+                                new RegExp(
+                                `^${college.replace(
+                                    /[.*+?^${}()|[\]\\]/g,
+                                    "\\$&"
+                                )}$`,
+                                "i"
+                                )
+                            ),
+                        },
+                        },
+                    },
+                    },
+
+                // shared company
+                ...sharedCompanyConditions,
+                ],
+            },
+
+            // -------------------------------------------------
+            // MUST BE RELATED TO TARGET COMPANY
+            // -------------------------------------------------
+
+            {
+                $or: [
+                {
+                    currentCompany: companyRegex,
+                },
+
+                {
+                    "experiences.company":
+                    companyRegex,
+                },
+                ],
+            },
+            ],
+        });
+
+    } catch (err) {
+        console.error(
+        `[ALUMNI] Failed to count for ${companyName}:`,
+        err.message
+        );
+    }
     }
 
     return { ...job, alumniCount };
   })
+
 );
 
   // ── STEP 6: Threshold + broadcast filter, sort, strip internal flag ───────
