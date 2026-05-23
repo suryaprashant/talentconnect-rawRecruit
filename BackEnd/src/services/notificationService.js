@@ -9,6 +9,41 @@ import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js";
 
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
+export const notifyReferralJobPosterOnApproval = async ({
+  job,
+  approvalStatus,
+  adminAuthId,
+}) => {
+  try {
+    // candidatePosted is the Onboarding doc of the job poster
+    // populated with "userId" — that's the Auth ID we need
+    const posterAuthId = job.candidatePosted?.userId;
+
+    if (!posterAuthId) {
+      console.error("❌ Could not resolve job poster authId from candidatePosted");
+      return;
+    }
+
+    const message =
+      approvalStatus === "Approved"
+        ? "Your referral job posting has been approved by admin"
+        : "Your referral job posting has been rejected by admin";
+
+    await sendNotification({
+      recipientId: posterAuthId,
+      senderId: adminAuthId,
+      type: approvalStatus === "Approved" ? "REFERRAL_JOB_APPROVED" : "REFERRAL_JOB_REJECTED",
+      message,
+      referenceId: job._id,
+      jobType: "Referral",
+      meta: { approvalStatus },
+    });
+
+    console.log(`✅ Notified job poster (${posterAuthId}) — ${approvalStatus}`);
+  } catch (error) {
+    console.error("notifyReferralJobPosterOnApproval failed:", error.message);
+  }
+};
 
 const sendNotification = async ({
   recipientId, senderId, type, message, referenceId, jobType, meta, jobId,

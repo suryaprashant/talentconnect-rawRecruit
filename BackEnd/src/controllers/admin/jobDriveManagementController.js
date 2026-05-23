@@ -3,6 +3,7 @@ import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
 import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import { notifyReferralJobPosterOnApproval } from "../../services/notificationService.js";
 import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
 import { ok } from "assert";
 import Auth from "../../models/authModel.js";
@@ -288,12 +289,10 @@ export const getAcceptedReferralJobsForAdmin= async (req, res) => {
 
 export const updateReferralJobApprovalStatus = async (req, res) => {
   try {
-    console.log('ok')
     const { jobId } = req.params;
     const { approvalStatus } = req.body;
-    console.log(approvalStatus)
+    const adminAuthId = req.user._id;
 
-    // Basic validation
     if (!["Approved", "Rejected", "Pending"].includes(approvalStatus)) {
       return res.status(400).json({
         success: false,
@@ -301,16 +300,24 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
       });
     }
 
-    const updatedJob = await updateReferralApprovalStatusService(
-      jobId,
-      approvalStatus
-    );
+    const updatedJob = await updateReferralApprovalStatusService(jobId, approvalStatus);
 
     if (!updatedJob) {
       return res.status(404).json({
         success: false,
         message: "Referral job not found",
       });
+    }
+
+    // 🔔 Notify job poster on Approved/Rejected only
+    if (approvalStatus === "Approved" || approvalStatus === "Rejected") {
+      notifyReferralJobPosterOnApproval({
+        job: updatedJob,
+        approvalStatus,
+        adminAuthId,
+      }).catch((err) =>
+        console.error("Job poster notification failed:", err.message)
+      );
     }
 
     res.status(200).json({

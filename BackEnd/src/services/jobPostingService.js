@@ -240,16 +240,17 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
 //     }
 // }
 
-export const getReferralJobsService = async (candidatePostedId, userId) => {
-    console.log('here')
-  // ── STEP 1: Weights & threshold in parallel ──────────────────────────────
-  const [W, thresholdConfig] = await Promise.all([
-    fetchWeights(),
-    fetchThreshold(),
-  ]);
-  const visibilityThreshold = thresholdConfig.value;
+// ─── snippet: getReferralJobsService  (replace the existing function) ────────
+// Full imports at the top of your jobPostingService.js already include
+// fetchWeights, fetchThreshold, scoreJob, logConfig from relevancyEngine.js
+// ─────────────────────────────────────────────────────────────────────────────
 
-  logConfig(W, thresholdConfig, "REFERRAL JOBS ENGINE");
+export const getReferralJobsService = async (candidatePostedId, userId) => {
+  console.log("here");
+
+  // ── STEP 1: Threshold (weights are fetched AFTER we know the profile type) ─
+  const thresholdConfig = await fetchThreshold();
+  const visibilityThreshold = thresholdConfig.value;
 
   // ── STEP 2: Student profile + applied jobs ───────────────────────────────
   const student = userId
@@ -260,8 +261,14 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
     ? await Application.find({ applicant: student._id }).distinct("job")
     : [];
 
-  // ── STEP 3: DB query ─────────────────────────────────────────────────────
-  // Referral jobs: approved, not posted by this student, not already applied
+  // ── STEP 3: Fetch weights from the correct DB collection ─────────────────
+  // Now that we have the student doc we know their profileType, so we can
+  // query the right RelevancyWeights model (professional vs student).
+  const W = await fetchWeights(student?.profileType ?? "student");
+
+  logConfig(W, thresholdConfig, "REFERRAL JOBS ENGINE");
+
+  // ── STEP 4: DB query ─────────────────────────────────────────────────────
   const query = {
     jobType: "Referral",
     approvalStatus: "Approved",
@@ -270,17 +277,17 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
   };
 
   const jobs = await JobPostingTable.find(query)
-    .populate("candidatePosted")   // poster's Onboarding doc (name, email, etc.)
-    .populate("companyPosted")     // in case some referral jobs have a company too
+    .populate("candidatePosted")
+    .populate("companyPosted")
     .lean()
     .sort({ createdAt: -1 });
 
   console.log(
     `\x1b[35m[REFERRAL ENGINE] ${jobs.length} jobs to score` +
-    `${student ? ` for: ${student.name} (${student.email})` : " — guest"}\x1b[0m\n`
+      `${student ? ` for: ${student.name} (${student.email}) [${student.profileType ?? "student"}]` : " — guest"}\x1b[0m\n`
   );
 
-  // ── STEP 4: Guest — no profile, return unscored ──────────────────────────
+  // ── STEP 5: Guest — no profile, return unscored ──────────────────────────
   if (!student) {
     return jobs
       .map((job) => ({
@@ -291,186 +298,112 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
       .filter((job) => job.matchScore >= visibilityThreshold);
   }
 
-  // ── STEP 5: Score every job ──────────────────────────────────────────────
+  // ── STEP 6: Score every job (W already resolved for this profile type) ───
   const scoredJobs = jobs.map((job, i) =>
     scoreJob(job, student, W, i, "Referral Job")
   );
- 
+
   const enrichedJobs = await Promise.all(
- scoredJobs.map(async (job) => {
-    let alumniCount = 0;
+    scoredJobs.map(async (job) => {
+      let alumniCount = 0;
 
-    const companyName =
-    job.candidatePosted?.currentCompany ||
-    job.companyPosted?.companyDetails?.companyName;
+      const companyName =
+        job.candidatePosted?.currentCompany ||
+        job.companyPosted?.companyDetails?.companyName;
 
-    if (companyName) {
-    try {
-
-        // =====================================================
-        // STUDENT COLLEGES
-        // =====================================================
-
-        const studentColleges = [
+      if (companyName) {
+        try {
+          const studentColleges = [
             ...new Set(
-                (student?.educations || [])
+              (student?.educations || [])
                 .map((edu) => edu.college)
                 .filter(Boolean)
             ),
-        ];
+          ];
 
-        // =====================================================
-        // STUDENT COMPANIES
-        // =====================================================
+          const studentCompanies = [];
+          if (student?.currentCompany) studentCompanies.push(student.currentCompany);
+          student?.experiences?.forEach((exp) => {
+            if (exp.company) studentCompanies.push(exp.company);
+          });
 
-        const studentCompanies = [];
+          const uniqueStudentCompanies = [
+            ...new Map(
+              studentCompanies.map((c) => [c.toLowerCase(), c])
+            ).values(),
+          ];
 
-        if (student?.currentCompany) {
-        studentCompanies.push(student.currentCompany);
-        }
+          const companyRegex = new RegExp(
+            `^${companyName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+            "i"
+          );
 
-        student?.experiences?.forEach((exp) => {
-        if (exp.company) {
-            studentCompanies.push(exp.company);
-        }
-        });
-
-        const uniqueStudentCompanies = [
-        ...new Map(
-            studentCompanies.map((c) => [
-            c.toLowerCase(),
-            c,
-            ])
-        ).values(),
-        ];
-
-        // =====================================================
-        // TARGET COMPANY REGEX
-        // =====================================================
-
-        const companyRegex = new RegExp(
-        `^${companyName.replace(
-            /[.*+?^${}()|[\]\\]/g,
-            "\\$&"
-        )}$`,
-        "i"
-        );
-
-        // =====================================================
-        // SHARED COMPANY CONDITIONS
-        // =====================================================
-
-        const sharedCompanyConditions =
-        uniqueStudentCompanies.flatMap(
+          const sharedCompanyConditions = uniqueStudentCompanies.flatMap(
             (company) => {
-            const regex = new RegExp(
-                `^${company.replace(
-                /[.*+?^${}()|[\]\\]/g,
-                "\\$&"
-                )}$`,
+              const regex = new RegExp(
+                `^${company.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
                 "i"
-            );
-
-            return [
-                {
-                currentCompany: regex,
-                },
-                {
-                "experiences.company": regex,
-                },
-            ];
+              );
+              return [
+                { currentCompany: regex },
+                { "experiences.company": regex },
+              ];
             }
-        );
+          );
 
-        // =====================================================
-        // FINAL COUNT
-        // =====================================================
-
-        alumniCount =
-        await OnboardingModel.countDocuments({
+          alumniCount = await OnboardingModel.countDocuments({
             userId: { $ne: userId },
-
-            profileType: "professional",
-
+            //profileType: "professional",
             $and: [
-            // -------------------------------------------------
-            // MUST SHARE COLLEGE OR COMPANY WITH USER
-            // -------------------------------------------------
-
-            {
+              {
                 $or: [
-                // shared college
-                {
+                  {
                     educations: {
-                        $elemMatch: {
+                      $elemMatch: {
                         college: {
-                            $in: studentColleges.map(
+                          $in: studentColleges.map(
                             (college) =>
-                                new RegExp(
-                                `^${college.replace(
-                                    /[.*+?^${}()|[\]\\]/g,
-                                    "\\$&"
-                                )}$`,
+                              new RegExp(
+                                `^${college.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
                                 "i"
-                                )
-                            ),
+                              )
+                          ),
                         },
-                        },
+                      },
                     },
-                    },
-
-                // shared company
-                ...sharedCompanyConditions,
+                  },
+                  ...sharedCompanyConditions,
                 ],
-            },
-
-            // -------------------------------------------------
-            // MUST BE RELATED TO TARGET COMPANY
-            // -------------------------------------------------
-
-            {
+              },
+              {
                 $or: [
-                {
-                    currentCompany: companyRegex,
-                },
-
-                {
-                    "experiences.company":
-                    companyRegex,
-                },
+                  { currentCompany: companyRegex },
+                  { "experiences.company": companyRegex },
                 ],
-            },
+              },
             ],
-        });
+          });
+        } catch (err) {
+          console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
+        }
+      }
 
-    } catch (err) {
-        console.error(
-        `[ALUMNI] Failed to count for ${companyName}:`,
-        err.message
-        );
-    }
-    }
+      return { ...job, alumniCount };
+    })
+  );
 
-    return { ...job, alumniCount };
-  })
+  // ── STEP 7: Threshold filter + sort ──────────────────────────────────────
+  const belowThreshold = enrichedJobs.filter(
+    (j) => j.matchScore < visibilityThreshold
+  ).length;
 
-);
+  console.log(
+    `\x1b[33m[REFERRAL ENGINE] ${belowThreshold} jobs hidden by threshold (${visibilityThreshold}%)\x1b[0m`
+  );
 
-  // ── STEP 6: Threshold + broadcast filter, sort, strip internal flag ───────
-//   const belowThreshold = scoredJobs.filter(
-//     (j) => j.matchScore < visibilityThreshold
-//   ).length;
-
-
-const belowThreshold = enrichedJobs.filter(      // ← changed
-  (j) => j.matchScore < visibilityThreshold
-).length;
-
-const finalData = enrichedJobs                   // ← changed
-  .filter((j) => j.matchScore >= visibilityThreshold)
-  .sort((a, b) => b.matchScore - a.matchScore);
-
-return finalData;
+  return enrichedJobs
+    .filter((j) => j.matchScore >= visibilityThreshold)
+    .sort((a, b) => b.matchScore - a.matchScore);
 };
 
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {

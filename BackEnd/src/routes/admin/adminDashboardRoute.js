@@ -6,6 +6,8 @@ import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from
 import {
   getRelevancyWeights,
   updateRelevancyWeights,
+   getRelevancyWeightsProfessional,
+  updateRelevancyWeightsProfessional,
 } from "../../controllers/Relevancyweightscontroller.js";
 
 const router = express.Router();
@@ -19,6 +21,10 @@ router.get("/overview", getAdminDashboardOverView);
 
 router.get("/relevancy-weights", adminAuth, getRelevancyWeights);
 router.patch("/relevancy-weights", adminAuth,updateRelevancyWeights);
+
+router.get("/relevancy-weights-professional", adminAuth, getRelevancyWeightsProfessional);
+router.patch("/relevancy-weights-professioanl", adminAuth,updateRelevancyWeightsProfessional);
+
 
 router.get(
   "/referral-jobs/pending",
