@@ -24,18 +24,20 @@ import mongoose from "mongoose";
 
 const relevancyWeightsSchema = new mongoose.Schema(
   {
-    skills: { type: Number, default: 30, min: 0, max: 100 },
-    jobRoles: { type: Number, default: 18, min: 0, max: 100 },
-    experience: { type: Number, default: 15, min: 0, max: 100 },
+    skills: { type: Number, default: 26, min: 0, max: 100 },
+    jobRoles: { type: Number, default: 16, min: 0, max: 100 },
+    experience: { type: Number, default: 14, min: 0, max: 100 },
 
     // academics is split into two sub-weights
-    cgpa: { type: Number, default: 5, min: 0, max: 100 },
+    cgpa: { type: Number, default: 2, min: 0, max: 100 },
     batchYear: { type: Number, default: 7, min: 0, max: 100 },
 
     location: { type: Number, default: 8, min: 0, max: 100 },
     degree: { type: Number, default: 7, min: 0, max: 100 },
     stream: { type: Number, default: 5, min: 0, max: 100 },
-    salary: { type: Number, default: 5, min: 0, max: 100 },
+    salary: { type: Number, default: 7, min: 0, max: 100 },
+    noticePeriod:     { type: Number, default:  5, min: 0, max: 100 },
+noticePeriodDays: { type: Number, default:  3, min: 0, max: 100 },
 
     // audit trail
     lastUpdatedBy: {
