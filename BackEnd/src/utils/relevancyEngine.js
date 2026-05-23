@@ -248,8 +248,8 @@ const printSummary = (bd, W, rawTotal, totalScore, profileTag, gateMultiplier) =
 // ═════════════════════════════════════════════════════════════════════════════
 
 import Auth from "../models/authModel.js";
-import RelevancyWeights from "../models/RelevancyWeightsModel.js";
-import RelevancyWeightsProfessional from "../models/RelevancyWeightsProfessionalModel.js";
+import RelevancyWeights from "../models/Relevancyweightsmodel.js";
+import RelevancyWeightsProfessional from "../models/RelevancyweightsProfessionalmodel.js";
 
 /**
  * fetchWeights(profileType?)
