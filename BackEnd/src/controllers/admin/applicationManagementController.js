@@ -1,7 +1,7 @@
 import { getAll, getTotalJobApplicationSubmited } from "../../services/applicationService.js";
 import Application from "../../models/applicationModel.js";
 import { fetchReferralApplicationsService, getReferralApplicationsForAdminService, updateReferralApplicationStatusService } from "../../services/adminService.js";
-import { notifyCandidateOnReferralApproval } from "../../services/notificationService.js";
+import { notifyCandidateOnReferralApproval, notifyReferralJobPosterOnNewApplication } from "../../services/notificationService.js";
 
 export const getApplicationOverView = async (req, res) => {
   try {
@@ -379,7 +379,7 @@ export const getReferralApplicationsForAdmin = async (req, res) => {
     });
   }
 };
-
+//
 export const updateReferralApplicationStatus = async (req, res) => {
   try {
     console.log('reached here')
@@ -406,6 +406,16 @@ export const updateReferralApplicationStatus = async (req, res) => {
       action,
       adminAuthId: req.user._id
     });
+
+    if (action === "Approved") {
+      notifyReferralJobPosterOnNewApplication({
+        jobId: response.job,
+        applicationId: response._id,
+        adminAuthId: req.user._id,
+      }).catch((err) =>
+        console.error("Referrer notification failed:", err.message)
+      );
+    }
 
     return res.status(200).json({
       success: true,

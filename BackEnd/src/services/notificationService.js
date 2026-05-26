@@ -7,8 +7,157 @@ import { getReceiverSocketId, io } from "../socketIO/server.js";
 import { pushNotification } from "./firebaseAdmin.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
 
+export const NOTIFICATION_SCREEN_MAP = {
+  REFERRAL_JOB_APPROVED: {
+    topic: "Jobs",
+    subtopic: "My Posted",
+    body: { jobId: "jobId" },
+  },
+  REFERRAL_JOB_REJECTED: {
+    topic: "Jobs",
+    subtopic: "My Posted",
+    body: { jobId: "jobId" },
+  },
+  REFERRAL_APPLICATION_APPROVED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "applicationId" },
+  },
+  JOB_REGISTRATION: {
+    topic: "Jobs",
+    subtopic: "JobDetail",
+    body: { jobId: "jobId" },
+  },
+  NEW_APPLICATION_FOR_JOB: {
+    topic: "Job Detail",
+    subtopic: "Candidates",
+    body: { jobId: "jobId", applicationId: "referenceId" },
+  },
+  INTERVIEW_SCHEDULED: {
+    topic: "Scheduled Interviews",
+    subtopic: "",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_INTERVIEW_SCHEDULED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_SHORTLISTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_ACCEPTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_REJECTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_OFFER_EXTENDED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  APPLICATION_REFERRED_TO_COMPANY: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { applicationId: "referenceId", jobId: "jobId" },
+  },
+  NEW_CHAT_MESSAGE: {
+    topic: "Chat",
+    subtopic: "",
+    body: { senderId: "senderId", referenceId: "referenceId" },
+  },
+  MESSAGE: {
+    topic: "Chat",
+    subtopic: "",
+    body: { senderId: "senderId", referenceId: "referenceId" },
+  },
+};
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
+const sendNotification = async ({
+  recipientId, senderId, type, message, referenceId, jobType, meta, jobId,
+}) => {
+  // Build enriched meta with deep link info
+  const screenInfo = NOTIFICATION_SCREEN_MAP[type];
+  const enrichedMeta = {
+    ...meta,
+    ...(screenInfo && {
+      topic: screenInfo.topic,
+      subtopic: screenInfo.subtopic,
+      body: Object.fromEntries(
+        Object.entries(screenInfo.body).map(([key, sourceKey]) => [
+          key,
+          sourceKey === "senderId"     ? senderId?.toString()     :
+          sourceKey === "jobId"        ? jobId?.toString()        :
+          sourceKey === "referenceId"  ? referenceId?.toString()  :
+          sourceKey === "applicationId"? referenceId?.toString()  :
+          null,
+        ])
+      ),
+    }),
+  };
+  console.log("===== NOTIFICATION DEBUG =====");
+  console.log("type:", type);
+  console.log("enrichedMeta:", JSON.stringify(enrichedMeta, null, 2));
+  console.log("==============================");
+  // 1. Save to DB
+  const notification = await Notification.create({
+    recipientId, senderId, type, message,
+    referenceId, jobType,
+    meta: enrichedMeta,   // 👈 now includes topic, subtopic, body
+    jobId, read: false,
+  });
+
+  // 2. Socket emit
+  const socketId = getReceiverSocketId(recipientId.toString());
+  if (socketId) {
+    const populatedNotification = await Notification.findById(notification._id)
+      .populate("senderId", "name userType profileImage");
+    io.to(socketId).emit("newNotification", populatedNotification);
+  }
+
+  // 3. FCM
+  try {
+    const user = await Auth.findById(recipientId).select("deviceToken");
+    if (user?.deviceToken) {
+      await pushNotification({
+        deviceToken: user.deviceToken,
+        title: type,
+        body: message,
+        data: {
+          topic:    screenInfo?.topic    ?? "",
+          subtopic: screenInfo?.subtopic ?? "",
+          type,
+          // resolved body values for FCM data payload
+          ...(screenInfo && Object.fromEntries(
+            Object.entries(screenInfo.body).map(([key, sourceKey]) => [
+              key,
+              sourceKey === "senderId"      ? senderId?.toString()     :
+              sourceKey === "jobId"         ? jobId?.toString()        :
+              sourceKey === "referenceId"   ? referenceId?.toString()  :
+              sourceKey === "applicationId" ? referenceId?.toString()  :
+              "",
+            ])
+          )),
+        },
+      });
+    }
+  } catch (fcmErr) {
+    console.error("FCM error (non-critical):", fcmErr);
+  }
+
+  return notification;
+};
+
+// ─── GET NOTIFICATIONS ───────────────────────────────────────────────────────
 export const notifyReferralJobPosterOnApproval = async ({
   job,
   approvalStatus,
@@ -35,6 +184,7 @@ export const notifyReferralJobPosterOnApproval = async ({
       type: approvalStatus === "Approved" ? "REFERRAL_JOB_APPROVED" : "REFERRAL_JOB_REJECTED",
       message,
       referenceId: job._id,
+      jobId: job._id, 
       jobType: "Referral",
       meta: { approvalStatus },
     });
@@ -44,58 +194,6 @@ export const notifyReferralJobPosterOnApproval = async ({
     console.error("notifyReferralJobPosterOnApproval failed:", error.message);
   }
 };
-
-const sendNotification = async ({
-  recipientId, senderId, type, message, referenceId, jobType, meta, jobId,
-}) => {
-  // 1. Save to DB
-  const notification = await Notification.create({
-    recipientId, senderId, type, message, referenceId, jobType, meta, jobId, read: false,
-  });
-
-  console.log("===== DEBUG SOCKET =====");
-  console.log("recipientId passed:", recipientId);
-  console.log("recipientId string:", recipientId?.toString());
-
-  // 2. Socket emit — sync, no await
-  const socketId = getReceiverSocketId(recipientId.toString());
-
-  if (socketId) {
-    const populatedNotification = await Notification.findById(notification._id)
-      .populate("senderId", "name userType profileImage");
-  
-    console.log(
-      "📤 Emitting populated notification:",
-      JSON.stringify(populatedNotification, null, 2)
-    );
-  
-    io.to(socketId).emit("newNotification", populatedNotification);
-  }
-
-  // 3. FCM — completely non-blocking, runs after socket
-  try {
-    console.log("🔔 Preparing FCM for recipient:", recipientId);
-    
-    const user = await Auth.findById(recipientId).select("deviceToken");
-    console.log("📱 Device token in DB:", user?.deviceToken);
-    
-    if (user?.deviceToken) {
-      await pushNotification({
-        deviceToken: user.deviceToken,
-        title: type,
-        body: message,
-      });
-    } else {
-      console.log("⚠️ No device token found in DB");
-    }
-  } catch (fcmErr) {
-    console.error("FCM error (non-critical):", fcmErr);
-  }
-
-  return notification;
-};
-
-// ─── GET NOTIFICATIONS ───────────────────────────────────────────────────────
 
 export async function getNotificationService(Id) {
   try {
@@ -559,5 +657,43 @@ export const notifyCandidateOnReferralApproval = async ({
 
   } catch (error) {
     console.error("Referral approval notification failed:", error.message);
+  }
+};
+
+export const notifyReferralJobPosterOnNewApplication = async ({
+  jobId,
+  applicationId,
+  adminAuthId,
+}) => {
+  try {
+    // 🔹 Fetch job and populate referrer's onboarding profile
+    const job = await JobPostingTable.findById(jobId)
+      .populate("candidatePosted", "userId currentCompany");
+
+    if (!job) {
+      console.error("❌ Job not found for referrer notification:", jobId);
+      return;
+    }
+
+    const referrerAuthId = job.candidatePosted?.userId;
+
+    if (!referrerAuthId) {
+      console.error("❌ Could not resolve referrer authId");
+      return;
+    }
+
+    await sendNotification({
+      recipientId: referrerAuthId,
+      senderId: adminAuthId,
+      type: "NEW_APPLICATION_FOR_JOB",
+      message: `There is a new application for your referral job`,
+      referenceId: applicationId,
+      jobId: job._id,
+      jobType: "Referral",
+    });
+
+    console.log(`✅ Notified referrer (${referrerAuthId}) of new approved application`);
+  } catch (error) {
+    console.error("notifyReferralJobPosterOnNewApplication failed:", error.message);
   }
 };

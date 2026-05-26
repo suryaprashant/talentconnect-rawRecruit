@@ -39,6 +39,7 @@ const notificationSchema = new mongoose.Schema({
     "APPLICATION_INTERVIEW_SCHEDULED",
     "APPLICATION_OFFER_EXTENDED",
     "APPLICATION_REFERRED_TO_COMPANY",
+    "NEW_APPLICATION_FOR_JOB",
   ],
         required: true,
     },
