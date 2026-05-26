@@ -12,12 +12,8 @@ const app = getApps().length === 0
   ? admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
   : getApp();
 
-export const pushNotification = async ({ deviceToken, title, body }) => {
-  console.log("========== FCM DEBUG START ==========");
-  console.log("Device Token:", deviceToken ? "Present ✅" : "Missing ❌");
-  console.log("Title:", title);
-  console.log("Body:", body);
 
+export const pushNotification = async ({ deviceToken, title, body, data = {} }) => {
   if (!deviceToken) {
     console.log("⛔ Skipping FCM — No device token");
     return;
@@ -27,25 +23,24 @@ export const pushNotification = async ({ deviceToken, title, body }) => {
     const message = {
       token: deviceToken,
       notification: { title, body },
+      data: Object.fromEntries(               // 👈 FCM requires all values as strings
+        Object.entries(data).map(([k, v]) => [k, String(v ?? "")])
+      ),
+      android: { priority: "high" },          // 👈 delivers even in doze mode
+      apns: {
+        payload: { aps: { contentAvailable: true } },
+      },
     };
 
-    console.log("📤 Sending message to FCM...");
-
     const response = await admin.messaging().send(message);
-
     console.log("✅ FCM SUCCESS:", response);
-    console.log("========== FCM DEBUG END ==========");
-
     return response;
   } catch (err) {
     console.error("❌ FCM ERROR CODE:", err.code);
     console.error("❌ FCM ERROR MESSAGE:", err.message);
-
     if (err.code === "messaging/registration-token-not-registered") {
       console.log("🧹 Clearing invalid token from DB");
       await Auth.findOneAndUpdate({ deviceToken }, { deviceToken: null });
     }
-
-    console.log("========== FCM DEBUG END ==========");
   }
 };
