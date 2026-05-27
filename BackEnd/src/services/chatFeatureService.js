@@ -5,28 +5,50 @@ import Auth from "../models/authModel.js";
 import mongoose from "mongoose";
 import { notifyOnNewChatMessage } from "./notificationService.js";
 import Onboarding from "../models/studentonboardingModel.js";
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 
+const resolveToAuthId = async (userId) => {
+    try {
+        const authUser = await Auth.findById(userId);
+        if (authUser) return authUser._id;
+
+        const [college, company, candidate] = await Promise.all([
+            CollegeOnboarding.findOne({ $or: [{ _id: userId }, { userId }] }),
+            CompanyProfile.findOne({ $or: [{ _id: userId }, { userId }] }),
+            Onboarding.findOne({ $or: [{ _id: userId }, { userId }] })
+        ]);
+
+        const profile = college || company || candidate;
+        if (profile?.userId) return profile.userId;
+    } catch (err) {
+        console.warn("resolveToAuthId failed:", err.message);
+    }
+    return userId;
+};
 
 export const createMessage = async ({ senderId, receiverId, message }) => {
-    
+    const resolvedSenderId = await resolveToAuthId(senderId);
+    const resolvedReceiverId = await resolveToAuthId(receiverId);
+
     if (mongoose.connection.readyState !== 1) {
       throw new Error("Database not connected");
     }
     
     
     let conversation = await Conversation.findOne({
-        members: { $all: [senderId, receiverId] },
+        members: { $all: [resolvedSenderId, resolvedReceiverId] },
     });
 
     if (!conversation) {
         conversation = await Conversation.create({
-            members: [senderId, receiverId],
+            members: [resolvedSenderId, resolvedReceiverId],
         });
     }
 
     const newMessage = new Message({
-        senderId,
-        receiverId,
+        senderId: resolvedSenderId,
+        receiverId: resolvedReceiverId,
         message,
     });
 
@@ -42,15 +64,15 @@ export const createMessage = async ({ senderId, receiverId, message }) => {
     // }
 
      try {
-      const receiverSocketId = getReceiverSocketId(receiverId.toString());
+      const receiverSocketId = getReceiverSocketId(resolvedReceiverId.toString());
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", newMessage);
       }
 
       // 🔥 Send push + optional extra socket notification
       await notifyOnNewChatMessage({
-          senderId,
-          receiverId,
+          senderId: resolvedSenderId,
+          receiverId: resolvedReceiverId,
           message,
           conversationId: conversation._id,
      });
@@ -131,15 +153,24 @@ export const getUnreadMessageCounts = async ({ userId }) => {
     ]);
     return unreadCounts;
 };
-
+//
 export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
-    // 1. Get conversations with at least 1 message
+
+    console.log("=== STEP 1: loggedInUserId ===");
+    console.log("value:", loggedInUserId);
+    console.log("type:", typeof loggedInUserId);
+
+    const loggedInObjectId = new mongoose.Types.ObjectId(loggedInUserId);
+
+    console.log("=== STEP 2: Querying Conversations ===");
     const conversations = await Conversation.find({
-        members: { $in: [loggedInUserId] },
+        members: { $in: [loggedInObjectId] },
         messages: { $exists: true, $ne: [] }
     }).sort({ updatedAt: -1 });
 
-    // 2. Extract other user IDs
+    console.log("conversations found:", conversations.length);
+    console.log("raw conversations:", JSON.stringify(conversations, null, 2));
+
     const userIds = conversations.map(conversation => {
         const otherUserId = conversation.members.find(
             member => member.toString() !== loggedInUserId.toString()
@@ -147,43 +178,96 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
         return otherUserId?.toString();
     }).filter(Boolean);
 
-    // 3. Remove duplicates
-    const uniqueUserIds = [...new Set(userIds)];
-    // 4. Fetch users from BOTH collections
-    const authUsers = await Auth.find({ _id: { $in: uniqueUserIds } })
-        .select("-password");
+    console.log("=== STEP 3: Extracted userIds ===");
+    console.log("userIds:", userIds);
 
-    let candidateUsers = [];
-    try {
-        const Onboarding = mongoose.model("Onboarding"); // avoid crash if not imported
-        candidateUsers = await Onboarding.find({ _id: { $in: uniqueUserIds } });
-    } catch (err) {
-        // if Onboarding model not present, ignore
+    const uniqueUserIds = [...new Set(userIds)];
+    console.log("uniqueUserIds:", uniqueUserIds);
+
+    if (uniqueUserIds.length === 0) {
+        console.log("⛔ STOPPING: uniqueUserIds is empty");
+        return [];
     }
 
-    // 5. Merge + preserve order
-    const allUsers = [...authUsers, ...candidateUsers];
+    const objectIds = uniqueUserIds.map(id => new mongoose.Types.ObjectId(id));
 
-    // ✅ Normalize all users to SAME shape
-    const normalizedUsers = allUsers.map(user => ({
-        _id: user._id.toString(),   // 🔥 important
-        name: user.name,
-        email: user.email,
-        profileImage: user.profileImage,
-        userType: user.userType || "candidate"
-    }));
+    console.log("=== STEP 4: Querying Auth ===");
+    const authUsers = await Auth.find({ _id: { $in: objectIds } }).select("-password");
+    console.log("authUsers found:", authUsers.length);
+    console.log("authUsers:", JSON.stringify(authUsers, null, 2));
 
-    // ✅ Preserve order (very important)
-    const userMap = new Map();
-    normalizedUsers.forEach(user => {
-        userMap.set(user._id, user);
+    console.log("=== STEP 5: Querying Profiles ===");
+    const CollegeOnboarding = mongoose.model("CollegeOnboarding");
+    const CompanyProfile = mongoose.model("CompanyProfile");
+
+    const [collegeProfiles, companyProfiles, candidateProfiles] = await Promise.all([
+        CollegeOnboarding.find({ userId: { $in: objectIds } }),
+        CompanyProfile.find({ userId: { $in: objectIds } }),
+        Onboarding.find({ userId: { $in: objectIds } })
+    ]);
+
+    console.log("collegeProfiles found:", collegeProfiles.length);
+    console.log("companyProfiles found:", companyProfiles.length);
+    console.log("candidateProfiles found:", candidateProfiles.length);
+
+
+    // 6. Build profile maps keyed by userId string
+    const collegeMap = new Map();
+    collegeProfiles.forEach(p => collegeMap.set(p.userId.toString(), p));
+
+    const companyMap = new Map();
+    companyProfiles.forEach(p => companyMap.set(p.userId.toString(), p));
+
+    const candidateMap = new Map();
+    candidateProfiles.forEach(p => candidateMap.set(p.userId.toString(), p));
+
+    // 7. Normalize — correct field paths per schema
+    const normalizedUsers = authUsers.map(user => {
+        const id = user._id.toString();
+
+        const college = collegeMap.get(id);
+        const company = companyMap.get(id);
+        const candidate = candidateMap.get(id);
+
+        let name, email, profileImage, userType;
+
+        if (college) {
+            // CollegeOnboarding schema
+            name         = college.collegeUniversityDetails?.collegeName;
+            email        = college.placementCoordinatorDetails?.officialEmail;
+            profileImage = college.profileImage;
+            userType     = "college";
+
+        } else if (company) {
+            // CompanyProfile schema
+            name         = company.companyDetails?.companyName;
+            email        = company.employerDetails?.workEmail;
+            profileImage = company.profileImageUrl;
+            userType     = "company";
+
+        } else if (candidate) {
+            // Onboarding (student/fresher/professional) schema
+            name         = candidate.name;
+            email        = candidate.email;
+            profileImage = candidate.profileImage;
+            userType     = candidate.profileType; // "student" | "fresher" | "professional"
+
+        } else {
+            // Fallback to Auth fields if no profile found
+            name         = user.name;
+            email        = user.email;
+            profileImage = user.profileImage;
+            userType     = user.userType;
+        }
+
+        return { _id: id, name, email, profileImage, userType };
     });
 
-    const orderedUsers = uniqueUserIds
-        .map(id => userMap.get(id))
-        .filter(Boolean);
+    // 8. Preserve conversation order
+    const userMap = new Map();
+    normalizedUsers.forEach(user => userMap.set(user._id, user));
 
-    return orderedUsers;
+    return uniqueUserIds.map(id => userMap.get(id)).filter(Boolean);
 };
 // export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
    
