@@ -46,8 +46,8 @@ import { fetchReferralApplicationsService,getAllProfessionalReferralsService,get
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js"
 import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
-
-// export const getReferralsForCompany = async (req, res, next) => {
+import { paginatedResponse } from "../utils/paginate.js";
+/// export const getReferralsForCompany = async (req, res, next) => {
 //   try {
 //     const userId = req.user._id;
 //     let professionalProfileId = req.user._id;
@@ -175,20 +175,11 @@ export const getGlobalReferralApplications = async (req, res, next) => {
 
     // Fetch all referrals
     const response = await getAllProfessionalReferralsService(
-      professionalProfileId
+      professionalProfileId,
+      req.pagination
     );
 
-    // Filter only pending referral-stage applications
-    const filteredApplications = response.data.filter(
-      (application) =>
-        application.currentStatus === "Application Sent"
-    );
-
-    return res.status(200).json({
-      success: true,
-      count: filteredApplications.length,
-      data: filteredApplications,
-    });
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -231,7 +222,7 @@ export const getReferralApplicationsForProfessional = async (req, res, next) => 
 export const getReferredCandidatesPipeline = async (req, res, next) => {
   try {
     const userId = req.user._id;
-
+    const { page, limit, skip } = req.pagination;
     // Resolve professional profile
     const userProfile = await getStudentService(userId);
 
@@ -252,7 +243,7 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
     const jobIds = jobs.map((job) => job._id);
 
     // Fetch referral pipeline applications
-    const applications = await Application.find({
+    const query = {
       job: { $in: jobIds },
       jobType: "Referral",
       currentStatus: {
@@ -265,21 +256,86 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
           "Rejected",
         ],
       },
-    })
-      .populate("job")
-      .populate({
-        path: "applicant", // change if your field name is different
-        select: "name email",
-      })
-      .sort({ updatedAt: -1 });
+    };
+
+    const [applications, total] = await Promise.all([
+      Application.find(query)
+        .populate("job")
+        .populate({
+          path: "applicant",
+          select: "name email",
+        })
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Application.countDocuments(query),
+    ]);
+
+    const cleanedApplications = applications.map((application) => {
+      const app = application.toObject
+        ? application.toObject()
+        : application;
+
+      if (app.job) {
+        const {
+          packageDetails,
+          currency,
+          totalCTC,
+          fixedPay,
+          joiningBonus,
+          jobType,
+          visibleTo,
+          broadcastType,
+          degree,
+          collegeTypes,
+          jobTitle,
+          jobStatus,
+          workMode,
+          jobRoles,
+          collegeCategories,
+          studentStreams,
+          endDate,
+          rounds,
+          selectionProcess,
+          numberOfOpenings,
+          numberOfStudent,
+          minEducation,
+          yearsOfExperience,
+          minYearofExperience,
+          skills,
+          certifications,
+          workAuthorization,
+          workAchievements,
+          cgpa,
+          toolsAndPlatforms,
+          eligibilityCriteria,
+          amenitiesRequired,
+          benefits,
+          tags,
+          views,
+          ...cleanJob
+        } = app.job;
+
+        app.job = cleanJob;
+      }
+
+      return app;
+    });
 
     return res.status(200).json({
       success: true,
-      count: applications.length,
-      data: applications,
+      ...paginatedResponse(
+        cleanedApplications,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
     });
   } catch (error) {
-    console.log("Error fetching referred candidates:", error);
+    console.error("Error fetching referred candidates:", error);
     next(error);
   }
 };
@@ -556,7 +612,7 @@ export async function fetchSavedJobs(req, res) {
 
     // ✅ candidate saved jobs
     if (["student", "fresher", "professional", "college"].includes(userType)) {
-      result = await getSavedJobsService(user.data[0]._id);
+      result = await getSavedJobsService(user.data[0]._id, req.pagination);
     }
 
     // ✅ company saved colleges
@@ -568,7 +624,7 @@ export async function fetchSavedJobs(req, res) {
   
 
     if (result?.success)
-      return res.status(200).json(result.data);
+      return res.status(200).json(result);
 
     return res.status(503).json(result);
   } catch (error) {
@@ -1240,7 +1296,8 @@ export async function getUserApplicationStatus(req, res) {
       user.data[0]._id,
       jobType,
       userType,
-      activeCompanyId
+      activeCompanyId,
+      req.pagination
     );
 
     // console.log(response);
@@ -1248,7 +1305,7 @@ export async function getUserApplicationStatus(req, res) {
     if (response.success) res.status(200).json(response);
     else res.status(404).json(response);
   } catch (error) {
-    console.log("Error: ", error);
+    console.log("Error fetching application status: ", error);
     res.status(500).json({ Error: "Internal server error" });
   }
 }

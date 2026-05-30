@@ -9,6 +9,7 @@ import {
   scoreJob,
   logConfig,
 } from "../utils/relevancyEngine.js";
+import { paginatedResponse } from "../utils/paginate.js";
 export const getProfessionalReferralsService = async (userId) => {
   try {
         // Step 1: 
@@ -104,10 +105,6 @@ export const getAll = async () => {
     throw new Error("Failed to fetch job postings from the database");
   }
 };
-
-
-
-
 
 export const createPostingService = async (postingData , authUserId) => {
     try {
@@ -245,13 +242,16 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
 // fetchWeights, fetchThreshold, scoreJob, logConfig from relevancyEngine.js
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const getReferralJobsService = async (candidatePostedId, userId) => {
-  console.log("here");
+export const getReferralJobsService = async (candidatePostedId, userId, pagination) => {
 
   // ── STEP 1: Threshold (weights are fetched AFTER we know the profile type) ─
   const thresholdConfig = await fetchThreshold();
   const visibilityThreshold = thresholdConfig.value;
-
+  const {
+    page,
+    limit,
+    skip,
+  } = pagination;
   // ── STEP 2: Student profile + applied jobs ───────────────────────────────
   const student = userId
     ? await OnboardingModel.findOne({ userId }).lean()
@@ -277,15 +277,13 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
   };
 
   const jobs = await JobPostingTable.find(query)
-    .populate("candidatePosted")
+    .populate({
+      path: "candidatePosted",
+      select: "_id userId name email currentCompany",
+    })
     .populate("companyPosted")
     .lean()
     .sort({ createdAt: -1 });
-
-  console.log(
-    `\x1b[35m[REFERRAL ENGINE] ${jobs.length} jobs to score` +
-      `${student ? ` for: ${student.name} (${student.email}) [${student.profileType ?? "student"}]` : " — guest"}\x1b[0m\n`
-  );
 
   // ── STEP 5: Guest — no profile, return unscored ──────────────────────────
   if (!student) {
@@ -397,13 +395,47 @@ export const getReferralJobsService = async (candidatePostedId, userId) => {
     (j) => j.matchScore < visibilityThreshold
   ).length;
 
-  console.log(
-    `\x1b[33m[REFERRAL ENGINE] ${belowThreshold} jobs hidden by threshold (${visibilityThreshold}%)\x1b[0m`
-  );
+  
 
-  return enrichedJobs
-    .filter((j) => j.matchScore >= visibilityThreshold)
-    .sort((a, b) => b.matchScore - a.matchScore);
+  const filteredJobs =
+    enrichedJobs
+      .filter(
+        (j) =>
+          j.matchScore >=
+          visibilityThreshold
+      )
+      .sort(
+        (a, b) =>
+          b.matchScore -
+          a.matchScore
+      );
+
+  const total =
+    filteredJobs.length;
+
+  const paginatedJobs =
+    filteredJobs
+      .slice(skip, skip + limit)
+      .map((job) => {
+        const {
+          _scoreBreakdown,
+          _gateMultiplier,
+          _skillMatchPct,
+          _profileType,
+          ...cleanJob
+        } = job;
+
+        return cleanJob;
+      });
+
+  return paginatedResponse(
+    paginatedJobs,
+    total,
+    {
+      page,
+      limit,
+    }
+  );
 };
 
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {
