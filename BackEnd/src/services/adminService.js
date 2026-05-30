@@ -1,6 +1,10 @@
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import Application from "../models/applicationModel.js";
 import mongoose from "mongoose";
+<<<<<<< HEAD
+=======
+import { paginatedResponse } from "../utils/paginate.js";
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
 
 export const getPendingReferralJobsService = async () => {
   try {
@@ -485,17 +489,36 @@ export const updateReferralApplicationStatusService = async ({
 //   }
 // };
 
+<<<<<<< HEAD
 export const getAllProfessionalReferralsService = async (
   professionalProfileId,
 ) => {
+=======
+export const getAllProfessionalReferralsService = async (professionalProfileId, pagination) => {
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
   try {
+    const {
+      page = 1,
+      limit = Number.MAX_SAFE_INTEGER,
+      skip = 0,
+    } = pagination || {};
     const pipeline = [
       // 1️⃣ Filter for Referral types that have passed initial admin screening
       {
+<<<<<<< HEAD
         $match: {
           jobType: "Referral",
           adminApprovalStatus: "Approved",
         },
+=======
+        
+          $match: {
+            jobType: "Referral",
+            adminApprovalStatus: "Approved",
+            currentStatus: "Application Sent"
+          }
+          
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
       },
 
       // 2️⃣ Join with Job Postings to see who posted the job
@@ -625,11 +648,32 @@ export const getAllProfessionalReferralsService = async (
           _id: 1,
           applicant: {
             $mergeObjects: [
+<<<<<<< HEAD
               "$profileData",
               {
                 email: { $ifNull: ["$authData.email", "$profileData.email"] },
               },
             ],
+=======
+              {
+                _id: "$profileData._id",
+                userId: "$profileData.userId",
+                name: "$profileData.name",
+                fullName: "$profileData.fullName",
+                email: {
+                  $ifNull: [
+                    "$authData.email",
+                    "$profileData.email"
+                  ]
+                },
+                college: "$profileData.college",
+                currentCompany: "$profileData.currentCompany",
+                profileImage: "$profileData.profileImage",
+                currentRole: "$profileData.currentRole",
+                profileType: "$profileData.profileType"
+              }
+            ]
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
           },
           applicantType: 1,
           adminApprovalStatus: 1,
@@ -645,13 +689,36 @@ export const getAllProfessionalReferralsService = async (
 
       // 🔟 Sort by most recent application first
       { $sort: { createdAt: -1 } },
+<<<<<<< HEAD
+=======
+      { $skip: skip },
+      { $limit: limit }
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
     ];
+    const totalData = await Application.aggregate([
+      ...pipeline.slice(0, -2), // removes skip & limit
+      {
+        $count: "total"
+      }
+    ]);
 
+    const total = totalData[0]?.total || 0;
     const data = await Application.aggregate(pipeline);
 
     return {
       success: true,
+<<<<<<< HEAD
       data: data,
+=======
+      ...paginatedResponse(
+        data,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
+>>>>>>> 26d7999fb89b3443710e90cc36443bfe18007eb1
     };
   } catch (error) {
     console.error("Error in getAllProfessionalReferralsService:", error);

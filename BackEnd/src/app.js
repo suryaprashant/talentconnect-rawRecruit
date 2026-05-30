@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { startRankingCron } from "./cron/rankingCron.js";
+import paginate from "./middlewares/paginate.js";
 startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
@@ -35,6 +36,7 @@ app.use(express.json({ limit: '50mb' }));
 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+app.use(paginate);
 
 // Auth and Profile Routes
 import adminAuth from "./routes/admin/adminAuth.js";
