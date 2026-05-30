@@ -1,7 +1,7 @@
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  Application  from "../models/applicationModel.js"
 import mongoose from "mongoose";
-
+import { paginatedResponse } from "../utils/paginate.js";
 
 export const getPendingReferralJobsService = async () => {
   try {
@@ -491,15 +491,23 @@ export const updateReferralApplicationStatusService = async ({
 //   }
 // };
 
-export const getAllProfessionalReferralsService = async (professionalProfileId) => {
+export const getAllProfessionalReferralsService = async (professionalProfileId, pagination) => {
   try {
+    const {
+      page = 1,
+      limit = Number.MAX_SAFE_INTEGER,
+      skip = 0,
+    } = pagination || {};
     const pipeline = [
       // 1️⃣ Filter for Referral types that have passed initial admin screening
       {
-        $match: {
-          jobType: "Referral",
-          adminApprovalStatus: "Approved"
-        }
+        
+          $match: {
+            jobType: "Referral",
+            adminApprovalStatus: "Approved",
+            currentStatus: "Application Sent"
+          }
+          
       },
 
       // 2️⃣ Join with Job Postings to see who posted the job
@@ -602,9 +610,22 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           _id: 1,
           applicant: {
             $mergeObjects: [
-              "$profileData", 
-              { 
-                email: { $ifNull: ["$authData.email", "$profileData.email"] } 
+              {
+                _id: "$profileData._id",
+                userId: "$profileData.userId",
+                name: "$profileData.name",
+                fullName: "$profileData.fullName",
+                email: {
+                  $ifNull: [
+                    "$authData.email",
+                    "$profileData.email"
+                  ]
+                },
+                college: "$profileData.college",
+                currentCompany: "$profileData.currentCompany",
+                profileImage: "$profileData.profileImage",
+                currentRole: "$profileData.currentRole",
+                profileType: "$profileData.profileType"
               }
             ]
           },
@@ -621,14 +642,30 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
       },
 
       // 🔟 Sort by most recent application first
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
     ];
+    const totalData = await Application.aggregate([
+      ...pipeline.slice(0, -2), // removes skip & limit
+      {
+        $count: "total"
+      }
+    ]);
 
+    const total = totalData[0]?.total || 0;
     const data = await Application.aggregate(pipeline);
 
     return {
       success: true,
-      data: data
+      ...paginatedResponse(
+        data,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
     };
 
   } catch (error) {

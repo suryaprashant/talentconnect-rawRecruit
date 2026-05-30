@@ -3,7 +3,7 @@ import Onboarding from "../models/studentonboardingModel.js";
 import Application from "../models/applicationModel.js";
 import Auth from "../models/authModel.js";
 import RelevancyWeights from "../models/Relevancyweightsmodel.js";
-
+import { paginatedResponse } from "../utils/paginate.js";
 /*
  * WEIGHT DISTRIBUTION — loaded dynamically from RelevancyWeights collection
  * ─────────────────────────────────────────────────────────────────────────
@@ -139,17 +139,17 @@ export const getRelevantOffCampusJobs = async (req, res) => {
     const userId = req.user?._id;
     let student = null;
     let appliedJobIds = [];
-
+    const { page, limit, skip } = req.pagination;
     // ── STEP 1: Fetch weights & threshold in parallel ─────────────────────
     const [W, thresholdConfig] = await Promise.all([
       fetchWeights(),
       fetchThreshold(),
     ]);
     const visibilityThreshold = thresholdConfig.value;
-    const academicsTotal = W.cgpa + W.batchYear;
+    // const academicsTotal = W.cgpa + W.batchYear;
 
     // Print verified config to console for admin/developer verification
-    logConfig(W, thresholdConfig);
+    // logConfig(W, thresholdConfig);
 
     // ── STEP 2: Fetch student & applied jobs ──────────────────────────────
     if (userId) {
@@ -177,7 +177,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
     // ── STEP 4: GUEST (not logged in) — return all, score 0 ──────────────
     if (!student) {
-      console.log("\x1b[35m[RELEVANCY] Guest user — skipping scoring\x1b[0m");
+      // console.log("\x1b[35m[RELEVANCY] Guest user — skipping scoring\x1b[0m");
       const guestJobs = jobs
         .map((job) => ({
           ...job,
@@ -188,12 +188,27 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         // Guests see all jobs that pass the threshold (threshold=0 → all jobs)
         .filter((job) => job.matchScore >= visibilityThreshold);
 
-      return res.status(200).json({ data: guestJobs });
+      const total =
+        guestJobs.length;
+
+      const paginatedJobs =
+        guestJobs.slice(
+          skip,
+          skip + limit
+        );
+
+      return res.status(200).json(
+        paginatedResponse(
+          paginatedJobs,
+          total,
+          { page, limit }
+        )
+      );
     }
 
-    console.log(
-      `\x1b[35m[RELEVANCY ENGINE] Scoring ${jobs.length} jobs for student: ${student.name} (${student.email})\x1b[0m\n`
-    );
+    // console.log(
+    //   `\x1b[35m[RELEVANCY ENGINE] Scoring ${jobs.length} jobs for student: ${student.name} (${student.email})\x1b[0m\n`
+    // );
 
     // Pre-compute normalised student locations for broadcasting filter
     const studentNormLocs = (student.locations || []).map(norm);
@@ -204,13 +219,13 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       calcExperienceYears(student.experiences || []);
 
     // ── STEP 5: SCORE every job (broadcast filter applied AFTER scoring) ──
-    const scoredJobs = jobs.map((job, index) => {
+    const scoredJobs = jobs.map((job) => {
       let breakdown = {
         skills: 0, roles: 0, experience: 0,
         cgpa: 0, batchYear: 0, location: 0,
         degree: 0, stream: 0, salary: 0,
       };
-      let logs = { ...breakdown };
+      // let logs = { ...breakdown };
 
       const fullJobText = (
         (job.description || "") + " " + (job.eligibilityCriteria || "")
@@ -225,7 +240,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (jobReqSkills.length === 0) {
         breakdown.skills = W.skills;
-        logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
+        // logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
       } else {
         const matchedSkills = jobReqSkills.filter(
           (s) => studentSkills.includes(s) || fullJobText.includes(s)
@@ -233,7 +248,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         breakdown.skills = Math.round(
           (matchedSkills.length / jobReqSkills.length) * W.skills
         );
-        logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
+        // logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
       }
 
       // ── 2. JOB ROLES (W.jobRoles %) ─────────────────────────────────
@@ -242,7 +257,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (jRoles.length === 0) {
         breakdown.roles = W.jobRoles;
-        logs.roles = `Full Credit (no roles specified) → ${W.jobRoles}/${W.jobRoles}`;
+        // logs.roles = `Full Credit (no roles specified) → ${W.jobRoles}/${W.jobRoles}`;
       } else {
         const matchedRoles = sRoles.filter((r) => jRoles.includes(r));
         if (matchedRoles.length > 0) {
@@ -250,15 +265,15 @@ export const getRelevantOffCampusJobs = async (req, res) => {
             Math.round((matchedRoles.length / jRoles.length) * W.jobRoles),
             W.jobRoles
           );
-          logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
+          // logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
         } else {
           // Soft match: student role keyword found anywhere in job text
           const softMatch = sRoles.some((r) => fullJobText.includes(r));
           if (softMatch) {
             breakdown.roles = Math.round(W.jobRoles * 0.35);
-            logs.roles = `Soft match via description → ${breakdown.roles}/${W.jobRoles}`;
+            // logs.roles = `Soft match via description → ${breakdown.roles}/${W.jobRoles}`;
           } else {
-            logs.roles = `No match → 0/${W.jobRoles}`;
+            // logs.roles = `No match → 0/${W.jobRoles}`;
           }
         }
       }
@@ -278,15 +293,15 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (effectiveExpRequired === 0) {
         breakdown.experience = W.experience;
-        logs.experience = `Full Credit (no exp requirement) → ${W.experience}/${W.experience}`;
+        // logs.experience = `Full Credit (no exp requirement) → ${W.experience}/${W.experience}`;
       } else if (studentExpYears >= effectiveExpRequired) {
         breakdown.experience = W.experience;
-        logs.experience = `Match (${studentExpYears.toFixed(1)}y ≥ ${effectiveExpRequired}y) → ${W.experience}/${W.experience}`;
+        // logs.experience = `Match (${studentExpYears.toFixed(1)}y ≥ ${effectiveExpRequired}y) → ${W.experience}/${W.experience}`;
       } else if (studentExpYears >= effectiveExpRequired * 0.7) {
         breakdown.experience = Math.round(W.experience * 0.5);
-        logs.experience = `Near match 70%+ (${studentExpYears.toFixed(1)}y vs ${effectiveExpRequired}y) → ${breakdown.experience}/${W.experience}`;
+        // logs.experience = `Near match 70%+ (${studentExpYears.toFixed(1)}y vs ${effectiveExpRequired}y) → ${breakdown.experience}/${W.experience}`;
       } else {
-        logs.experience = `Fail (${studentExpYears.toFixed(1)}y < ${effectiveExpRequired}y) → 0/${W.experience}`;
+        // logs.experience = `Fail (${studentExpYears.toFixed(1)}y < ${effectiveExpRequired}y) → 0/${W.experience}`;
       }
 
       // ── 4. DEGREE (W.degree %) ──────────────────────────────────────
@@ -302,27 +317,27 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         );
         if (!anyDegreeInText) {
           breakdown.degree = W.degree;
-          logs.degree = `Full Credit (no degree specified) → ${W.degree}/${W.degree}`;
+          // logs.degree = `Full Credit (no degree specified) → ${W.degree}/${W.degree}`;
         } else if (studentDegree && fullJobText.includes(studentDegree)) {
           breakdown.degree = W.degree;
-          logs.degree = `Text match (${student.degree}) → ${W.degree}/${W.degree}`;
+          // logs.degree = `Text match (${student.degree}) → ${W.degree}/${W.degree}`;
         } else {
           breakdown.degree = Math.round(W.degree * 0.4);
-          logs.degree = `Partial Credit (degree mentioned, no match) → ${breakdown.degree}/${W.degree}`;
+          // logs.degree = `Partial Credit (degree mentioned, no match) → ${breakdown.degree}/${W.degree}`;
         }
       } else {
         if (studentDegree && jobDegrees.includes(studentDegree)) {
           breakdown.degree = W.degree;
-          logs.degree = `Match (${student.degree}) → ${W.degree}/${W.degree}`;
+          // logs.degree = `Match (${student.degree}) → ${W.degree}/${W.degree}`;
         } else {
           const partialMatch = jobDegrees.some(
             (d) => d.includes(studentDegree) || studentDegree.includes(d)
           );
           if (partialMatch) {
             breakdown.degree = Math.round(W.degree * 0.5);
-            logs.degree = `Partial match → ${breakdown.degree}/${W.degree}`;
+            // logs.degree = `Partial match → ${breakdown.degree}/${W.degree}`;
           } else {
-            logs.degree = `No match → 0/${W.degree}`;
+            // logs.degree = `No match → 0/${W.degree}`;
           }
         }
       }
@@ -342,19 +357,19 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (jobStreams.length === 0) {
         breakdown.stream = W.stream;
-        logs.stream = `Full Credit (no stream specified) → ${W.stream}/${W.stream}`;
+        // logs.stream = `Full Credit (no stream specified) → ${W.stream}/${W.stream}`;
       } else if (studentStream && jobStreams.includes(studentStream)) {
         breakdown.stream = W.stream;
-        logs.stream = `Match (${student.specialization}) → ${W.stream}/${W.stream}`;
+        // logs.stream = `Match (${student.specialization}) → ${W.stream}/${W.stream}`;
       } else {
         const studentGroup = relatedGroups.find((g) => g.includes(studentStream));
         const partialMatch =
           studentGroup && jobStreams.some((s) => studentGroup.includes(s));
         if (partialMatch) {
           breakdown.stream = Math.round(W.stream * 0.57);
-          logs.stream = `Related stream match → ${breakdown.stream}/${W.stream}`;
+          // logs.stream = `Related stream match → ${breakdown.stream}/${W.stream}`;
         } else {
-          logs.stream = `No match → 0/${W.stream}`;
+          // logs.stream = `No match → 0/${W.stream}`;
         }
       }
 
@@ -374,12 +389,12 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (effectiveCGPA === 0) {
         breakdown.cgpa = W.cgpa;
-        logs.cgpa = `Full Credit (no min CGPA) → ${W.cgpa}/${W.cgpa}`;
+        // logs.cgpa = `Full Credit (no min CGPA) → ${W.cgpa}/${W.cgpa}`;
       } else if (sCGPA >= effectiveCGPA) {
         breakdown.cgpa = W.cgpa;
-        logs.cgpa = `Match (${sCGPA} ≥ ${effectiveCGPA}) → ${W.cgpa}/${W.cgpa}`;
+        // logs.cgpa = `Match (${sCGPA} ≥ ${effectiveCGPA}) → ${W.cgpa}/${W.cgpa}`;
       } else {
-        logs.cgpa = `Fail (${sCGPA} < ${effectiveCGPA}) → 0/${W.cgpa}`;
+        // logs.cgpa = `Fail (${sCGPA} < ${effectiveCGPA}) → 0/${W.cgpa}`;
       }
 
       // ── 7. BATCH YEAR (W.batchYear %) ───────────────────────────────
@@ -388,12 +403,12 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (!yearRegex.test(fullJobText)) {
         breakdown.batchYear = W.batchYear;
-        logs.batchYear = `Full Credit (no batch year specified) → ${W.batchYear}/${W.batchYear}`;
+        // logs.batchYear = `Full Credit (no batch year specified) → ${W.batchYear}/${W.batchYear}`;
       } else if (sYear && fullJobText.includes(sYear)) {
         breakdown.batchYear = W.batchYear;
-        logs.batchYear = `Match (${sYear}) → ${W.batchYear}/${W.batchYear}`;
+        // logs.batchYear = `Match (${sYear}) → ${W.batchYear}/${W.batchYear}`;
       } else {
-        logs.batchYear = `Fail (batch mismatch) → 0/${W.batchYear}`;
+        // logs.batchYear = `Fail (batch mismatch) → 0/${W.batchYear}`;
       }
 
       // ── 8. LOCATION (W.location %) ──────────────────────────────────
@@ -405,10 +420,10 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (jLocs.length === 0 && !job.city && !job.venue) {
         breakdown.location = W.location;
-        logs.location = `Full Credit (no location specified) → ${W.location}/${W.location}`;
+        // logs.location = `Full Credit (no location specified) → ${W.location}/${W.location}`;
       } else if (isRemote) {
         breakdown.location = W.location;
-        logs.location = `Remote role → ${W.location}/${W.location}`;
+        // logs.location = `Remote role → ${W.location}/${W.location}`;
       } else {
         const matchedLocs = sLocs.filter(
           (l) =>
@@ -418,9 +433,9 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         );
         if (matchedLocs.length > 0) {
           breakdown.location = W.location;
-          logs.location = `Matched [${matchedLocs.join(", ")}] → ${W.location}/${W.location}`;
+          // logs.location = `Matched [${matchedLocs.join(", ")}] → ${W.location}/${W.location}`;
         } else {
-          logs.location = `Mismatch → 0/${W.location}`;
+          // logs.location = `Mismatch → 0/${W.location}`;
         }
       }
 
@@ -430,15 +445,15 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       if (sExp === 0 || jSal === 0) {
         breakdown.salary = W.salary;
-        logs.salary = `Full Credit (no salary preference/hidden) → ${W.salary}/${W.salary}`;
+        // logs.salary = `Full Credit (no salary preference/hidden) → ${W.salary}/${W.salary}`;
       } else if (jSal >= sExp) {
         breakdown.salary = W.salary;
-        logs.salary = `Match (${jSal} ≥ ${sExp}) → ${W.salary}/${W.salary}`;
+        // logs.salary = `Match (${jSal} ≥ ${sExp}) → ${W.salary}/${W.salary}`;
       } else if (jSal >= sExp * 0.85) {
         breakdown.salary = Math.round(W.salary * 0.67);
-        logs.salary = `Near match 85%+ → ${breakdown.salary}/${W.salary}`;
+        // logs.salary = `Near match 85%+ → ${breakdown.salary}/${W.salary}`;
       } else {
-        logs.salary = `Below target (${jSal} < ${sExp}) → 0/${W.salary}`;
+        // logs.salary = `Below target (${jSal} < ${sExp}) → 0/${W.salary}`;
       }
 
       // ── TOTAL SCORE ──────────────────────────────────────────────────
@@ -461,7 +476,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       // We flag it here (post-score) so the threshold is applied first,
       // then the broadcast filter removes location-mismatched jobs.
       let broadcastAllowed = true;
-      let broadcastLog = "Everyone → allowed";
+      // let broadcastLog = "Everyone → allowed";
 
       if (job.broadcastType === "Location") {
         const jobVenueNorm = norm(job.venue);
@@ -470,28 +485,28 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         const workLocMatch = jLocs.some((l) => studentNormLocs.includes(l));
 
         broadcastAllowed = venueMatch || workLocMatch;
-        broadcastLog = broadcastAllowed
-          ? `Location broadcast → allowed (venue/workLocation matched)`
-          : `Location broadcast → BLOCKED (student locs: [${studentNormLocs.join(", ")}], job venue: "${job.venue || ""}", workLoc: [${(job.workLocation || []).join(", ")}])`;
+        // broadcastLog = broadcastAllowed
+        //   ? `Location broadcast → allowed (venue/workLocation matched)`
+        //   : `Location broadcast → BLOCKED (student locs: [${studentNormLocs.join(", ")}], job venue: "${job.venue || ""}", workLoc: [${(job.workLocation || []).join(", ")}])`;
       }
 
       // ── PER-JOB CONSOLE LOG ──────────────────────────────────────────
-      console.log(`\x1b[36m┌─ Job #${index + 1}: ${companyName} | "${job.jobTitle || "N/A"}"\x1b[0m`);
-      console.log(`\x1b[36m│  Skills     : ${logs.skills}\x1b[0m`);
-      console.log(`\x1b[36m│  Roles      : ${logs.roles}\x1b[0m`);
-      console.log(`\x1b[36m│  Experience : ${logs.experience}\x1b[0m`);
-      console.log(`\x1b[36m│  CGPA       : ${logs.cgpa}\x1b[0m`);
-      console.log(`\x1b[36m│  Batch Year : ${logs.batchYear}\x1b[0m`);
-      console.log(`\x1b[36m│  Location   : ${logs.location}\x1b[0m`);
-      console.log(`\x1b[36m│  Degree     : ${logs.degree}\x1b[0m`);
-      console.log(`\x1b[36m│  Stream     : ${logs.stream}\x1b[0m`);
-      console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
-      console.log(`\x1b[36m│  Broadcast  : ${broadcastLog}\x1b[0m`);
-      console.log(
-        `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: ${visibilityThreshold}% | ` +
-          `${totalScore >= visibilityThreshold ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL (below threshold)\x1b[0m"}` +
-          ` | Broadcast: ${broadcastAllowed ? "\x1b[32mALLOWED\x1b[0m" : "\x1b[31mBLOCKED\x1b[0m"}\n`
-      );
+      // console.log(`\x1b[36m┌─ Job #${index + 1}: ${companyName} | "${job.jobTitle || "N/A"}"\x1b[0m`);
+      // console.log(`\x1b[36m│  Skills     : ${logs.skills}\x1b[0m`);
+      // console.log(`\x1b[36m│  Roles      : ${logs.roles}\x1b[0m`);
+      // console.log(`\x1b[36m│  Experience : ${logs.experience}\x1b[0m`);
+      // console.log(`\x1b[36m│  CGPA       : ${logs.cgpa}\x1b[0m`);
+      // console.log(`\x1b[36m│  Batch Year : ${logs.batchYear}\x1b[0m`);
+      // console.log(`\x1b[36m│  Location   : ${logs.location}\x1b[0m`);
+      // console.log(`\x1b[36m│  Degree     : ${logs.degree}\x1b[0m`);
+      // console.log(`\x1b[36m│  Stream     : ${logs.stream}\x1b[0m`);
+      // console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
+      // console.log(`\x1b[36m│  Broadcast  : ${broadcastLog}\x1b[0m`);
+      // console.log(
+      //   `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: ${visibilityThreshold}% | ` +
+      //     `${totalScore >= visibilityThreshold ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL (below threshold)\x1b[0m"}` +
+      //     ` | Broadcast: ${broadcastAllowed ? "\x1b[32mALLOWED\x1b[0m" : "\x1b[31mBLOCKED\x1b[0m"}\n`
+      // );
 
       return {
         ...job,
@@ -546,21 +561,46 @@ const finalData = enrichedJobs                               // ← changed
   .map(({ _broadcastAllowed, ...job }) => job);
 
 // ── Summary log (update these two lines too) ──────────────────────────
-const belowThreshold = enrichedJobs.filter(              // ← changed
-  (j) => j.matchScore < visibilityThreshold
-).length;
-const broadcastBlocked = enrichedJobs.filter(            // ← changed
-  (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
-).length;
+// const belowThreshold = enrichedJobs.filter(              // ← changed
+//   (j) => j.matchScore < visibilityThreshold
+// ).length;
+// const broadcastBlocked = enrichedJobs.filter(            // ← changed
+//   (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
+// ).length;
 
-    console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
-    console.log(`\x1b[33m║  Total jobs fetched    : ${String(jobs.length).padEnd(24)}\x1b[0m║`);
-    console.log(`\x1b[33m║  Below threshold (<${String(visibilityThreshold + "%)").padEnd(4)}: ${String(belowThreshold).padEnd(24)}\x1b[0m║`);
-    console.log(`\x1b[33m║  Broadcast blocked     : ${String(broadcastBlocked).padEnd(24)}\x1b[0m║`);
-    console.log(`\x1b[33m║  Returned to client    : ${String(finalData.length).padEnd(24)}\x1b[0m║`);
-    console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
+    // console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
+    // console.log(`\x1b[33m║  Total jobs fetched    : ${String(jobs.length).padEnd(24)}\x1b[0m║`);
+    // console.log(`\x1b[33m║  Below threshold (<${String(visibilityThreshold + "%)").padEnd(4)}: ${String(belowThreshold).padEnd(24)}\x1b[0m║`);
+    // console.log(`\x1b[33m║  Broadcast blocked     : ${String(broadcastBlocked).padEnd(24)}\x1b[0m║`);
+    // console.log(`\x1b[33m║  Returned to client    : ${String(finalData.length).padEnd(24)}\x1b[0m║`);
+    // console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
 
-    res.status(200).json({ data: finalData });
+    const total =
+      finalData.length;
+
+    const paginatedJobs =
+      finalData
+        .slice(skip, skip + limit)
+        .map((job) => {
+          const {
+            _scoreBreakdown,
+            _gateMultiplier,
+            _skillMatchPct,
+            _profileType,
+            _broadcastAllowed,
+            ...cleanJob
+          } = job;
+
+          return cleanJob;
+        });
+
+    return res.status(200).json(
+      paginatedResponse(
+        paginatedJobs,
+        total,
+        { page, limit }
+      )
+    );
   } catch (error) {
     console.error("\x1b[31m[RELEVANCY ERROR]\x1b[0m", error);
     res.status(500).json({ error: "Internal Server Error" });

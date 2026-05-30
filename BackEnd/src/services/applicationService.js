@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import { paginatedResponse } from "../utils/paginate.js";
 import Application from '../models/applicationModel.js';
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 import { getCollegeService } from './collegeService.js';
@@ -116,7 +116,7 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
     }
 }*/
 //Prathmesh
-export async function getSavedJobsService(userId) {
+export async function getSavedJobsService(userId, pagination) {
   try {
 
     // Student profile
@@ -126,7 +126,7 @@ export async function getSavedJobsService(userId) {
     const [W] = await Promise.all([
       fetchWeights(),
     ]);
-
+    const { page, limit, skip } = pagination;
     const applications = await Application.find({
       currentStatus: "Saved",
       applicant: userId,
@@ -169,36 +169,81 @@ export async function getSavedJobsService(userId) {
           matchScore = scoredJob?.matchScore ?? 0;
         }
 
-        // Company name
+        // Company name — job's own field first
         const companyName =
+          application.job?.companyName ||
           application.job?.candidatePosted?.currentCompany ||
           application.job?.companyPosted?.companyDetails?.companyName;
 
         // Alumni count
-        if (student?.college && companyName) {
-
-          const escapedCompanyName = companyName.replace(
-            /[.*+?^${}()|[\]\\]/g,
-            "\\$&"
-          );
-
+        if (companyName && student) {
           try {
-            alumniCount = await OnboardingModel.countDocuments({
-              college: student.college,
-              userId: { $ne: student.userId },
-              profileType: "professional",
-              currentCompany: {
-                $regex: new RegExp(
-                  `^${escapedCompanyName}$`,
-                  "i"
-                ),
-              },
+            const studentColleges = [
+              ...new Set(
+                (student?.educations || [])
+                  .map((edu) => edu.college)
+                  .filter(Boolean)
+              ),
+            ];
+
+            const allStudentCompanies = [];
+            if (student?.currentCompany) {
+              allStudentCompanies.push(student.currentCompany);
+            }
+            student?.experiences?.forEach((exp) => {
+              if (exp.company) allStudentCompanies.push(exp.company);
             });
+            const uniqueStudentCompanies = [
+              ...new Map(
+                allStudentCompanies.map((c) => [c.toLowerCase(), c])
+              ).values(),
+            ];
+
+            const sharedCompanyConditions = uniqueStudentCompanies.flatMap((company) => {
+              const regex = new RegExp(
+                company.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"
+              );
+              return [
+                { currentCompany: regex },
+                { "experiences.company": regex },
+              ];
+            });
+
+            const sharedWithStudentConditions = [
+              ...(studentColleges.length > 0 ? [{
+                "educations.college": {
+                  $in: studentColleges.map(
+                    (c) => new RegExp(`^${c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i")
+                  ),
+                },
+              }] : []),
+              ...sharedCompanyConditions,
+            ];
+
+            // Guard: skip DB call if student has no colleges and no companies
+            if (sharedWithStudentConditions.length === 0) {
+              alumniCount = 0;
+            } else {
+              const companyRegex = new RegExp(
+                companyName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"
+              );
+
+              alumniCount = await OnboardingModel.countDocuments({
+                userId: { $ne: student.userId },
+                $and: [
+                  { $or: sharedWithStudentConditions },
+                  {
+                    $or: [
+                      { currentCompany: companyRegex },
+                      { "experiences.company": companyRegex },
+                    ],
+                  },
+                ],
+              });
+            }
+
           } catch (err) {
-            console.error(
-              `[ALUMNI COUNT ERROR] ${companyName}:`,
-              err.message
-            );
+            console.error(`[ALUMNI COUNT ERROR] ${companyName}:`, err.message);
           }
         }
 
@@ -210,9 +255,25 @@ export async function getSavedJobsService(userId) {
       })
     );
 
+    const total =
+      enrichedApplications.length;
+
+    const paginatedApplications =
+      enrichedApplications.slice(
+        skip,
+        skip + limit
+      );
+
     return {
       success: true,
-      data: enrichedApplications,
+      ...paginatedResponse(
+        paginatedApplications,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
     };
 
   } catch (error) {
@@ -793,7 +854,13 @@ export async function createInternshipApplicationService(userId, userType, jobId
 // job management
 // joblisting and offcampus
 
-export async function fetchApplicationStatusService(userId, jobType, userType, activeCompanyId = null) {
+export async function fetchApplicationStatusService(
+  userId,
+  jobType,
+  userType,
+  activeCompanyId = null,
+  pagination
+) {
   try {
     let matchStage = {
       jobType,
@@ -805,114 +872,127 @@ export async function fetchApplicationStatusService(userId, jobType, userType, a
       matchStage.appliedForCompany = new mongoose.Types.ObjectId(
         activeCompanyId || userId
       );
-    }
-
-    else if (userType === "company") {
+    } else if (userType === "company") {
       matchStage.appliedForCompany = new mongoose.Types.ObjectId(userId);
-    } 
-    else {
+    } else {
       matchStage.applicant = new mongoose.Types.ObjectId(userId);
     }
 
-    console.log("Match stage for aggregation:", matchStage);
+    const { page, limit, skip } = pagination;
 
-    // const applicationData = await Application.aggregate([
-    //   { $match: matchStage },
-    //   {
-    //     $lookup: {
-    //       from: "jobpostingtables",
-    //       localField: "job",
-    //       foreignField: "_id",
-    //       as: "jobDetails",
-    //     },
-    //   },
-    //   { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
-    //   {
-    //     $lookup: {
-    //       from: "companyprofiles",
-    //       localField: "jobDetails.companyPosted",
-    //       foreignField: "_id",
-    //       as: "companyProfile",
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "collegeonboardings",
-    //       localField: "jobDetails.collegePosted",
-    //       foreignField: "_id",
-    //       as: "collegeDetails",
-    //     },
-    //   },
-    //   {
-    //     $addFields: {
-    //       companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
-    //       collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
-    //     },
-    //   },
-    // ]);
-// In fetchApplicationStatusService, update the aggregation pipeline:
+    const total = await Application.countDocuments(matchStage);
 
-const applicationData = await Application.aggregate([
-  { $match: matchStage },
-  {
-    $lookup: {
-      from: "jobpostingtables",
-      localField: "job",
-      foreignField: "_id",
-      as: "jobDetails",
-    },
-  },
-  { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
-  {
-    $lookup: {
-      from: "companyprofiles",
-      localField: "jobDetails.companyPosted",
-      foreignField: "_id",
-      as: "companyProfile",
-    },
-  },
-  {
-    $lookup: {
-      from: "collegeonboardings",
-      localField: "jobDetails.collegePosted",
-      foreignField: "_id",
-      as: "collegeDetails",
-    },
-  },
-  {
-    $lookup: {
-      from: "onboardings",
-      localField: "jobDetails.postedBy",
-      foreignField: "_id",
-      as: "referralPosterProfile",
-    },
-  },
-  {
-    $addFields: {
-      companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
-      collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
-      referralPosterProfile: { $arrayElemAt: ["$referralPosterProfile", 0] },
+    const applicationData = await Application.aggregate([
+      { $match: matchStage },
 
-      // ✅ Resolve display company name:
-      // For Referral jobs → use referralCompany stored on the application
-      // For others → fall back to companyProfile name
-      displayCompanyName: {
-        $cond: {
-          if: { $eq: ["$jobType", "Referral"] },
-          then: { $ifNull: ["$referralCompany", "Referral"] },
-          else: {
-            $ifNull: [
-              { $arrayElemAt: ["$companyProfile.companyDetails.companyName", 0] },
-              "Unknown Company"
-            ]
-          }
+      {
+        $lookup: {
+          from: "jobpostingtables",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobDetails",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$jobDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "jobDetails.companyPosted",
+          foreignField: "_id",
+          as: "companyProfile",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "jobDetails.collegePosted",
+          foreignField: "_id",
+          as: "collegeDetails",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "jobDetails.postedBy",
+          foreignField: "_id",
+          as: "referralPosterProfile",
+        },
+      },
+
+      {
+        $addFields: {
+          companyProfile: {
+            $arrayElemAt: ["$companyProfile", 0],
+          },
+
+          collegeDetails: {
+            $arrayElemAt: ["$collegeDetails", 0],
+          },
+
+          referralPosterProfile: {
+            $arrayElemAt: ["$referralPosterProfile", 0],
+          },
+
+          displayCompanyName: {
+            $cond: {
+              if: { $eq: ["$jobType", "Referral"] },
+
+              then: {
+                $ifNull: ["$referralCompany", "Referral"],
+              },
+
+              else: {
+                $ifNull: [
+                  {
+                    $arrayElemAt: [
+                      "$companyProfile.companyDetails.companyName",
+                      0,
+                    ],
+                  },
+                  "Unknown Company",
+                ],
+              },
+            },
+          },
+        },
+      },
+
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+
+      {
+        $skip: skip,
+      },
+
+      {
+        $limit: limit,
+      },
+    ]);
+
+    return {
+      success: true,
+
+      ...paginatedResponse(
+        applicationData,
+        total,
+        {
+          page,
+          limit,
         }
-      }
-    },
-  },
-]);
-    console.log("🔍 Total applications found:", applicationData.length);
-    return { success: true, data: applicationData };
+      ),
+    };
   } catch (error) {
     console.error("Aggregation Error:", error.message);
     throw new Error("Failed to fetch");

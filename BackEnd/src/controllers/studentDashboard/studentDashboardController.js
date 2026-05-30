@@ -10,7 +10,8 @@ import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
 import {getProfessionalReferralsService} from "../../services/jobPostingService.js"
 import mongoose from "mongoose";
-
+import { paginatedResponse } from "../../utils/paginate.js";
+//
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
 
@@ -117,23 +118,21 @@ export const fetchMetricsForJob = async (jobId) => {
 // };
 
 export const getProfessionalReferrals = async (req, res) => {
-  console.log(">>> API Request Received <<<");
   try {
     const authUserId = req.user._id;
     const { showAll } = req.query; // ?showAll=true → return all, default → active only
-    console.log("1. Auth User ID:", authUserId, "| showAll:", showAll);
+    const { page, limit, skip } =
+      req.pagination;
 
     const studentProfile = await OnboardingModel.findOne({
       userId: new mongoose.Types.ObjectId(authUserId),
     }).lean();
 
     if (!studentProfile) {
-      console.log("2. ❌ No student profile found for this Auth ID");
       return res.status(404).json({ message: "Student profile not found" });
     }
 
     const profileId = studentProfile._id;
-    console.log("2. ✅ Found Student Profile ID:", profileId);
 
     const query = {
       candidatePosted: profileId,
@@ -141,11 +140,18 @@ export const getProfessionalReferrals = async (req, res) => {
       ...(showAll === "true" ? {} : { inactive: false }), // only filter when showAll is not true
     };
 
-    const referrals = await JobPostingTable.find(query)
-      .sort({ createdAt: -1 })
-      .lean();
+    const [referrals, total] =
+      await Promise.all([
+        JobPostingTable.find(query)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
 
-    console.log(`3. ✅ Referrals Found: ${referrals.length}`);
+        JobPostingTable.countDocuments(
+          query
+        ),
+      ]);
 
     const referralsWithMetrics = await Promise.all(
       referrals.map(async (job) => {
@@ -154,15 +160,33 @@ export const getProfessionalReferrals = async (req, res) => {
       })
     );
 
+    const pagination =
+      paginatedResponse(
+        referralsWithMetrics,
+        total,
+        {
+          page,
+          limit,
+        }
+      );
+
     return res.status(200).json({
       success: true,
-      count: referrals.length,
-      data: referralsWithMetrics,
+
+      ...pagination,
     });
 
   } catch (error) {
-    console.error("4. ❌ Error:", error.message);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error(
+      "Error fetching professional referrals:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Something went wrong while fetching referrals.",
+    });
   }
 };
 
@@ -1452,6 +1476,7 @@ export const getInternshipPostings = async (req, res) => {
     let studentProfileId = null;
     let appliedJobIds = [];
     let student = null;
+    const { page, limit, skip } = req.pagination;
 
     // ── STEP 1: Fetch weights & threshold in parallel ─────────────────────
     const [W, thresholdConfig] = await Promise.all([
@@ -1461,7 +1486,7 @@ export const getInternshipPostings = async (req, res) => {
     const visibilityThreshold = thresholdConfig.value;
 
     // Print verified config to console for admin/developer verification
-    logConfig(W, thresholdConfig);
+    // logConfig(W, thresholdConfig);
 
     // ── STEP 2: Fetch student profile & applied jobs ───────────────────────
     if (userId) {
@@ -1507,25 +1532,40 @@ export const getInternshipPostings = async (req, res) => {
 
     // ── STEP 6: GUEST (not logged in) — return all, score 0 ──────────────
     if (!student) {
-      console.log("\x1b[35m[RELEVANCY] Guest user — skipping scoring\x1b[0m");
+      // console.log("\x1b[35m[RELEVANCY] Guest user — skipping scoring\x1b[0m");
       const guestPostings = afterAppliedFilter
         .map((p) => ({ ...p, matchScore: 0 }))
         .filter((p) => p.matchScore >= visibilityThreshold);
 
-      return sendResponse(res, 200, { data: guestPostings });
+      const total =
+        guestPostings.length;
+
+      const paginatedPostings =
+        guestPostings.slice(
+          skip,
+          skip + limit
+        );
+
+      return sendResponse(res, 200, {
+        ...paginatedResponse(
+          paginatedPostings,
+          total,
+          { page, limit }
+        ),
+      });
     }
 
-    console.log(
-      `\x1b[35m[RELEVANCY ENGINE] Scoring ${afterAppliedFilter.length} internships for student: ${student.name} (${student.email})\x1b[0m\n`
-    );
+    // console.log(
+    //   `\x1b[35m[RELEVANCY ENGINE] Scoring ${afterAppliedFilter.length} internships for student: ${student.name} (${student.email})\x1b[0m\n`
+    // );
 
     // ── STEP 7: Score every internship ────────────────────────────────────
-    const scoredPostings = afterAppliedFilter.map((job, index) => {
+    const scoredPostings = afterAppliedFilter.map((job) => {
       let breakdown = {
         roles: 0, skills: 0, cgpa: 0,
         batchYear: 0, location: 0, salary: 0, tools: 0,
       };
-      let logs = { ...breakdown };
+      
 
       const fullJobText = (
         (job.description || "") + " " + (job.eligibilityCriteria || "")
@@ -1547,7 +1587,7 @@ export const getInternshipPostings = async (req, res) => {
 
       if (jRoles.length === 0) {
         breakdown.roles = W.jobRoles;
-        logs.roles = `Full Credit (no roles specified) → ${W.jobRoles}/${W.jobRoles}`;
+        // logs.roles = `Full Credit (no roles specified) → ${W.jobRoles}/${W.jobRoles}`;
       } else {
         const matchedRoles = sRoles.filter((r) => jRoles.includes(r));
         if (matchedRoles.length > 0) {
@@ -1555,14 +1595,14 @@ export const getInternshipPostings = async (req, res) => {
             Math.round((matchedRoles.length / jRoles.length) * W.jobRoles),
             W.jobRoles
           );
-          logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
+          // logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
         } else {
           const softMatch = sRoles.some((r) => normJobText.includes(r));
           if (softMatch) {
             breakdown.roles = Math.round(W.jobRoles * 0.33); // ~10 at default 30
-            logs.roles = `Soft match via description → ${breakdown.roles}/${W.jobRoles}`;
+            // logs.roles = `Soft match via description → ${breakdown.roles}/${W.jobRoles}`;
           } else {
-            logs.roles = `No match → 0/${W.jobRoles}`;
+            // logs.roles = `No match → 0/${W.jobRoles}`;
           }
         }
       }
@@ -1572,7 +1612,7 @@ export const getInternshipPostings = async (req, res) => {
 
       if (jobReqSkills.length === 0) {
         breakdown.skills = W.skills;
-        logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
+        // logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
       } else {
         const matchedSkills = jobReqSkills.filter(
           (s) => studentSkills.includes(s) || normJobText.includes(s)
@@ -1580,7 +1620,7 @@ export const getInternshipPostings = async (req, res) => {
         breakdown.skills = Math.round(
           (matchedSkills.length / jobReqSkills.length) * W.skills
         );
-        logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
+        // logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
       }
 
       // ── 3. CGPA (W.cgpa %) ───────────────────────────────────────────
@@ -1599,12 +1639,12 @@ export const getInternshipPostings = async (req, res) => {
 
       if (effectiveCGPA === 0) {
         breakdown.cgpa = W.cgpa;
-        logs.cgpa = `Full Credit (no min CGPA) → ${W.cgpa}/${W.cgpa}`;
+        // logs.cgpa = `Full Credit (no min CGPA) → ${W.cgpa}/${W.cgpa}`;
       } else if (sCGPA >= effectiveCGPA) {
         breakdown.cgpa = W.cgpa;
-        logs.cgpa = `Match (${sCGPA} ≥ ${effectiveCGPA}) → ${W.cgpa}/${W.cgpa}`;
+        // logs.cgpa = `Match (${sCGPA} ≥ ${effectiveCGPA}) → ${W.cgpa}/${W.cgpa}`;
       } else {
-        logs.cgpa = `Fail (${sCGPA} < ${effectiveCGPA}) → 0/${W.cgpa}`;
+        // logs.cgpa = `Fail (${sCGPA} < ${effectiveCGPA}) → 0/${W.cgpa}`;
       }
 
       // ── 4. BATCH YEAR (W.batchYear %) ────────────────────────────────
@@ -1613,12 +1653,12 @@ export const getInternshipPostings = async (req, res) => {
 
       if (!yearRegex.test(fullJobText)) {
         breakdown.batchYear = W.batchYear;
-        logs.batchYear = `Full Credit (no batch year specified) → ${W.batchYear}/${W.batchYear}`;
+        // logs.batchYear = `Full Credit (no batch year specified) → ${W.batchYear}/${W.batchYear}`;
       } else if (sYear && fullJobText.includes(sYear)) {
         breakdown.batchYear = W.batchYear;
-        logs.batchYear = `Match (${sYear}) → ${W.batchYear}/${W.batchYear}`;
+        // logs.batchYear = `Match (${sYear}) → ${W.batchYear}/${W.batchYear}`;
       } else {
-        logs.batchYear = `Fail (batch mismatch) → 0/${W.batchYear}`;
+        // logs.batchYear = `Fail (batch mismatch) → 0/${W.batchYear}`;
       }
 
       // ── 5. LOCATION (W.location %) ───────────────────────────────────
@@ -1630,10 +1670,10 @@ export const getInternshipPostings = async (req, res) => {
 
       if (jLocs.length === 0 && !job.city && !job.venue && !job.location) {
         breakdown.location = W.location;
-        logs.location = `Full Credit (no location specified) → ${W.location}/${W.location}`;
+        // logs.location = `Full Credit (no location specified) → ${W.location}/${W.location}`;
       } else if (isRemote) {
         breakdown.location = W.location;
-        logs.location = `Remote role → ${W.location}/${W.location}`;
+        // logs.location = `Remote role → ${W.location}/${W.location}`;
       } else {
         const matchedLocs = sLocs.filter(
           (l) =>
@@ -1644,9 +1684,9 @@ export const getInternshipPostings = async (req, res) => {
         );
         if (matchedLocs.length > 0) {
           breakdown.location = W.location;
-          logs.location = `Matched [${matchedLocs.join(", ")}] → ${W.location}/${W.location}`;
+          // logs.location = `Matched [${matchedLocs.join(", ")}] → ${W.location}/${W.location}`;
         } else {
-          logs.location = `Mismatch → 0/${W.location}`;
+          // logs.location = `Mismatch → 0/${W.location}`;
         }
       }
 
@@ -1656,15 +1696,15 @@ export const getInternshipPostings = async (req, res) => {
 
       if (sExp === 0 || jSal === 0) {
         breakdown.salary = W.salary;
-        logs.salary = `Full Credit (no salary preference/hidden) → ${W.salary}/${W.salary}`;
+        // logs.salary = `Full Credit (no salary preference/hidden) → ${W.salary}/${W.salary}`;
       } else if (jSal >= sExp) {
         breakdown.salary = W.salary;
-        logs.salary = `Match (${jSal} ≥ ${sExp}) → ${W.salary}/${W.salary}`;
+        // logs.salary = `Match (${jSal} ≥ ${sExp}) → ${W.salary}/${W.salary}`;
       } else if (jSal >= sExp * 0.85) {
         breakdown.salary = Math.round(W.salary * 0.5); // ~5 at default 10
-        logs.salary = `Near match 85%+ → ${breakdown.salary}/${W.salary}`;
+        // logs.salary = `Near match 85%+ → ${breakdown.salary}/${W.salary}`;
       } else {
-        logs.salary = `Below target (${jSal} < ${sExp}) → 0/${W.salary}`;
+        // logs.salary = `Below target (${jSal} < ${sExp}) → 0/${W.salary}`;
       }
 
       // ── 7. TOOLS & PLATFORMS (W.tools %) ─────────────────────────────
@@ -1673,7 +1713,7 @@ export const getInternshipPostings = async (req, res) => {
 
       if (jobTools.length === 0) {
         breakdown.tools = W.tools;
-        logs.tools = `Full Credit (no tools specified) → ${W.tools}/${W.tools}`;
+        // logs.tools = `Full Credit (no tools specified) → ${W.tools}/${W.tools}`;
       } else {
         const matchedTools = studentTools.filter(
           (t) => jobTools.includes(t) || normJobText.includes(t)
@@ -1683,7 +1723,7 @@ export const getInternshipPostings = async (req, res) => {
         } else if (matchedTools.length === 1) {
           breakdown.tools = Math.round(W.tools * 0.6); // ~3 at default 5
         }
-        logs.tools = `[${matchedTools.join(", ") || "none"}] → ${breakdown.tools}/${W.tools}`;
+        // logs.tools = `[${matchedTools.join(", ") || "none"}] → ${breakdown.tools}/${W.tools}`;
       }
 
       // ── TOTAL SCORE ──────────────────────────────────────────────────
@@ -1699,20 +1739,20 @@ export const getInternshipPostings = async (req, res) => {
       );
 
       // ── PER-JOB CONSOLE LOG ──────────────────────────────────────────
-      console.log(`\x1b[36m┌─ Internship #${index + 1}: ${companyName} | "${job.jobTitle || "N/A"}"\x1b[0m`);
-      console.log(`\x1b[36m│  Roles      : ${logs.roles}\x1b[0m`);
-      console.log(`\x1b[36m│  Skills     : ${logs.skills}\x1b[0m`);
-      console.log(`\x1b[36m│  CGPA       : ${logs.cgpa}\x1b[0m`);
-      console.log(`\x1b[36m│  Batch Year : ${logs.batchYear}\x1b[0m`);
-      console.log(`\x1b[36m│  Location   : ${logs.location}\x1b[0m`);
-      console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
-      console.log(`\x1b[36m│  Tools      : ${logs.tools}\x1b[0m`);
-      console.log(
-        `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: ${visibilityThreshold}% | ` +
-          `${totalScore >= visibilityThreshold
-            ? "\x1b[32mPASS\x1b[0m"
-            : "\x1b[31mFAIL (below threshold)\x1b[0m"}\n`
-      );
+      // console.log(`\x1b[36m┌─ Internship #${index + 1}: ${companyName} | "${job.jobTitle || "N/A"}"\x1b[0m`);
+      // console.log(`\x1b[36m│  Roles      : ${logs.roles}\x1b[0m`);
+      // console.log(`\x1b[36m│  Skills     : ${logs.skills}\x1b[0m`);
+      // console.log(`\x1b[36m│  CGPA       : ${logs.cgpa}\x1b[0m`);
+      // console.log(`\x1b[36m│  Batch Year : ${logs.batchYear}\x1b[0m`);
+      // console.log(`\x1b[36m│  Location   : ${logs.location}\x1b[0m`);
+      // console.log(`\x1b[36m│  Salary     : ${logs.salary}\x1b[0m`);
+      // console.log(`\x1b[36m│  Tools      : ${logs.tools}\x1b[0m`);
+      // console.log(
+      //   `\x1b[36m└─ SCORE: \x1b[1m${totalScore}%\x1b[0m\x1b[36m | THRESHOLD: ${visibilityThreshold}% | ` +
+      //     `${totalScore >= visibilityThreshold
+      //       ? "\x1b[32mPASS\x1b[0m"
+      //       : "\x1b[31mFAIL (below threshold)\x1b[0m"}\n`
+      // );
 
       return {
         ...job,
@@ -1721,8 +1761,8 @@ export const getInternshipPostings = async (req, res) => {
       };
     });
 
-   const enrichedPostings = await Promise.all(
-  scoredPostings.map(async (job) => {
+    const enrichedPostings = await Promise.all(
+    scoredPostings.map(async (job) => {
     let alumniCount = 0;
 
     const companyName =
@@ -1748,22 +1788,46 @@ export const getInternshipPostings = async (req, res) => {
 );
 
 // ── STEP 8: Apply threshold & sort ────────────────────────────────────
-const belowThreshold = enrichedPostings.filter(       // ← changed
-  (j) => j.matchScore < visibilityThreshold
-).length;
+// const belowThreshold = enrichedPostings.filter(       // ← changed
+//   (j) => j.matchScore < visibilityThreshold
+// ).length;
 
 const finalPostings = enrichedPostings               // ← changed
   .filter((j) => j.matchScore >= visibilityThreshold)
   .sort((a, b) => b.matchScore - a.matchScore);
 
     // ── Summary log ───────────────────────────────────────────────────────
-    console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
-    console.log(`\x1b[33m║  Total internships fetched : ${String(afterAppliedFilter.length).padEnd(20)}\x1b[0m║`);
-    console.log(`\x1b[33m║  Below threshold (<${String(visibilityThreshold + "%)").padEnd(4)})  : ${String(belowThreshold).padEnd(20)}\x1b[0m║`);
-    console.log(`\x1b[33m║  Returned to client        : ${String(finalPostings.length).padEnd(20)}\x1b[0m║`);
-    console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
+    // console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
+    // console.log(`\x1b[33m║  Total internships fetched : ${String(afterAppliedFilter.length).padEnd(20)}\x1b[0m║`);
+    // console.log(`\x1b[33m║  Below threshold (<${String(visibilityThreshold + "%)").padEnd(4)})  : ${String(belowThreshold).padEnd(20)}\x1b[0m║`);
+    // console.log(`\x1b[33m║  Returned to client        : ${String(finalPostings.length).padEnd(20)}\x1b[0m║`);
+    // console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
 
-    sendResponse(res, 200, { data: finalPostings });
+    const total =
+      finalPostings.length;
+
+    const paginatedPostings =
+      finalPostings
+        .slice(skip, skip + limit)
+        .map((job) => {
+          const {
+            _scoreBreakdown,
+            _gateMultiplier,
+            _skillMatchPct,
+            _profileType,
+            ...cleanJob
+          } = job;
+
+          return cleanJob;
+        });
+
+    return sendResponse(res, 200, {
+      ...paginatedResponse(
+        paginatedPostings,
+        total,
+        { page, limit }
+      ),
+    });
   } catch (error) {
     console.error("\x1b[31m[INTERNSHIP RELEVANCY ERROR]\x1b[0m", error);
     sendError(res, 500, "Internal server error");
@@ -1908,28 +1972,29 @@ export const getReferralJobs = async (req, res) => {
     }
 
     const userId = req.user._id;  
-
+    const { page, limit, skip } = req.pagination;
     // 2. Get student profile
     const postId = await getStudentService(userId);
-console.log('in step 2 of controller')
-if (!postId.data || postId.data.length === 0) {
-      return res.status(404).json({ message: "Student profile not found" });
-    }
+    if (!postId.data || postId.data.length === 0) {
+          return res.status(404).json({ message: "Student profile not found" });
+        }
 
     // data is an array from .find(), so use index [0]
     const candidatePostedId = postId.data[0]._id;
     // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
-    const data = await getReferralJobsService(candidatePostedId, userId);
+    const result =
+      await getReferralJobsService(
+        candidatePostedId,
+        userId,
+        req.pagination
+      );
 
     return res.status(200).json({
       success: true,
+
       isGuest: false,
-      total: data.length,
-      data: data.map((job) => ({
-        ...job,
-        matchScore: job.matchScore ?? 0,
-        alumniCount: job.alumniCount ?? 0,
-      })),
+
+      ...result,
     });
 
   } catch (err) {
