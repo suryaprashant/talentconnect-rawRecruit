@@ -1,5 +1,5 @@
 import express from 'express';
-import { getInternshipPostings, getIntershipById, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs ,getProfessionalReferrals,getProfessionalInActiveReferrals } from '../../controllers/studentDashboard/studentDashboardController.js';
+import { getInternshipPostings, getJobById, getIntershipById, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs ,getProfessionalReferrals,getProfessionalInActiveReferrals } from '../../controllers/studentDashboard/studentDashboardController.js';
 import secureRoute  from '../../middlewares/secureRouteMiddleware.js';
 import verifyUser from '../../middlewares/verifyUser.js';
 import { getRelevantOffCampusJobs } from '../../controllers/relevantJobContoller.js';
@@ -30,4 +30,5 @@ router.get('/inactive-posted-referral-job', secureRoute, getProfessionalInActive
 
 
 router.get('/referral-jobs/:id', secureRoute, getReferralJobById);
+router.get('/job/:jobId', secureRoute, getJobById);
 export default router;

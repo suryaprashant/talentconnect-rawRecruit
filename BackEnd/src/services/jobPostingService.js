@@ -10,6 +10,7 @@ import {
   logConfig,
 } from "../utils/relevancyEngine.js";
 import { paginatedResponse } from "../utils/paginate.js";
+import { fetchMetricsForJob } from "../controllers/studentDashboard/studentDashboardController.js";
 export const getProfessionalReferralsService = async (userId) => {
   try {
         // Step 1: 
@@ -385,8 +386,8 @@ export const getReferralJobsService = async (candidatePostedId, userId, paginati
           console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
         }
       }
-
-      return { ...job, alumniCount };
+      const metrics = await fetchMetricsForJob(job._id);
+      return { ...job, alumniCount, metrics };
     })
   );
 

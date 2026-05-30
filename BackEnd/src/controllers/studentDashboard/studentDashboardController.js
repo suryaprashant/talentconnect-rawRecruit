@@ -2015,3 +2015,57 @@ export const getReferralJobById = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 }
+
+export const getJobById = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    if (!jobId) {
+      return res.status(400).json({
+        success: false,
+        message: "jobId is required",
+      });
+    }
+
+    const job = await JobPostingTable.findById(jobId)
+      .populate({
+        path: "candidatePosted",
+        select:
+          "fullName name profileImage currentCompany currentRole college userId"
+      })
+      .populate({
+        path: "companyPosted",
+        select:
+          "companyDetails profileImageUrl companyType"
+      })
+      .populate({
+        path: "collegePosted",
+        select:
+          "collegeName logo"
+      })
+      .populate({
+        path: "postedByUser",
+        select: "-password",
+      })
+      .lean();
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: job,
+    });
+  } catch (error) {
+    console.error("Error fetching job by id:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
