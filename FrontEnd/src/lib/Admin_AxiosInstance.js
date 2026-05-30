@@ -37,7 +37,7 @@ export function updateReferralApplicationStatus(applicationId, action,adminComme
   // Matches controller: const { applicationId } = req.params;
   return axiosClient.patch(`/api/admin/dashboard/referral-applications/${applicationId}`, {
     action: action,
-    adminComment:saveComment // Must be "Approved" or "Rejected"
+    adminComment:adminComment // Must be "Approved" or "Rejected"
   });
 }
 
