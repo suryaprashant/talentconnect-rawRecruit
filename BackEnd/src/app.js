@@ -19,6 +19,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 5000;
+console.log("PORT",PORT);
 app.use(cookieParser());
 
 // Middleware

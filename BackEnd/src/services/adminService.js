@@ -1,60 +1,52 @@
 import { JobPostingTable } from "../models/jobPostingsModel.js";
-import  Application  from "../models/applicationModel.js"
+import Application from "../models/applicationModel.js";
 import mongoose from "mongoose";
-
 
 export const getPendingReferralJobsService = async () => {
   try {
-    const jobs = await JobPostingTable
-      .find({
-        jobType: "Referral",
-        approvalStatus: "Pending"
-      })
+    const jobs = await JobPostingTable.find({
+      jobType: "Referral",
+      approvalStatus: "Pending",
+    })
       .populate({
         path: "candidatePosted",
-        select: "name email totalYearsOfExperience currentCompany linkedin profileType"
+        select:
+          "name email totalYearsOfExperience currentCompany linkedin profileType",
       })
       .sort({ createdAt: -1 })
       .lean();
 
     return jobs;
   } catch (error) {
-    console.error(
-      "Error in getPendingReferralJobsService:",
-      error.message
-    );
+    console.error("Error in getPendingReferralJobsService:", error.message);
     throw error;
   }
 };
 
 export const getAcceptedReferralJobsService = async () => {
   try {
-    const jobs = await JobPostingTable
-      .find({
-        jobType: "Referral",
-        approvalStatus: "Approved"
-      })
+    const jobs = await JobPostingTable.find({
+      jobType: "Referral",
+      approvalStatus: "Approved",
+    })
       .populate({
         path: "candidatePosted",
-        select: "name email totalYearsOfExperience currentCompany linkedin profileType"
+        select:
+          "name email totalYearsOfExperience currentCompany linkedin profileType",
       })
       .sort({ createdAt: -1 })
       .lean();
 
     return jobs;
   } catch (error) {
-    console.error(
-      "Error in getPendingReferralJobsService:",
-      error.message
-    );
+    console.error("Error in getPendingReferralJobsService:", error.message);
     throw error;
   }
 };
 
-
 export const updateReferralApprovalStatusService = async (
   jobId,
-  approvalStatus
+  approvalStatus,
 ) => {
   try {
     const updatedJob = await JobPostingTable.findOneAndUpdate(
@@ -67,7 +59,7 @@ export const updateReferralApprovalStatusService = async (
       },
       {
         new: true,
-      }
+      },
     ).populate("candidatePosted", "userId currentCompany");
 
     return updatedJob;
@@ -76,7 +68,6 @@ export const updateReferralApprovalStatusService = async (
     throw error;
   }
 };
-
 
 export const getReferralApplicationsForAdminService = async ({
   status,
@@ -119,9 +110,8 @@ export async function fetchReferralApplicationsService({
   jobId,
   adminApprovalStatus,
   professionalProfileId, // only for professional dashboard
-  isVisited, 
+  isVisited,
   currentStatus,
-
 }) {
   try {
     const matchStage = {
@@ -140,7 +130,7 @@ export async function fetchReferralApplicationsService({
       matchStage.currentStatus = currentStatus;
     }
 
-      if (typeof isVisited === "boolean") {
+    if (typeof isVisited === "boolean") {
       matchStage.isVisited = isVisited;
     }
 
@@ -164,7 +154,7 @@ export async function fetchReferralApplicationsService({
       pipeline.push({
         $match: {
           "job.candidatePosted": new mongoose.Types.ObjectId(
-            professionalProfileId
+            professionalProfileId,
           ),
           adminApprovalStatus: "Approved",
         },
@@ -272,7 +262,7 @@ export async function fetchReferralApplicationsService({
             jobTitle: 1,
           },
         },
-      }
+      },
     );
 
     const data = await Application.aggregate(pipeline);
@@ -287,6 +277,7 @@ export async function fetchReferralApplicationsService({
 export const updateReferralApplicationStatusService = async ({
   applicationId,
   action,
+  adminComment,
 }) => {
   const application = await Application.findById(applicationId);
 
@@ -300,9 +291,7 @@ export const updateReferralApplicationStatusService = async ({
 
   // prevent double approval / rejection
   if (["Approved", "Rejected"].includes(application.adminApprovalStatus)) {
-    throw new Error(
-      `Application already ${application.adminApprovalStatus}`
-    );
+    throw new Error(`Application already ${application.adminApprovalStatus}`);
   }
 
   application.adminApprovalStatus = action;
@@ -313,6 +302,13 @@ export const updateReferralApplicationStatusService = async ({
     application.statusHistory.push({ status: "Application Sent" });
   }
 
+  if (!adminComment?.trim()) {
+    throw new Error("Admin comment is required");
+  }
+
+  application.adminApprovalStatus = action;
+  application.adminComment = adminComment.trim();
+
   if (action === "Rejected") {
     application.currentStatus = "Rejected";
     application.statusHistory.push({ status: "Rejected" });
@@ -322,8 +318,6 @@ export const updateReferralApplicationStatusService = async ({
 
   return application;
 };
-
-
 
 // export const getAllProfessionalReferralsService = async (professionalProfileId) => {
 //   try {
@@ -491,15 +485,17 @@ export const updateReferralApplicationStatusService = async ({
 //   }
 // };
 
-export const getAllProfessionalReferralsService = async (professionalProfileId) => {
+export const getAllProfessionalReferralsService = async (
+  professionalProfileId,
+) => {
   try {
     const pipeline = [
       // 1️⃣ Filter for Referral types that have passed initial admin screening
       {
         $match: {
           jobType: "Referral",
-          adminApprovalStatus: "Approved"
-        }
+          adminApprovalStatus: "Approved",
+        },
       },
 
       // 2️⃣ Join with Job Postings to see who posted the job
@@ -508,49 +504,71 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           from: "jobpostingtables",
           localField: "job",
           foreignField: "_id",
-          as: "jobInfo"
-        }
+          as: "jobInfo",
+        },
       },
       { $unwind: "$jobInfo" },
 
       // 3️⃣ Security Filter: Only get applications for jobs posted by THIS professional
       {
         $match: {
-          "jobInfo.candidatePosted": new mongoose.Types.ObjectId(professionalProfileId)
-        }
+          "jobInfo.candidatePosted": new mongoose.Types.ObjectId(
+            professionalProfileId,
+          ),
+        },
       },
 
-      // 4️⃣ Resolve the actual Applicant ID 
+      // 4️⃣ Resolve the actual Applicant ID
       // (Handles cases where an employer refers a company-linked profile)
       {
         $addFields: {
           effectiveApplicantId: {
             $cond: [
-              { 
+              {
                 $and: [
-                  { $eq: ["$appliedByType", "employer"] }, 
-                  { $ne: ["$appliedForCompany", null] }
-                ] 
+                  { $eq: ["$appliedByType", "employer"] },
+                  { $ne: ["$appliedForCompany", null] },
+                ],
               },
               "$appliedForCompany",
-              "$applicant"
-            ]
-          }
-        }
+              "$applicant",
+            ],
+          },
+        },
       },
 
       // 5️⃣ Lookups for all possible Applicant Profile types
       {
-        $lookup: { from: "onboardings", localField: "effectiveApplicantId", foreignField: "_id", as: "studentApplicant" }
+        $lookup: {
+          from: "onboardings",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "studentApplicant",
+        },
       },
       {
-        $lookup: { from: "companyprofiles", localField: "effectiveApplicantId", foreignField: "_id", as: "companyApplicant" }
+        $lookup: {
+          from: "companyprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "companyApplicant",
+        },
       },
       {
-        $lookup: { from: "employerprofiles", localField: "effectiveApplicantId", foreignField: "_id", as: "employerApplicant" }
+        $lookup: {
+          from: "employerprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "employerApplicant",
+        },
       },
       {
-        $lookup: { from: "collegeonboardings", localField: "effectiveApplicantId", foreignField: "_id", as: "collegeApplicant" }
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "collegeApplicant",
+        },
       },
 
       // 6️⃣ Select the correct profile document based on applicantType
@@ -559,27 +577,32 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           profileData: {
             $switch: {
               branches: [
-                { 
-                  case: { $in: ["$applicantType", ["student", "fresher", "professional"]] }, 
-                  then: { $arrayElemAt: ["$studentApplicant", 0] } 
+                {
+                  case: {
+                    $in: [
+                      "$applicantType",
+                      ["student", "fresher", "professional"],
+                    ],
+                  },
+                  then: { $arrayElemAt: ["$studentApplicant", 0] },
                 },
-                { 
-                  case: { $eq: ["$applicantType", "company"] }, 
-                  then: { $arrayElemAt: ["$companyApplicant", 0] } 
+                {
+                  case: { $eq: ["$applicantType", "company"] },
+                  then: { $arrayElemAt: ["$companyApplicant", 0] },
                 },
-                { 
-                  case: { $eq: ["$applicantType", "employer"] }, 
-                  then: { $arrayElemAt: ["$employerApplicant", 0] } 
+                {
+                  case: { $eq: ["$applicantType", "employer"] },
+                  then: { $arrayElemAt: ["$employerApplicant", 0] },
                 },
-                { 
-                  case: { $eq: ["$applicantType", "college"] }, 
-                  then: { $arrayElemAt: ["$collegeApplicant", 0] } 
-                }
+                {
+                  case: { $eq: ["$applicantType", "college"] },
+                  then: { $arrayElemAt: ["$collegeApplicant", 0] },
+                },
               ],
-              default: null
-            }
-          }
-        }
+              default: null,
+            },
+          },
+        },
       },
 
       // 7️⃣ Filter out any applications where the profile might have been deleted
@@ -591,8 +614,8 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           from: "auths",
           localField: "profileData.userId",
           foreignField: "_id",
-          as: "authData"
-        }
+          as: "authData",
+        },
       },
       { $unwind: { path: "$authData", preserveNullAndEmptyArrays: true } },
 
@@ -602,81 +625,81 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           _id: 1,
           applicant: {
             $mergeObjects: [
-              "$profileData", 
-              { 
-                email: { $ifNull: ["$authData.email", "$profileData.email"] } 
-              }
-            ]
+              "$profileData",
+              {
+                email: { $ifNull: ["$authData.email", "$profileData.email"] },
+              },
+            ],
           },
           applicantType: 1,
           adminApprovalStatus: 1,
           job: {
             _id: "$jobInfo._id",
-            jobTitle: "$jobInfo.jobTitle"
+            jobTitle: "$jobInfo.jobTitle",
           },
           currentStatus: 1,
           matchScore: 1,
-          createdAt: 1
-        }
+          createdAt: 1,
+        },
       },
 
       // 🔟 Sort by most recent application first
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ];
 
     const data = await Application.aggregate(pipeline);
 
     return {
       success: true,
-      data: data
+      data: data,
     };
-
   } catch (error) {
     console.error("Error in getAllProfessionalReferralsService:", error);
     throw error;
   }
 };
 export const getCompanyReferralFeedService = async (professionalProfileId) => {
-   try {
+  try {
     const pipeline = [
       {
         $match: {
           jobType: "Referral",
           adminApprovalStatus: "Approved",
-          currentStatus: "Referred To Company"
-
-        }
+          currentStatus: "Referred To Company",
+        },
       },
       {
         $lookup: {
           from: "jobpostingtables",
           localField: "job",
           foreignField: "_id",
-          as: "jobInfo"
-        }
+          as: "jobInfo",
+        },
       },
       { $unwind: "$jobInfo" },
       {
         $match: {
-          "jobInfo.candidatePosted": new mongoose.Types.ObjectId(professionalProfileId)
-        }
+          "jobInfo.candidatePosted": new mongoose.Types.ObjectId(
+            professionalProfileId,
+          ),
+        },
       },
       {
         $lookup: {
           from: "onboardings",
           localField: "applicant",
           foreignField: "_id",
-          as: "profileData"
-        }
+          as: "profileData",
+        },
       },
       { $unwind: { path: "$profileData", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
-          from: "auths", 
+          from: "auths",
           localField: "profileData.userId",
           foreignField: "_id",
-          as: "authData"
-        }
+          as: "authData",
+        },
       },
       { $unwind: { path: "$authData", preserveNullAndEmptyArrays: true } },
       {
@@ -686,27 +709,31 @@ export const getCompanyReferralFeedService = async (professionalProfileId) => {
           matchScore: 1,
           createdAt: 1,
           jobTitle: "$jobInfo.jobTitle",
-          
+
           // Contact Info
-          applicantName: { $ifNull: ["$profileData.fullName", "$profileData.name"] },
+          applicantName: {
+            $ifNull: ["$profileData.fullName", "$profileData.name"],
+          },
           applicantEmail: { $ifNull: ["$authData.email", "N/A"] },
-          applicantPhone: { $ifNull: ["$profileData.phone", "$profileData.phoneNumber", "N/A"] },
-          
+          applicantPhone: {
+            $ifNull: ["$profileData.phone", "$profileData.phoneNumber", "N/A"],
+          },
+
           // Academic Background
           academicBackground: {
             collegeName: { $ifNull: ["$profileData.collegeName", "VIPS"] },
             course: "$profileData.course",
-            graduationYear: "$profileData.graduationYear"
+            graduationYear: "$profileData.graduationYear",
           },
 
           // ✅ Skills Array
           skills: { $ifNull: ["$profileData.skills", []] },
-          
+
           // Optional: Work Experience / Summary if it exists
-          summary: "$profileData.summary"
-        }
+          summary: "$profileData.summary",
+        },
       },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ];
 
     const data = await Application.aggregate(pipeline);
@@ -717,7 +744,9 @@ export const getCompanyReferralFeedService = async (professionalProfileId) => {
   }
 };
 
-export const fetchProfessionalReferralMetrics = async (professionalProfileId) => {
+export const fetchProfessionalReferralMetrics = async (
+  professionalProfileId,
+) => {
   // 1. All referral jobs posted by this professional
   const referralJobs = await JobPostingTable.find({
     candidatePosted: professionalProfileId,
@@ -725,10 +754,10 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
   })
     .select("_id")
     .lean();
- 
+
   const jobIds = referralJobs.map((j) => j._id);
   const totalReferralsPosted = jobIds.length;
- 
+
   if (totalReferralsPosted === 0) {
     return {
       totalReferralsPosted: 0,
@@ -739,7 +768,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       referralSuccessRate: 0,
     };
   }
- 
+
   // 2. Run all counts in parallel
   const [
     totalApplicationsReceived,
@@ -752,7 +781,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       jobType: "Referral",
       adminApprovalStatus: "Approved",
     }),
- 
+
     // Admin approved AND (referred or accepted)
     Application.countDocuments({
       job: { $in: jobIds },
@@ -760,7 +789,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       adminApprovalStatus: "Approved",
       currentStatus: { $in: ["Referred To Company", "Accepted"] },
     }),
- 
+
     // Admin approved AND accepted by company
     Application.countDocuments({
       job: { $in: jobIds },
@@ -769,24 +798,28 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       currentStatus: "Accepted",
     }),
   ]);
- 
+
   // 3. Calculate rates (rounded to 2 decimal places, 0 if denominator is 0)
   const responseRate =
     totalApplicationsReceived > 0
-      ? Math.round((totalReferredToCompany / totalApplicationsReceived) * 100 * 100) / 100
+      ? Math.round(
+          (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
+        ) / 100
       : 0;
- 
+
   const referralSuccessRate =
     totalReferredToCompany > 0
-      ? Math.round((totalAcceptedByCompany / totalReferredToCompany) * 100 * 100) / 100
+      ? Math.round(
+          (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
+        ) / 100
       : 0;
- 
+
   return {
     totalReferralsPosted,
     totalApplicationsReceived,
     totalReferredToCompany,
     totalAcceptedByCompany,
-    responseRate,        // e.g. 65.50  (means 65.50%)
+    responseRate, // e.g. 65.50  (means 65.50%)
     referralSuccessRate, // e.g. 40.00  (means 40.00%)
   };
 };
