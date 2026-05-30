@@ -30,6 +30,8 @@ export const adminLogin = async (req, res) => {
 
     // Compare password
     const isMatch = await bcrypt.compare(password, admin.password);
+
+    console.log(isMatch);
     if (!isMatch) {
       return res.status(401).json({ 
         success: false,
@@ -48,6 +50,8 @@ export const adminLogin = async (req, res) => {
       { expiresIn: "24h" }
     );
 
+    console.log(process.env.JWT_SECRET);
+
     // Set cookie
     res.cookie('jwt', token, {
       httpOnly: true,
@@ -55,6 +59,8 @@ export const adminLogin = async (req, res) => {
       sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
+
+    console.log(process.env.NODE_ENV);
 
     res.status(200).json({
       success: true,

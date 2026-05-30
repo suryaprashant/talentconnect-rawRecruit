@@ -8,8 +8,8 @@ getProfessionalDashboardMetrics,
  getReferralsForCompany,
  getProfessionalReferralMetrics,
  getCandidateDashboardStats,
- getReferredCandidatesPipeline, updateReferralCandidateStatus
-    
+ getReferredCandidatesPipeline, updateReferralCandidateStatus,
+ getApplicationDetailsById
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 //import { updateApplicationStatus } from '../controllers/applicationController.js';
@@ -120,5 +120,5 @@ router.get(
 );
 
 router.get('/dashboard/candidate/stats', secureRoute, getCandidateDashboardStats);
-
+router.get('/details/:applicationId', secureRoute, getApplicationDetailsById);
 export default router;

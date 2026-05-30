@@ -2252,3 +2252,75 @@ export const updateApplicationStatus = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+
+export const getApplicationDetailsById = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+
+    if (!applicationId) {
+      return res.status(400).json({
+        success: false,
+        message: "applicationId is required",
+      });
+    }
+
+    const application = await Application.findById(applicationId)
+
+      .populate({
+        path: "job",
+        populate: [
+          {
+            path: "companyPosted",
+            select:
+              "companyDetails.companyName profileImageUrl companyType",
+          },
+          {
+            path: "candidatePosted",
+            select:
+              "fullName name currentCompany currentRole profileImage",
+          },
+          {
+            path: "collegePosted",
+            select:
+              "collegeName logo profileImage",
+          },
+        ],
+      })
+
+      .populate({
+        path: "applicant",
+        select: "-categorizedSkills",
+      })
+
+      .populate({
+        path: "appliedForCompany",
+        select:
+          "companyDetails.companyName profileImageUrl",
+      })
+
+      .lean();
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching application:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};

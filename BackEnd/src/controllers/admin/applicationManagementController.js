@@ -384,7 +384,7 @@ export const updateReferralApplicationStatus = async (req, res) => {
   try {
     console.log('reached here')
     const { applicationId } = req.params;
-    const { action } = req.body;
+    const { action,adminComment } = req.body;
 
     if (!["Approved", "Rejected"].includes(action)) {
       return res.status(400).json({
@@ -396,6 +396,7 @@ export const updateReferralApplicationStatus = async (req, res) => {
     const response = await updateReferralApplicationStatusService({
       applicationId,
       action,
+      adminComment
     });
 
     // 🔔 Notify candidate
