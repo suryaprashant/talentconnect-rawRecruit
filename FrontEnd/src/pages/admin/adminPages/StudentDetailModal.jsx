@@ -15,6 +15,7 @@ import {
   Loader2,
   BookOpen,
   MessageSquare,
+  Star,
 } from "lucide-react";
 
 import { updateReferralApplicationStatus } from "@/lib/Admin_AxiosInstance";
@@ -31,7 +32,8 @@ export default function StudentDetailModal({
   const [loadingResume, setLoadingResume] = useState(false);
 
   const [adminComment, setadminComment] = useState("");
-  
+  const [rating, setRating] = useState(0);
+  const [hoverRating, sethoverRating] = useState(0);
 
   const SectionTitle = ({ title, icon }) => (
     <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
@@ -42,8 +44,6 @@ export default function StudentDetailModal({
   const handlecommentChange = (e) => {
     setadminComment(e.target.value);
   };
-
- 
 
   const handleViewResume = async (resumeUrl, applicantName) => {
     if (!resumeUrl) return alert("No resume found");
@@ -128,6 +128,10 @@ export default function StudentDetailModal({
       alert("Please enter an admin comment");
       return;
     }
+    if (rating <= 0) {
+      alert("Please select a rating");
+      return;
+    }
     setUpdating(statusAction);
     try {
       // Calling the axios instance function
@@ -135,6 +139,7 @@ export default function StudentDetailModal({
         application._id,
         statusAction,
         adminComment,
+        rating,
       );
 
       if (response.data.success) {
@@ -316,26 +321,58 @@ export default function StudentDetailModal({
               )}
             </div>
 
-            <section className="w-full mt-6">
-              <div className="bg-white dark:bg-white rounded-lg shadow-sm p-2 sm:p-1">
-                <SectionTitle
-                  title="Admin Comment"
-                  icon={<MessageSquare size={14} />}
-                />
+            <div className="mt-6 flex flex-col gap-4 md:flex-row">
+              {/* Admin Comment */}
+              <section className="w-full md:w-2/3">
+                <div className="bg-white rounded-lg shadow-sm p-4">
+                  <SectionTitle
+                    title="Admin Comment"
+                    icon={<MessageSquare size={14} />}
+                  />
 
-                <textarea
-                  id="adminComment"
-                  name="adminComment"
-                  rows={5}
-                  value={adminComment}
-                  onChange={handlecommentChange}
-                  placeholder="Enter your comment here..."
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white text-black"
-                />
+                  <textarea
+                    id="adminComment"
+                    name="adminComment"
+                    rows={5}
+                    value={adminComment}
+                    onChange={handlecommentChange}
+                    placeholder="Enter your comment here..."
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white text-black"
+                  />
+                </div>
+              </section>
 
-                
-              </div>
-            </section>
+              {/* Rating */}
+              <section className="w-full md:w-1/2">
+                <div className="bg-white rounded-lg shadow-sm p-4 h-full">
+                  <SectionTitle
+                    title="Candidate Rating"
+                    icon={<Star size={18} />}
+                  />
+
+                  <div className="mt-4 flex items-center gap-1 flex-wrap">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        size={28}
+                        onClick={() => setRating(star)}
+                        onMouseEnter={() => sethoverRating(star)}
+                        onMouseLeave={() => sethoverRating(0)}
+                        className={`cursor-pointer transition-all duration-200 ${
+                          star <= (hoverRating || rating)
+                            ? "fill-amber-500 text-amber-500"
+                            : "text-slate-500"
+                        }`}
+                      />
+                    ))}
+
+                    <span className="ml-2 text-sm font-medium text-slate-600">
+                      {rating > 0 ? `${rating}/5` : "Rate"}
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
 

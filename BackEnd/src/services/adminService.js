@@ -287,7 +287,8 @@ export async function fetchReferralApplicationsService({
 export const updateReferralApplicationStatusService = async ({
   applicationId,
   action,
-  adminComment
+  adminComment,
+  rating
 }) => {
   const application = await Application.findById(applicationId);
 
@@ -310,6 +311,7 @@ export const updateReferralApplicationStatusService = async ({
 
 
   application.adminComment=adminComment;
+  application.rating=rating;
 
 
   // keep statuses meaningful
