@@ -117,6 +117,16 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   // console.log("hero");
   try {
+    if (req.user?._id) {
+      await Auth.findByIdAndUpdate(
+        req.user._id,
+        {
+          $unset: {
+            deviceToken: 1,
+          },
+        }
+      );
+    }
     res.clearCookie("jwt", {
       httpOnly: true,
       sameSite: 'none',
