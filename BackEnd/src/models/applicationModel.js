@@ -117,7 +117,13 @@ const ApplicationSchema = new mongoose.Schema(
       trim: true,
       maxlength: 1000,
       default: "",
-      
+    },
+
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0,
     },
   },
   { timestamps: true },
