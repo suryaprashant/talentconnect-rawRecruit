@@ -2,6 +2,7 @@
 
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import { fetchWeights, scoreJob } from "../utils/relevancyEngine.js"; // adjust path as needed
+import { fetchMetricsForJob } from "../controllers/studentDashboard/studentDashboardController.js";
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
@@ -70,8 +71,8 @@ select: 'userId name jobRoles experiences currentCompany college profileImage'
       const scored = scoreJob(enriched, student, W, 0, "Referral Job Detail");
       matchScore = scored.matchScore;
     }
-
-    return { success: true, data: { ...enriched, matchScore } };
+    const metrics = await fetchMetricsForJob(job._id);
+    return { success: true, data: { ...enriched, matchScore, metrics } };
   } catch (error) {
     console.error("Error:", error.message);
     throw new Error("Failed to fetch");
