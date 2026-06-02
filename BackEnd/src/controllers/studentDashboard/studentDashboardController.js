@@ -1,4 +1,4 @@
-import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService, getReferralJobsService } from "../../services/jobPostingService.js";
+import { getJobPostingsByCollegeService, getReferralJobsCursorService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService, getReferralJobsService } from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
 import { JobPostingTable  } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
@@ -1972,7 +1972,9 @@ export const getReferralJobs = async (req, res) => {
     }
 
     const userId = req.user._id;  
-    const { page, limit, skip } = req.pagination;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const cursor =
+      req.query.cursor || null;
     // 2. Get student profile
     const postId = await getStudentService(userId);
     if (!postId.data || postId.data.length === 0) {
@@ -1983,10 +1985,13 @@ export const getReferralJobs = async (req, res) => {
     const candidatePostedId = postId.data[0]._id;
     // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
     const result =
-      await getReferralJobsService(
+      await getReferralJobsCursorService(
         candidatePostedId,
         userId,
-        req.pagination
+        {
+          limit,
+          cursor,
+        }
       );
 
     return res.status(200).json({

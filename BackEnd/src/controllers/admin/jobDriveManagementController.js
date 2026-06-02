@@ -7,6 +7,7 @@ import { notifyReferralJobPosterOnApproval } from "../../services/notificationSe
 import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
 import { ok } from "assert";
 import Auth from "../../models/authModel.js";
+import {jobNotificationQueue} from "../../queue/jobNotificationQueue.js";
 export const getJobDriveOverView = async (req, res) => {
   try {
     const [
@@ -319,7 +320,21 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
         console.error("Job poster notification failed:", err.message)
       );
     }
-
+    if (approvalStatus === "Approved") {
+      await jobNotificationQueue.add(
+        "new-job-notification",
+        {
+          jobId: updatedJob._id,
+        },
+        {
+          removeOnComplete: 100,
+          removeOnFail: 100,
+        }
+      );
+      console.log(
+        `✅ Job notification worker queued for job ${updatedJob._id}`
+      );
+    }
     res.status(200).json({
       success: true,
       message: `Referral job ${approvalStatus.toLowerCase()} successfully`,

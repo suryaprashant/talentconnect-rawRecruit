@@ -80,6 +80,11 @@ export const NOTIFICATION_SCREEN_MAP = {
     subtopic: "",
     body: { senderId: "senderId", referenceId: "referenceId" },
   },
+  NEW_MATCHING_REFERRAL_JOB : {
+    topic: "Jobs",
+    subtopic: "JobDetail",
+    body: { jobId: "jobId" },
+  },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
 const sendNotification = async ({
@@ -475,8 +480,10 @@ export async function createNotification({
   message,
   referenceId,
   jobType,
+  meta,
+  jobId,
 }) {
-  await sendNotification({ recipientId, senderId, type, message, referenceId, jobType });
+  await sendNotification({ recipientId, senderId, type, message, referenceId, jobType, meta, jobId });
 }
 
 export const notifyCompanyOnCollegeApply = async ({
