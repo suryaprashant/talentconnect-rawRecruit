@@ -438,7 +438,317 @@ export const getReferralJobsService = async (candidatePostedId, userId, paginati
     }
   );
 };
+export const getReferralJobsCursorService = async (
+  candidatePostedId,
+  userId,
+  {
+    limit = 10,
+    cursor = null,
+  }
+) => {
+  const thresholdConfig = await fetchThreshold();
+  const visibilityThreshold = thresholdConfig.value;
 
+  const student = userId
+    ? await OnboardingModel.findOne({ userId }).lean()
+    : null;
+
+  const appliedJobIds = student
+    ? await Application.find({
+        applicant: student._id,
+      }).distinct("job")
+    : [];
+
+  const W = await fetchWeights(
+    student?.profileType ?? "student"
+  );
+
+  logConfig(
+    W,
+    thresholdConfig,
+    "REFERRAL JOBS CURSOR ENGINE"
+  );
+
+  const query = {
+    jobType: "Referral",
+    approvalStatus: "Approved",
+    candidatePosted: {
+      $ne: candidatePostedId,
+    },
+
+    ...(appliedJobIds.length > 0 && {
+      _id: { $nin: appliedJobIds },
+    }),
+  };
+
+  if (cursor) {
+    query._id = {
+      ...(query._id || {}),
+      $lt: cursor,
+    };
+  }
+
+  const BATCH_SIZE = 20;
+
+  let matchedJobs = [];
+  let lastScannedJob = null;
+  let hasMore = true;
+
+  while (matchedJobs.length < limit) {
+    const jobs = await JobPostingTable.find(
+      query
+    )
+      .populate({
+        path: "candidatePosted",
+        select:
+          "_id userId name email currentCompany",
+      })
+      .populate("companyPosted")
+      .sort({ _id: -1 })
+      .limit(BATCH_SIZE)
+      .lean();
+
+    if (!jobs.length) {
+      hasMore = false;
+      break;
+    }
+
+    lastScannedJob =
+      jobs[jobs.length - 1];
+
+    const scoredJobs = jobs.map(
+      (job, i) =>
+        scoreJob(
+          job,
+          student,
+          W,
+          i,
+          "Referral Job"
+        )
+    );
+
+    const passingJobs =
+      scoredJobs.filter(
+        (job) =>
+          job.matchScore >=
+          visibilityThreshold
+      );
+
+    matchedJobs.push(...passingJobs);
+
+    query._id = {
+      ...(query._id || {}),
+      $lt: lastScannedJob._id,
+    };
+  }
+
+  const jobsForResponse =
+    matchedJobs.slice(0, limit);
+
+  const enrichedJobs =
+    await Promise.all(
+      jobsForResponse.map(
+        async (job) => {
+          let alumniCount = 0;
+
+          const companyName =
+            job.candidatePosted
+              ?.currentCompany ||
+            job.companyPosted
+              ?.companyDetails
+              ?.companyName;
+
+          if (companyName) {
+            try {
+              const studentColleges = [
+                ...new Set(
+                  (
+                    student?.educations ||
+                    []
+                  )
+                    .map(
+                      (edu) =>
+                        edu.college
+                    )
+                    .filter(Boolean)
+                ),
+              ];
+
+              const studentCompanies =
+                [];
+
+              if (
+                student?.currentCompany
+              ) {
+                studentCompanies.push(
+                  student.currentCompany
+                );
+              }
+
+              student?.experiences?.forEach(
+                (exp) => {
+                  if (exp.company) {
+                    studentCompanies.push(
+                      exp.company
+                    );
+                  }
+                }
+              );
+
+              const uniqueStudentCompanies =
+                [
+                  ...new Map(
+                    studentCompanies.map(
+                      (c) => [
+                        c.toLowerCase(),
+                        c,
+                      ]
+                    )
+                  ).values(),
+                ];
+
+              const companyRegex =
+                new RegExp(
+                  `^${companyName.replace(
+                    /[.*+?^${}()|[\]\\]/g,
+                    "\\$&"
+                  )}$`,
+                  "i"
+                );
+
+              const sharedCompanyConditions =
+                uniqueStudentCompanies.flatMap(
+                  (company) => {
+                    const regex =
+                      new RegExp(
+                        `^${company.replace(
+                          /[.*+?^${}()|[\]\\]/g,
+                          "\\$&"
+                        )}$`,
+                        "i"
+                      );
+
+                    return [
+                      {
+                        currentCompany:
+                          regex,
+                      },
+                      {
+                        "experiences.company":
+                          regex,
+                      },
+                    ];
+                  }
+                );
+
+              alumniCount =
+                await OnboardingModel.countDocuments(
+                  {
+                    userId: {
+                      $ne: userId,
+                    },
+
+                    $and: [
+                      {
+                        $or: [
+                          {
+                            educations:
+                              {
+                                $elemMatch:
+                                  {
+                                    college:
+                                      {
+                                        $in: studentColleges.map(
+                                          (
+                                            college
+                                          ) =>
+                                            new RegExp(
+                                              `^${college.replace(
+                                                /[.*+?^${}()|[\]\\]/g,
+                                                "\\$&"
+                                              )}$`,
+                                              "i"
+                                            )
+                                        ),
+                                      },
+                                  },
+                              },
+                          },
+
+                          ...sharedCompanyConditions,
+                        ],
+                      },
+
+                      {
+                        $or: [
+                          {
+                            currentCompany:
+                              companyRegex,
+                          },
+                          {
+                            "experiences.company":
+                              companyRegex,
+                          },
+                        ],
+                      },
+                    ],
+                  }
+                );
+            } catch (err) {
+              console.error(
+                `[ALUMNI] Failed to count for ${companyName}:`,
+                err.message
+              );
+            }
+          }
+
+          const metrics =
+            await fetchMetricsForJob(
+              job._id
+            );
+
+          return {
+            ...job,
+            alumniCount,
+            metrics,
+          };
+        }
+      )
+    );
+
+  const cleanedJobs =
+    enrichedJobs.map((job) => {
+      const {
+        _scoreBreakdown,
+        _gateMultiplier,
+        _skillMatchPct,
+        _profileType,
+        ...cleanJob
+      } = job;
+
+      return cleanJob;
+    });
+
+  return {
+    data: cleanedJobs,
+
+    meta: {
+      limit,
+
+      returned:
+        cleanedJobs.length,
+
+      nextCursor:
+        cleanedJobs.length > 0
+          ? cleanedJobs[
+              cleanedJobs.length - 1
+            ]._id
+          : null,
+
+      hasMore,
+    },
+  };
+};
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {
     try {
         let query = { jobType };

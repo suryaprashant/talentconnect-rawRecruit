@@ -12,6 +12,7 @@
   },
   "reactSnap": {
     "source": "dist",
+    "port": 56789,
     "include": ["/", "/blogs"],
     "skipThirdPartyRequests": true,
     "crawl": false,

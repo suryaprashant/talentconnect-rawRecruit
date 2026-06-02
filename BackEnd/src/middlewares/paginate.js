@@ -1,3 +1,4 @@
+//pagination middleware to handle page and limit query parameters
 const paginate = (req, res, next) => {
   let page = parseInt(req.query.page, 10) || 1;
   let limit = parseInt(req.query.limit, 10) || 10;

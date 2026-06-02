@@ -11,7 +11,7 @@ import {
 } from "../services/studentService.js";
 import { categorizeSkillsService } from "../services/skillCategorizationService.js";
 import Onboarding from "../models/studentonboardingModel.js";
-
+import {alumniNetworkQueue} from "../queue/alumniNetworkQueue.js";
 export const getAllOnboardingForms = async (req, res) => {
   try {
     const result = await getAllOnboardingFormsService();
@@ -51,7 +51,18 @@ export const submitOnboardingForm = async (req, res) => {
     }
 
     const onboardingData = result.updatedOnboarding;
-
+    if (onboardingData?._id) {
+      alumniNetworkQueue
+        .add("new-alumni-member", {
+          onboardingId: onboardingData._id,
+        })
+        .catch((err) => {
+          console.error(
+            "Failed to queue alumni notification:",
+            err.message
+          );
+        });
+    }
     categorizeSkillsService(req.user._id, onboardingData)
       .then(() => {
         console.log("Career insights generated successfully");
