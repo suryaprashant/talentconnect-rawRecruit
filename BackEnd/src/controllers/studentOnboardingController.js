@@ -11,7 +11,7 @@ import {
 } from "../services/studentService.js";
 import { categorizeSkillsService } from "../services/skillCategorizationService.js";
 import Onboarding from "../models/studentonboardingModel.js";
-import alumniNetworkQueue from "../queue/alumniNetworkQueue.js";
+import {alumniNetworkQueue} from "../queue/alumniNetworkQueue.js";
 export const getAllOnboardingForms = async (req, res) => {
   try {
     const result = await getAllOnboardingFormsService();
