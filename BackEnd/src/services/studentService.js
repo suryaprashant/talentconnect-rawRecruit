@@ -2,7 +2,7 @@ import OnboardingModel from '../models/studentonboardingModel.js';
 import Auth from '../models/authModel.js';
 import { updateAuthUserService } from '../services/authService.js';
 import { streamUpload } from '../utils/streamUpload.js';
-
+import {JobPostingTable} from '../models/jobPostingsModel.js'
 // Get all onboarding forms
 export async function getAllOnboardingFormsService() {
   try {
