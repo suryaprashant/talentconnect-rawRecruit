@@ -8,7 +8,7 @@ import { pushNotification } from "./firebaseAdmin.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
-
+console.log("✅✅✅ notificationService.js LOADED ✅✅✅");
 export const NOTIFICATION_SCREEN_MAP = {
   REFERRAL_JOB_APPROVED: {
     topic: "Jobs",
@@ -85,42 +85,88 @@ export const NOTIFICATION_SCREEN_MAP = {
     subtopic: "JobDetail",
     body: { jobId: "jobId" },
   },
+  NEW_ALUMNI_JOINED_NETWORK : {
+    topic: "Alumni Network",
+    subtopic: "Alumni Detail",
+    body: { userId: "userId" },
+  },
+  REFERRAL_MILESTONE_REACHED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: {},
+  },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
 const sendNotification = async ({
-  recipientId, senderId, type, message, referenceId, jobType, meta, jobId,
+  recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId,
 }) => {
   // Build enriched meta with deep link info
   const screenInfo = NOTIFICATION_SCREEN_MAP[type];
+  
+  console.log("===== NOTIFICATION DEBUG =====");
+  console.log("type:", type);
+  console.log("screenInfo:", screenInfo);
+  console.log("Input - userId:", userId, "jobId:", jobId, "referenceId:", referenceId, "senderId:", senderId);
+  
+  // ✅ FIXED: Build body with proper value mapping
+  let enrichedBody = {};
+  if (screenInfo?.body) {
+    enrichedBody = Object.fromEntries(
+      Object.entries(screenInfo.body)
+        .map(([key, sourceKey]) => {
+          let value = null;
+          
+          // Map source key to actual value
+          if (sourceKey === "senderId")      value = senderId?.toString();
+          else if (sourceKey === "jobId")    value = jobId?.toString();
+          else if (sourceKey === "userId")   value = userId?.toString();
+          else if (sourceKey === "referenceId")  value = referenceId?.toString();
+          else if (sourceKey === "applicationId") value = referenceId?.toString();
+          
+          // Only include if value exists
+          if (value) {
+            return [key, value];
+          }
+          return null;
+        })
+        .filter(Boolean) // Remove null entries
+    );
+  }
+ 
   const enrichedMeta = {
     ...meta,
     ...(screenInfo && {
       topic: screenInfo.topic,
       subtopic: screenInfo.subtopic,
-      body: Object.fromEntries(
-        Object.entries(screenInfo.body).map(([key, sourceKey]) => [
-          key,
-          sourceKey === "senderId"     ? senderId?.toString()     :
-          sourceKey === "jobId"        ? jobId?.toString()        :
-          sourceKey === "referenceId"  ? referenceId?.toString()  :
-          sourceKey === "applicationId"? referenceId?.toString()  :
-          null,
-        ])
-      ),
+      body: enrichedBody,
     }),
   };
-  console.log("===== NOTIFICATION DEBUG =====");
-  console.log("type:", type);
+  
   console.log("enrichedMeta:", JSON.stringify(enrichedMeta, null, 2));
   console.log("==============================");
+  
   // 1. Save to DB
+  console.error("\n🔵 ABOUT TO SAVE NOTIFICATION 🔵");
+  console.error("enrichedMeta being saved:", JSON.stringify(enrichedMeta, null, 2));
+  console.error("🔵\n");
+  
   const notification = await Notification.create({
-    recipientId, senderId, type, message,
-    referenceId, jobType,
+    recipientId, 
+    senderId, 
+    type, 
+    message,
+    referenceId, 
+    jobType,
     meta: enrichedMeta,   // 👈 now includes topic, subtopic, body
-    jobId, read: false,
+    jobId, 
+    read: false,
   });
-
+  
+  console.error("\n🟢 NOTIFICATION SAVED 🟢");
+  console.error("ID:", notification._id);
+  console.error("meta from DB:", JSON.stringify(notification.meta, null, 2));
+  console.error("🟢\n");
+ 
   // 2. Socket emit
   const socketId = getReceiverSocketId(recipientId.toString());
   if (socketId) {
@@ -128,7 +174,7 @@ const sendNotification = async ({
       .populate("senderId", "name userType profileImage");
     io.to(socketId).emit("newNotification", populatedNotification);
   }
-
+ 
   // 3. FCM
   try {
     const user = await Auth.findById(recipientId).select("deviceToken");
@@ -141,24 +187,15 @@ const sendNotification = async ({
           topic:    screenInfo?.topic    ?? "",
           subtopic: screenInfo?.subtopic ?? "",
           type,
-          // resolved body values for FCM data payload
-          ...(screenInfo && Object.fromEntries(
-            Object.entries(screenInfo.body).map(([key, sourceKey]) => [
-              key,
-              sourceKey === "senderId"      ? senderId?.toString()     :
-              sourceKey === "jobId"         ? jobId?.toString()        :
-              sourceKey === "referenceId"   ? referenceId?.toString()  :
-              sourceKey === "applicationId" ? referenceId?.toString()  :
-              "",
-            ])
-          )),
+          // Add resolved body values to FCM payload
+          ...enrichedBody,
         },
       });
     }
   } catch (fcmErr) {
     console.error("FCM error (non-critical):", fcmErr);
   }
-
+ 
   return notification;
 };
 
@@ -482,8 +519,23 @@ export async function createNotification({
   jobType,
   meta,
   jobId,
+  userId,
 }) {
-  await sendNotification({ recipientId, senderId, type, message, referenceId, jobType, meta, jobId });
+  console.error("\n🟢🟢🟢 createNotification CALLED 🟢🟢🟢");
+  console.error("Type:", type);
+  console.error("RecipientId:", recipientId);
+  console.error("UserId:", userId);
+  console.error("🟢🟢🟢 About to call sendNotification 🟢🟢🟢\n");
+  
+  try {
+    const result = await sendNotification({ recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId });
+    console.error("🟢 createNotification returned successfully\n");
+    return result;
+  } catch (error) {
+    console.error("🔴 ERROR in createNotification:", error.message);
+    console.error(error);
+    throw error;
+  }
 }
 
 export const notifyCompanyOnCollegeApply = async ({

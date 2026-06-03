@@ -41,7 +41,8 @@ const notificationSchema = new mongoose.Schema({
     "APPLICATION_REFERRED_TO_COMPANY",
     "NEW_APPLICATION_FOR_JOB",
     "NEW_MATCHING_REFERRAL_JOB",
-    "NEW_ALUMNI_JOINED_NETWORK"
+    "NEW_ALUMNI_JOINED_NETWORK",
+    "REFERRAL_MILESTONE_REACHED",
   ],
         required: true,
     },

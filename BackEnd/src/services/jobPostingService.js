@@ -640,12 +640,17 @@ export const getReferralJobsCursorService = async (
                     ];
                   }
                 );
-
+              const excludedUserIds = [userId];
+                if (job.candidatePosted?.userId) {
+                excludedUserIds.push(
+                  job.candidatePosted.userId
+                );
+                }
               alumniCount =
                 await OnboardingModel.countDocuments(
                   {
                     userId: {
-                      $ne: userId,
+                      $nin: excludedUserIds,
                     },
 
                     $and: [

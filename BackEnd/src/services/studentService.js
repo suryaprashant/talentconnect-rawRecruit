@@ -847,5 +847,58 @@ export const getOnboardingByUserIdService = async (
     });
   }
 
+  if (onboardingData.profileType === "professional") {
+    const jobs = await JobPostingTable.find(
+      {
+        postedByUser: userId,
+        jobType: "Referral",
+        approvalStatus: "Approved"
+      },
+      { _id: 1 }
+    ).lean();
+
+    const jobIds = jobs.map(job => job._id);
+
+    if (jobIds.length === 0) {
+      onboardingData.responseRate = 0;
+    } else {
+      const [
+        totalApplicationsReceived,
+        totalReferredToCompany,
+      ] = await Promise.all([
+        Application.countDocuments({
+          job: { $in: jobIds },
+          jobType: "Referral",
+          adminApprovalStatus: "Approved",
+        }),
+
+        Application.countDocuments({
+          job: { $in: jobIds },
+          jobType: "Referral",
+          adminApprovalStatus: "Approved",
+          currentStatus: {
+            $in: [
+              "Referred To Company",
+              "Shortlisted",
+              "Interview Scheduled",
+              "Offer Extended",
+              "Accepted",
+              "Rejected",
+            ],
+          },
+        }),
+      ]);
+
+      onboardingData.responseRate =
+        totalApplicationsReceived > 0
+          ? Math.round(
+              (totalReferredToCompany /
+                totalApplicationsReceived) *
+                10000
+            ) / 100
+          : 0;
+    }
+  }
+
   return onboardingData;
 };

@@ -171,6 +171,49 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
     console.log("conversations found:", conversations.length);
     console.log("raw conversations:", JSON.stringify(conversations, null, 2));
 
+    // ============================================
+    // Fetch last message for each conversation
+    // ============================================
+
+    const lastMessageIds = conversations
+        .map(conversation =>
+            conversation.messages[
+                conversation.messages.length - 1
+            ]
+        )
+        .filter(Boolean);
+
+    const lastMessages = await Message.find({
+        _id: { $in: lastMessageIds }
+    }).select("message");
+
+    const messageMap = new Map(
+        lastMessages.map(msg => [
+            msg._id.toString(),
+            msg.message
+        ])
+    );
+
+    const lastMessageMap = new Map();
+
+    conversations.forEach(conversation => {
+        const otherUserId = conversation.members.find(
+            member => member.toString() !== loggedInUserId.toString()
+        )?.toString();
+
+        if (!otherUserId) return;
+
+        const lastMessageId =
+            conversation.messages[
+                conversation.messages.length - 1
+            ]?.toString();
+
+        lastMessageMap.set(
+            otherUserId,
+            messageMap.get(lastMessageId) || ""
+        );
+    });
+
     const userIds = conversations.map(conversation => {
         const otherUserId = conversation.members.find(
             member => member.toString() !== loggedInUserId.toString()
@@ -189,39 +232,85 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
         return [];
     }
 
-    const objectIds = uniqueUserIds.map(id => new mongoose.Types.ObjectId(id));
+    const objectIds = uniqueUserIds.map(
+        id => new mongoose.Types.ObjectId(id)
+    );
 
     console.log("=== STEP 4: Querying Auth ===");
-    const authUsers = await Auth.find({ _id: { $in: objectIds } }).select("-password");
+    const authUsers = await Auth.find({
+        _id: { $in: objectIds }
+    }).select("-password");
+
     console.log("authUsers found:", authUsers.length);
     console.log("authUsers:", JSON.stringify(authUsers, null, 2));
 
     console.log("=== STEP 5: Querying Profiles ===");
-    const CollegeOnboarding = mongoose.model("CollegeOnboarding");
-    const CompanyProfile = mongoose.model("CompanyProfile");
 
-    const [collegeProfiles, companyProfiles, candidateProfiles] = await Promise.all([
-        CollegeOnboarding.find({ userId: { $in: objectIds } }),
-        CompanyProfile.find({ userId: { $in: objectIds } }),
-        Onboarding.find({ userId: { $in: objectIds } })
+    const CollegeOnboarding =
+        mongoose.model("CollegeOnboarding");
+
+    const CompanyProfile =
+        mongoose.model("CompanyProfile");
+
+    const [
+        collegeProfiles,
+        companyProfiles,
+        candidateProfiles
+    ] = await Promise.all([
+        CollegeOnboarding.find({
+            userId: { $in: objectIds }
+        }),
+        CompanyProfile.find({
+            userId: { $in: objectIds }
+        }),
+        Onboarding.find({
+            userId: { $in: objectIds }
+        })
     ]);
 
-    console.log("collegeProfiles found:", collegeProfiles.length);
-    console.log("companyProfiles found:", companyProfiles.length);
-    console.log("candidateProfiles found:", candidateProfiles.length);
+    console.log(
+        "collegeProfiles found:",
+        collegeProfiles.length
+    );
 
+    console.log(
+        "companyProfiles found:",
+        companyProfiles.length
+    );
+
+    console.log(
+        "candidateProfiles found:",
+        candidateProfiles.length
+    );
 
     // 6. Build profile maps keyed by userId string
+
     const collegeMap = new Map();
-    collegeProfiles.forEach(p => collegeMap.set(p.userId.toString(), p));
+    collegeProfiles.forEach(p =>
+        collegeMap.set(
+            p.userId.toString(),
+            p
+        )
+    );
 
     const companyMap = new Map();
-    companyProfiles.forEach(p => companyMap.set(p.userId.toString(), p));
+    companyProfiles.forEach(p =>
+        companyMap.set(
+            p.userId.toString(),
+            p
+        )
+    );
 
     const candidateMap = new Map();
-    candidateProfiles.forEach(p => candidateMap.set(p.userId.toString(), p));
+    candidateProfiles.forEach(p =>
+        candidateMap.set(
+            p.userId.toString(),
+            p
+        )
+    );
 
-    // 7. Normalize — correct field paths per schema
+    // 7. Normalize
+
     const normalizedUsers = authUsers.map(user => {
         const id = user._id.toString();
 
@@ -229,45 +318,81 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
         const company = companyMap.get(id);
         const candidate = candidateMap.get(id);
 
-        let name, email, profileImage, userType;
+        let name,
+            email,
+            profileImage,
+            userType;
 
         if (college) {
-            // CollegeOnboarding schema
-            name         = college.collegeUniversityDetails?.collegeName;
-            email        = college.placementCoordinatorDetails?.officialEmail;
-            profileImage = college.profileImage;
-            userType     = "college";
+
+            name =
+                college.collegeUniversityDetails?.collegeName;
+
+            email =
+                college.placementCoordinatorDetails?.officialEmail;
+
+            profileImage =
+                college.profileImage;
+
+            userType = "college";
 
         } else if (company) {
-            // CompanyProfile schema
-            name         = company.companyDetails?.companyName;
-            email        = company.employerDetails?.workEmail;
-            profileImage = company.profileImageUrl;
-            userType     = "company";
+
+            name =
+                company.companyDetails?.companyName;
+
+            email =
+                company.employerDetails?.workEmail;
+
+            profileImage =
+                company.profileImageUrl;
+
+            userType = "company";
 
         } else if (candidate) {
-            // Onboarding (student/fresher/professional) schema
-            name         = candidate.name;
-            email        = candidate.email;
-            profileImage = candidate.profileImage;
-            userType     = candidate.profileType; // "student" | "fresher" | "professional"
+
+            name = candidate.name;
+
+            email = candidate.email;
+
+            profileImage =
+                candidate.profileImage;
+
+            userType =
+                candidate.profileType;
 
         } else {
-            // Fallback to Auth fields if no profile found
-            name         = user.name;
-            email        = user.email;
-            profileImage = user.profileImage;
-            userType     = user.userType;
+
+            name = user.name;
+            email = user.email;
+            profileImage =
+                user.profileImage;
+            userType =
+                user.userType;
         }
 
-        return { _id: id, name, email, profileImage, userType };
+        return {
+            _id: id,
+            name,
+            email,
+            profileImage,
+            userType,
+            last_message:
+                lastMessageMap.get(id) || ""
+        };
     });
 
     // 8. Preserve conversation order
-    const userMap = new Map();
-    normalizedUsers.forEach(user => userMap.set(user._id, user));
 
-    return uniqueUserIds.map(id => userMap.get(id)).filter(Boolean);
+    const userMap = new Map();
+
+    normalizedUsers.forEach(user =>
+        userMap.set(user._id, user)
+    );
+
+    return uniqueUserIds
+        .map(id => userMap.get(id))
+        .filter(Boolean);
 };
 // export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
    
