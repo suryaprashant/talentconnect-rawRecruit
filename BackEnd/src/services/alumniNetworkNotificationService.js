@@ -1,8 +1,11 @@
 import Onboarding from "../models/studentonboardingModel.js";
 import { createNotification } from "./notificationService.js";
-
+console.log("✅✅✅ alumniNetworkWorker LOADED ✅✅✅");
 export const processAlumniNetworkNotification =
   async (onboardingId) => {
+    console.error("\n🟣🟣🟣 processAlumniNetworkNotification CALLED 🟣🟣🟣");
+    console.error("onboardingId:", onboardingId);
+    console.error("🟣🟣🟣\n");
     try {
       const profile =
         await Onboarding.findById(
@@ -198,40 +201,21 @@ export const processAlumniNetworkNotification =
       await Promise.all(
         recipients.map(
           async (recipient) => {
+
             try {
-              await createNotification(
-                {
-                  recipientId:
-                    recipient.userId,
-
-                  senderId:
-                    profile.userId,
-
-                  type:
-                    "NEW_ALUMNI_JOINED_NETWORK",
-
-                  message: `${profile.name} joined your alumni network`,
-
-                  referenceId:
-                    profile._id,
-
-                  meta: {
-                    onboardingId:
-                      profile._id,
-
-                    profileType:
-                      profile.profileType,
-
-                    name:
-                      profile.name,
-
-                    currentCompany:
-                      profile.currentCompany,
-
-                    colleges,
-                  },
-                }
-              );
+              console.error(`\n🟠🟠🟠 Creating notification for recipient ${recipient.userId} 🟠🟠🟠\n`);
+              // ✅ CORRECTED: No jobId/jobType needed for alumni notifications
+              // The deep link will use userId to navigate to alumni profile
+              await createNotification({
+                recipientId: recipient.userId,      // Person who will see the notification
+                senderId: profile.userId,           // The new alumni who joined
+                type: "NEW_ALUMNI_JOINED_NETWORK",  // Notification type
+                message: `${profile.name} joined your alumni network`,
+                referenceId: profile._id,           // The new alumni's onboarding profile
+                userId: profile.userId,             // ✅ CRITICAL: Pass the new alumni's userId
+                // NO jobId, NO jobType (not applicable for alumni notifications)
+              });
+               console.error(`🟠 Notification created successfully for ${recipient.userId}\n`);
             } catch (err) {
               console.error(
                 `[ALUMNI NETWORK] Failed notification for recipient ${recipient.userId}`,

@@ -393,10 +393,50 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
 
     // Update status using existing service
     const response = await ChangeStatusService(applicationId, status);
-
     if (!response.success) {
       return res.status(400).json(response);
     }
+    if (
+        status === "Referred To Company"
+      ) {
+        try {
+          const job =
+            await JobPostingTable.findById(
+              response.data.job
+            )
+            .populate(
+              "candidatePosted",
+              "userId"
+            );
+
+          const referrerAuthId =
+            job?.candidatePosted?.userId;
+
+          if (referrerAuthId) {
+            await Onboarding.updateOne(
+              {
+                userId:
+                  referrerAuthId,
+              },
+              {
+                $inc: {
+                  totalCandidatesReferred: 1,
+                },
+              }
+            );
+
+            await handleReferralMilestone(
+              referrerAuthId
+            );
+          }
+        } catch (err) {
+          console.error(
+            "Referral milestone failed:",
+            err
+          );
+        }
+      }
+    
 
     // =========================
     // SEND EMAIL

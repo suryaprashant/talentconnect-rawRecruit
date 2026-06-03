@@ -51,17 +51,31 @@ export const submitOnboardingForm = async (req, res) => {
     }
 
     const onboardingData = result.updatedOnboarding;
+    
     if (onboardingData?._id) {
-      alumniNetworkQueue
-        .add("new-alumni-member", {
-          onboardingId: onboardingData._id,
-        })
-        .catch((err) => {
-          console.error(
-            "Failed to queue alumni notification:",
-            err.message
-          );
-        });
+      console.error("\n🟡🟡🟡 ADDING JOB TO QUEUE 🟡🟡🟡");
+      console.error("Onboarding ID:", onboardingData._id);
+      console.error("Queue:", alumniNetworkQueue.name);
+      
+      try {
+        const job = await alumniNetworkQueue
+          .add("new-alumni-member", {
+            onboardingId: onboardingData._id,
+          });
+        
+        console.error("✅ Job added successfully!");
+        console.error("Job ID:", job.id);
+        console.error("Job Name:", job.name);
+        console.error("🟡🟡🟡 END QUEUE ADD 🟡🟡🟡\n");
+      } catch (err) {
+        console.error(
+          "❌ Failed to queue alumni notification:",
+          err.message
+        );
+        console.error(err);
+      }
+    } else {
+      console.warn("⚠️  No onboardingData._id found");
     }
     categorizeSkillsService(req.user._id, onboardingData)
       .then(() => {

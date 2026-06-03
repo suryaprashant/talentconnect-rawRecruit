@@ -173,7 +173,15 @@ emailVerified: {
   type: Boolean,
   default: false,
 },
+    totalCandidatesReferred: {
+      type: Number,
+      default: 0,
+    },
 
+    referralMilestonesAchieved: {
+      type: [Number],
+      default: [],
+    },
     certifications: String,
     linkedin: String,
     github: String,
