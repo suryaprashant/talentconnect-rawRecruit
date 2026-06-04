@@ -188,31 +188,31 @@ export const updateOnboardingForm = async (req, res) => {
     if (!req.body.employmentType) delete req.body.employmentType;
 
     // FIX SKILLS
-    if (typeof req.body.skills === "string") {
-      req.body.skills = req.body.skills
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-    }
+    // if (typeof req.body.skills === "string") {
+    //   req.body.skills = req.body.skills
+    //     .split(",")
+    //     .map((s) => s.trim())
+    //     .filter(Boolean);
+    // }
 
     // FIX OTHER ARRAY FIELDS
-    const arrayFields = [
-      "languagesKnown",
-      "toolsAndPlatforms",
-      "domainKnowledge",
-      "industry",
-      "jobRoles",
-      "locations"
-    ];
+    // const arrayFields = [
+    //   "languagesKnown",
+    //   "toolsAndPlatforms",
+    //   "domainKnowledge",
+    //   "industry",
+    //   "jobRoles",
+    //   "locations"
+    // ];
 
-    arrayFields.forEach((field) => {
-      if (typeof req.body[field] === "string") {
-        req.body[field] = req.body[field]
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-      }
-    });
+    // arrayFields.forEach((field) => {
+    //   if (typeof req.body[field] === "string") {
+    //     req.body[field] = req.body[field]
+    //       .split(",")
+    //       .map((s) => s.trim())
+    //       .filter(Boolean);
+    //   }
+    // });
 
     // UPDATE DB
     const updated = await updateOnboardingFormService(
