@@ -181,8 +181,8 @@ export const updateOnboardingForm = async (req, res) => {
     };
 
     // CLEAN ENUM FIELDS
-    req.body.lookingFor = cleanArrayField(req.body.lookingFor);
-    req.body.employmentType = cleanArrayField(req.body.employmentType);
+    // req.body.lookingFor = cleanArrayField(req.body.lookingFor);
+    // req.body.employmentType = cleanArrayField(req.body.employmentType);
 
     if (!req.body.lookingFor) delete req.body.lookingFor;
     if (!req.body.employmentType) delete req.body.employmentType;
