@@ -91,8 +91,8 @@ export const NOTIFICATION_SCREEN_MAP = {
     body: { userId: "userId" },
   },
   REFERRAL_MILESTONE_REACHED: {
-    topic: "Referrer",
-    subtopic: "Applied By Me",
+    topic: "Profile",
+    subtopic: "",
     body: {},
   },
 };

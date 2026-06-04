@@ -2234,7 +2234,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
               //         edu.yearOfGraduation
               //     )
               //     .filter(Boolean) || [],
-
+              locations : person.locations ?? [],
               educations:
                 person.educations ??
                 [],
