@@ -334,8 +334,21 @@ export async function updateOnboardingFormService(
   const parseArrayField = (field) => {
     if (!updates[field]) return;
 
-    // already parsed
-    if (Array.isArray(updates[field])) return;
+    if (Array.isArray(updates[field])) {
+      // ✅ NEW: Handle arrays with stringified elements
+      updates[field] = updates[field].map((item) => {
+        if (typeof item === "string") {
+          try {
+            const parsed = JSON.parse(item);
+            return Array.isArray(parsed) ? parsed[0] : parsed;
+          } catch {
+            return item.trim();
+          }
+        }
+        return item;
+      });
+      return;
+    }
 
     if (typeof updates[field] === "string") {
       try {
