@@ -325,69 +325,32 @@ export async function updateOnboardingFormService(
   body,
   files
 ) {
+  // ✅ Helper - SAME as CREATE
+  const parseJsonArray = (field) => {
+    if (!body[field]) return;  // ✅ Don't set default for missing fields
+    if (Array.isArray(body[field])) return body[field];
+    try {
+      const parsed = JSON.parse(body[field]);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const parseJsonObject = (field) => {
+    if (!body[field]) return;  // ✅ Don't set default for missing fields
+    if (typeof body[field] === "object") return body[field];
+    try {
+      return JSON.parse(body[field]);
+    } catch {
+      return null;
+    }
+  };
+
+  // ✅ Start with body spread (includes only what was provided)
   const updates = { ...body };
 
-  // =========================
-  // Helpers
-  // =========================
-
-  const parseArrayField = (field) => {
-    if (!updates[field]) return;
-
-    if (Array.isArray(updates[field])) {
-      // ✅ NEW: Handle arrays with stringified elements
-      updates[field] = updates[field].map((item) => {
-        if (typeof item === "string") {
-          try {
-            const parsed = JSON.parse(item);
-            return Array.isArray(parsed) ? parsed[0] : parsed;
-          } catch {
-            return item.trim();
-          }
-        }
-        return item;
-      });
-      return;
-    }
-
-    if (typeof updates[field] === "string") {
-      try {
-        updates[field] = JSON.parse(updates[field]);
-
-        // fallback for comma separated strings
-        if (!Array.isArray(updates[field])) {
-          updates[field] = updates[field]
-            .split(",")
-            .map((item) => item.trim());
-        }
-
-      } catch {
-        updates[field] = updates[field]
-          .split(",")
-          .map((item) => item.trim());
-      }
-    }
-  };
-
-  const parseJsonField = (field) => {
-    if (!updates[field]) return;
-
-    // already parsed
-    if (typeof updates[field] === "object") return;
-
-    if (typeof updates[field] === "string") {
-      try {
-        updates[field] = JSON.parse(updates[field]);
-      } catch {
-        updates[field] = [];
-      }
-    }
-  };
-
-  // =========================
-  // Simple Array Fields
-  // =========================
-
+  // ✅ Process ONLY array fields that were actually provided
   const arrayFields = [
     "jobRoles",
     "locations",
@@ -400,14 +363,15 @@ export async function updateOnboardingFormService(
     "employmentType"
   ];
 
-  arrayFields.forEach(parseArrayField);
+  arrayFields.forEach((field) => {
+    if (updates[field] !== undefined) {  // ✅ Only if provided
+      updates[field] = parseJsonArray(field);
+    }
+  });
 
-  // =========================
-  // JSON Fields
-  // =========================
-
+  // ✅ Process ONLY JSON fields that were actually provided
   const jsonFields = [
-    "educations", // ✅ added
+    "educations",
     "experiences",
     "leadership",
     "internationalExperience",
@@ -417,15 +381,17 @@ export async function updateOnboardingFormService(
     "projectsHandled"
   ];
 
-  jsonFields.forEach(parseJsonField);
+  jsonFields.forEach((field) => {
+    if (updates[field] !== undefined) {  // ✅ Only if provided
+      updates[field] = parseJsonObject(field);
+    }
+  });
 
   // =========================
   // Experiences Logic
   // =========================
 
   if (Array.isArray(updates.experiences)) {
-
-    // derive current company
     const currentExp = updates.experiences.find(
       (e) => e.isCurrent === true
     );
@@ -434,19 +400,12 @@ export async function updateOnboardingFormService(
       updates.currentCompany = currentExp.company;
     }
 
-    // cleanup current exp endDate
-    updates.experiences = updates.experiences.map(
-      (exp) => {
-        if (exp.isCurrent === true) {
-          return {
-            ...exp,
-            endDate: "",
-          };
-        }
-
-        return exp;
+    updates.experiences = updates.experiences.map((exp) => {
+      if (exp.isCurrent === true) {
+        return { ...exp, endDate: "" };
       }
-    );
+      return exp;
+    });
   }
 
   // =========================
@@ -454,19 +413,12 @@ export async function updateOnboardingFormService(
   // =========================
 
   if (Array.isArray(updates.educations)) {
-
-    updates.educations = updates.educations.map(
-      (edu) => {
-        if (edu.isCurrent === true) {
-          return {
-            ...edu,
-            endDate: "",
-          };
-        }
-
-        return edu;
+    updates.educations = updates.educations.map((edu) => {
+      if (edu.isCurrent === true) {
+        return { ...edu, endDate: "" };
       }
-    );
+      return edu;
+    });
   }
 
   // =========================
