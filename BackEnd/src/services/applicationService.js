@@ -1324,7 +1324,10 @@ export async function ChangeStatusService(applicationId, newStatus) {
           "Shortlisted",
           "Interview Scheduled",
           "Offer Extended",
-          "Accepted"
+          "Accepted",
+          "Offer Accepted",
+          "Offer Rejected",
+          "Joined the Company",
         ];
 
         // console.log("existing response: ", existing);
