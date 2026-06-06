@@ -151,7 +151,7 @@ const sendNotification = async ({
   console.error("enrichedMeta being saved:", JSON.stringify(enrichedMeta, null, 2));
   console.error("🔵\n");
   if (!SKIP_DB_TYPES.includes(type)) {
-  const notification = await Notification.create({
+   notification = await Notification.create({
     recipientId, 
     senderId, 
     type, 
@@ -163,10 +163,10 @@ const sendNotification = async ({
     read: false,
   });
    }
-  console.error("\n🟢 NOTIFICATION SAVED 🟢");
-  console.error("ID:", notification._id);
-  console.error("meta from DB:", JSON.stringify(notification.meta, null, 2));
-  console.error("🟢\n");
+  // console.error("\n🟢 NOTIFICATION SAVED 🟢");
+  // console.error("ID:", notification._id);
+  // console.error("meta from DB:", JSON.stringify(notification.meta, null, 2));
+  // console.error("🟢\n");
  
   // 2. Socket emit
   // const socketId = getReceiverSocketId(recipientId.toString());
@@ -564,6 +564,7 @@ export const notifyCompanyOnCollegeApply = async ({
     type: "JOB_REGISTRATION",
     message: `${collegeName} applied for your job: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };
@@ -582,6 +583,7 @@ export const notifyCompanyOnStudentApply = async ({
     type: "JOB_REGISTRATION",
     message: `${studentName} applied for your job: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };
@@ -600,6 +602,7 @@ export const notifyCollegeOnCompanyApply = async ({
     type: "JOB_REGISTRATION",
     message: `${companyName} applied to your campus job request: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };
