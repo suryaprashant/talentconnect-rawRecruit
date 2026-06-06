@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 
 const educationSchema = new mongoose.Schema({
   college: String,
+  college_canonical_id: String,
+
+  college_display: String,
+
+  college_master_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "CollegeMaster",
+  },
   degree: String,
   specialization: String,
   semester: String,
@@ -119,6 +127,15 @@ const studentOnboardingSchema = new mongoose.Schema(
     experiences: [
       {
         company: String,
+        company_canonical_id: String,
+
+        company_display: String,
+
+        company_master_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "CompanyMaster",
+        },
+
         role: String,
         startDate: String,
         endDate: String,
@@ -160,6 +177,16 @@ const studentOnboardingSchema = new mongoose.Schema(
     about :String ,
 
     currentCompany: String,
+    currentCompany_canonical_id:
+      String,
+
+    currentCompany_display:
+      String,
+
+    currentCompany_master_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CompanyMaster",
+    },
     noticePeriod: String,
     servingNoticePeriod: Boolean,
     noticePeriodStartDate: String,
