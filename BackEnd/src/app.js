@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { startRankingCron } from "./cron/rankingCron.js";
 import paginate from "./middlewares/paginate.js";
+import {refreshFuseIndex} from "./services/fuseIndexService.js";
 startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
@@ -127,6 +128,7 @@ import CustomDropDown from "./routes/CustomDropDown.js"
 import CandidateRoute from "./routes/CandidateRoute.js"
 import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
 import adminBlogRoute from "./routes/admin/adminBlogRoute.js";
+import adminNormalizationRoute from "./routes/admin/adminNormalizationRoute.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import deleteJobRoute from "./routes/deleteJobRoute.js";
 
@@ -143,6 +145,7 @@ app.use("/api/admin", adminAuth);
 
 app.use("/api/admin/dashboard", adminDashboard);
 app.use("/api/admin/blogs", adminBlogRoute);
+app.use("/api/admin/normalization", adminNormalizationRoute);
 app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement)
@@ -248,6 +251,11 @@ const startServer = async () => {
     // Connect to database FIRST
     await Connection();
     console.log('Database connected successfully');
+    await refreshFuseIndex();
+
+    console.log(
+      "Fuse indexes loaded"
+    );
     await seedDB();
     // THEN start the server
     server.listen(PORT, () => {

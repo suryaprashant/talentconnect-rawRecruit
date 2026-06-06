@@ -3,37 +3,56 @@ import dotenv from "dotenv";
 
 import { resolveCollege, resolveCompany }
   from "../services/normalizationService.js";
+import {
+  refreshFuseIndex,
+  getCompanyFuse,
+  getCollegeFuse,
+} from "../services/fuseIndexService.js";
 
 dotenv.config();
 
 await mongoose.connect(process.env.DB_URL);
-
+await refreshFuseIndex();
 console.log(
-  await resolveCollege("IITD")
+  "Company Fuse:",
+  !!getCompanyFuse()
 );
 
 console.log(
-  await resolveCollege(
-    "Indian Institute of Technology Delhi"
-  )
+  "College Fuse:",
+  !!getCollegeFuse()
 );
+
+// console.log(
+//   await resolveCompany(
+//     "Microsoft"
+//   )
+// );
 
 console.log(
   await resolveCompany(
-    "Microsoft India"
+    "Micorsoft"
   )
 );
 
-console.log(
-  await resolveCompany("MSFT")
-);
+// console.log(
+//   await resolveCompany(
+//     "Microsft"
+//   )
+// );
 
-console.log(
-  await resolveCompany("Zomato")
-);
+// console.log(
+//   await resolveCollege(
+//     "IITD"
+//   )
+// );
 
-console.log(
-  await resolveCompany("RawRecruit")
+// console.log(
+//   await resolveCollege(
+//     "Indian Institute Technology Delhi"
+//   )
+// );
+await resolveCompany(
+  "RandomCompanyXYZ123"
 );
-
 process.exit(0);

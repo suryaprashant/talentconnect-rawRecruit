@@ -54,7 +54,21 @@ const normalizationLogSchema =
         "normalization_logs",
     }
   );
+normalizationLogSchema.index({
+  entity_type: 1,
+  reviewed: 1,
+});
 
+normalizationLogSchema.index({
+  confidence: 1,
+});
+normalizationLogSchema.index({
+  match_type: 1,
+});
+
+normalizationLogSchema.index({
+  accepted: 1,
+});
 export default mongoose.model(
   "NormalizationLog",
   normalizationLogSchema
