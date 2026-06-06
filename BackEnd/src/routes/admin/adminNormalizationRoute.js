@@ -4,6 +4,7 @@ import {
   getPendingNormalizations,
   approveNormalization,
   rejectNormalization,
+  createCanonicalEntity,
 } from "../../controllers/admin/adminNormalizationController.js";
 import adminAuth from "../../middlewares/adminMiddleware.js";
 const router =
@@ -24,4 +25,8 @@ router.patch(
   rejectNormalization
 );
 
+router.post(
+  "/:id/create",
+  createCanonicalEntity
+);
 export default router;

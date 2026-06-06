@@ -29,11 +29,11 @@ console.log(
 //   )
 // );
 
-console.log(
-  await resolveCompany(
-    "Micorsoft"
-  )
-);
+// console.log(
+//   await resolveCompany(
+//     "Micorsoft"
+//   )
+// );
 
 // console.log(
 //   await resolveCompany(
@@ -52,7 +52,9 @@ console.log(
 //     "Indian Institute Technology Delhi"
 //   )
 // );
-await resolveCompany(
-  "RandomCompanyXYZ123"
+console.log(
+  await resolveCompany(
+    "Raw Recruit"
+  )
 );
 process.exit(0);
