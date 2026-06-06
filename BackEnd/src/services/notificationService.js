@@ -97,7 +97,7 @@ export const NOTIFICATION_SCREEN_MAP = {
   },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
-const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE"];
+const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE", "INTERVIEW_SCHEDULED", "APPLICATION_INTERVIEW_SCHEDULED" ];
 const sendNotification = async ({
   recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId,
 }) => {
@@ -564,6 +564,7 @@ export const notifyCompanyOnCollegeApply = async ({
     type: "JOB_REGISTRATION",
     message: `${collegeName} applied for your job: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };
@@ -582,6 +583,7 @@ export const notifyCompanyOnStudentApply = async ({
     type: "JOB_REGISTRATION",
     message: `${studentName} applied for your job: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };
@@ -600,6 +602,7 @@ export const notifyCollegeOnCompanyApply = async ({
     type: "JOB_REGISTRATION",
     message: `${companyName} applied to your campus job request: ${jobTitle}`,
     referenceId: jobId,
+    jobId: jobId,
     jobType,
   });
 };

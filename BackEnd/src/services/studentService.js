@@ -926,6 +926,30 @@ export const getOnboardingByUserIdService = async (
           : 0;
     }
   }
+  // =========================
+  // Referral Jobs
+  // =========================
 
+  let referralJobs = [];
+
+  try {
+    referralJobs = await JobPostingTable.find({
+      candidatePosted: onboardingData._id,
+      jobType: "Referral",
+      approvalStatus: "Approved",
+      inactive: false,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+  } catch (error) {
+    console.error(
+      `Error fetching referral jobs for onboarding ${onboardingData._id}:`,
+      error
+    );
+  }
+
+  onboardingData.referralJobs = referralJobs;
+  onboardingData.isHiring =
+    referralJobs.length > 0;
   return onboardingData;
 };
