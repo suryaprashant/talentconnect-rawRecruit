@@ -97,7 +97,7 @@ export const NOTIFICATION_SCREEN_MAP = {
   },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
-const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE"];
+const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE", "INTERVIEW_SCHEDULED", "APPLICATION_INTERVIEW_SCHEDULED" ];
 const sendNotification = async ({
   recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId,
 }) => {
