@@ -11,6 +11,14 @@ import {
 } from "../utils/relevancyEngine.js";
 import { paginatedResponse } from "../utils/paginate.js";
 import { fetchMetricsForJob } from "../controllers/studentDashboard/studentDashboardController.js";
+import {
+  buildCollegeAlumniQuery,
+  buildCompanyAlumniQuery,
+} from "../services/entityQueryService.js";
+
+import {
+  resolveCompany,
+} from "../services/normalizationService.js";
 export const getProfessionalReferralsService = async (userId) => {
   try {
         // Step 1: 
@@ -562,84 +570,33 @@ export const getReferralJobsCursorService = async (
             try {
               const studentColleges = [
                 ...new Set(
-                  (
-                    student?.educations ||
-                    []
-                  )
+                  (student?.educations || [])
                     .map(
                       (edu) =>
-                        edu.college
+                        edu.college_canonical_id
                     )
                     .filter(Boolean)
                 ),
               ];
 
-              const studentCompanies =
-                [];
+              const studentCompanies = [
+                ...new Set([
+                  student?.currentCompany_canonical_id,
 
-              if (
-                student?.currentCompany
-              ) {
-                studentCompanies.push(
-                  student.currentCompany
-                );
-              }
-
-              student?.experiences?.forEach(
-                (exp) => {
-                  if (exp.company) {
-                    studentCompanies.push(
-                      exp.company
-                    );
-                  }
-                }
-              );
-
-              const uniqueStudentCompanies =
-                [
-                  ...new Map(
-                    studentCompanies.map(
-                      (c) => [
-                        c.toLowerCase(),
-                        c,
-                      ]
-                    )
-                  ).values(),
-                ];
-
-              const companyRegex =
-                new RegExp(
-                  `^${companyName.replace(
-                    /[.*+?^${}()|[\]\\]/g,
-                    "\\$&"
-                  )}$`,
-                  "i"
+                  ...(student?.experiences || [])
+                    .map(
+                      (exp) =>
+                        exp.company_canonical_id
+                    ),
+                ].filter(Boolean)),
+              ];
+              const targetCompany =
+                await resolveCompany(
+                  companyName
                 );
 
-              const sharedCompanyConditions =
-                uniqueStudentCompanies.flatMap(
-                  (company) => {
-                    const regex =
-                      new RegExp(
-                        `^${company.replace(
-                          /[.*+?^${}()|[\]\\]/g,
-                          "\\$&"
-                        )}$`,
-                        "i"
-                      );
-
-                    return [
-                      {
-                        currentCompany:
-                          regex,
-                      },
-                      {
-                        "experiences.company":
-                          regex,
-                      },
-                    ];
-                  }
-                );
+              const targetCanonicalId =
+                targetCompany?.canonicalId;
               const excludedUserIds = [userId];
                 if (job.candidatePosted?.userId) {
                 excludedUserIds.push(
@@ -657,42 +614,41 @@ export const getReferralJobsCursorService = async (
                       {
                         $or: [
                           {
-                            educations:
+                            "educations.college_canonical_id":
                               {
-                                $elemMatch:
-                                  {
-                                    college:
-                                      {
-                                        $in: studentColleges.map(
-                                          (
-                                            college
-                                          ) =>
-                                            new RegExp(
-                                              `^${college.replace(
-                                                /[.*+?^${}()|[\]\\]/g,
-                                                "\\$&"
-                                              )}$`,
-                                              "i"
-                                            )
-                                        ),
-                                      },
-                                  },
+                                $in:
+                                  studentColleges,
                               },
                           },
 
-                          ...sharedCompanyConditions,
+                          {
+                            currentCompany_canonical_id:
+                              {
+                                $in:
+                                  studentCompanies,
+                              },
+                          },
+
+                          {
+                            "experiences.company_canonical_id":
+                              {
+                                $in:
+                                  studentCompanies,
+                              },
+                          },
                         ],
                       },
 
                       {
                         $or: [
                           {
-                            currentCompany:
-                              companyRegex,
+                            currentCompany_canonical_id:
+                              targetCanonicalId,
                           },
+
                           {
-                            "experiences.company":
-                              companyRegex,
+                            "experiences.company_canonical_id":
+                              targetCanonicalId,
                           },
                         ],
                       },

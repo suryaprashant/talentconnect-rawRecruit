@@ -4,6 +4,10 @@ import { updateAuthUserService } from '../services/authService.js';
 import { streamUpload } from '../utils/streamUpload.js';
 import {JobPostingTable} from '../models/jobPostingsModel.js'
 import Application  from '../models/applicationModel.js';
+import {
+  resolveCollege,
+  resolveCompany,
+} from "./normalizationService.js";
 // Get all onboarding forms
 export async function getAllOnboardingFormsService() {
   try {
@@ -613,9 +617,6 @@ export async function checkStudentService(studentId) {
 
 export const handleOnboardingUpdate = async (updateData, files) => {
 
-
-  
-
   if (files?.resume?.[0]) {
     const file = files.resume[0];
     const upload = await streamUpload(file.buffer, "resumes");
@@ -684,7 +685,67 @@ export const handleOnboardingUpdate = async (updateData, files) => {
       updateData.awards[i].certificate = uploadedCert.secure_url;
     }
   }
+  if (Array.isArray(updateData.educations)) {
+    for (const edu of updateData.educations) {
 
+      if (!edu.college) continue;
+
+      const result = await resolveCollege(
+        edu.college
+      );
+
+      if (!result) continue;
+
+      edu.college_master_id =
+        result.masterId;
+
+      edu.college_canonical_id =
+        result.canonicalId;
+
+      edu.college_display =
+        result.displayName;
+    }
+  }
+  if (Array.isArray(updateData.experiences)) {
+    for (const exp of updateData.experiences) {
+
+      if (!exp.company) continue;
+
+      const result = await resolveCompany(
+        exp.company
+      );
+
+      if (!result) continue;
+
+      exp.company_master_id =
+        result.masterId;
+
+      exp.company_canonical_id =
+        result.canonicalId;
+
+      exp.company_display =
+        result.displayName;
+    }
+  }
+  if (updateData.currentCompany) {
+
+    const result =
+      await resolveCompany(
+        updateData.currentCompany
+      );
+
+    if (result) {
+
+      updateData.currentCompany_master_id =
+        result.masterId;
+
+      updateData.currentCompany_canonical_id =
+        result.canonicalId;
+
+      updateData.currentCompany_display =
+        result.displayName;
+    }
+  }
   // Save onboarding data
   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
     { userId: updateData.userId },

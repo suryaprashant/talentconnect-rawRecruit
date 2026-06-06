@@ -1,0 +1,32 @@
+import express from "express";
+
+import {
+  getPendingNormalizations,
+  approveNormalization,
+  rejectNormalization,
+  createCanonicalEntity,
+} from "../../controllers/admin/adminNormalizationController.js";
+import adminAuth from "../../middlewares/adminMiddleware.js";
+const router =
+  express.Router();
+router.use(adminAuth);
+router.get(
+  "/pending",
+  getPendingNormalizations
+);
+
+router.patch(
+  "/:id/approve",
+  approveNormalization
+);
+
+router.patch(
+  "/:id/reject",
+  rejectNormalization
+);
+
+router.post(
+  "/:id/create",
+  createCanonicalEntity
+);
+export default router;

@@ -13,6 +13,14 @@ import {
   scoreJob,
   logConfig,
 } from "../utils/relevancyEngine.js";
+import {
+  buildCollegeAlumniQuery,
+  buildCompanyAlumniQuery,
+} from "../services/entityQueryService.js";
+
+import {
+  resolveCompany,
+} from "../services/normalizationService.js";
 class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
@@ -181,65 +189,108 @@ export async function getSavedJobsService(userId, pagination) {
             const studentColleges = [
               ...new Set(
                 (student?.educations || [])
-                  .map((edu) => edu.college)
+                  .map(
+                    (edu) =>
+                      edu.college_canonical_id
+                  )
                   .filter(Boolean)
               ),
             ];
 
-            const allStudentCompanies = [];
-            if (student?.currentCompany) {
-              allStudentCompanies.push(student.currentCompany);
-            }
-            student?.experiences?.forEach((exp) => {
-              if (exp.company) allStudentCompanies.push(exp.company);
-            });
-            const uniqueStudentCompanies = [
-              ...new Map(
-                allStudentCompanies.map((c) => [c.toLowerCase(), c])
-              ).values(),
-            ];
+            const studentCompanies = [
+              ...new Set([
+                student?.currentCompany_canonical_id,
 
-            const sharedCompanyConditions = uniqueStudentCompanies.flatMap((company) => {
-              const regex = new RegExp(
-                company.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"
-              );
-              return [
-                { currentCompany: regex },
-                { "experiences.company": regex },
-              ];
-            });
+                ...(student?.experiences || [])
+                  .map(
+                    (exp) =>
+                      exp.company_canonical_id
+                  ),
+              ].filter(Boolean)),
+            ];
 
             const sharedWithStudentConditions = [
-              ...(studentColleges.length > 0 ? [{
-                "educations.college": {
-                  $in: studentColleges.map(
-                    (c) => new RegExp(`^${c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i")
-                  ),
-                },
-              }] : []),
-              ...sharedCompanyConditions,
-            ];
+              ...(studentColleges.length > 0
+                ? [{
+                    "educations.college_canonical_id": {
+                      $in: studentColleges,
+                    },
+                  }]
+                : []),
 
-            // Guard: skip DB call if student has no colleges and no companies
-            if (sharedWithStudentConditions.length === 0) {
-              alumniCount = 0;
-            } else {
-              const companyRegex = new RegExp(
-                companyName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"
+              ...(studentCompanies.length > 0
+                ? [{
+                    currentCompany_canonical_id: {
+                      $in: studentCompanies,
+                    },
+                  }]
+                : []),
+
+              ...(studentCompanies.length > 0
+                ? [{
+                    "experiences.company_canonical_id": {
+                      $in: studentCompanies,
+                    },
+                  }]
+                : []),
+            ];
+            const targetCompany =
+              await resolveCompany(
+                companyName
               );
 
-              alumniCount = await OnboardingModel.countDocuments({
-                userId: { $ne: student.userId },
-                $and: [
-                  { $or: sharedWithStudentConditions },
-                  {
-                    $or: [
-                      { currentCompany: companyRegex },
-                      { "experiences.company": companyRegex },
-                    ],
+            const targetCanonicalId =
+              targetCompany?.canonicalId;
+            // Guard: skip DB call if student has no colleges and no companies
+            if (!targetCanonicalId) {
+              alumniCount = 0;
+            }
+            else if (
+              studentColleges.length === 0 &&
+              studentCompanies.length === 0
+            ) {
+              alumniCount = 0;
+            } else {
+              const excludedUserIds = [
+                student.userId,
+              ];
+
+              if (
+                application.job?.postedByUser
+              ) {
+                excludedUserIds.push(
+                  application.job
+                    .postedByUser
+                );
+              }
+
+              alumniCount =
+                await OnboardingModel.countDocuments({
+                  userId: {
+                    $nin: excludedUserIds,
                   },
-                ],
-              });
+
+                  $and: [
+                    {
+                      $or:
+                        sharedWithStudentConditions,
+                    },
+
+                    {
+                      $or: [
+                        {
+                          currentCompany_canonical_id:
+                            targetCanonicalId,
+                        },
+
+                        {
+                          "experiences.company_canonical_id":
+                            targetCanonicalId,
+                        },
+                      ],
+                    },
+                  ],
+                });
             }
 
           } catch (err) {

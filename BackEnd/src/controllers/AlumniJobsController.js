@@ -4,6 +4,11 @@ import OpenAI from "openai";
 import Application from "../models/applicationModel.js";
 import mongoose from "mongoose";
 import { fetchProfessionalReferralMetrics } from "../services/adminService.js"; // adjust import path
+import {
+  buildCollegeAlumniQuery,
+  buildCompanyAlumniQuery,
+} from "../services/entityQueryService.js";
+import {resolveCompany} from "../services/normalizationService.js";
 const openai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY, // Ensure this is in your .env file
   baseURL: "https://api.groq.com/openai/v1", // This tells the SDK to talk to Groq
@@ -151,7 +156,20 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     const userId = req.user?._id;
 
     const { company, postedByUser } = req.params;
+    const targetCompany =
+      await resolveCompany(company);
 
+    const targetCanonicalId =
+      targetCompany?.canonicalId || null;
+
+    if (!targetCanonicalId) {
+      return res.status(404).json({
+        success: false,
+        errorCode: "COMPANY_NOT_NORMALIZED",
+        message:
+          "Company not found in normalization database.",
+      });
+    }
     const { page, limit, skip } =
       req.pagination;
 
@@ -200,23 +218,13 @@ export const getAlumniWhoCanHelp = async (req, res) => {
         data: null,
       });
     }
-
+    let collegeAlumni = [];
+    let companyAlumni = [];
     // =====================================================
     // STEP 2: BUILD EXCLUDED IDS + COMPANY REGEX
     // =====================================================
 
-    const escapedCompany =
-      company.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
-      );
-
-    const companyRegex =
-      new RegExp(
-        `^${escapedCompany}$`,
-        "i"
-      );
-
+    
     const excludedUserIds = [userId];
 
     if (postedByUser) {
@@ -229,24 +237,29 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     // STEP 3: FETCH COLLEGE ALUMNI
     // =====================================================
 
-    let collegeAlumni = [];
+    const collegeQuery =
+      buildCollegeAlumniQuery(
+        myProfile,
+        userId
+      );
 
     const colleges = [
       ...new Set(
         (myProfile.educations || [])
           .map(
-            (edu) => edu.college
+            (edu) =>
+              edu.college_canonical_id ||
+              edu.college
           )
           .filter(Boolean)
       ),
     ];
 
-    if (colleges.length > 0) {
+    if (collegeQuery) {
+
       collegeAlumni =
         await Onboarding.find({
-          "educations.college": {
-            $in: colleges,
-          },
+          ...collegeQuery,
 
           userId: {
             $nin: excludedUserIds,
@@ -258,70 +271,35 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     // STEP 4: BUILD USER COMPANIES
     // =====================================================
 
-    const allCompanies = [];
-
-    if (myProfile.currentCompany) {
-      allCompanies.push(
-        myProfile.currentCompany
-      );
-    }
-
-    myProfile.experiences?.forEach(
-      (exp) => {
-        if (exp.company) {
-          allCompanies.push(
-            exp.company
-          );
-        }
-      }
+    const companyQuery =
+    buildCompanyAlumniQuery(
+      myProfile,
+      userId
     );
 
     const uniqueCompanies = [
-      ...new Map(
-        allCompanies.map((c) => [
-          c.toLowerCase(),
-          c,
-        ])
-      ).values(),
+      ...new Set([
+        myProfile.currentCompany_canonical_id ||
+          myProfile.currentCompany,
+
+        ...(myProfile.experiences || [])
+          .map(
+            (exp) =>
+              exp.company_canonical_id ||
+              exp.company
+          ),
+      ].filter(Boolean)),
     ];
 
-    // =====================================================
-    // STEP 5: FETCH COMPANY ALUMNI
-    // =====================================================
-
-    let companyAlumni = [];
-
-    if (uniqueCompanies.length > 0) {
-      const orConditions =
-        uniqueCompanies.flatMap(
-          (companyName) => {
-            const regex =
-              new RegExp(
-                companyName,
-                "i"
-              );
-
-            return [
-              {
-                currentCompany:
-                  regex,
-              },
-
-              {
-                "experiences.company":
-                  regex,
-              },
-            ];
-          }
-        );
+    if (companyQuery) {
 
       companyAlumni =
         await Onboarding.find({
+          ...companyQuery,
+
           userId: {
             $nin: excludedUserIds,
           },
-
-          $or: orConditions,
         }).lean();
     }
 
@@ -365,18 +343,17 @@ export const getAlumniWhoCanHelp = async (req, res) => {
     const alumni =
       uniqueAlumni.filter(
         (person) => {
+
           const currentlyWorking =
-            companyRegex.test(
-              person.currentCompany ||
-                ""
-            );
+            targetCanonicalId &&
+            person.currentCompany_canonical_id ===
+              targetCanonicalId;
 
           const previouslyWorked =
             person.experiences?.some(
               (exp) =>
-                companyRegex.test(
-                  exp.company || ""
-                )
+                exp.company_canonical_id ===
+                targetCanonicalId
             );
 
           return (
@@ -385,7 +362,6 @@ export const getAlumniWhoCanHelp = async (req, res) => {
           );
         }
       );
-
     const total = alumni.length;
 
     // =====================================================
@@ -445,17 +421,15 @@ export const getAlumniWhoCanHelp = async (req, res) => {
             let referralJobs = [];
 
             const currentlyWorking =
-              companyRegex.test(
-                person.currentCompany ||
-                  ""
-              );
+              targetCanonicalId &&
+              person.currentCompany_canonical_id ===
+                targetCanonicalId;
 
             const previouslyWorked =
               person.experiences?.some(
                 (exp) =>
-                  companyRegex.test(
-                    exp.company || ""
-                  )
+                  exp.company_canonical_id ===
+                  targetCanonicalId
               );
 
             try {
@@ -1407,10 +1381,20 @@ export const getCollegeAlumni = async (req, res) => {
     // NEW EDUCATION LOGIC
     // =========================
 
+    const collegeQuery =
+      buildCollegeAlumniQuery(
+        myProfile,
+        userId
+      );
+
     const colleges = [
       ...new Set(
         (myProfile.educations || [])
-          .map((edu) => edu.college)
+          .map(
+            (edu) =>
+              edu.college_canonical_id ||
+              edu.college
+          )
           .filter(Boolean)
       ),
     ];
@@ -1422,7 +1406,7 @@ export const getCollegeAlumni = async (req, res) => {
     //   myProfile.profileType
     // );
 
-    if (!colleges.length) {
+    if (!collegeQuery) {
       // console.log(
       //   `${debugId} ❌ College field is empty on profile`
       // );
@@ -1447,10 +1431,7 @@ export const getCollegeAlumni = async (req, res) => {
     //   colleges
     // );
 
-    const alumniQuery = {
-      "educations.college": { $in: colleges },
-      userId: { $ne: userId },
-    };
+    const alumniQuery = collegeQuery;
 
     const [alumni, total] = await Promise.all([
       Onboarding.find(alumniQuery)
@@ -1749,20 +1730,27 @@ export const getCompanyAlumni = async (req, res) => {
       });
     }
 
-    // Step 2: Collect all companies
-    const allCompanies = [];
+    const companyQuery =
+      buildCompanyAlumniQuery(
+        myProfile,
+        userId
+      );
 
-    if (myProfile.currentCompany) {
-      allCompanies.push(myProfile.currentCompany);
-    }
+    const uniqueCompanies = [
+      ...new Set([
+        myProfile.currentCompany_canonical_id ||
+          myProfile.currentCompany,
 
-    myProfile.experiences?.forEach((exp) => {
-      if (exp.company) {
-        allCompanies.push(exp.company);
-      }
-    });
+        ...(myProfile.experiences || [])
+          .map(
+            (exp) =>
+              exp.company_canonical_id ||
+              exp.company
+          ),
+      ].filter(Boolean)),
+    ];
 
-    if (allCompanies.length === 0) {
+    if (!companyQuery) {
       return res.status(404).json({
         success: false,
         errorCode: "NO_COMPANIES_FOUND",
@@ -1771,28 +1759,9 @@ export const getCompanyAlumni = async (req, res) => {
         data: null,
       });
     }
-
-    const uniqueCompanies = [
-      ...new Map(
-        allCompanies.map((c) => [c.toLowerCase(), c])
-      ).values(),
-    ];
-
-    // Step 3: Build query conditions
-    const orConditions = uniqueCompanies.flatMap((company) => {
-      const regex = new RegExp(company, "i");
-
-      return [
-        { currentCompany: regex },
-        { "experiences.company": regex },
-      ];
-    });
-
     // Step 4: Find alumni with pagination
-    const companyAlumniQuery = {
-      userId: { $ne: userId },
-      $or: orConditions,
-    };
+    const companyAlumniQuery = 
+      companyQuery;
 
     const [companyAlumni, total] = await Promise.all([
       Onboarding.find(companyAlumniQuery)
@@ -1869,7 +1838,11 @@ export const getCompanyAlumni = async (req, res) => {
           // yearOfGraduation: person.yearOfGraduation ?? null,
 
           currentCompany: person.currentCompany ?? null,
+          currentCompany_canonical_id:
+            person.currentCompany_canonical_id ?? null,
 
+          currentCompany_display:
+            person.currentCompany_display ?? null,
           totalYearsOfExperience:
             person.totalYearsOfExperience ?? null,
 
@@ -1928,25 +1901,37 @@ export const getCompanyAlumni = async (req, res) => {
     // Step 7: Group by company
     const alumniByCompany = {};
 
-    uniqueCompanies.forEach((company) => {
-      const regex = new RegExp(company, "i");
+    uniqueCompanies.forEach(
+      (canonicalCompany) => {
 
-      const matched = filteredAlumni.filter(
-        (alumni) =>
-          (alumni.currentCompany &&
-            regex.test(alumni.currentCompany)) ||
+        const matched =
+          filteredAlumni.filter(
+            (alumni) => {
 
-          alumni.experiences?.some(
-            (exp) =>
-              exp.company &&
-              regex.test(exp.company)
-          )
-      );
+              if (
+                alumni.currentCompany_canonical_id ===
+                canonicalCompany
+              ) {
+                return true;
+              }
 
-      if (matched.length > 0) {
-        alumniByCompany[company] = matched;
+              return (
+                alumni.experiences?.some(
+                  (exp) =>
+                    exp.company_canonical_id ===
+                    canonicalCompany
+                ) || false
+              );
+            }
+          );
+
+        if (matched.length > 0) {
+          alumniByCompany[
+            canonicalCompany
+          ] = matched;
+        }
       }
-    });
+    );
 
     const flattenedAlumni = Object.values(
       alumniByCompany
@@ -2020,104 +2005,67 @@ export const getAlumniHiringNetwork = async (req, res) => {
     }
 
     // =====================================================
-    // STEP 2: BUILD COLLEGE QUERY
+    // STEP 2: BUILD NORMALIZED QUERIES
     // =====================================================
 
+    const collegeQuery =
+      buildCollegeAlumniQuery(
+        myProfile,
+        userId
+      );
+
+    const companyQuery =
+      buildCompanyAlumniQuery(
+        myProfile,
+        userId
+      );
+
+    // For response/debugging
     const colleges = [
       ...new Set(
         (myProfile.educations || [])
-          .map((edu) => edu.college)
+          .map(
+            (edu) =>
+              edu.college_canonical_id ||
+              edu.college
+          )
           .filter(Boolean)
       ),
     ];
 
-    const collegeQuery =
-      colleges.length > 0
-        ? {
-            "educations.college": {
-              $in: colleges,
-            },
-            userId: { $ne: userId },
-          }
-        : null;
-
-    // =====================================================
-    // STEP 3: BUILD COMPANY QUERY
-    // =====================================================
-
-    const allCompanies = [];
-
-    if (myProfile.currentCompany) {
-      allCompanies.push(
-        myProfile.currentCompany
-      );
-    }
-
-    myProfile.experiences?.forEach((exp) => {
-      if (exp.company) {
-        allCompanies.push(exp.company);
-      }
-    });
-
     const uniqueCompanies = [
-      ...new Map(
-        allCompanies.map((c) => [
-          c.toLowerCase(),
-          c,
-        ])
-      ).values(),
+      ...new Set([
+        myProfile.currentCompany_canonical_id ||
+          myProfile.currentCompany,
+
+        ...(myProfile.experiences || [])
+          .map(
+            (exp) =>
+              exp.company_canonical_id ||
+              exp.company
+          ),
+      ].filter(Boolean)),
     ];
-
-    let companyQuery = null;
-
-    if (uniqueCompanies.length > 0) {
-      const orConditions =
-        uniqueCompanies.flatMap((company) => {
-          const regex = new RegExp(
-            company,
-            "i"
-          );
-
-          return [
-            { currentCompany: regex },
-            {
-              "experiences.company": regex,
-            },
-          ];
-        });
-
-      companyQuery = {
-        userId: { $ne: userId },
-        $or: orConditions,
-      };
-    }
-
     // =====================================================
     // STEP 4: FETCH ALL MATCHING ALUMNI
     // =====================================================
 
-    const queries = [];
+    let collegeAlumni = [];
+    let companyAlumni = [];
 
     if (collegeQuery) {
-      queries.push(
-        Onboarding.find(collegeQuery).lean()
-      );
+      collegeAlumni =
+        await Onboarding.find(
+          collegeQuery
+        ).lean();
     }
 
     if (companyQuery) {
-      queries.push(
-        Onboarding.find(companyQuery).lean()
-      );
+      companyAlumni =
+        await Onboarding.find(
+          companyQuery
+        ).lean();
     }
-
-    const results = await Promise.all(queries);
-
-    const collegeAlumni = results[0] || [];
-
-    const companyAlumni =
-      results.length > 1
-        ? results[1]
-        : [];
 
     // =====================================================
     // STEP 5: MERGE + REMOVE DUPLICATES
