@@ -97,6 +97,7 @@ export const NOTIFICATION_SCREEN_MAP = {
   },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
+const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE"];
 const sendNotification = async ({
   recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId,
 }) => {
@@ -144,12 +145,12 @@ const sendNotification = async ({
   
   console.log("enrichedMeta:", JSON.stringify(enrichedMeta, null, 2));
   console.log("==============================");
-  
+  let notification = null;
   // 1. Save to DB
   console.error("\n🔵 ABOUT TO SAVE NOTIFICATION 🔵");
   console.error("enrichedMeta being saved:", JSON.stringify(enrichedMeta, null, 2));
   console.error("🔵\n");
-  
+  if (!SKIP_DB_TYPES.includes(type)) {
   const notification = await Notification.create({
     recipientId, 
     senderId, 
@@ -161,20 +162,31 @@ const sendNotification = async ({
     jobId, 
     read: false,
   });
-  
+   }
   console.error("\n🟢 NOTIFICATION SAVED 🟢");
   console.error("ID:", notification._id);
   console.error("meta from DB:", JSON.stringify(notification.meta, null, 2));
   console.error("🟢\n");
  
   // 2. Socket emit
+  // const socketId = getReceiverSocketId(recipientId.toString());
+  // if (socketId) {
+  //   const populatedNotification = await Notification.findById(notification._id)
+  //     .populate("senderId", "name userType profileImage");
+  //   io.to(socketId).emit("newNotification", populatedNotification);
+  // }
   const socketId = getReceiverSocketId(recipientId.toString());
   if (socketId) {
-    const populatedNotification = await Notification.findById(notification._id)
-      .populate("senderId", "name userType profileImage");
-    io.to(socketId).emit("newNotification", populatedNotification);
+    const payload = notification
+      ? await Notification.findById(notification._id)
+          .populate("senderId", "name userType profileImage")
+      : {
+          recipientId, senderId, type, message,
+          referenceId, jobType, meta: enrichedMeta, jobId,
+          read: false, createdAt: new Date(),
+        };
+    io.to(socketId).emit("newNotification", payload);
   }
- 
   // 3. FCM
   try {
     const user = await Auth.findById(recipientId).select("deviceToken");
