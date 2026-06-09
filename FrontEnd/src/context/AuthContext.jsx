@@ -18,6 +18,7 @@ export const AuthContextRole = ({ children }) => {
       const res = await axios.get("/api/auth/me", {
         withCredentials: true,
       });
+      console.log(res.data.user)
       setUser(res.data.user);
     } catch (err) {
       if (err.response?.status === 401) {

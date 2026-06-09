@@ -15,7 +15,6 @@ import AllReferralPost from "@/pages/admin/adminPages/AllReferralPost";
 import ManageReferral from "@/pages/admin/adminPages/ManageReferral";
 import ScheduledInterviewPage from "@/pages/admin/adminPages/ScheduledInterviewPage";
 import AdminManageBlogs from "@/pages/admin/adminPages/adminBlog";
-import AdminNormalization from "@/pages/admin/adminPages/adminNormalization";
 
 const AdminRoutes = () => {
   return (
@@ -40,7 +39,6 @@ const AdminRoutes = () => {
         <Route path="manage-referral" element={<ManageReferral/>}/>
         <Route path="scheduled-interviews" element={<ScheduledInterviewPage/>}/>
         <Route path="manage-blogs" element={<AdminManageBlogs/>}/>
-        <Route path="normalization-logs" element={<AdminNormalization/>}/>
         <Route path="*" element={<NotFound />} />
 
       </Route>
