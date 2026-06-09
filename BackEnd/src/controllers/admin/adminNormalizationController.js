@@ -11,7 +11,6 @@ import { normalizeText }
 import {refreshFuseIndex} from "../../services/fuseIndexService.js";
 export const getPendingNormalizations =  async (req, res) => {
     try {
-
       const logs =
         await NormalizationLog.find({
           reviewed: false,
