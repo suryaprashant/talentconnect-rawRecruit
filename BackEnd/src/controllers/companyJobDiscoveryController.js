@@ -8,7 +8,7 @@ export const discoverCompanyJobs = async (req, res) => {
     const userId = req.user?._id || req.user?.id || req.body.userId;
 
     const companyName = String(req.body.companyName || "").trim();
-
+    
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -23,6 +23,7 @@ export const discoverCompanyJobs = async (req, res) => {
       });
     }
 
+    
     const result = await discoverCompanyJobsForCandidate({
       userId,
       companyName,

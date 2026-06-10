@@ -9,11 +9,11 @@ const isCompanyMatched = (currentCompany = "", jobCompanyName = "") => {
     return false;
   }
 
-  // Strict match only.
-  // Airbnb === Airbnb
-  // Airbnb Private Limited === Airbnb
-  // Airbnb India === Airbnb only if normalizeCompanyName removes "india"
-  return normalizedCurrentCompany === normalizedJobCompany;
+  return (
+    normalizedCurrentCompany === normalizedJobCompany ||
+    normalizedCurrentCompany.includes(normalizedJobCompany) ||
+    normalizedJobCompany.includes(normalizedCurrentCompany)
+  );
 };
 
 export const getAlumniCountForCompany = async (companyName = "") => {
@@ -22,7 +22,7 @@ export const getAlumniCountForCompany = async (companyName = "") => {
   const onboardings = await Onboarding.find({
     currentCompany: {
       $exists: true,
-      $nin: ["", null],
+      $ne: "",
     },
   })
     .select("currentCompany")
@@ -36,6 +36,8 @@ export const getAlumniCountForCompany = async (companyName = "") => {
     }
   }
 
+  console.log(alumaniCount);
+
   return alumniCount;
 };
 
@@ -47,7 +49,7 @@ export const attachAlumniCountToJobs = async (jobs = []) => {
   const onboardings = await Onboarding.find({
     currentCompany: {
       $exists: true,
-      $nin: ["", null],
+      $ne: "",
     },
   })
     .select("currentCompany")

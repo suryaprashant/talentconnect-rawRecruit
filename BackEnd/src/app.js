@@ -131,7 +131,7 @@ import adminBlogRoute from "./routes/admin/adminBlogRoute.js";
 import adminNormalizationRoute from "./routes/admin/adminNormalizationRoute.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import deleteJobRoute from "./routes/deleteJobRoute.js";
-
+import companyJobRoutes from "./routes/companyJobRoutes.js"
 
 
 app.use("/api/auth", authRoutes);
@@ -175,6 +175,8 @@ app.use("/api/notifications" , notificationRoute )
 app.use("/interviews", interviewRoutes);
 
 app.use("/dropdown" , dropDownItems) ;
+
+app.use("/api/company-jobs",companyJobRoutes)
 
 
 //student dashboard
