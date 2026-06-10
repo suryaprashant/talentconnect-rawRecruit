@@ -1,6 +1,6 @@
 import {
   discoverCompanyJobsForCandidate,
-  getSavedDiscoveredJobs,
+  saveSelectedDiscoveredJob,
 } from "../services/companyDiscoveryService.js";
 
 export const discoverCompanyJobs = async (req, res) => {
@@ -8,7 +8,7 @@ export const discoverCompanyJobs = async (req, res) => {
     const userId = req.user?._id || req.user?.id || req.body.userId;
 
     const companyName = String(req.body.companyName || "").trim();
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -23,7 +23,6 @@ export const discoverCompanyJobs = async (req, res) => {
       });
     }
 
-    
     const result = await discoverCompanyJobsForCandidate({
       userId,
       companyName,
@@ -44,11 +43,11 @@ export const discoverCompanyJobs = async (req, res) => {
   }
 };
 
-export const getDiscoveredJobs = async (req, res) => {
+export const saveDiscoveredJob = async (req, res) => {
   try {
-    const userId = req.user?._id || req.user?.id || req.query.userId;
+    const userId = req.user?._id || req.user?.id || req.body.userId;
 
-    const companyName = String(req.params.companyName || "").trim();
+    const job = req.body.job || req.body;
 
     if (!userId) {
       return res.status(401).json({
@@ -56,30 +55,30 @@ export const getDiscoveredJobs = async (req, res) => {
         message: "Unauthorized. User ID not found.",
       });
     }
-    if (!companyName) {
-      return res.status(401).json({
+
+    if (!job || typeof job !== "object") {
+      return res.status(400).json({
         success: false,
-        message: "companyName required!",
+        message: "Job data is required",
       });
     }
 
-    const jobs = await getSavedDiscoveredJobs({
+    const savedJob = await saveSelectedDiscoveredJob({
       userId,
-      companyName: companyName || undefined,
+      job,
     });
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
-      message: "Discovered jobs fetched successfully",
-      count: jobs.length,
-      jobs,
+      message: "Discovered job saved successfully",
+      job: savedJob,
     });
   } catch (error) {
-    console.error("getDiscoveredJobs error:", error);
+    console.error("saveDiscoveredJob error:", error);
 
     return res.status(500).json({
       success: false,
-      message: error.message || "Failed to get discovered jobs",
+      message: error.message || "Failed to save discovered job",
     });
   }
 };

@@ -33,98 +33,80 @@ const fetchJobsByATS = async (companyATS) => {
   return [];
 };
 
-const saveDiscoveredJobs = async ({
-  jobs,
-  userId,
-  preferences,
-  companyATS,
-  companyName,
-}) => {
-  if (!Array.isArray(jobs) || jobs.length === 0) {
-    debugLog("NO JOBS TO SAVE");
-    return [];
+const normalizeAtsSource = (atsSource = "") => {
+  const value = String(atsSource || "").toLowerCase();
+
+  if (value === "greenhouse") return "Greenhouse";
+  if (value === "lever") return "Lever";
+  if (value === "workday") return "Workday";
+
+  return "Custom";
+};
+
+const normalizeDateOrNull = (value) => {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
   }
 
+  return date;
+};
+
+const prepareJobForFrontend = ({
+  job,
+  companyATS,
+  companyName,
+  preferences,
+}) => {
   const companySlug = companyATS.companySlug || createCompanySlug(companyName);
 
-  const savedJobs = await Promise.all(
-    jobs.map(async (job) => {
-      const payload = {
-        candidateId: userId,
-        onboardingId: preferences.onboardingId || null,
+  return {
+    companySlug,
+    companyName: companyATS.companyName || companyName,
+    companyNormalized:
+      companyATS.companyNormalized ||
+      `${createCompanySlug(companyName).toUpperCase()}_CANONICAL`,
 
-        companySlug,
-        companyName: companyATS.companyName || companyName,
-        companyNormalized:
-          companyATS.companyNormalized ||
-          `${createCompanySlug(companyName).toUpperCase()}_CANONICAL`,
+    title: job.title || job.jobTitle || "",
+    jobUrl: job.jobUrl || job.applyUrl || job.applicationUrl || job.url || "",
+    applyUrl: job.applyUrl || job.jobUrl || job.applicationUrl || job.url || "",
 
-        title: job.title || job.jobTitle || "",
-        jobUrl: job.jobUrl || job.applyUrl || job.applicationUrl || job.url || "",
-        applyUrl: job.applyUrl || job.jobUrl || "",
-        location: job.location || "",
-        workMode: job.workMode || "",
-        department: job.department || "",
+    location: job.location || "",
+    workMode: job.workMode || "",
+    department: job.department || "",
 
-        jdSnippet: job.jdSnippet || "",
-        description: job.description || "",
+    jdSnippet: job.jdSnippet || "",
+    description: job.description || "",
 
-        requiredSkills: job.requiredSkills || [],
-        matchedSkills: job.matchedSkills || [],
-        missingSkills: job.missingSkills || [],
+    requiredSkills: Array.isArray(job.requiredSkills) ? job.requiredSkills : [],
+    matchedSkills: Array.isArray(job.matchedSkills) ? job.matchedSkills : [],
+    missingSkills: Array.isArray(job.missingSkills) ? job.missingSkills : [],
 
-        experienceRequired:
-          job.experienceRequired ||
-          job.experienceLevel ||
-          job.experience ||
-          "",
+    experienceRequired:
+      job.experienceRequired ||
+      job.experienceLevel ||
+      job.experience ||
+      "",
 
-        salaryRange: job.salaryRange || "",
-        postedDate: job.postedDate ? new Date(job.postedDate) : null,
+    salaryRange: job.salaryRange || "",
+    postedDate: job.postedDate || null,
 
-        jobId: String(job.jobId || job.id || job._id || ""),
-        atsSource: job.atsSource || companyATS.atsType,
+    jobId: String(job.jobId || job.id || job._id || ""),
+    atsSource: normalizeAtsSource(job.atsSource || companyATS.atsType),
 
-        matchScore: job.matchScore || 0,
-        scoreBreakdown: job.scoreBreakdown || {},
+    matchScore: job.matchScore || 0,
+    scoreBreakdown: job.scoreBreakdown || {},
 
-        alumniCount: job.alumniCount || 0,
-        totalEmployeeCount: job.totalEmployeeCount || 0,
+    alumniCount: job.alumniCount || 0,
+    totalEmployeeCount: job.totalEmployeeCount || 0,
 
-        discoveredAt: new Date(),
-        expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-        isActive: true,
-      };
+    onboardingId: preferences?.onboardingId || null,
 
-      debugLog("SAVING JOB", {
-        candidateId: payload.candidateId,
-        title: payload.title,
-        jobId: payload.jobId,
-        matchScore: payload.matchScore,
-        experienceRequired: payload.experienceRequired,
-      });
-
-      return DiscoveredJob.findOneAndUpdate(
-        {
-          candidateId: payload.candidateId,
-          companySlug: payload.companySlug,
-          jobId: payload.jobId,
-          atsSource: payload.atsSource,
-        },
-        {
-          $set: payload,
-        },
-        {
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true,
-          runValidators: true,
-        }
-      ).lean();
-    })
-  );
-
-  return savedJobs.filter(Boolean);
+    referralRequested: false,
+  };
 };
 
 export const discoverCompanyJobsForCandidate = async ({
@@ -201,9 +183,17 @@ export const discoverCompanyJobsForCandidate = async ({
 
       return (b.matchScore || 0) - (a.matchScore || 0);
     })
-    .slice(0, 5);
+    .slice(0, 5)
+    .map((job) =>
+      prepareJobForFrontend({
+        job,
+        companyATS,
+        companyName,
+        preferences,
+      })
+    );
 
-  debugLog("FINAL RANKED JOBS BEFORE SAVE", {
+  debugLog("FINAL RANKED JOBS RETURNED TO FRONTEND WITHOUT SAVE", {
     total: rankedJobs.length,
     jobs: rankedJobs.map((job) => ({
       title: job.title,
@@ -211,23 +201,6 @@ export const discoverCompanyJobsForCandidate = async ({
       matchScore: job.matchScore,
       alumniCount: job.alumniCount || 0,
       experienceRequired: job.experienceRequired,
-    })),
-  });
-
-  const savedJobs = await saveDiscoveredJobs({
-    jobs: rankedJobs,
-    userId,
-    preferences,
-    companyATS,
-    companyName,
-  });
-
-  debugLog("SAVED JOBS", {
-    totalSaved: savedJobs.length,
-    jobs: savedJobs.map((job) => ({
-      title: job.title,
-      jobId: job.jobId,
-      matchScore: job.matchScore,
     })),
   });
 
@@ -239,31 +212,129 @@ export const discoverCompanyJobsForCandidate = async ({
     candidateExperience: preferences.totalYearsOfExperience,
     candidateExperienceLevel: preferences.experienceLevel,
     totalFetched: fetchedJobs.length,
-    totalMatched: savedJobs.length,
-    jobs: savedJobs,
+    totalMatched: rankedJobs.length,
+    jobs: rankedJobs,
   };
 };
 
-export const getSavedDiscoveredJobs = async ({ userId, companyName }) => {
-  const query = {
-    candidateId: userId,
-    isActive: true,
-    expiresAt: { $gt: new Date() },
-  };
-
-  if (companyName) {
-    query.companySlug = createCompanySlug(companyName);
+export const saveSelectedDiscoveredJob = async ({ userId, job }) => {
+  if (!userId) {
+    throw new Error("User ID is required");
   }
 
-  debugLog("GET SAVED DISCOVERED JOBS QUERY", query);
+  if (!job) {
+    throw new Error("Job data is required");
+  }
 
-  const jobs = await DiscoveredJob.find(query)
-    .sort({ alumniCount: -1, matchScore: -1, createdAt: -1 })
-    .lean();
+  const title = String(job.title || job.jobTitle || "").trim();
 
-  debugLog("GET SAVED DISCOVERED JOBS RESULT", {
-    total: jobs.length,
+  const jobUrl = String(
+    job.jobUrl || job.applyUrl || job.applicationUrl || job.url || ""
+  ).trim();
+
+  const jobId = String(job.jobId || job.id || job._id || "").trim();
+
+  const companyName = String(job.companyName || "").trim();
+
+  const companySlug = String(
+    job.companySlug || createCompanySlug(companyName)
+  ).trim();
+
+  const atsSource = normalizeAtsSource(job.atsSource);
+
+  if (!title) {
+    throw new Error("Job title is required");
+  }
+
+  if (!jobUrl) {
+    throw new Error("Job URL is required");
+  }
+
+  if (!jobId) {
+    throw new Error("Job ID is required");
+  }
+
+  if (!companyName) {
+    throw new Error("Company name is required");
+  }
+
+  if (!companySlug) {
+    throw new Error("Company slug is required");
+  }
+
+  const preferences = await getCandidatePreferencesFromOnboarding(userId);
+
+  const payload = {
+    candidateId: userId,
+    onboardingId: preferences?.onboardingId || job.onboardingId || null,
+
+    companySlug,
+    companyName,
+    companyNormalized:
+      job.companyNormalized ||
+      `${createCompanySlug(companyName).toUpperCase()}_CANONICAL`,
+
+    title,
+    jobUrl,
+    applyUrl: job.applyUrl || jobUrl,
+
+    location: job.location || "",
+    workMode: job.workMode || "",
+    department: job.department || "",
+
+    jdSnippet: job.jdSnippet || "",
+    description: job.description || "",
+
+    requiredSkills: Array.isArray(job.requiredSkills) ? job.requiredSkills : [],
+    matchedSkills: Array.isArray(job.matchedSkills) ? job.matchedSkills : [],
+    missingSkills: Array.isArray(job.missingSkills) ? job.missingSkills : [],
+
+    experienceRequired: job.experienceRequired || "",
+    salaryRange: job.salaryRange || "",
+    postedDate: normalizeDateOrNull(job.postedDate),
+
+    jobId,
+    atsSource,
+
+    matchScore: Number(job.matchScore || 0),
+    scoreBreakdown: job.scoreBreakdown || {},
+
+    alumniCount: Number(job.alumniCount || 0),
+    totalEmployeeCount: Number(job.totalEmployeeCount || 0),
+
+    discoveredAt: new Date(),
+    expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+
+    isActive: true,
+    referralRequested: Boolean(job.referralRequested || false),
+    referralRequestId: job.referralRequestId || undefined,
+  };
+
+  debugLog("SAVING SELECTED DISCOVERED JOB", {
+    candidateId: payload.candidateId,
+    companySlug: payload.companySlug,
+    jobId: payload.jobId,
+    atsSource: payload.atsSource,
+    title: payload.title,
   });
 
-  return jobs;
+  const savedJob = await DiscoveredJob.findOneAndUpdate(
+    {
+      candidateId: payload.candidateId,
+      companySlug: payload.companySlug,
+      jobId: payload.jobId,
+      atsSource: payload.atsSource,
+    },
+    {
+      $set: payload,
+    },
+    {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+      runValidators: true,
+    }
+  ).lean();
+
+  return savedJob;
 };
