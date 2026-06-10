@@ -3,7 +3,6 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../common/redis.js";
 import { alumniNetworkQueue } from "../queue/alumniNetworkQueue.js"; // Make sure you import the queue
-
 import {
   processAlumniNetworkNotification,
 } from "../services/alumniNetworkNotificationService.js";
