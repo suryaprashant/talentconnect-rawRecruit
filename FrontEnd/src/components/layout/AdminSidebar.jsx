@@ -19,7 +19,6 @@ const sidebarItems = [
   {name:   "Referral Posted", to: "/admin/referral-posted", icon :<IoAlbums />},
   { name:  "Manage Referral", to:"/admin/manage-referral",icon:<RiAccountPinCircleFill />},
   { name: "Manage Blogs", to: "/admin/manage-blogs", icon: <IoAlbums /> },
-  { name: "Normalization Logs", to: "/admin/normalization-logs", icon: <IoAlbums /> },
   { name:  "Scheduled Interviews", to:"/admin/scheduled-interviews",icon:<RiAccountPinCircleFill />},
   { name: "Jobs & Drives", to: "/admin/jobs", icon: <FaBriefcase /> },
   { name: "Applications", to: "/admin/applications", icon: <FaClipboardList /> },
