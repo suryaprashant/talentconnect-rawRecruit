@@ -6,6 +6,8 @@ import {
   getInterviewById,
   updateInterviewStatus,
   getInterviews,
+  getUnreadInterviews,
+  markInterviewAsRead,
 } from "../controllers/interviewController.js";
 
 const router = express.Router();
@@ -24,4 +26,6 @@ router.get("/:interviewId", secureRoute, getInterviewById);
 // Update interview status (Completed / Cancelled)
 router.patch("/:interviewId/status", secureRoute, updateInterviewStatus);
 
+router.get("/unread", secureRoute, getUnreadInterviews);
+router.patch("/:interviewId/mark-read", secureRoute, markInterviewAsRead);
 export default router;

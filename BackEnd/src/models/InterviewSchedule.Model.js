@@ -101,6 +101,11 @@ const interviewScheduleSchema = new mongoose.Schema(
       enum: ["PENDING", "SENT", "FAILED"],
       default: "PENDING",
     },
+
+    readByApplicant: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

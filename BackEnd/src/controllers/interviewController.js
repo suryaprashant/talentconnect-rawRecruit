@@ -186,3 +186,102 @@ export async function getInterviewById(req, res) {
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
+
+export const getUnreadInterviews = async (req, res) => {
+  try {
+    const authId = req.user._id;
+    const userType = req.user.userType;
+
+    let query = {
+      readByApplicant: false,
+    };
+
+    /**
+     * WHO CAN SEE WHICH UNREAD INTERVIEWS
+     */
+
+    // College
+    if (userType === "college") {
+      query.applicantAuthId = authId;
+      query.applicantType = "college";
+    }
+
+    // Student / Fresher / Professional
+    else if (
+      userType === "student" ||
+      userType === "fresher" ||
+      userType === "professional"
+    ) {
+      query.applicantAuthId = authId;
+      query.applicantType = userType;
+    }
+
+    // Companies don't have applicant notifications
+    else {
+      return res.status(403).json({
+        success: false,
+        message: "Unread interview notifications are only available for applicants.",
+      });
+    }
+
+    const interviews = await InterviewSchedule.find(query)
+      .populate("jobId", "jobType title companyName")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: interviews.length,
+      data: interviews,
+    });
+  } catch (error) {
+    console.error("getUnreadInterviews error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch unread interviews",
+    });
+  }
+};
+
+export const markInterviewAsRead = async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+    const authId = req.user._id;
+    const userType = req.user.userType;
+
+    const interview = await InterviewSchedule.findOneAndUpdate(
+      {
+        _id: interviewId,
+        applicantAuthId: authId,
+        applicantType: userType,
+      },
+      {
+        $set: {
+          readByApplicant: true,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Interview marked as read",
+      data: interview,
+    });
+  } catch (error) {
+    console.error("markInterviewAsRead error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to mark interview as read",
+    });
+  }
+};
