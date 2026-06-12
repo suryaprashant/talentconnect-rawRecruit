@@ -20,12 +20,14 @@ router.get("/company", secureRoute, getCompanyInterviews);
 // College dashboard – scheduled interviews
 router.get("/college", secureRoute, getCollegeInterviews);
 
+router.get("/unread", secureRoute, getUnreadInterviews);
+
 // Single interview detail (optional – for modal/detail page)
 router.get("/:interviewId", secureRoute, getInterviewById);
 
 // Update interview status (Completed / Cancelled)
 router.patch("/:interviewId/status", secureRoute, updateInterviewStatus);
 
-router.get("/unread", secureRoute, getUnreadInterviews);
+
 router.patch("/:interviewId/mark-read", secureRoute, markInterviewAsRead);
 export default router;
