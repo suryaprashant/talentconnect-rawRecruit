@@ -1,0 +1,83 @@
+import express from "express";
+import adminAuth from "../../middlewares/adminMiddleware.js";
+import {getAdminDashboardOverView, getAdminScheduledInterviews, scheduleInterviewByAdmin} from "../../controllers/admin/adminDashboardController.js"
+import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin, updateJobVisibilityThreshold} from "../../controllers/admin/jobDriveManagementController.js";
+import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from "../../controllers/admin/applicationManagementController.js";
+import {
+  getRelevancyWeights,
+  updateRelevancyWeights,
+   getRelevancyWeightsProfessional,
+  updateRelevancyWeightsProfessional,
+} from "../../controllers/Relevancyweightscontroller.js";
+
+const router = express.Router();
+
+// Apply admin authentication to all dashboard routes
+router.use(adminAuth);
+
+// Admin dashboard overview
+router.get('/overviewdata', getAdminDashboardOverView);
+router.get("/overview", getAdminDashboardOverView);
+
+router.get("/relevancy-weights", adminAuth, getRelevancyWeights);
+router.patch("/relevancy-weights", adminAuth,updateRelevancyWeights);
+
+router.get("/relevancy-weights-professional", adminAuth, getRelevancyWeightsProfessional);
+router.patch("/relevancy-weights-professioanl", adminAuth,updateRelevancyWeightsProfessional);
+
+
+router.get(
+  "/referral-jobs/pending",
+  adminAuth,
+  getPendingReferralJobsForAdmin
+);
+router.patch(
+  "/updateThreshold",
+  adminAuth,
+  updateJobVisibilityThreshold
+
+);
+
+router.get(
+  "/referral-jobs/accepted",
+  adminAuth,
+  getAcceptedReferralJobsForAdmin
+);
+
+
+//admin approve/reject step 2
+router.patch(
+  "/referral-jobs/:jobId/approval",
+  adminAuth,
+  updateReferralJobApprovalStatus
+);
+
+// GET referral job applications
+router.get(
+  "/referral-applications",
+  adminAuth,
+  getReferralApplicationsForAdmin
+);
+
+// PATCH approve / reject referral application
+router.patch(
+  "/referral-applications/:applicationId",
+  adminAuth,
+  updateReferralApplicationStatus
+);
+
+//admin schedule interview for referral application
+router.post(
+  "/admin/schedule-interview",
+  adminAuth,
+  scheduleInterviewByAdmin
+);
+
+
+//admin get interview call
+router.get(
+  "/interviews",
+  adminAuth,
+  getAdminScheduledInterviews
+);
+export default router;

@@ -1,0 +1,281 @@
+import React, { useState, useEffect } from "react";
+import { AlertCircle, Search } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
+const ServiceRequestManagement = () => {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterType, setFilterType] = useState("all");
+  const [statistics, setStatistics] = useState(null);
+  const [pagination, setPagination] = useState(null);
+
+  const ITEMS_PER_PAGE = 10;
+
+  const REQUEST_TYPES = [
+    "careerCounseling",
+    "seminar",
+    "training",
+    "workshop",
+    "internship",
+    "placement",
+    "other"
+  ];
+
+  // Fetch service requests data
+  const fetchRequests = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/servicerequest/requests-board`,
+        {
+          page,
+          limit: ITEMS_PER_PAGE,
+          search: searchTerm,
+          status: filterStatus,
+          requestType: filterType
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.success) {
+        setRequests(response.data.data.requests);
+        setPagination(response.data.data.pagination);
+        setStatistics(response.data.data.statistics);
+        setCurrentPage(page);
+      }
+    } catch (error) {
+      console.error("Error fetching service requests:", error);
+      toast.error("Failed to fetch service requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch and refetch on filter change
+  useEffect(() => {
+    fetchRequests(1);
+  }, [searchTerm, filterStatus, filterType]);
+
+  const getStatusColor = (status) => {
+    const statusLower = (status || '').toLowerCase();
+    switch (statusLower) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-700";
+      case "approved":
+      case "in progress":
+        return "bg-blue-100 text-[#143694]";
+      case "completed":
+        return "bg-green-100 text-green-700";
+      case "rejected":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getTypeColor = (type) => {
+    const colors = {
+      careerCounseling: "bg-purple-100 text-purple-700",
+      seminar: "bg-indigo-100 text-indigo-700",
+      training: "bg-cyan-100 text-cyan-700",
+      workshop: "bg-teal-100 text-teal-700",
+      internship: "bg-lime-100 text-lime-700",
+      placement: "bg-orange-100 text-orange-700",
+      other: "bg-gray-100 text-gray-700"
+    };
+    return colors[type] || "bg-gray-100 text-gray-700";
+  };
+
+  return (
+    <main className="min-h-screen">
+      <div className="p-6 space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="responsive-title font-bold text-slate-900 mb-2">
+              Service Request Management
+            </h1>
+            <p className="text-slate-600">
+              Track and manage all service requests from colleges and companies
+            </p>
+          </div>
+          <div className="mt-4 md:mt-0">
+            <div className="inline-flex items-center rounded-md border font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 text-lg px-3 py-1">
+              {statistics?.total || 0} requests
+            </div>
+          </div>
+        </div>
+
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {[
+            { count: statistics?.total || 0, label: "Total", color: "text-[#143694]" },
+            { count: statistics?.pending || 0, label: "Pending", color: "text-yellow-700" },
+            { count: statistics?.inProgress || 0, label: "In Progress", color: "text-slate-700" },
+            { count: statistics?.completed || 0, label: "Completed", color: "text-green-700" },
+            { count: statistics?.rejected || 0, label: "Rejected", color: "text-red-700" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="rounded-xl border bg-card text-card-foreground shadow text-center"
+            >
+              <div className="p-6 pt-6">
+                <div className={`text-2xl font-bold ${item.color}`}>
+                  {item.count}
+                </div>
+                <div className="text-sm text-slate-600">{item.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Service Requests Table */}
+        <div className="rounded-xl border bg-card text-card-foreground shadow">
+          <div className="flex flex-col space-y-1.5 p-6">
+            <div className="font-semibold leading-none tracking-tight flex items-center space-x-2">
+              <AlertCircle className="w-5 h-5" />
+              <span>All Service Requests</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              View and manage service requests
+            </div>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="p-6 pt-0 flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 pl-10 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                placeholder="Search by requester name, email, organization..."
+              />
+            </div>
+            
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="flex h-9 items-center justify-between w-full lg:w-48 border rounded-md px-3 py-2 text-sm shadow-sm bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
+            {/* Type Filter */}
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="flex h-9 items-center justify-between w-full lg:w-48 border rounded-md px-3 py-2 text-sm shadow-sm bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <option value="all">All Types</option>
+              {REQUEST_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Table */}
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full caption-bottom text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="p-2 text-left font-medium">Requester</th>
+                  <th className="p-2 text-left font-medium">Type</th>
+                  <th className="p-2 text-left font-medium">Status</th>
+                  <th className="p-2 text-left font-medium">Organization</th>
+                  <th className="p-2 text-left font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                      Loading service requests...
+                    </td>
+                  </tr>
+                ) : requests.length > 0 ? (
+                  requests.map((req) => (
+                    <tr key={req._id} className="border-b hover:bg-slate-50">
+                      <td className="p-2">
+                        <div className="font-medium">{req.requesterName || "N/A"}</div>
+                        <div className="text-xs text-slate-500">{req.requesterEmail || ""}</div>
+                      </td>
+                      <td className="p-2">
+                        <div className={`inline-flex items-center rounded-md ${getTypeColor(req.serviceRequestType)} px-2 py-0.5 text-xs font-semibold`}>
+                          {(req.serviceRequestType || "Other")
+                            .split(/(?=[A-Z])/)
+                            .join(" ")
+                            .toUpperCase()}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className={`inline-flex items-center rounded-md ${getStatusColor(req.status)} px-2 py-0.5 text-xs font-semibold`}>
+                          {(req.status || "pending").charAt(0).toUpperCase() + (req.status || "pending").slice(1)}
+                        </div>
+                      </td>
+                      <td className="p-2">{req.organizationName || "N/A"}</td>
+                      <td className="p-2">
+                        {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : "N/A"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                      No service requests found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 px-6 pb-6">
+              <div className="text-sm text-slate-600">
+                Page {pagination.currentPage} of {pagination.totalPages} • Total Requests: {pagination.totalServiceRequests}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fetchRequests(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  className="px-4 py-2 border rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => fetchRequests(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  className="px-4 py-2 border rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default ServiceRequestManagement;

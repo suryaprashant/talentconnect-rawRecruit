@@ -1,0 +1,254 @@
+
+//import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
+import employerOnboardingModel from '../../models/employerDashboard/employerOnboardingModel.js';
+import cloudinary from '../../../config/cloudinary.js';
+import streamifier from 'streamifier';
+import Auth from '../../models/authModel.js'
+import { getCompanyService, updateCompanyProfileService, createProfileService, createEmployerProfileService } from '../../services/companyService.js';
+import { updateAuthUserService } from '../../services/authService.js';
+
+// Helper function to upload a file stream to Cloudinary
+const streamUpload = (buffer, folder) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { resource_type: 'auto', folder: `rawrecruit/${folder}` },
+            (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+    });
+};
+
+// POST: Create onboarding profile
+export const createEmployerOnboarding = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const company = await getCompanyService(userId);
+    
+        if (!company) {
+            return res.status(400).json({ message: 'Onboarding already exists for this user.' });
+        }
+
+        const { employerDetails, companyDetails, hiringPreferences } = req.body;
+        const files = req.files;
+        const uploads = {};
+
+        // Handle file uploads
+        if (files?.profileImage?.[0]) {
+            uploads.profileImageUrl = (await streamUpload(files.profileImage[0].buffer, 'employerProfileImages')).secure_url;
+        }
+        if (files?.backgroundImage?.[0]) {
+            uploads.backgroundImageUrl = (await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')).secure_url;
+        }
+        const parsedEmployerDetails = JSON.parse(employerDetails);
+        const parsedCompanyDetails = JSON.parse(companyDetails);
+        const parsedHiringPreferences = JSON.parse(hiringPreferences);
+
+        // Create the new document using service
+       const onboardingData = await createProfileService({
+          userId,
+          employerDetails: {
+            ...parsedEmployerDetails,
+            ...uploads, // ✅ CORRECT PLACE
+          },
+          companyDetails: parsedCompanyDetails,
+          hiringPreferences: parsedHiringPreferences,
+        });
+
+        const updatedUser = await updateAuthUserService(userId, {
+            userType: "employer",
+            onboardingCompleted: true, // Set onboarding as completed
+            onboardingStep: 6 // Set to final step
+        });
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found after update." });
+        }
+
+        res.status(201).json({
+            message: 'Onboarding created successfully.',
+            profile: onboardingData,
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error('Error in createEmployerOnboarding:', error);
+        res.status(500).json({ message: 'Failed to create onboarding.', error: error.message });
+    }
+};
+
+// export const createEmployerOnboarding = async (req, res) => {
+//     try {
+//         if (!req.user || !req.user._id) {
+//             return res.status(401).json({ message: "Unauthorized" });
+//         }
+
+//         const userId = req.user._id;
+
+//         const company = await getCompanyService(userId);
+
+// if (company.success && company.data.length > 0) {
+//     return res.status(400).json({
+//         message: 'Onboarding already exists for this user.'
+//     });
+// }
+
+
+//         const employerDetails = req.body.employerDetails
+//             ? JSON.parse(req.body.employerDetails)
+//             : {};
+
+//         const companyDetails = req.body.companyDetails
+//             ? JSON.parse(req.body.companyDetails)
+//             : {};
+
+//         const hiringPreferences = req.body.hiringPreferences
+//             ? JSON.parse(req.body.hiringPreferences)
+//             : {};
+
+//         const uploads = {};
+//         const files = req.files;
+
+//         if (files?.profileImage?.[0]) {
+//             uploads.profileImageUrl = (
+//                 await streamUpload(files.profileImage[0].buffer, 'employerProfileImages')
+//             ).secure_url;
+//         }
+
+//         if (files?.backgroundImage?.[0]) {
+//             uploads.backgroundImageUrl = (
+//                 await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')
+//             ).secure_url;
+//         }
+
+//         const onboardingData = await createProfileService({
+//             userId,
+//             ...uploads,
+//             employerDetails,
+//             companyDetails,
+//             hiringPreferences
+//         });
+
+//         const updatedUser = await updateAuthUserService(userId, {
+//             userType: "employer",
+//             onboardingCompleted: true,
+//             onboardingStep: 6
+//         });
+
+//         res.status(201).json({
+//             message: "Onboarding created successfully",
+//             profile: onboardingData,
+//             user: updatedUser
+//         });
+
+//     } catch (error) {
+//         console.error("Error in createEmployerOnboarding:", error);
+//         res.status(500).json({
+//             message: "Failed to create onboarding",
+//             error: error.message
+//         });
+//     }
+// };
+
+// GET: Fetch onboarding profile
+export const getEmployerOnboarding = async (req, res) => {
+
+    try {
+        const userId = req.user._id;
+        const onboarding = await getCompanyService(userId);
+        //console.log(onboarding);
+        if (!onboarding) {
+            return res.status(404).json({ message: 'No onboarding data found.' });
+        }
+        //   console.log("Employer data aa rha hai ");
+        res.status(200).json({ message: 'Success', profile: onboarding.data[0] });
+    } catch (error) {
+        console.error('Error in getEmployerOnboarding:', error);
+        res.status(500).json({ message: 'Failed to fetch onboarding.', error: error.message });
+    }
+};
+
+// PUT: Update onboarding profile
+export const updateEmployerOnboarding = async (req, res) => {
+      try {
+        const userId = req.user._id;
+        const { employerDetails, companyDetails, hiringPreferences } = req.body;
+        const files = req.files;
+        const updates = {};
+
+        // Handle file uploads and add them to the root of the update object
+        if (files?.profileImage?.[0]) {
+            // FIX: Update the root `profileImageUrl` field
+            updates.profileImageUrl = (await streamUpload(files.profileImage[0].buffer, 'employerProfileImages')).secure_url;
+        }
+        if (files?.backgroundImage?.[0]) {
+            // FIX: Update the root `backgroundImageUrl` field
+            updates.backgroundImageUrl = (await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')).secure_url;
+        }
+
+        // Use dot notation to update nested fields without overwriting entire objects
+        if (employerDetails) {
+            Object.entries(JSON.parse(employerDetails)).forEach(([key, value]) => {
+                updates[`employerDetails.${key}`] = value;
+            });
+        }
+        if (companyDetails) {
+            Object.entries(JSON.parse(companyDetails)).forEach(([key, value]) => {
+                updates[`companyDetails.${key}`] = value;
+            });
+        }
+        if (hiringPreferences) {
+            Object.entries(JSON.parse(hiringPreferences)).forEach(([key, value]) => {
+                updates[`hiringPreferences.${key}`] = value;
+            });
+        }
+
+        const updatedProfile = await updateCompanyProfileService(userId, updates);
+
+        if (!updatedProfile) {
+            return res.status(404).json({ message: 'No onboarding profile found to update.' });
+        }
+
+        res.status(200).json({ message: 'Onboarding updated successfully.', profile: updatedProfile });
+    } catch (error) {
+        console.error('Error in updateEmployerOnboarding:', error);
+        res.status(500).json({ message: 'Failed to update onboarding.', error: error.message });
+    }
+};
+
+// employerProfileController.js
+export const uploadSingleImage = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { imageType } = req.body;
+        const file = req.file;
+
+        if (!file) return res.status(400).json({ message: 'No image file provided.' });
+
+        // 1. Upload to Cloudinary
+        const folder = imageType === 'profile' ? 'employerProfileImages' : 'employerBackgroundImages';
+        const result = await streamUpload(file.buffer, folder);
+
+        // 2. Map to the nested schema path using dot notation
+        // Based on your EmployerOnboarding schema, these are inside employerDetails
+       // In employerProfileController.js
+       const updatePath = imageType === 'profile' ? 'profileImageUrl' : 'backgroundImageUrl'; //
+      const updates = { [updatePath]: result.secure_url }; //
+
+      const updatedProfile = await updateCompanyProfileService(userId, updates); //
+
+        if (!updatedProfile) {
+            return res.status(404).json({ message: 'Employer profile not found.' });
+        }
+
+        res.status(200).json({
+            message: `${imageType} image uploaded successfully!`,
+            imageUrl: result.secure_url,
+            profile: updatedProfile
+        });
+    } catch (error) {
+        console.error('Error in uploadSingleImage:', error);
+        res.status(500).json({ message: 'Failed to upload image.', error: error.message });
+    }
+};
