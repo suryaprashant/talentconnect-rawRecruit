@@ -12,7 +12,7 @@ startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
 import { app, server } from "./socketIO/server.js";
-
+// For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
