@@ -432,7 +432,7 @@ export const getSentCareerPageRequests = async (req, res) => {
 
     const result = paginatedResponse(requests, total, { page, limit });
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       message: "Sent career page referral requests fetched successfully.",
       ...result,

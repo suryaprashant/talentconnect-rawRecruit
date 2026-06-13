@@ -34,4 +34,6 @@ router.get(
   getSentCareerPageRequests
 );
 
+router.post("/save", secureRoute, saveDiscoveredJob);
+
 export default router;

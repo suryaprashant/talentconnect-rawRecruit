@@ -83,9 +83,17 @@ export const discoverCompanyJobsForCandidate = async ({
 
       return (b.matchScore || 0) - (a.matchScore || 0);
     })
-    .slice(0, 5);
+    .slice(0, 5)
+    .map((job) =>
+      prepareJobForFrontend({
+        job,
+        companyATS,
+        companyName,
+        preferences,
+      })
+    );
 
-  debugLog("FINAL RANKED JOBS BEFORE SAVE", {
+  debugLog("FINAL RANKED JOBS RETURNED TO FRONTEND WITHOUT SAVE", {
     total: rankedJobs.length,
     jobs: rankedJobs.map((job) => ({
       title: job.title,
@@ -93,23 +101,6 @@ export const discoverCompanyJobsForCandidate = async ({
       matchScore: job.matchScore,
       alumniCount: job.alumniCount || 0,
       experienceRequired: job.experienceRequired,
-    })),
-  });
-
-  const savedJobs = await saveDiscoveredJobs({
-    jobs: rankedJobs,
-    userId,
-    preferences,
-    companyATS,
-    companyName,
-  });
-
-  debugLog("SAVED JOBS", {
-    totalSaved: savedJobs.length,
-    jobs: savedJobs.map((job) => ({
-      title: job.title,
-      jobId: job.jobId,
-      matchScore: job.matchScore,
     })),
   });
 
@@ -121,8 +112,8 @@ export const discoverCompanyJobsForCandidate = async ({
     candidateExperience: preferences.totalYearsOfExperience,
     candidateExperienceLevel: preferences.experienceLevel,
     totalFetched: fetchedJobs.length,
-    totalMatched: savedJobs.length,
-    jobs: savedJobs,
+    totalMatched: rankedJobs.length,
+    jobs: rankedJobs,
   };
 };
 
