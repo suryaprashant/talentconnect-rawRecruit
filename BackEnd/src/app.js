@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+dotenv.config(); 
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -12,12 +13,12 @@ startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
 import { app, server } from "./socketIO/server.js";
-
+// For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables - This must be the first logic that needs env vars
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 5000;
