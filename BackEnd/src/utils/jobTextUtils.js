@@ -6,6 +6,50 @@ export const normalize = (value = "") => {
     .trim();
 };
 
+
+
+
+
+export const extractCompanyNameFromCareerUrl = (careerpageUrl = "") => {
+  try {
+    let urlValue = String(careerpageUrl).trim();
+
+    if (!urlValue.startsWith("http://") && !urlValue.startsWith("https://")) {
+      urlValue = `https://${urlValue}`;
+    }
+
+    const url = new URL(urlValue);
+
+    const host = url.hostname
+      .replace(/^www\./, "")
+      .toLowerCase();
+
+    const parts = host.split(".").filter(Boolean);
+
+    if (parts.length < 2) return "";
+
+    const ignoredSubdomains = [
+      "career",
+      "careers",
+      "job",
+      "jobs",
+      "hiring",
+      "work",
+      "apply",
+      "boards",
+    ];
+
+    if (ignoredSubdomains.includes(parts[0])) {
+      return parts[1];
+    }
+
+    // Example: company.in.something.com => company
+    return parts[0];
+  } catch (error) {
+    return "";
+  }
+};
+
 /**
  * Used for ATS slug/search.
  * Example:
@@ -135,4 +179,9 @@ export const uniqueStrings = (items = []) => {
 
 export const escapeRegex = (value = "") => {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+
+export const cleanText = (value = "") => {
+  return String(value).replace(/\s+/g, " ").trim();
 };

@@ -134,11 +134,16 @@ import deleteJobRoute from "./routes/deleteJobRoute.js";
 import companyJobRoutes from "./routes/companyJobRoutes.js"
 
 
+
 app.use("/api/auth", authRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use("/api/blogs", blogRoutes);
 
 app.use('/api/candidate',CandidateRoute)
+
+//care
+
+
 
 // admin related auths
 app.use("/api/admin", adminAuth);
