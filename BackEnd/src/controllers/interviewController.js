@@ -1,5 +1,6 @@
 import InterviewSchedule from "../models/InterviewSchedule.Model.js";
-
+import { JobPostingTable}  from "../models/jobPostingsModel.js";
+import { createNotification } from "../services/notificationService.js";
 {/*export const getInterviews = async (req, res) => {
   try {
     const authId = req.user._id;
@@ -285,3 +286,131 @@ export const markInterviewAsRead = async (req, res) => {
     });
   }
 };
+
+export async function scheduleInterviewByProfessional(req, res) {
+  try {
+    const professionalAuthId = req.user._id;
+
+    const {
+      applicationId,
+      jobId,
+      applicantProfileId,
+      applicantAuthId,
+      applicantType,
+      applicantName,
+      data,
+    } = req.body;
+
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        msg: "Interview data missing",
+      });
+    }
+
+    const { date, time, meetLink, message } = data;
+
+    // 🔒 One interview per application
+    // const alreadyScheduled = await InterviewSchedule.findOne({
+    //   applicationId,
+    // });
+
+    // if (alreadyScheduled) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     msg: "Interview already scheduled",
+    //   });
+    // }
+
+    // Fetch Job
+    const job = await JobPostingTable.findById(jobId);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        msg: "Job not found",
+      });
+    }
+
+    // Professional Snapshot
+    const professionalName =
+      req.user.fullName ||
+      req.user.name ||
+      req.user.firstName ||
+      "Professional";
+
+    const applicantSnapshot = {
+      name: applicantName || "",
+      profileType: applicantType,
+    };
+
+    const interview = await InterviewSchedule.create({
+      jobId,
+      jobType: job.jobType || "Referral",
+      applicationId,
+
+      // Professional becomes owner of interview
+      companyAuthId: professionalAuthId,
+
+      applicantType,
+      applicantAuthId,
+      applicantProfileId,
+
+      applicantSnapshot,
+
+      companySnapshot: {
+        companyName: professionalName,
+
+        scheduledBy: {
+          name: professionalName,
+          email: req.user.email,
+          designation: "Professional",
+        },
+      },
+
+      date,
+      time,
+      meetLink,
+      message,
+
+      status: "Scheduled",
+      emailStatus: "PENDING",
+      readByApplicant: false,
+    });
+
+    // 🔔 Notification
+    await createNotification({
+      recipientId: applicantAuthId,
+      senderId: professionalAuthId,
+
+      type: "INTERVIEW_SCHEDULED",
+
+      message: `${professionalName} scheduled an interview for you`,
+
+      referenceId: applicationId,
+      jobId,
+      jobType: job.jobType,
+
+      meta: {
+        date,
+        time,
+      },
+    });
+    return res.status(201).json({
+      success: true,
+      msg: "Interview scheduled successfully",
+      data: interview,
+    });
+
+  } catch (error) {
+    console.error(
+      "❌ scheduleInterviewByProfessional error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+}

@@ -8,9 +8,12 @@ import {
   getInterviews,
   getUnreadInterviews,
   markInterviewAsRead,
+  scheduleInterviewByProfessional,
 } from "../controllers/interviewController.js";
 
 const router = express.Router();
+
+router.post("/professional/schedule",  secureRoute, scheduleInterviewByProfessional);
 
 router.get("/", secureRoute, getInterviews);
 
