@@ -43,6 +43,8 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 60s
+          command_timeout: 30m
           script: |
             set -e
             cd /var/www/rr-test/talentconnect-rawRecruit
@@ -57,4 +59,4 @@ jobs:
             cd ../BackEnd
             npm install
             pm2 reload rawrecruit-test || pm2 start src/app.js --name rawrecruit-test
-            pm2 reload rr-test-worker || pm2 start src/workers/scoreWorker.js --name rr-test-worker
+            pm2 reload rr-test-worker || pm2 start src/workers/index.js --name rr-test-worker
