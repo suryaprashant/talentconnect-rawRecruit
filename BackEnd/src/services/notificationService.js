@@ -95,6 +95,21 @@ export const NOTIFICATION_SCREEN_MAP = {
     subtopic: "",
     body: {},
   },
+  NEW_REFERRAL_REQUEST: {
+    topic: "Referrals",
+    subtopic: "Received Requests",
+    body: { requestId: "referenceId", userId: "senderId" },
+  },
+  REFERRAL_REQUEST_ACCEPTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { requestId: "referenceId" },
+  },
+  REFERRAL_REQUEST_REJECTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: { requestId: "referenceId" },
+  },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
 const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE", "INTERVIEW_SCHEDULED", "APPLICATION_INTERVIEW_SCHEDULED" ];
@@ -769,5 +784,52 @@ export const notifyReferralJobPosterOnNewApplication = async ({
     console.log(`✅ Notified referrer (${referrerAuthId}) of new approved application`);
   } catch (error) {
     console.error("notifyReferralJobPosterOnNewApplication failed:", error.message);
+  }
+};
+
+export const notifyAlumniOnNewReferralRequest = async ({
+  alumniAuthId,
+  senderUserId,
+  senderName,
+  companyName,
+  requestId,
+}) => {
+  try {
+    await sendNotification({
+      recipientId: alumniAuthId,
+      senderId: senderUserId,
+      type: "NEW_REFERRAL_REQUEST",
+      message: `${senderName} requested a referral for ${companyName}`,
+      referenceId: requestId,
+      jobType: "Referral",
+    });
+  } catch (error) {
+    console.error("notifyAlumniOnNewReferralRequest failed:", error.message);
+  }
+};
+
+export const notifySenderOnReferralRequestStatusChange = async ({
+  senderAuthId,
+  receiverAuthId,
+  status,
+  requestId,
+  companyName,
+}) => {
+  try {
+    const message =
+      status === "accepted"
+        ? `Your referral request for ${companyName} was accepted`
+        : `Your referral request for ${companyName} was declined`;
+
+    await sendNotification({
+      recipientId: senderAuthId,
+      senderId: receiverAuthId,
+      type: status === "accepted" ? "REFERRAL_REQUEST_ACCEPTED" : "REFERRAL_REQUEST_REJECTED",
+      message,
+      referenceId: requestId,
+      jobType: "Referral",
+    });
+  } catch (error) {
+    console.error("notifySenderOnReferralRequestStatusChange failed:", error.message);
   }
 };

@@ -3,7 +3,7 @@ name: Deploy to VPS (Production)
 on:
   push:
     branches:
-      - preprod
+      - Prod
 
 jobs:
   deploy:
@@ -43,12 +43,14 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 60s
+          command_timeout: 30m
           script: |
             set -e
             cd /root/rawrecruit/talentconnect-rawRecruit 
             git fetch origin
-            git checkout preprod
-            git pull origin preprod
+            git checkout Prod
+            git pull origin Prod
 
             cd FrontEnd
             npm install
@@ -57,4 +59,4 @@ jobs:
             cd ../BackEnd
             npm install
             pm2 reload rawrecruit-api || pm2 start src/app.js --name rawrecruit-api
-            pm2 reload rr-worker || pm2 start src/workers/scoreWorker.js --name rr-worker
+            pm2 reload rr-worker || pm2 start src/workers/index.js --name rr-worker

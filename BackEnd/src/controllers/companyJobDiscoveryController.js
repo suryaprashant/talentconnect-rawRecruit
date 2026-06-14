@@ -6,7 +6,12 @@ import CareerPageReferralRequest from "../models/AlumniJobRequest.js";
 import { extractCompanyNameFromCareerUrl } from "../utils/jobTextUtils.js";
 import { paginatedResponse } from "../utils/paginate.js";
 import { notifyOnApplicationStatusChange } from "../services/notificationService.js";
-
+import { logNormalization }
+  from "../services/normalizationLogService.js";
+import { resolveCompany} from "../services/normalizationService.js"
+import { normalizeText }
+  from "../utils/normalizeText.js";
+import { notifyAlumniOnNewReferralRequest, notifySenderOnReferralRequestStatusChange } from "../services/notificationService.js";
 /**
  * POST
  * Candidate sends careerPageUrl.
@@ -33,14 +38,53 @@ export const addCompanyWithCareer = async (req, res) => {
     }
 
     const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
-
+    
     if (!companyName) {
       return res.status(400).json({
         success: false,
         message: "Invalid career page URL. Company name not found.",
       });
     }
+    const companyResult =
+      await resolveCompany(
+        companyName
+      );
 
+    const canonicalCompanyId =
+      companyResult?.canonicalId;
+
+    if (!canonicalCompanyId) {
+
+      await logNormalization({
+        entityType: "company",
+
+        rawInput: companyName,
+
+        normalizedInput:
+          normalizeText(
+            companyName
+          ),
+
+        canonicalId: null,
+
+        displayName: null,
+
+        confidence: null,
+
+        matchType: "unmatched",
+      });
+
+      return res.status(404).json({
+        success: false,
+
+        message:
+          "No alumni found. Company has been submitted for review.",
+
+        companyName,
+
+        pendingReview: true,
+      });
+    }
     const senderProfile = await Onboarding.findOne({
       userId: senderUserId,
     }).lean();
@@ -52,13 +96,15 @@ export const addCompanyWithCareer = async (req, res) => {
       });
     }
 
-    const alumniResult = await getAlumniByCompanyForCandidate({
-      userId: senderUserId,
-      companyName,
-      page: 1,
-      limit: 100,
-      skip: 0,
-    });
+    const alumniResult =
+      await getAlumniByCompanyForCandidate({
+        userId: senderUserId,
+        companyName,
+        canonicalCompanyId,
+        page: 1,
+        limit: 100,
+        skip: 0,
+      });
 
     if (!alumniResult.alumFound) {
       return res.status(404).json({
@@ -102,14 +148,17 @@ export const addCompanyWithCareer = async (req, res) => {
 
       requests.push(request);
 
-      // await notifyOnApplicationStatusChange({
-      //   recipientId: alumni.userId,
-      //   senderId: senderUserId,
-      //   companyName: "Professional Referral",
-      //   status: "Referred To Company",
-      //   applicationId: request._id,
-      //   jobType: "Referral",
-      // });
+      if (request.createdAt.getTime() === request.updatedAt.getTime()) {
+        notifyAlumniOnNewReferralRequest({
+          alumniAuthId: alumni.userId,
+          senderUserId,
+          senderName: senderProfile?.name || "Someone",
+          companyName,
+          requestId: request._id,
+        }).catch((err) =>
+          console.error("Referral request notification failed:", err.message)
+        );
+      }
     }
 
     return res.status(201).json({
@@ -254,14 +303,15 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       });
     }
 
-    // await notifyOnApplicationStatusChange({
-    //   recipientId: request.senderUserId,
-    //   senderId: receiverUserId,
-    //   companyName: "Professional Referral",
-    //   status: status === "accepted" ? "Accepted" : "Rejected",
-    //   applicationId: request._id,
-    //   jobType: "Referral",
-    // });
+    notifySenderOnReferralRequestStatusChange({
+      senderAuthId: request.senderUserId,
+      receiverAuthId: receiverUserId,
+      status,
+      requestId: request._id,
+      companyName: request.companyName,
+    }).catch((err) =>
+      console.error("Referral status notification failed:", err.message)
+    );
 
     return res.status(200).json({
       success: true,
