@@ -86,10 +86,28 @@ const isPastEmployeeOfCompany = (person, companyRegex) => {
     : false;
 };
 
-const formatAlumniUser = ({ person, companyRegex, companyName, sourceType }) => {
-  const isCurrentEmployee = isCurrentEmployeeOfCompany(person, companyRegex);
+const formatAlumniUser = ({ person, canonicalCompanyId, companyName, sourceType }) => {
+  const isCurrentEmployee =
+    person.currentCompany_canonical_id ===
+      canonicalCompanyId ||
+
+    person.experiences?.some(
+      (exp) =>
+        exp.company_canonical_id ===
+        canonicalCompanyId &&
+        (exp.isCurrent === true ||
+          !exp.endDate)
+    );
+
   const isAlumni =
-    sourceType === "network" && isPastEmployeeOfCompany(person, companyRegex);
+    sourceType === "network" &&
+    person.experiences?.some(
+      (exp) =>
+        exp.company_canonical_id ===
+        canonicalCompanyId &&
+        (exp.isCurrent === false ||
+          Boolean(exp.endDate))
+    );
 
   return {
     _id: person._id,
@@ -130,6 +148,7 @@ const formatAlumniUser = ({ person, companyRegex, companyName, sourceType }) => 
 export const getAlumniByCompanyForCandidate = async ({
   userId,
   companyName,
+  canonicalCompanyId,
   page = 1,
   limit = 100,
   skip = 0,
@@ -155,7 +174,7 @@ export const getAlumniByCompanyForCandidate = async ({
     };
   }
 
-  const companyRegex = new RegExp(escapeRegex(searchedCompany), "i");
+  // const companyRegex = new RegExp(escapeRegex(searchedCompany), "i");
 
   const myProfile = await Onboarding.findOne({ userId }).lean();
 
@@ -163,32 +182,78 @@ export const getAlumniByCompanyForCandidate = async ({
     throw new Error("Profile not found. Complete onboarding.");
   }
 
-  const myCompanies = getCompanyValuesFromProfile(myProfile);
+  // const myCompanies = getCompanyValuesFromProfile(myProfile);
+  const myCompanies = [
+  ...new Set([
+    myProfile.currentCompany_canonical_id,
+
+    ...(myProfile.experiences || [])
+      .map(
+        (exp) =>
+          exp.company_canonical_id
+      ),
+  ].filter(Boolean)),
+];
 
   let networkUsers = [];
 
+  // if (myCompanies.length > 0) {
+  //   const networkConditions = myCompanies.flatMap((company) => {
+  //     const regex = new RegExp(escapeRegex(company), "i");
+
+  //     return [
+  //       { currentCompany: regex },
+  //       { currentCompany_display: regex },
+  //       { currentCompany_canonical_id: regex },
+  //       { "experiences.company": regex },
+  //       { "experiences.company_display": regex },
+  //       { "experiences.company_canonical_id": regex },
+  //     ];
+  //   });
+
+  //   networkUsers = await Onboarding.find({
+  //     userId: { $ne: userId },
+  //     $or: networkConditions,
+  //   }).lean();
+  // }
   if (myCompanies.length > 0) {
-    const networkConditions = myCompanies.flatMap((company) => {
-      const regex = new RegExp(escapeRegex(company), "i");
 
-      return [
-        { currentCompany: regex },
-        { currentCompany_display: regex },
-        { currentCompany_canonical_id: regex },
-        { "experiences.company": regex },
-        { "experiences.company_display": regex },
-        { "experiences.company_canonical_id": regex },
-      ];
-    });
+  networkUsers =
+    await Onboarding.find({
+      userId: {
+        $ne: userId,
+      },
 
-    networkUsers = await Onboarding.find({
-      userId: { $ne: userId },
-      $or: networkConditions,
+      $or: [
+        {
+          currentCompany_canonical_id: {
+            $in: myCompanies,
+          },
+        },
+
+        {
+          "experiences.company_canonical_id": {
+            $in: myCompanies,
+          },
+        },
+      ],
     }).lean();
-  }
+}
 
-  const networkMatchedUsers = networkUsers.filter((person) =>
-    personMatchesCompany(person, companyRegex),
+  // const networkMatchedUsers = networkUsers.filter((person) =>
+  //   personMatchesCompany(person, companyRegex),
+  // );
+const networkMatchedUsers =
+  networkUsers.filter(
+    (person) =>
+      person.currentCompany_canonical_id ===
+        canonicalCompanyId ||
+
+      person.experiences?.some(
+        (exp) =>
+          exp.company_canonical_id ===
+          canonicalCompanyId
+      )
   );
 
   let sourceType = "network";
@@ -197,17 +262,24 @@ export const getAlumniByCompanyForCandidate = async ({
   if (finalUsers.length === 0) {
     sourceType = "global_current_employee";
 
-    finalUsers = await Onboarding.find({
-      userId: { $ne: userId },
-      $or: [
-        { currentCompany: companyRegex },
-        { currentCompany_display: companyRegex },
-        { currentCompany_canonical_id: companyRegex },
-        { "experiences.company": companyRegex },
-        { "experiences.company_display": companyRegex },
-        { "experiences.company_canonical_id": companyRegex },
-      ],
-    }).lean();
+    finalUsers =
+      await Onboarding.find({
+        userId: {
+          $ne: userId,
+        },
+
+        $or: [
+          {
+            currentCompany_canonical_id:
+              canonicalCompanyId,
+          },
+
+          {
+            "experiences.company_canonical_id":
+              canonicalCompanyId,
+          },
+        ],
+      }).lean();
   }
 
   const uniqueUsers = [
@@ -221,7 +293,7 @@ export const getAlumniByCompanyForCandidate = async ({
   const users = paginatedUsers.map((person) =>
     formatAlumniUser({
       person,
-      companyRegex,
+      canonicalCompanyId,
       companyName: searchedCompany,
       sourceType,
     }),
