@@ -520,12 +520,15 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
       },
       { $unwind: "$jobInfo" },
 
+      
+
       // 3️⃣ Security Filter: Only get applications for jobs posted by THIS professional
       {
         $match: {
           "jobInfo.candidatePosted": new mongoose.Types.ObjectId(professionalProfileId)
         }
       },
+
 
       // 4️⃣ Resolve the actual Applicant ID 
       // (Handles cases where an employer refers a company-linked profile)
@@ -632,6 +635,7 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
     ];
 
     const data = await Application.aggregate(pipeline);
+    console.log(data);
 
     return {
       success: true,
