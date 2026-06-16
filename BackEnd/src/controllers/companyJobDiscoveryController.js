@@ -9,10 +9,19 @@ import { notifyOnApplicationStatusChange } from "../services/notificationService
 import Application from "../models/applicationModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import {
-  
   getStudentService,
 } from "../services/studentService.js";
-
+import { logNormalization }
+  from "../services/normalizationLogService.js";
+import { resolveCompany} from "../services/normalizationService.js"
+import { normalizeText }
+  from "../utils/normalizeText.js";
+import { notifyAlumniOnNewReferralRequest, notifySenderOnReferralRequestStatusChange } from "../services/notificationService.js";
+/**
+ * POST
+ * Candidate sends careerPageUrl.
+ * senderUserId comes from token.
+ */
 export const addCompanyWithCareer = async (req, res) => {
   try {
     const senderUserId = req.user?._id || req.user?.id;
@@ -97,6 +106,7 @@ export const addCompanyWithCareer = async (req, res) => {
     const alumniResult = await getAlumniByCompanyForCandidate({
       userId: senderUserId,
       companyName,
+      canonicalCompanyId,
       page: 1,
       limit: 100,
       skip: 0,
@@ -152,7 +162,17 @@ export const addCompanyWithCareer = async (req, res) => {
       );
 
       requests.push(request);
-
+      if (request.createdAt.getTime() === request.updatedAt.getTime()) {
+        notifyAlumniOnNewReferralRequest({
+          alumniAuthId: alumni.userId,
+          senderUserId,
+          senderName: senderProfile?.name || "Someone",
+          companyName,
+          requestId: request._id,
+        }).catch((err) =>
+          console.error("Referral request notification failed:", err.message)
+        );
+      }
       let referralJob = await JobPostingTable.findOne({
         referralRequestId: request._id,
         isAskForReferral: true,
@@ -418,7 +438,15 @@ export const updateCareerPageRequestStatus = async (req, res) => {
         new: true,
       },
     );
-
+    notifySenderOnReferralRequestStatusChange({
+      senderAuthId: request.senderUserId,
+      receiverAuthId: receiverUserId,
+      status,
+      requestId: request._id,
+      companyName: request.companyName,
+    }).catch((err) =>
+      console.error("Referral status notification failed:", err.message)
+    );
     return res.status(200).json({
       success: true,
       message: `Referral request ${status} successfully.`,
