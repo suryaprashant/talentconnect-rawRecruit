@@ -128,6 +128,10 @@ const ApplicationSchema = new mongoose.Schema(
       max: 5,
       default: 0,
     },
+    isAskForReferral: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

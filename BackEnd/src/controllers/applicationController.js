@@ -161,8 +161,12 @@ export const getGlobalReferralApplications = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
+    console.log(userId);
+
     // Resolve professional profile
     const userProfile = await getStudentService(userId);
+
+
 
     if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
       return res.status(404).json({
@@ -173,6 +177,8 @@ export const getGlobalReferralApplications = async (req, res, next) => {
 
     const professionalProfileId = userProfile.data[0]._id;
 
+    console.log(professionalProfileId);
+    
     // Fetch all referrals
     const response = await getAllProfessionalReferralsService(
       professionalProfileId,

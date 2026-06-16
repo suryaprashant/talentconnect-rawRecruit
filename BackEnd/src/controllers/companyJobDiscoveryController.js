@@ -6,21 +6,16 @@ import CareerPageReferralRequest from "../models/AlumniJobRequest.js";
 import { extractCompanyNameFromCareerUrl } from "../utils/jobTextUtils.js";
 import { paginatedResponse } from "../utils/paginate.js";
 import { notifyOnApplicationStatusChange } from "../services/notificationService.js";
-import { logNormalization }
-  from "../services/normalizationLogService.js";
-import { resolveCompany} from "../services/normalizationService.js"
-import { normalizeText }
-  from "../utils/normalizeText.js";
-import { notifyAlumniOnNewReferralRequest, notifySenderOnReferralRequestStatusChange } from "../services/notificationService.js";
-/**
- * POST
- * Candidate sends careerPageUrl.
- * senderUserId comes from token.
- */
+import Application from "../models/applicationModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
+import {
+  
+  getStudentService,
+} from "../services/studentService.js";
+
 export const addCompanyWithCareer = async (req, res) => {
   try {
     const senderUserId = req.user?._id || req.user?.id;
-
     const careerPageUrl = String(req.body.careerPageUrl || "").trim();
 
     if (!senderUserId) {
@@ -96,17 +91,20 @@ export const addCompanyWithCareer = async (req, res) => {
       });
     }
 
-    const alumniResult =
-      await getAlumniByCompanyForCandidate({
-        userId: senderUserId,
-        companyName,
-        canonicalCompanyId,
-        page: 1,
-        limit: 100,
-        skip: 0,
-      });
+    const applicantType =
+      senderProfile.profileType || senderProfile.userType || "fresher";
 
-    if (!alumniResult.alumFound) {
+    const alumniResult = await getAlumniByCompanyForCandidate({
+      userId: senderUserId,
+      companyName,
+      page: 1,
+      limit: 100,
+      skip: 0,
+    });
+
+    const alumniList = alumniResult?.data || [];
+
+    if (!alumniResult?.alumFound || alumniList.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No alumni or current employee found for this company.",
@@ -119,20 +117,26 @@ export const addCompanyWithCareer = async (req, res) => {
     }
 
     const requests = [];
+    const applications = [];
+    const referralJobs = [];
 
-    for (const alumni of alumniResult.data) {
-      if (!alumni.userId) continue;
+    for (const alumni of alumniList) {
+      const receiverUserId = alumni?.userId;
+
+      if (!receiverUserId) continue;
+
+      if (String(receiverUserId) === String(senderUserId)) continue;
 
       const request = await CareerPageReferralRequest.findOneAndUpdate(
         {
           senderUserId,
-          receiverUserId: alumni.userId,
+          receiverUserId,
           careerPageUrl,
         },
         {
           $setOnInsert: {
             senderUserId,
-            receiverUserId: alumni.userId,
+            receiverUserId,
             companyName,
             careerPageUrl,
             senderProfile,
@@ -143,21 +147,95 @@ export const addCompanyWithCareer = async (req, res) => {
         {
           new: true,
           upsert: true,
+          setDefaultsOnInsert: true,
         },
       );
 
       requests.push(request);
 
-      if (request.createdAt.getTime() === request.updatedAt.getTime()) {
-        notifyAlumniOnNewReferralRequest({
-          alumniAuthId: alumni.userId,
-          senderUserId,
-          senderName: senderProfile?.name || "Someone",
-          companyName,
-          requestId: request._id,
-        }).catch((err) =>
-          console.error("Referral request notification failed:", err.message)
-        );
+      let referralJob = await JobPostingTable.findOne({
+        referralRequestId: request._id,
+        isAskForReferral: true,
+      });
+
+      const userProfile = await getStudentService(receiverUserId);
+      
+      if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found for this account.",
+      });
+    }
+
+      if (!referralJob) {
+        referralJob = await JobPostingTable.create({
+          candidatePosted:userProfile.data[0]._id,
+
+          postedByUser: receiverUserId,
+
+          jobType: "Referral",
+          approvalStatus: "Approved",
+
+          visibleTo: "All",
+          broadcastType: "Everyone",
+
+          location: ["None"],
+
+          jobTitle: [`Referral request for ${companyName}`],
+          jobCategory: "Referral",
+
+          description: `Referral request for ${companyName}. Career page URL: ${careerPageUrl}`,
+
+          jobStatus: "Open",
+          lookingFor: "Job",
+
+          referralRequestId: request._id,
+          careerPageUrl,
+
+          isAskForReferral: true,
+          inactive: false,
+        });
+      }
+
+      referralJobs.push(referralJob);
+
+      const existingApplication = await Application.findOne({
+        applicant: senderProfile._id,
+        job: referralJob._id,
+        jobType: "Referral",
+        isAskForReferral: true,
+      });
+
+      if (!existingApplication) {
+        const application = await Application.create({
+          applicant: senderProfile._id,
+          applicantType,
+
+          appliedForCompany: null,
+          referralCompany: companyName,
+
+          appliedByType: applicantType,
+          adminApprovalStatus: "Approved",
+
+          job: referralJob._id,
+          jobType: "Referral",
+          isAskForReferral: true,
+
+          isVisited: true,
+
+          statusHistory: [
+            {
+              status: "Applied",
+              date: new Date(),
+            },
+          ],
+
+          currentStatus: "Applied",
+          adminComment: "",
+          rating: 0,
+        });
+
+        applications.push(application);
       }
     }
 
@@ -167,15 +245,26 @@ export const addCompanyWithCareer = async (req, res) => {
       data: {
         companyName,
         careerPageUrl,
-        sourceType: alumniResult.sourceType,
-        totalAlumniFound: alumniResult.data.length,
+        sourceType: alumniResult?.sourceType,
+        totalAlumniFound: alumniList.length,
         totalRequestsSent: requests.length,
-        alumni: alumniResult.data,
+        totalReferralJobsCreated: referralJobs.length,
+        totalApplicationsCreated: applications.length,
+        alumni: alumniList,
         requests,
+        referralJobs,
+        applications,
       },
     });
   } catch (error) {
     console.error("addCompanyWithCareer error:", error);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Referral request already exists for this career page.",
+      });
+    }
 
     return res.status(500).json({
       success: false,
@@ -251,14 +340,13 @@ export const getReceivedCareerPageRequests = async (req, res) => {
 export const updateCareerPageRequestStatus = async (req, res) => {
   try {
     const receiverUserId = req.user?._id || req.user?.id;
-
     const { requestId } = req.params;
     const { status } = req.body;
 
     if (!receiverUserId) {
       return res.status(401).json({
         success: false,
-        message: "Receiver user ID not found.",
+        message: "Unauthorized. Receiver user ID not found.",
       });
     }
 
@@ -276,7 +364,9 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       });
     }
 
-    if (!["accepted", "rejected"].includes(status)) {
+    const allowedStatuses = ["accepted", "rejected"];
+
+    if (!allowedStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
         message: "Status must be accepted or rejected.",
@@ -285,11 +375,13 @@ export const updateCareerPageRequestStatus = async (req, res) => {
 
     const request = await CareerPageReferralRequest.findOneAndUpdate(
       {
-        _id: new mongoose.Types.ObjectId(requestId),
-        receiverUserId: new mongoose.Types.ObjectId(receiverUserId),
+        _id: requestId,
+        receiverUserId,
       },
       {
-        $set: { status },
+        $set: {
+          status,
+        },
       },
       {
         new: true,
@@ -299,24 +391,41 @@ export const updateCareerPageRequestStatus = async (req, res) => {
     if (!request) {
       return res.status(404).json({
         success: false,
-        message: "Referral request not found or receiverUserId not matched.",
+        message:
+          "Referral request not found or you are not allowed to update it.",
       });
     }
 
-    notifySenderOnReferralRequestStatusChange({
-      senderAuthId: request.senderUserId,
-      receiverAuthId: receiverUserId,
-      status,
-      requestId: request._id,
-      companyName: request.companyName,
-    }).catch((err) =>
-      console.error("Referral status notification failed:", err.message)
+    const applicationStatus = status === "accepted" ? "Accepted" : "Rejected";
+
+    const updatedApplication = await Application.findOneAndUpdate(
+      {
+        job: request._id,
+        jobType: "AskForReferral",
+      },
+      {
+        $set: {
+          currentStatus: applicationStatus,
+        },
+        $push: {
+          statusHistory: {
+            status: applicationStatus,
+            changedAt: new Date(),
+          },
+        },
+      },
+      {
+        new: true,
+      },
     );
 
     return res.status(200).json({
       success: true,
       message: `Referral request ${status} successfully.`,
-      data: request,
+      data: {
+        request,
+        application: updatedApplication,
+      },
     });
   } catch (error) {
     console.error("updateCareerPageRequestStatus error:", error);
