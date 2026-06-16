@@ -26,10 +26,25 @@ console.log("PORT",PORT);
 app.use(cookieParser());
 
 // Middleware
+const allowedOrigins = process.env.FRONTEND_URLS
+  ?.split(",")
+  .map(origin => origin.trim());
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin(origin, callback) {
+      // Allow non-browser requests if needed
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins?.includes(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
