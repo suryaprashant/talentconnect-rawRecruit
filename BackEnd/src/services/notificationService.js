@@ -98,7 +98,7 @@ export const NOTIFICATION_SCREEN_MAP = {
   NEW_REFERRAL_REQUEST: {
     topic: "Referrals",
     subtopic: "Received Requests",
-    body: { requestId: "referenceId", userId: "senderId" },
+    body: { requestId: "referenceId", userId: "senderId", applicationId: "linkedApplicationId" },
   },
   REFERRAL_REQUEST_ACCEPTED: {
     topic: "Referrer",
@@ -138,7 +138,7 @@ const sendNotification = async ({
           else if (sourceKey === "userId")   value = userId?.toString();
           else if (sourceKey === "referenceId")  value = referenceId?.toString();
           else if (sourceKey === "applicationId") value = referenceId?.toString();
-          
+          else if (sourceKey === "linkedApplicationId") value = meta?.linkedApplicationId;  // 👈 new, isolated case
           // Only include if value exists
           if (value) {
             return [key, value];
@@ -793,6 +793,7 @@ export const notifyAlumniOnNewReferralRequest = async ({
   senderName,
   companyName,
   requestId,
+  applicationId,
 }) => {
   try {
     await sendNotification({
@@ -801,6 +802,7 @@ export const notifyAlumniOnNewReferralRequest = async ({
       type: "NEW_REFERRAL_REQUEST",
       message: `${senderName} requested a referral for ${companyName}`,
       referenceId: requestId,
+      meta: { linkedApplicationId: applicationId?.toString() },
       jobType: "Referral",
     });
   } catch (error) {

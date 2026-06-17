@@ -146,23 +146,6 @@ export const addCompanyWithCareer = async (req, res) => {
 
       requests.push(request);
 
-      // Send notification for new requests only
-      if (
-        request.createdAt &&
-        request.updatedAt &&
-        request.createdAt.getTime() === request.updatedAt.getTime()
-      ) {
-        notifyAlumniOnNewReferralRequest({
-          alumniAuthId: alumni.userId,
-          senderUserId,
-          senderName: senderProfile?.name || "Someone",
-          companyName,
-          requestId: request._id,
-        }).catch((err) =>
-          console.error("Referral request notification failed:", err.message),
-        );
-      }
-
       // Get user profile for job posting
       const userProfile = await getStudentService(receiverUserId);
 
@@ -270,6 +253,24 @@ export const addCompanyWithCareer = async (req, res) => {
       }
 
       applications.push(populatedApplication);
+
+      // Send notification for new requests only
+      if (
+        request.createdAt &&
+        request.updatedAt &&
+        request.createdAt.getTime() === request.updatedAt.getTime()
+      ) {
+        notifyAlumniOnNewReferralRequest({
+          alumniAuthId: alumni.userId,
+          senderUserId,
+          senderName: senderProfile?.name || "Someone",
+          companyName,
+          requestId: request._id,
+          applicationId: application._id,   
+        }).catch((err) =>
+          console.error("Referral request notification failed:", err.message),
+        );
+      }
     }
 
     // Ensure referralJobs in response also have careerPageUrl
