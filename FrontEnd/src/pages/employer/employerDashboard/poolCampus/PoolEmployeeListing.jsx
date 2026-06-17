@@ -564,36 +564,85 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
     }
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+    <div className="container mx-auto px-0 py-0">
             {/* Pastel blur background elements */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            {/* <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#143694]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
-            </div>
+            </div> */}
 
-            <div className="relative z-10 container mx-auto px-4 py-8 pt-20">
+            <div className="container mx-auto px-0 py-0">
                 {/* Header Section */}
-                <div className="mb-8 -mt-10">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
-                        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">
-                            <div>
-                                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1e4ed8] to-[#1e40af] bg-clip-text text-transparent">
-                                    Colleges Posting for Pool Campus
-                                </h1>
-                                <p className="text-gray-600 mt-2">
-                                    Discover and connect with colleges posting for pool-campus opportunities
-                                </p>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-6">
+
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+                        <div>
+                        <div className="flex items-center gap-3 mb-2">
+
+                            <div className="p-2 bg-[#143694]/10 rounded-lg">
+                            <Building2 className="h-5 w-5 text-[#143694]" />
                             </div>
+
+                            <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                            Colleges Posting for Pool-Campus
+                            </h1>
+
                         </div>
+
+                        <p className="text-gray-600 text-sm md:text-base">
+                            Discover and connect with colleges posting for pool-campus opportunities.
+                        </p>
+
+                        <div className="flex items-center gap-6 mt-4">
+
+                            <button
+                            onClick={() => navigate('/employer-dashboard/On-campus')}
+                            className="text-gray-500 hover:text-[#143694] font-medium text-sm"
+                            >
+                            On-Campus
+                            </button>
+
+                            <button
+                            className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                            >
+                            Pool-Campus
+                            </button>
+
+                        </div>
+                        </div>
+
+                        <div className="relative w-full md:w-auto">
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="
+                            w-full md:w-auto
+                            px-4 py-2.5 pr-10
+                            bg-gray-50 border border-gray-200 rounded-xl
+                            text-sm text-gray-700
+                            focus:ring-2 focus:ring-[#143694]/30
+                            focus:border-[#143694]
+                            appearance-none
+                            "
+                        >
+                            <option value="newest">Sort: Newest</option>
+                            <option value="oldest">Sort: Oldest</option>
+                            <option value="a-z">Sort: A-Z</option>
+                        </select>
+
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </div>
+
                     </div>
-                </div>
+
+                    </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                     <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
                         <div className="flex items-center justify-between">
                             <div>
@@ -643,14 +692,27 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                             </div>
                         </div>
                     </div>
+                    <div
+                        onClick={() => setShowMainFilter(!showMainFilter)}
+                        className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 flex items-center justify-between cursor-pointer hover:shadow-md transition-all"
+                    >
+                        <div>
+                            <p className="text-lg text-gray-600">Filters</p>
+                        </div>
+
+                        <div className="p-2 bg-[#143694]/10 rounded-lg">
+                            <Filter className="w-5 h-5 text-[#143694]" />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Filter Section with Dropdown System */}
                 <div className="mb-8">
                     {/* Active Filters Tags */}
                     {getActiveFiltersCount() > 0 && (
-                        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-4 mb-4">
-                            <div className="flex items-center flex-wrap gap-2">
+                        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center flex-wrap gap-2">
                                 <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
                                 
                                 {filters.workMode.map(mode => (
@@ -736,13 +798,31 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                         </button>
                                     </span>
                                 )}
+                                </div>
+                                <button
+                                    onClick={clearAllFilters}
+                                    className="
+                                        px-4 py-2
+                                        text-sm font-medium
+                                        text-[#143694]
+                                        bg-[#143694]/10
+                                        border border-[#143694]/20
+                                        rounded-lg
+                                        hover:bg-[#143694]
+                                        hover:text-white
+                                        transition-all
+                                    "
+                                    >
+                                    Clear all
+                                    </button>
+
                             </div>
                         </div>
                     )}
 
                     {/* Filter Controls Row */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                        {/* Main Filter Button */}
+                    {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        {/* Main Filter Button 
                         <div className="flex items-center gap-4">
                             <div className="relative">
                                 <button
@@ -760,7 +840,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 </button>
                             </div>
 
-                            {/* Sort Dropdown */}
+                            {/* Sort Dropdown 
                             {/* <div className="relative">
                                 <select
                                     value={sortBy}
@@ -772,10 +852,10 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                     <option value="a-z">Sort: College Name (A-Z)</option>
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                            </div> */}
+                            </div> 
                         </div>
 
-                        {/* Clear All Button */}
+                        {/* Clear All Button 
                         <div>
                             <button
                                 onClick={clearAllFilters}
@@ -786,7 +866,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 Clear all filters
                             </button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Main Filter Dropdown */}
                     {showMainFilter && (

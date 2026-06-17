@@ -77,9 +77,9 @@ export default function HeroSection() {
       desc: "Run On-Campus and Pool-Campus placement drives from one unified platform — connect with employers and improve student placement outcomes."
     },
     apply: {
-      title: "Start Your Career with",
-      highlight: "Confidence",
-      desc: "Access Off-campus, referral job and internship opportunities, apply easily, and track your hiring progress in one place."
+      title: "Become a",
+      highlight: "Hiring Partner",
+      desc: "Collaborate with companies and colleges, provide referrals, conduct interviews, and help organizations discover high-potential fresher talent."
     }
   };
   const videoMap = {
@@ -157,7 +157,7 @@ export default function HeroSection() {
   </button>
 
   <button
-    onClick={() => handleRoleSelect("candidate")}
+    onClick={() => handleRoleSelect("employer")}
     onMouseEnter={() => setHoveredAction("apply")}
     className={`px-6 py-3 rounded-xl border-2 font-medium transition-all duration-300 ease-out
       ${hoveredAction === "apply"
@@ -165,7 +165,7 @@ export default function HeroSection() {
         : "border-primaryBrand text-primaryBrand hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5"}
       active:scale-95`}
   >
-    Apply for Jobs
+    Join as Employer
   </button>
 
 </div>

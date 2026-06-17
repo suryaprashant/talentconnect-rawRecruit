@@ -8,14 +8,15 @@ import CollegeJobCard from "../home/jobCards/CollegeJobCard";
 import ReferralJobCard from "../home/jobCards/ReferralJobCard";
 import InternshipJobCard from "../home/jobCards/InternshipJobCard";
 // ROLES
-const roleFilters = ["Company", "College", "Student", "Freshers"];
-
+// const roleFilters = ["Company", "College", "Student", "Freshers"];
+const roleFilters = ["Company", "College", "Employer"];
 // SUB FILTERS
 const subFiltersMap = {
-  Student: [ "Off-Campus", "Internship"],
+  // Student: [ "Off-Campus", "Internship"],
   Company: ["On-Campus", "Pool-Campus"],
   College: ["On-Campus", "Pool-Campus"],
-  Freshers: ["Off-Campus", "Referral", "Internship"],
+  Employer: ["On-Campus", "Off-Campus", "Referral", "Internship"],
+  // Employer: ["Off-Campus", "Referral", "Internship"],
 };
 
 const LiveJobs = () => {

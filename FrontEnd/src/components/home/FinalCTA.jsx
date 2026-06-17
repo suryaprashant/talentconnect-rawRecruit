@@ -84,12 +84,12 @@ const FinalCTA = () => {
           </a>
           {/* Student */}
           <a
-            href='/signup?role=student'
-            onClick={() => handleRoleSelect("student")}
+            href='/signup?role=employer'
+            onClick={() => handleRoleSelect("employer")}
             className="px-6 py-3 rounded-xl border-2 border-primaryBrand text-primaryBrand font-medium transition-all duration-300 ease-out
             hover:bg-primaryBrand hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95"
           >
-            Apply Now
+            Join as Employer
           </a>
 
           {/* Ghost */}

@@ -539,6 +539,35 @@ export default function OffCampusJobManagement() {
               <p className="text-gray-600">
                 Track Your Job Listings and Applicant Applications
               </p>
+              {/* Tabs */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-gray-200 pt-3">
+                <button 
+                  onClick={() => navigate('/job-management/on-campus-listings/employer')}
+                  className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+                >
+                  On-Campus
+                </button>
+                <button 
+                  onClick={() => navigate('/job-management/pool-campus-listings/employer')}
+                  className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+                >
+                  Pool-Campus
+                </button>
+                {/* Active */}
+                <button 
+                  className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  Off-Campus
+                </button>
+
+                <button 
+                  onClick={() => navigate('/employer/job-management/Internship')}
+                  className="px-2 py-2 text-gray-500 hover:text-[#143694] font-medium text-sm transition-all"
+                >
+                  Internship
+                </button>
+
+              </div>
             </div>
             
             {/* Search Bar */}

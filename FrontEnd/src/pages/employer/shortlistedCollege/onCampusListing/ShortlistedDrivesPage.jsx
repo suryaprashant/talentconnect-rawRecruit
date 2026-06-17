@@ -3,7 +3,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calen
 import CollegeRequestDetail from './DriveDetailPage';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function OnCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -15,6 +15,7 @@ export default function OnCampusJobManagement() {
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isVisited, setIsVisited] = useState();
+  const navigate = useNavigate();
 
 
   const itemsPerPage = 10;
@@ -265,6 +266,39 @@ export default function OnCampusJobManagement() {
               <p className="text-gray-600">
                 Track Your Shortlisted On-Campus Drives and College Applications
               </p>
+              {/* Tabs */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
+
+                {/* Active */}
+                <button 
+                  className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  On-Campus
+                </button>
+                
+                {/* Others */}
+                <button 
+                  onClick={() => navigate('/employer/shortlisted/pool-campus-listings')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Pool Campus
+                </button>
+
+                <button 
+                  onClick={() => navigate('/employer/shortlisted/Off-campus')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Off-Campus
+                </button>
+
+                <button 
+                  onClick={() => navigate('/employer/shortlisted/internship-listings')}
+                  className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                >
+                  Internship
+                </button>
+
+              </div>
             </div>
             
             {/* Search Bar */}

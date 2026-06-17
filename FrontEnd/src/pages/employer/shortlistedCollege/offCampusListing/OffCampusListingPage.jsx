@@ -991,6 +991,39 @@ export default function OffCampusJobManagement() {
                             <p className="text-gray-600">
                                 Track Your Shortlisted Off-Campus Drives and Candidate Applications
                             </p>
+                            {/* Tabs */}
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
+
+                              
+                              <button 
+                                onClick={() => navigate('/employer/shortlisted/on-campus-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                              >
+                                On-Campus
+                              </button>
+                              {/* Others */}
+                              <button 
+                                onClick={() => navigate('/employer/shortlisted/pool-campus-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                              >
+                                Pool Campus
+                              </button>
+
+                              {/* Active */}
+                              <button 
+                                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                              >
+                                Off-Campus
+                              </button>
+
+                              <button 
+                                onClick={() => navigate('/employer/shortlisted/internship-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                              >
+                                Internship
+                              </button>
+
+                            </div>
                         </div>
                     </div>
 

@@ -5,12 +5,13 @@ import {
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function OffCampusJobManagement() {
     // State variables
     const [jobs, setJobs] = useState();
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedJob, setSelectedJob] = useState(null);
@@ -145,10 +146,42 @@ export default function OffCampusJobManagement() {
                             <p className="text-gray-600">
                                 Track Your Off-Campus and Streamline Shortlisted Candidate Applications
                             </p>
+                            {/* Tabs */}
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
+
+                            
+                            <button 
+                                onClick={() => navigate('/employer/accepted/on-campus-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                            >
+                                On-Campus
+                            </button>
+                            <button 
+                                onClick={() => navigate('/employer/accepted/pool-campus-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                            >
+                                Pool Campus
+                            </button>
+
+                            {/* Active */}
+                            <button 
+                                className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                            >
+                                Off-Campus
+                            </button>
+
+                            <button 
+                                onClick={() => navigate('/employer/accepted/internship-listings')}
+                                className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                            >
+                                Internship
+                            </button>
+
+                            </div>
                         </div>
                         
                         {/* Search Bar */}
-                        <div className="relative w-full md:w-96">
+                        {/* <div className="relative w-full md:w-96">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-gray-400" />
                             </div>
@@ -159,7 +192,7 @@ export default function OffCampusJobManagement() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

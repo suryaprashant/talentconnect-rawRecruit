@@ -6,9 +6,10 @@ import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 import DatePicker from 'react-datepicker';
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
-
+import { useNavigate } from 'react-router-dom';
 
 export default function EmployerPostIntership() {
+  const navigate = useNavigate();
   const initialState = {
     jobRoles: [],
     description: '',
@@ -339,23 +340,59 @@ export default function EmployerPostIntership() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-6xl flex flex-col py-0">
         {/* Header Section */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mr-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
+
+            {/* Top Section */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-[#143694]/10 rounded-lg">
                 <Briefcase className="h-5 w-5 text-[#143694]" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
+
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
                 Create Internship Opportunity
               </h1>
             </div>
-            <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+
+            <p className="text-sm md:text-base text-gray-600 mb-4">
               Post a new internship opportunity and connect with talented students. Fill in the details below to create your internship listing.
             </p>
+
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-gray-200 pt-0">
+
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                On-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Pool Campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/off-campus-hiring/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Off-campus
+              </button>
+
+              {/* Active */}
+              <button 
+                className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm"
+              >
+                Internship
+              </button>
+
+            </div>
+
           </div>
-        </div>
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
