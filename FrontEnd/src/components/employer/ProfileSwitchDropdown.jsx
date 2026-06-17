@@ -75,6 +75,11 @@ function ProfileSwitchDropdown() {
             await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });
             setAuthuser(null); 
             navigate('/', { replace: true });
+            localStorage.clear();
+            Cookies.remove("jwt", { path: '/' });
+            //setAuth({ user: null, token: null });
+            setAuthUserStable(null);
+      navigate('/', { replace: true });
         } catch (error) {
             console.error('Logout failed:', error);
         }

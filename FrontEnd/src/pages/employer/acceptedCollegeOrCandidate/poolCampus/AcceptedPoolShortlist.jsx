@@ -3,7 +3,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calen
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function PoolCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +15,7 @@ export default function PoolCampusJobManagement() {
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isVisited, setIsVisited] = useState('');
-
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 
@@ -268,10 +268,42 @@ export default function PoolCampusJobManagement() {
               <p className="text-gray-600">
                 Track Your Accepted Pool-Campus Drives
               </p>
+              {/* Tabs */}
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2  border-gray-200 pt-3">
+
+                    
+                    <button 
+                        onClick={() => navigate('/employer/accepted/on-campus-listings')}
+                        className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                    >
+                        On-Campus
+                    </button>
+                    {/* Active */}
+                    <button 
+                        className="px-6 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                    >
+                        Pool Campus
+                    </button>
+
+                    <button 
+                        onClick={() => navigate('/employer/accepted/off-campus-listings')}
+                        className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                    >
+                        Off-Campus
+                    </button>
+
+                    <button 
+                        onClick={() => navigate('/employer/accepted/internship-listings')}
+                        className="px-3 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-md font-medium text-sm transition-all"
+                    >
+                        Internship
+                    </button>
+
+                    </div>
             </div>
             
             {/* Search Bar */}
-            <div className="relative w-full md:w-96">
+            {/* <div className="relative w-full md:w-96">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-gray-400" />
               </div>
@@ -282,7 +314,7 @@ export default function PoolCampusJobManagement() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

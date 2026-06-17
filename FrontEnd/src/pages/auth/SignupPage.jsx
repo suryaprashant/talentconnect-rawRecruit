@@ -501,8 +501,8 @@ function SignupPage() {
           </div> */}
 
           {/* ROLE SELECT */}
-          <div className="grid grid-cols-5 gap-2 mt-6 mb-6">
-            {["company", "college", "student", "fresher", "professional"].map((role) => (
+          <div className="grid grid-cols-3 gap-2 mt-6 mb-6">
+            {["company", "college", "employer"].map((role) => (
               <button
                 key={role}
                 onClick={() => {

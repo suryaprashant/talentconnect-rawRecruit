@@ -52,9 +52,12 @@ const Navbar = () => {
           <Link to="/signup?role=college" onClick={() => handleRoleSelect("college")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             For Colleges
           </Link>
-          <Link to="/signup?role=student" onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-            For Candidate
+          <Link to="/signup?role=employer" onClick={() => handleRoleSelect("employer")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            For Employers
           </Link>
+          {/* <Link to="/signup?role=student" onClick={() => handleRoleSelect("student")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            For Candidate
+          </Link> */}
           <Link to="/blogs" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Blogs
           </Link>
@@ -94,9 +97,10 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden bg-background border-t border-border px-6 py-4 space-y-3">
-          <button onClick={() => handleRoleSelect("candidate")} className="block text-sm">For Students</button>
+          {/* <button onClick={() => handleRoleSelect("candidate")} className="block text-sm">For Students</button> */}
           <button onClick={() => handleRoleSelect("company")} className="block text-sm">For Companies</button>
           <button onClick={() => handleRoleSelect("college")} className="block text-sm">For Colleges</button>
+          <button onClick={() => handleRoleSelect("employer")} className="block text-sm">For Employers</button>
           <button onClick={() => navigate("/blogs")} className="block text-sm">Blogs</button>
 
           <button onClick={() => navigate("/help")} className="block text-sm">Help</button>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ServiceCard from './ServiceCard';
 import { Brain, Users, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const serviceData = [
   {
@@ -24,24 +25,58 @@ const serviceData = [
 ];
 
 export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
       <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
         
         {/* Header */}
-        <header className="mb-8 pt-2">
-          <div className="flex items-center justify-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
-              <Brain className="h-6 w-6 text-[#143694]" />
+        <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
+
+            {/* Top Section */}
+            <div className="mb-4">
+              <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                Off-Campus Recruitment
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Flexible fresher hiring beyond campuses through open recruitment channels
+              </p>
             </div>
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
-              OffCampus Access: Hire Beyond Boundaries
-            </h1>
-          </div>
-          <p className="text-center text-sm text-gray-600 mt-4 max-w-xl mx-auto">
-            Reach top talent across cities, domains, and institutions—without stepping on campus. OffCampus Access connects companies with graduates and job seekers beyond traditional campuses, offering flexible, efficient, skill-based hiring at scale.
-          </p>
-        </header>
+
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-gray-200">
+
+              <button 
+                onClick={() => navigate('/hiring-channels/on-campus-hiring/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                On-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Pool Campus
+              </button>
+
+              {/* Active */}
+              <button 
+                className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm"
+              >
+                Off-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/post-an-internship/employer')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Internship
+              </button>
+
+            </div>
+
+          </header>
 
         {/* Services - Square Cards */}
         <section className="mb-10">
@@ -86,7 +121,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
           </button>
           <button
             onClick={onRegisterClick}
-            className="bg-gray-800 text-white px-8 py-3.5 rounded-lg font-medium hover:bg-gray-900 transition-colors text-base"
+            className="bg-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:bg-primaryBrand hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
           >
             Request Info
           </button>

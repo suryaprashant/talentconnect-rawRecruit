@@ -65,9 +65,32 @@ import {
   getShortlistedCandidates, 
   getAcceptedCandidates 
 } from '@/lib/Company_AxiosInstance'
-
+import axios from 'axios';
+import ActivationBlock from '@/components/dashboard/ActivationBlock'
 function Home() {
   const navigate = useNavigate()
+  const [employer, setEmployer] = useState(null);
+  useEffect(() => {
+  const fetchEmployer = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_Backend_URL;
+      const userType = "employer";
+      const response = await axios.get(`${backendUrl}/api/dashboard/employer-data`, {
+          withCredentials: true,
+          headers: userType 
+              ? { Authorization: `Bearer ${localStorage.getItem('token')}` }
+              : {}
+      });
+      const data = response.data?.data || response.data;
+
+      setEmployer(data);
+      console.log('Employer information:', data); 
+    }catch (error) {
+    console.error('Error fetching employer information:', error);
+  }
+  } 
+  fetchEmployer()
+}, [])
   const [dashboardData, setDashboardData] = useState({
     appliedByCategory: {
       'On-campus': 0,
@@ -563,7 +586,7 @@ function Home() {
       </div>
     )
   }
-
+  const employerName = employer?.profile?.employerDetails?.name || "Employer";
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/10 via-[#f093fb]/5 to-[#1e4ed8]/10">
       <div className="container mx-auto px-4 py-8 pt-20">
@@ -573,11 +596,11 @@ function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
-                  Company Dashboard
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primaryBrand to-[#6C8BFF] bg-clip-text text-transparent">
+                  Employer Dashboard
                 </h1>
               </div>
-              <div className="w-full max-w-md">
+              {/* <div className="w-full max-w-md">
                 <div className="relative">
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -586,10 +609,52 @@ function Home() {
                     className="w-full pl-10 pr-4 py-3 bg-white/90 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
+        <ActivationBlock
+          greeting="Welcome back !"
+          subtitle={employerName}
+          steps={[
+            { number: 1, label: "Post Job" },
+            { number: 2, label: "Get Applications" },
+            { number: 3, label: "Shortlist" },
+          ]}
+        >
+          <div className="flex flex-col items-center lg:items-end gap-4">
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-600 bg-slate-300 px-2 py-1 mx-auto rounded-full">
+              Start Hiring
+            </span>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'On Campus', path: '/hiring-channels/on-campus-hiring/employer' },
+                { label: 'Off Campus', path: '/hiring-channels/off-campus-hiring/employer' },
+                { label: 'Pool Campus', path: '/hiring-channels/pool-campus-hiring/employer' },
+                { label: 'Internship', path: '/hiring-channels/post-an-internship/employer' }
+              ].map((btn) => (
+                <button
+                  key={btn.label}
+                  onClick={() => navigate(btn.path)}
+                  className="group relative flex items-center justify-center min-w-[140px] px-4 py-2.5 bg-blue-900 text-white rounded-xl transition-all duration-300 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95"
+                >
+                  <span className="text-[11px] font-bold uppercase tracking-tight">
+                    {btn.label}
+                  </span>
+                  {/* Subtle arrow that appears on hover */}
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-3 w-3 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" 
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </div>
+        </ActivationBlock>
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 auto-rows-fr gap-3 mb-8">
