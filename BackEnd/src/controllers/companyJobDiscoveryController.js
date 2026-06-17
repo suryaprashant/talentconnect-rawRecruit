@@ -8,15 +8,14 @@ import { paginatedResponse } from "../utils/paginate.js";
 import { notifyOnApplicationStatusChange } from "../services/notificationService.js";
 import Application from "../models/applicationModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
+import { getStudentService } from "../services/studentService.js";
+import { logNormalization } from "../services/normalizationLogService.js";
+import { resolveCompany } from "../services/normalizationService.js";
+import { normalizeText } from "../utils/normalizeText.js";
 import {
-  getStudentService,
-} from "../services/studentService.js";
-import { logNormalization }
-  from "../services/normalizationLogService.js";
-import { resolveCompany} from "../services/normalizationService.js"
-import { normalizeText }
-  from "../utils/normalizeText.js";
-import { notifyAlumniOnNewReferralRequest, notifySenderOnReferralRequestStatusChange } from "../services/notificationService.js";
+  notifyAlumniOnNewReferralRequest,
+  notifySenderOnReferralRequestStatusChange,
+} from "../services/notificationService.js";
 /**
  * POST
  * Candidate sends careerPageUrl.
@@ -42,53 +41,36 @@ export const addCompanyWithCareer = async (req, res) => {
     }
 
     const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
-    
+
     if (!companyName) {
       return res.status(400).json({
         success: false,
         message: "Invalid career page URL. Company name not found.",
       });
     }
-    const companyResult =
-      await resolveCompany(
-        companyName
-      );
 
-    const canonicalCompanyId =
-      companyResult?.canonicalId;
+    const companyResult = await resolveCompany(companyName);
+    const canonicalCompanyId = companyResult?.canonicalId;
 
     if (!canonicalCompanyId) {
-
       await logNormalization({
         entityType: "company",
-
         rawInput: companyName,
-
-        normalizedInput:
-          normalizeText(
-            companyName
-          ),
-
+        normalizedInput: normalizeText(companyName),
         canonicalId: null,
-
         displayName: null,
-
         confidence: null,
-
         matchType: "unmatched",
       });
 
       return res.status(404).json({
         success: false,
-
-        message:
-          "No alumni found. Company has been submitted for review.",
-
+        message: "No alumni found. Company has been submitted for review.",
         companyName,
-
         pendingReview: true,
       });
     }
+
     const senderProfile = await Onboarding.findOne({
       userId: senderUserId,
     }).lean();
@@ -137,6 +119,7 @@ export const addCompanyWithCareer = async (req, res) => {
 
       if (String(receiverUserId) === String(senderUserId)) continue;
 
+      // Create or update referral request
       const request = await CareerPageReferralRequest.findOneAndUpdate(
         {
           senderUserId,
@@ -162,7 +145,13 @@ export const addCompanyWithCareer = async (req, res) => {
       );
 
       requests.push(request);
-      if (request.createdAt.getTime() === request.updatedAt.getTime()) {
+
+      // Send notification for new requests only
+      if (
+        request.createdAt &&
+        request.updatedAt &&
+        request.createdAt.getTime() === request.updatedAt.getTime()
+      ) {
         notifyAlumniOnNewReferralRequest({
           alumniAuthId: alumni.userId,
           senderUserId,
@@ -170,27 +159,29 @@ export const addCompanyWithCareer = async (req, res) => {
           companyName,
           requestId: request._id,
         }).catch((err) =>
-          console.error("Referral request notification failed:", err.message)
+          console.error("Referral request notification failed:", err.message),
         );
       }
+
+      // Get user profile for job posting
+      const userProfile = await getStudentService(receiverUserId);
+
+      if (!userProfile?.data?.length) {
+        console.warn(`Professional profile not found for user: ${receiverUserId}`);
+        continue; // Skip this alumni but continue with others
+      }
+
+      // Check for existing referral job
       let referralJob = await JobPostingTable.findOne({
         referralRequestId: request._id,
         isAskForReferral: true,
       });
 
-      const userProfile = await getStudentService(receiverUserId);
-      
-      if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Professional profile not found for this account.",
-      });
-    }
-
+      // Create new referral job if doesn't exist
       if (!referralJob) {
-        referralJob = await JobPostingTable.create({
-          candidatePosted:userProfile.data[0]._id,
-
+        // Make sure careerPageUrl is explicitly set and not empty
+        const jobData = {
+          candidatePosted: userProfile.data[0]._id,
           postedByUser: receiverUserId,
 
           jobType: "Referral",
@@ -198,6 +189,8 @@ export const addCompanyWithCareer = async (req, res) => {
 
           visibleTo: "All",
           broadcastType: "Everyone",
+          
+          careerPageUrl: careerPageUrl, // Explicitly set the URL
 
           location: ["None"],
 
@@ -210,24 +203,31 @@ export const addCompanyWithCareer = async (req, res) => {
           lookingFor: "Job",
 
           referralRequestId: request._id,
-          careerPageUrl,
 
           isAskForReferral: true,
           inactive: false,
-        });
+        };
+
+        console.log("Creating job with data:", jobData); // Debug log
+        
+        referralJob = await JobPostingTable.create(jobData);
+        
+        console.log("Created job:", referralJob); // Debug log to verify careerPageUrl is saved
       }
 
       referralJobs.push(referralJob);
 
-      const existingApplication = await Application.findOne({
+      // Check for existing application
+      let application = await Application.findOne({
         applicant: senderProfile._id,
         job: referralJob._id,
         jobType: "Referral",
         isAskForReferral: true,
       });
 
-      if (!existingApplication) {
-        const application = await Application.create({
+      // Create new application if doesn't exist
+      if (!application) {
+        application = await Application.create({
           applicant: senderProfile._id,
           applicantType,
 
@@ -254,10 +254,32 @@ export const addCompanyWithCareer = async (req, res) => {
           adminComment: "",
           rating: 0,
         });
-
-        applications.push(application);
       }
+
+      // Populate application with job details - explicitly select careerPageUrl
+      const populatedApplication = await Application.findById(application._id)
+        .populate({
+          path: "job",
+          select: "careerPageUrl companyName jobTitle description",
+        })
+        .lean();
+
+      // If careerPageUrl is still empty in populated application, add it manually
+      if (populatedApplication && populatedApplication.job && !populatedApplication.job.careerPageUrl) {
+        populatedApplication.job.careerPageUrl = careerPageUrl;
+      }
+
+      applications.push(populatedApplication);
     }
+
+    // Ensure referralJobs in response also have careerPageUrl
+    const referralJobsWithUrl = referralJobs.map(job => {
+      const jobObj = job.toObject ? job.toObject() : job;
+      return {
+        ...jobObj,
+        careerPageUrl: jobObj.careerPageUrl || careerPageUrl
+      };
+    });
 
     return res.status(201).json({
       success: true,
@@ -272,7 +294,7 @@ export const addCompanyWithCareer = async (req, res) => {
         totalApplicationsCreated: applications.length,
         alumni: alumniList,
         requests,
-        referralJobs,
+        referralJobs: referralJobsWithUrl, // Use the mapped version
         applications,
       },
     });
@@ -445,7 +467,7 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       requestId: request._id,
       companyName: request.companyName,
     }).catch((err) =>
-      console.error("Referral status notification failed:", err.message)
+      console.error("Referral status notification failed:", err.message),
     );
     return res.status(200).json({
       success: true,
