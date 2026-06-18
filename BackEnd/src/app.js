@@ -26,7 +26,7 @@ console.log("PORT",PORT);
 app.use(cookieParser());
 
 // Middleware
-const allowedOrigins = process.env.FRONTEND_URL
+const allowedOrigins = process.env.FRONTEND_URLS
   ?.split(",")
   .map(origin => origin.trim());
   console.log(allowedOrigins);
