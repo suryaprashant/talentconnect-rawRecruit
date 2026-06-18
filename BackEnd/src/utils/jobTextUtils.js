@@ -1,10 +1,152 @@
-export const normalize = (value = "") => {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+import dns from "dns/promises";
+import net from "net";
+
+
+
+const KNOWN_ATS_DOMAINS = [
+  "greenhouse.io",
+  "lever.co",
+  "workdayjobs.com",
+  "myworkdayjobs.com",
+  "ashbyhq.com",
+  "smartrecruiters.com",
+  "breezy.hr",
+  "recruitee.com",
+  "jobs.ashbyhq.com",
+  "boards.greenhouse.io",
+  "jobs.lever.co",
+];
+
+const CAREER_KEYWORDS = [
+  "career",
+  "careers",
+  "job",
+  "jobs",
+  "position",
+  "positions",
+  "opening",
+  "openings",
+  "apply",
+  "work-with-us",
+  "join-us",
+  "opportunities",
+  "recruiting",
+  "hiring",
+];
+
+const isPrivateIp = (ip) => {
+  if (!net.isIP(ip)) return true;
+
+  if (ip.startsWith("10.")) return true;
+  if (ip.startsWith("127.")) return true;
+  if (ip.startsWith("169.254.")) return true;
+  if (ip.startsWith("192.168.")) return true;
+
+  const parts = ip.split(".").map(Number);
+
+  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) {
+    return true;
+  }
+
+  if (ip === "0.0.0.0") return true;
+
+  return false;
 };
+
+export const validateCareerPageUrl = async (careerPageUrl = "") => {
+  if (!careerPageUrl || typeof careerPageUrl !== "string") {
+    return {
+      valid: false,
+      message: "careerPageUrl is required",
+    };
+  }
+
+  const trimmedUrl = careerPageUrl.trim();
+
+  let parsed;
+
+  try {
+    parsed = new URL(trimmedUrl);
+  } catch {
+    return {
+      valid: false,
+      message: "Please enter a valid URL",
+    };
+  }
+
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    return {
+      valid: false,
+      message: "Only HTTP and HTTPS URLs are allowed",
+    };
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  if (
+    hostname === "localhost" ||
+    hostname.endsWith(".local") ||
+    hostname.includes("..")
+  ) {
+    return {
+      valid: false,
+      message: "Invalid or unsafe URL",
+    };
+  }
+
+  try {
+    const addresses = await dns.lookup(hostname, {
+      all: true,
+    });
+
+    const hasPrivateIp = addresses.some((item) =>
+      isPrivateIp(item.address)
+    );
+
+    if (hasPrivateIp) {
+      return {
+        valid: false,
+        message: "Private or internal URLs are not allowed",
+      };
+    }
+  } catch {
+    return {
+      valid: false,
+      message: "Unable to verify this URL",
+    };
+  }
+
+  const isKnownAts = KNOWN_ATS_DOMAINS.some(
+    (domain) =>
+      hostname === domain || hostname.endsWith(`.${domain}`)
+  );
+
+  const fullUrl = `${hostname}${parsed.pathname}${parsed.search}`.toLowerCase();
+
+  const hasCareerKeyword = CAREER_KEYWORDS.some((keyword) =>
+    fullUrl.includes(keyword)
+  );
+
+  if (!isKnownAts && !hasCareerKeyword) {
+    return {
+      valid: false,
+      message: "Please enter a valid company career or job page URL",
+    };
+  }
+
+  return {
+    valid: true,
+    normalizedUrl: parsed.toString(),
+  };
+};
+
+// export const normalize = (value = "") => {
+//   return String(value || "")
+//     .toLowerCase()
+//     .replace(/&nbsp;/g, " ")
+//     .replace(/\s+/g, " ")
+//     .trim();
+// };
 
 
 
@@ -50,69 +192,8 @@ export const extractCompanyNameFromCareerUrl = (careerpageUrl = "") => {
   }
 };
 
-/**
- * Used for ATS slug/search.
- * Example:
- * Razorpay Private Limited -> razorpay
- * Razorpay Software Private Limited -> razorpay
- */
-const removeCompanySuffixesForSlug = (companyName = "") => {
-  return String(companyName || "")
-    .toLowerCase()
-    .trim()
 
-    // Indian legal suffixes
-    .replace(/\bprivate\s+limited\b/g, "")
-    .replace(/\bpvt\.?\s*ltd\.?\b/g, "")
-    .replace(/\bpvt\.?\s*limited\b/g, "")
-    .replace(/\blimited\b/g, "")
-    .replace(/\bltd\.?\b/g, "")
-    .replace(/\bllp\b/g, "")
-    .replace(/\bopc\b/g, "")
 
-    // Global legal suffixes
-    .replace(/\binc\.?\b/g, "")
-    .replace(/\bcorp\.?\b/g, "")
-    .replace(/\bcorporation\b/g, "")
-    .replace(/\bcompany\b/g, "")
-    .replace(/\bco\.?\b/g, "")
-
-    // Common extra words for ATS search only
-    .replace(/\btechnologies\b/g, "")
-    .replace(/\btechnology\b/g, "")
-    .replace(/\bsolutions\b/g, "")
-    .replace(/\bservices\b/g, "")
-    .replace(/\bsoftware\b/g, "")
-    .replace(/\bsystems\b/g, "")
-    .replace(/\bindia\b/g, "")
-    .replace(/\bglobal\b/g, "")
-
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-export const createCompanySlug = (companyName = "") => {
-  return removeCompanySuffixesForSlug(companyName).replace(/[^a-z0-9]/g, "");
-};
-
-/**
- * Used for exact/raw slug attempts.
- * Example:
- * Razorpay Software Private Limited -> razorpaysoftwareprivatelimited
- */
-export const createRawCompanySlug = (companyName = "") => {
-  return String(companyName || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]/g, "");
-};
-
-/**
- * Used for alumni/currentCompany matching.
- * Keep this stricter.
- * Do NOT remove software / technologies / services here,
- * because that can create wrong alumni matches.
- */
 export const normalizeCompanyName = (companyName = "") => {
   return String(companyName || "")
     .toLowerCase()

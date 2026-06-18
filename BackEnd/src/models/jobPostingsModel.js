@@ -45,10 +45,18 @@ const jobPostingSchema = new mongoose.Schema(
       enum: ["All", "College", "Company"],
       default: "All",
     },
-    careerPageUrl: {
-      type: String,
-      default: "",
+    companyName: String,
+    careerPageUrl: String,
+    senderProfile: {
+      type: Object,
+      default: {},
     },
+
+    receiverProfile: {
+      type: Object,
+      default: {},
+    },
+
     broadcastType: {
       type: String,
       enum: ["Everyone", "Location"],
@@ -73,6 +81,12 @@ const jobPostingSchema = new mongoose.Schema(
     lookingFor: {
       type: String,
       enum: ["Job", "Internship", "Both"],
+    },
+    status: {
+      type: String,
+      enum: ["Applied", "accepted", "rejected"],
+      default: "Applied",
+      index: true,
     },
     employmentType: {
       type: [String],
@@ -211,7 +225,6 @@ const jobPostingSchema = new mongoose.Schema(
     },
     referralRequestId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CareerPageReferralRequest",
       default: null,
       index: true,
     },
