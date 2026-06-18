@@ -1,19 +1,30 @@
-import { getJobPostingsByCollegeService, getReferralJobsCursorService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService, getReferralJobsService } from "../../services/jobPostingService.js";
+import {
+  getJobPostingsByCollegeService,
+  getReferralJobsCursorService,
+  getJobPostingsByJobTypeService,
+  getJobPostingsByJobTypeWithLocationBasedService,
+  getReferralJobsService,
+} from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
-import { JobPostingTable  } from "../../models/jobPostingsModel.js";
+import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
 import { getStudentService } from "../../services/studentService.js";
-import { getCompanyService, getEmployerService } from "../../services/companyService.js";
+import {
+  getCompanyService,
+  getEmployerService,
+} from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import RelevancyWeights from "../../models/Relevancyweightsmodel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
-import {getProfessionalReferralsService} from "../../services/jobPostingService.js"
+import { getProfessionalReferralsService } from "../../services/jobPostingService.js";
 import mongoose from "mongoose";
 import { paginatedResponse } from "../../utils/paginate.js";
 //
-const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
-const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
+const sendResponse = (res, statusCode, data) =>
+  res.status(statusCode).json(data);
+const sendError = (res, statusCode, message) =>
+  res.status(statusCode).json({ message });
 
 export const fetchMetricsForJob = async (jobId) => {
   const [
@@ -32,14 +43,16 @@ export const fetchMetricsForJob = async (jobId) => {
       job: jobId,
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: { $in: [
-        "Referred To Company",
-        "Shortlisted",
-        "Interview Scheduled",
-        "Offer Extended",
-        "Accepted",
-        "Rejected",
-      ], },
+      currentStatus: {
+        $in: [
+          "Referred To Company",
+          "Shortlisted",
+          "Interview Scheduled",
+          "Offer Extended",
+          "Accepted",
+          "Rejected",
+        ],
+      },
     }),
 
     // Total interview scheduled
@@ -60,12 +73,16 @@ export const fetchMetricsForJob = async (jobId) => {
 
   const responseRate =
     totalApplicationsReceived > 0
-      ? Math.round((totalReferredToCompany / totalApplicationsReceived) * 100 * 100) / 100
+      ? Math.round(
+          (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
+        ) / 100
       : 0;
 
   const referralSuccessRate =
     totalReferredToCompany > 0
-      ? Math.round((totalAcceptedByCompany / totalReferredToCompany) * 100 * 100) / 100
+      ? Math.round(
+          (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
+        ) / 100
       : 0;
 
   return {
@@ -85,8 +102,8 @@ export const fetchMetricsForJob = async (jobId) => {
 //         console.log("1. Auth User ID:", authUserId);
 
 //         // Step 1: Directly find the student profile in the DB
-//         const studentProfile = await OnboardingModel.findOne({ 
-//             userId: new mongoose.Types.ObjectId(authUserId) 
+//         const studentProfile = await OnboardingModel.findOne({
+//             userId: new mongoose.Types.ObjectId(authUserId)
 //         }).lean();
 
 //         if (!studentProfile) {
@@ -121,8 +138,7 @@ export const getProfessionalReferrals = async (req, res) => {
   try {
     const authUserId = req.user._id;
     const { showAll } = req.query; // ?showAll=true → return all, default → active only
-    const { page, limit, skip } =
-      req.pagination;
+    const { page, limit, skip } = req.pagination;
 
     const studentProfile = await OnboardingModel.findOne({
       userId: new mongoose.Types.ObjectId(authUserId),
@@ -137,59 +153,47 @@ export const getProfessionalReferrals = async (req, res) => {
     const query = {
       candidatePosted: profileId,
       jobType: "Referral",
+      isAskForReferral: { $ne: true },
+
       ...(showAll === "true" ? {} : { inactive: false }), // only filter when showAll is not true
     };
 
-    const [referrals, total] =
-      await Promise.all([
-        JobPostingTable.find(query)
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
+    const [referrals, total] = await Promise.all([
+      JobPostingTable.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
 
-        JobPostingTable.countDocuments(
-          query
-        ),
-      ]);
+      JobPostingTable.countDocuments(query),
+    ]);
 
     const referralsWithMetrics = await Promise.all(
       referrals.map(async (job) => {
         const metrics = await fetchMetricsForJob(job._id);
         return { ...job, metrics };
-      })
+      }),
     );
 
-    const pagination =
-      paginatedResponse(
-        referralsWithMetrics,
-        total,
-        {
-          page,
-          limit,
-        }
-      );
+    const pagination = paginatedResponse(referralsWithMetrics, total, {
+      page,
+      limit,
+    });
 
     return res.status(200).json({
       success: true,
 
       ...pagination,
     });
-
   } catch (error) {
-    console.error(
-      "Error fetching professional referrals:",
-      error
-    );
+    console.error("Error fetching professional referrals:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Something went wrong while fetching referrals.",
+      message: "Something went wrong while fetching referrals.",
     });
   }
 };
-
 
 export const getProfessionalInActiveReferrals = async (req, res) => {
   console.log(">>> API Request Received <<<");
@@ -210,7 +214,7 @@ export const getProfessionalInActiveReferrals = async (req, res) => {
     console.log("2. ✅ Found Student Profile ID:", profileId);
 
     const referrals = await JobPostingTable.find({
-       inactive: true,
+      inactive: true,
       candidatePosted: profileId,
       jobType: "Referral",
     })
@@ -224,7 +228,7 @@ export const getProfessionalInActiveReferrals = async (req, res) => {
       referrals.map(async (job) => {
         const metrics = await fetchMetricsForJob(job._id);
         return { ...job, metrics };
-      })
+      }),
     );
 
     return res.status(200).json({
@@ -232,7 +236,6 @@ export const getProfessionalInActiveReferrals = async (req, res) => {
       count: referrals.length,
       data: referralsWithMetrics,
     });
-
   } catch (error) {
     console.error("4. ❌ Error:", error.message);
     return res.status(500).json({ success: false, error: error.message });
@@ -240,28 +243,32 @@ export const getProfessionalInActiveReferrals = async (req, res) => {
 };
 
 export const getOffCampusPostings = async (req, res) => {
-    const userId = req.user._id;
-    try {
-        // Step 1: Specifically fetch onboarding for the candidate logic
-        const studentProfile = await OnboardingModel.findOne({ userId }).lean();
+  const userId = req.user._id;
+  try {
+    // Step 1: Specifically fetch onboarding for the candidate logic
+    const studentProfile = await OnboardingModel.findOne({ userId }).lean();
 
-        // Step 2: Pass the profile as a 3rd argument. 
-        // Other controllers that don't pass this won't trigger the filter.
-        const postings = await getJobPostingsByJobTypeService("Off-campus", userId, studentProfile);
-        
-        sendResponse(res, 200, { data: postings });
-    } catch (error) {
-        sendError(res, 500, "Internal server error");
-    }
+    // Step 2: Pass the profile as a 3rd argument.
+    // Other controllers that don't pass this won't trigger the filter.
+    const postings = await getJobPostingsByJobTypeService(
+      "Off-campus",
+      userId,
+      studentProfile,
+    );
+
+    sendResponse(res, 200, { data: postings });
+  } catch (error) {
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 export const getOnCampusPostings = async (req, res) => {
-    try {
-        const postings = await getJobPostingsByJobTypeService("On-campus");
-        sendResponse(res, 200, { data: postings });
-    } catch (error) {
-        sendError(res, 500, "Internal server error");
-    }
+  try {
+    const postings = await getJobPostingsByJobTypeService("On-campus");
+    sendResponse(res, 200, { data: postings });
+  } catch (error) {
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 // export const getOnCampusPostingsForCompany = async (req, res) => {
@@ -301,7 +308,8 @@ export const getOnCampusPostings = async (req, res) => {
 //     }
 // };
 
-{/*export const getOnCampusPostingsForCompany = async (req, res) => {
+{
+  /*export const getOnCampusPostingsForCompany = async (req, res) => {
     // 1. Safely handle guest users
     const userId = req.user ? req.user._id : null; 
     console.log("=== GET ON-CAMPUS POSTINGS FOR COMPANY ===");
@@ -363,126 +371,123 @@ export const getOnCampusPostings = async (req, res) => {
         console.error("Error in getOnCampusPostingsForCompany:", error.message);
         sendError(res, 500, "Internal server error");
     }
-};*/}
+};*/
+}
 
-//comapny-> employer parenmt child working 
+//comapny-> employer parenmt child working
 export const getOnCampusPostingsForCompany = async (req, res) => {
-      const userId = req.user ? req.user._id : null;
-      
+  const userId = req.user ? req.user._id : null;
 
+  try {
+    let companyProfileId = null;
 
-      try {
-        let companyProfileId = null;
+    // Employer acting on behalf of company
+    if (req.user?.userType === "employer" && req.user.activeCompanyId) {
+      companyProfileId = req.user.activeCompanyId;
+    }
+    // Company user
+    else if (req.user?.userType === "company") {
+      const company = await getCompanyService(userId);
+      companyProfileId = company?.data?.[0]?._id || null;
+    }
 
-        // Employer acting on behalf of company
-        if (req.user?.userType === "employer" && req.user.activeCompanyId) {
-          companyProfileId = req.user.activeCompanyId;
-        }
-        // Company user
-        else if (req.user?.userType === "company") {
-          const company = await getCompanyService(userId);
-          companyProfileId = company?.data?.[0]?._id || null;
-        }
+    let employerProfileId = null;
 
-        let employerProfileId = null;
+    if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
+      const employer = await getEmployerService(userId);
+      employerProfileId = employer?.data?.[0]?._id || null;
+    }
 
-        if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
-          const employer = await getEmployerService(userId);
-          employerProfileId = employer?.data?.[0]?._id || null;
-        }
+    // Get all on-campus postings
+    const postings = await getJobPostingsByCollegeService("On-campus", userId);
 
-        // Get all on-campus postings
-        const postings = await getJobPostingsByCollegeService(
-          "On-campus",
-          userId
-        );
+    // Visible to company
+    const filteredPostings = postings.filter(
+      (posting) => posting.visibleTo === "Company",
+    );
 
-        // Visible to company
-        const filteredPostings = postings.filter(
-          (posting) => posting.visibleTo === "Company"
-        );
+    // Guest / no company context
+    // Guest = neither company nor employer individual
+    if (!companyProfileId && !employerProfileId) {
+      return sendResponse(res, 200, {
+        data: filteredPostings,
+        message: "Guest view: Showing all available postings.",
+      });
+    }
 
-        // Guest / no company context
-        // Guest = neither company nor employer individual
-        if (!companyProfileId && !employerProfileId) {
-          return sendResponse(res, 200, {
-            data: filteredPostings,
-            message: "Guest view: Showing all available postings.",
-          });
-        }
+    // 🔒 EXACT SAME RULE AS POOL-CAMPUS
+    const jobIds = filteredPostings.map((p) => p._id);
 
-
-        // 🔒 EXACT SAME RULE AS POOL-CAMPUS
-        const jobIds = filteredPostings.map((p) => p._id);
-
-        {/*const applications = await Application.find({
+    {
+      /*const applications = await Application.find({
           appliedForCompany: companyProfileId,
           job: { $in: jobIds },
         })
           .select("job")
-          .lean();*/}
+          .lean();*/
+    }
 
-        const applicationQuery = {
-          job: { $in: jobIds },
-        };
-
-        // Company OR employer acting on behalf
-        if (companyProfileId) {
-          //applicationQuery.appliedForCompany = companyProfileId;
-          applicationQuery.$or = [
-        { appliedForCompany: companyProfileId },
-        { applicant: companyProfileId } 
-    ];
-        }
-
-        // Employer as individual
-        else if (employerProfileId) {
-          applicationQuery.applicant = employerProfileId;
-        }
-
-
-
-        const applications = await Application.find(applicationQuery)
-          .select("job")
-          .lean();
-
-  
-        const appliedJobIds = new Set(applications.map((a) => String(a.job)));
-
-        const finalPostings = filteredPostings.filter(
-          (p) => !appliedJobIds.has(String(p._id))
-        );
-        
-      console.log('finalpostings',finalPostings)
-        return sendResponse(res, 200, { data: finalPostings });
-      } catch (error) {
-        console.error("Error in getOnCampusPostingsForCompany:", error);
-        return sendError(res, 500, "Internal server error");
-      }
+    const applicationQuery = {
+      job: { $in: jobIds },
     };
 
+    // Company OR employer acting on behalf
+    if (companyProfileId) {
+      //applicationQuery.appliedForCompany = companyProfileId;
+      applicationQuery.$or = [
+        { appliedForCompany: companyProfileId },
+        { applicant: companyProfileId },
+      ];
+    }
+
+    // Employer as individual
+    else if (employerProfileId) {
+      applicationQuery.applicant = employerProfileId;
+    }
+
+    const applications = await Application.find(applicationQuery)
+      .select("job")
+      .lean();
+
+    const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+
+    const finalPostings = filteredPostings.filter(
+      (p) => !appliedJobIds.has(String(p._id)),
+    );
+
+    console.log("finalpostings", finalPostings);
+    return sendResponse(res, 200, { data: finalPostings });
+  } catch (error) {
+    console.error("Error in getOnCampusPostingsForCompany:", error);
+    return sendError(res, 500, "Internal server error");
+  }
+};
 
 export const getOnCampusPostingForCompanybyID = async (req, res) => {
-    const { id } = req.params;
-    console.log("Fetching On-campus posting for Company by ID:", id);
-    try {
-        console.log("Fetching posting with ID:", id);
-        const response = await JobPostingTable.findById(id)
-            .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' }).lean();
-        res.status(200).json(response);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
+  const { id } = req.params;
+  console.log("Fetching On-campus posting for Company by ID:", id);
+  try {
+    console.log("Fetching posting with ID:", id);
+    const response = await JobPostingTable.findById(id)
+      .populate({
+        path: "collegePosted",
+        select: "collegeUniversityDetails profileImage profileAchievements",
+      })
+      .lean();
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // export const getOnCampusPostingsForCollege = async (req, res) => {
 //     const userId = req.user && req.user._id;
-    
+
 //     try {
 //         let collegeCity = null;
 //         let collegeProfileId = null;
-       
+
 //         console.log("=== getOnCampusPostingsForCollege called ===");
 //         console.log("User ID:", userId);
 //         console.log("User object:", req.user);
@@ -492,7 +497,7 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 //             try {
 //                 const college = await getCollegeService(userId);
 //                 console.log("College service response:", college);
-                
+
 //                 if (college && college.success && college.data && college.data.length > 0) {
 //                     collegeProfileId = college.data[0]._id;
 //                     collegeCity = profile.collegeUniversityDetails?.city
@@ -525,7 +530,7 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 //         // If no college profile, return all filtered postings
 //         if (!collegeProfileId) {
 //             console.log("Returning postings without application filter (no college profile)");
-//             return sendResponse(res, 200, { 
+//             return sendResponse(res, 200, {
 //                 data: filteredPostings,
 //                 message: "No college profile found. Showing all available postings."
 //             });
@@ -535,19 +540,19 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 //         try {
 //             const jobIds = filteredPostings.map(p => p._id);
 //             console.log(`Checking applications for ${jobIds.length} jobs`);
-            
-//             const applications = await Application.find({ 
-//                 applicant: collegeProfileId, 
-//                 job: { $in: jobIds } 
+
+//             const applications = await Application.find({
+//                 applicant: collegeProfileId,
+//                 job: { $in: jobIds }
 //             }).select('job').lean();
-            
+
 //             console.log(`Found ${applications.length} existing applications`);
-            
+
 //             const appliedJobIds = new Set(applications.map(a => String(a.job)));
 //             const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-            
+
 //             console.log(`Final postings after filter: ${finalPostings.length}`);
-//             return sendResponse(res, 200, { 
+//             return sendResponse(res, 200, {
 //                 data: finalPostings,
 //                 filteredFrom: filteredPostings.length,
 //                 appliedJobs: applications.length
@@ -555,7 +560,7 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 //         } catch (filterError) {
 //             console.error('Error filtering applications:', filterError.message);
 //             // Return unfiltered postings as fallback
-//             return sendResponse(res, 200, { 
+//             return sendResponse(res, 200, {
 //                 data: filteredPostings,
 //                 message: "Unable to filter applications. Showing all available postings.",
 //                 error: filterError.message
@@ -585,104 +590,111 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 // }
 
 export const getOnCampusPostingsForCollege = async (req, res) => {
-    const userId = req.user && req.user._id;
-    
-    try {
-        let collegeCity = null;
-        let collegeProfileId = null;
+  const userId = req.user && req.user._id;
 
-        // 1. Fetch College Profile and Extract City
-        if (userId) {
-            const college = await getCollegeService(userId);
-            
-            if (college && college.success && college.data?.length > 0) {
-                const collegeDoc = college.data[0]; // Define the variable here
-                collegeProfileId = collegeDoc._id;
-                
-                // Extract city from the nested object
-                collegeCity = collegeDoc.collegeUniversityDetails?.collegeLocation;
-                console.log(collegeCity)
-                
-                console.log("Found College City:", collegeCity);
-            }
-        }
+  try {
+    let collegeCity = null;
+    let collegeProfileId = null;
 
-        // 2. Fetch Job Postings
-        let postings = await getJobPostingsByJobTypeService("On-campus", userId);
-        // Filter out inactive jobs
-      postings = postings.filter(posting => posting.inactive !== true);
-        // 3. Filter by Visibility AND Location logic
-        const filteredPostings = postings.filter((posting) => {
-            // Must be visible to College
-            if (posting.visibleTo !== "College") return false;
+    // 1. Fetch College Profile and Extract City
+    if (userId) {
+      const college = await getCollegeService(userId);
 
-            // If Broadcast is Location, check for city match
-            if (posting.broadcastType === "Location") {
-                // If we don't know the college's city, they can't see location-restricted jobs
-                if (!collegeCity) return false;
+      if (college && college.success && college.data?.length > 0) {
+        const collegeDoc = college.data[0]; // Define the variable here
+        collegeProfileId = collegeDoc._id;
 
-                const jobCities = posting.location || [];
-                const isMatch = (posting.city === collegeCity) || jobCities.includes(collegeCity);
-                
-                if (!isMatch) return false;
-            }
+        // Extract city from the nested object
+        collegeCity = collegeDoc.collegeUniversityDetails?.collegeLocation;
+        console.log(collegeCity);
 
-            // If broadcastType is 'Everyone', it passes through automatically
-            return true;
-        });
-
-        // 4. Application Filter (Existing Logic)
-        if (!collegeProfileId) {
-            return sendResponse(res, 200, { data: filteredPostings });
-        }
-
-        const jobIds = filteredPostings.map(p => p._id);
-        const applications = await Application.find({ 
-            applicant: collegeProfileId, 
-            job: { $in: jobIds } 
-        }).select('job').lean();
-        
-        const appliedJobIds = new Set(applications.map(a => String(a.job)));
-        const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-
-        return sendResponse(res, 200, { 
-            data: finalPostings,
-            totalAvailable: finalPostings.length 
-        });
-
-    } catch (error) {
-        console.error("Critical Error in getOnCampusPostingsForCollege:", error.message);
-        sendError(res, 500, "Internal server error");
+        console.log("Found College City:", collegeCity);
+      }
     }
+
+    // 2. Fetch Job Postings
+    let postings = await getJobPostingsByJobTypeService("On-campus", userId);
+    // Filter out inactive jobs
+    postings = postings.filter((posting) => posting.inactive !== true);
+    // 3. Filter by Visibility AND Location logic
+    const filteredPostings = postings.filter((posting) => {
+      // Must be visible to College
+      if (posting.visibleTo !== "College") return false;
+
+      // If Broadcast is Location, check for city match
+      if (posting.broadcastType === "Location") {
+        // If we don't know the college's city, they can't see location-restricted jobs
+        if (!collegeCity) return false;
+
+        const jobCities = posting.location || [];
+        const isMatch =
+          posting.city === collegeCity || jobCities.includes(collegeCity);
+
+        if (!isMatch) return false;
+      }
+
+      // If broadcastType is 'Everyone', it passes through automatically
+      return true;
+    });
+
+    // 4. Application Filter (Existing Logic)
+    if (!collegeProfileId) {
+      return sendResponse(res, 200, { data: filteredPostings });
+    }
+
+    const jobIds = filteredPostings.map((p) => p._id);
+    const applications = await Application.find({
+      applicant: collegeProfileId,
+      job: { $in: jobIds },
+    })
+      .select("job")
+      .lean();
+
+    const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+    const finalPostings = filteredPostings.filter(
+      (p) => !appliedJobIds.has(String(p._id)),
+    );
+
+    return sendResponse(res, 200, {
+      data: finalPostings,
+      totalAvailable: finalPostings.length,
+    });
+  } catch (error) {
+    console.error(
+      "Critical Error in getOnCampusPostingsForCollege:",
+      error.message,
+    );
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 export const getOnCampusPostingForCollegebyID = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const response = await JobPostingTable.findById(id)
-            .populate({
-                path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
-            })
-            .lean();
+  const { id } = req.params;
+  try {
+    const response = await JobPostingTable.findById(id)
+      .populate({
+        path: "companyPosted",
+        select: "companyDetails profileImageUrl hiringPreferences", // Changed from profileImage to profileImageUrl
+      })
+      .lean();
 
-        // Debug log
-        console.log('🔍 Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
+    // Debug log
+    console.log("🔍 Backend Response:", {
+      jobId: id,
+      hasCompanyPosted: !!response?.companyPosted,
+      profileImageUrl: response?.companyPosted?.profileImageUrl,
+      companyName: response?.companyPosted?.companyDetails?.companyName,
+    });
 
-        res.status(200).json(response);
-    } catch (err) {
-        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
-        res.status(500).json({ error: err.message });
-    }
-}
+    res.status(200).json(response);
+  } catch (err) {
+    console.error("❌ Error in getOnCampusPostingForCollegebyID:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // export const getPoolCampusPostingsForCollege = async (req, res) => {
-//     try {       
+//     try {
 //         const postings = await getJobPostingsByJobTypeService("Pool-campus");
 
 //         const filteredPostings = postings.filter(
@@ -691,12 +703,10 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 
 //         sendResponse(res, 200, { data: filteredPostings });
 //     } catch (error) {
-//         console.error("Error in getPoolCampusPostingsForCollege:", error.message);  
+//         console.error("Error in getPoolCampusPostingsForCollege:", error.message);
 //         sendError(res, 500, "Internal server error");
 //     }
 // }
-
-
 
 // export const getPoolCampusPostings = async (req, res) => {
 //     try {
@@ -709,10 +719,10 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 
 // export const getPoolCampusForCollege = async (req, res) => {
 //     const userId = req.user._id;
-    
+
 //     try {
 //         console.log("=== getPoolCampusForCollege called ===");
-        
+
 //         // Get college profile
 //         let collegeProfile = null;
 //         if (userId) {
@@ -743,26 +753,26 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 //                 // FIX: Use filteredPostings, not postings
 //                 const jobIds = filteredPostings.map(p => p._id);
 //                 console.log(`Checking applications for ${jobIds.length} jobs`);
-                
-//                 const applications = await Application.find({ 
-//                     applicant: collegeProfile._id, 
-//                     job: { $in: jobIds } 
+
+//                 const applications = await Application.find({
+//                     applicant: collegeProfile._id,
+//                     job: { $in: jobIds }
 //                 }).select('job').lean();
-                
+
 //                 console.log(`Found ${applications.length} existing applications`);
-                
+
 //                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
 //                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-                
+
 //                 console.log(`Final postings after filter: ${finalPostings.length}`);
-//                 return sendResponse(res, 200, { 
+//                 return sendResponse(res, 200, {
 //                     data: finalPostings,
 //                     message: "Successfully fetched pool campus postings"
 //                 });
 //             } catch (err) {
 //                 console.error('Error filtering applications:', err.message);
 //                 // Fallback to unfiltered visible postings
-//                 return sendResponse(res, 200, { 
+//                 return sendResponse(res, 200, {
 //                     data: filteredPostings,
 //                     message: "Unable to filter applications"
 //                 });
@@ -770,18 +780,18 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 //         }
 
 //         // No college profile, return all visible postings
-//         sendResponse(res, 200, { 
+//         sendResponse(res, 200, {
 //             data: filteredPostings,
 //             message: "No college profile found. Showing all available postings."
 //         });
-        
+
 //     } catch (error) {
 //         console.error("Error in getPoolCampusForCollege:", error.message);
 //         sendError(res, 500, "Internal server error");
 //     }
 // };
 
-import jwt from 'jsonwebtoken'; // Make sure to import this at the top
+import jwt from "jsonwebtoken"; // Make sure to import this at the top
 
 // export const getPoolCampusForCollege = async (req, res) => {
 //     // 1. Manually extract the token from headers
@@ -805,7 +815,7 @@ import jwt from 'jsonwebtoken'; // Make sure to import this at the top
 
 //         // ✅ ADD THIS (single source of truth)
 //         const userId = req.user?._id;
-        
+
 //         // 2. Fetch the postings (visible to everyone)
 //         const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
 //         const filteredPostings = postings.filter(p => p.visibleTo === "College");
@@ -816,26 +826,26 @@ import jwt from 'jsonwebtoken'; // Make sure to import this at the top
 //             // Use 'userId' instead of 'req.user._id'
 //             let collegeProfile = null;
 //             const college = await getCollegeService(userId);
-            
+
 //             if (college?.success && college?.data?.length > 0) {
 //                 collegeProfile = college.data[0];
-                
+
 //                 const jobIds = filteredPostings.map(p => p._id);
-//                 const applications = await Application.find({ 
-//                     applicant: collegeProfile._id, 
-//                     job: { $in: jobIds } 
+//                 const applications = await Application.find({
+//                     applicant: collegeProfile._id,
+//                     job: { $in: jobIds }
 //                 }).select('job').lean();
-                
+
 //                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
 //                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-                
+
 //                 return sendResponse(res, 200, { data: finalPostings });
 //             }
 //         }
 
 //         // 4. Fallback for non-logged in users (Guests)
 //         // If no userId or no collegeProfile, just send all visible postings
-//         return sendResponse(res, 200, { 
+//         return sendResponse(res, 200, {
 //             data: filteredPostings,
 //             message: "Successfully fetched postings (Guest View)"
 //         });
@@ -847,102 +857,106 @@ import jwt from 'jsonwebtoken'; // Make sure to import this at the top
 // };
 
 export const getPoolCampusForCollege = async (req, res) => {
-    const userId = req.user?._id;
+  const userId = req.user?._id;
 
-    try {
-        console.log("=== getPoolCampusForCollege called ===");
-        
-        let collegeCity = null;
-        let collegeProfileId = null;
+  try {
+    console.log("=== getPoolCampusForCollege called ===");
 
-        // 1. Fetch college info if user is logged in
-        if (userId) {
-            const college = await getCollegeService(userId);
-            if (college?.success && college.data?.[0]) {
-                const profile = college.data[0];
-                collegeProfileId = profile._id;
-                // Capture city for location-based filtering
-                collegeCity = profile.collegeUniversityDetails?.collegeLocation;
-            }
-        }
+    let collegeCity = null;
+    let collegeProfileId = null;
 
-        // 2. Fetch all Pool-campus postings
-        let postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
-         postings = postings.filter(posting => posting.inactive !== true);
-
-        // 3. Apply Visibility and Location Filter
-        const filteredByLocation = postings.filter((posting) => {
-            // Must be visible to Colleges
-            if (posting.visibleTo !== "College") return false;
-
-            // Apply Broadcast Logic:
-            // If broadcast is 'Location', cities MUST match. 
-            // If it's 'Everyone', skip the city check.
-            if (posting.broadcastType === "Location") {
-                if (!collegeCity) return false; // Hide location-restricted jobs if city is unknown
-
-                const jobCities = posting.venue || [];
-                const isMatch = (posting.city === collegeCity) || jobCities.includes(collegeCity);
-                
-                if (!isMatch) return false;
-            }
-
-            return true;
-        });
-
-        // 4. Filter out already applied postings for logged-in users
-        if (collegeProfileId) {
-            const jobIds = filteredByLocation.map(p => p._id);
-            const applications = await Application.find({ 
-                applicant: collegeProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
-            
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredByLocation.filter(p => !appliedJobIds.has(String(p._id)));
-            
-            return sendResponse(res, 200, { data: finalPostings });
-        }
-
-        // 5. Fallback for Guests
-        return sendResponse(res, 200, { 
-            data: filteredByLocation,
-            message: "Showing jobs based on guest visibility."
-        });
-
-    } catch (error) {
-        console.error("Error in getPoolCampusForCollege:", error.message);
-        sendError(res, 500, "Internal server error");
+    // 1. Fetch college info if user is logged in
+    if (userId) {
+      const college = await getCollegeService(userId);
+      if (college?.success && college.data?.[0]) {
+        const profile = college.data[0];
+        collegeProfileId = profile._id;
+        // Capture city for location-based filtering
+        collegeCity = profile.collegeUniversityDetails?.collegeLocation;
+      }
     }
+
+    // 2. Fetch all Pool-campus postings
+    let postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
+    postings = postings.filter((posting) => posting.inactive !== true);
+
+    // 3. Apply Visibility and Location Filter
+    const filteredByLocation = postings.filter((posting) => {
+      // Must be visible to Colleges
+      if (posting.visibleTo !== "College") return false;
+
+      // Apply Broadcast Logic:
+      // If broadcast is 'Location', cities MUST match.
+      // If it's 'Everyone', skip the city check.
+      if (posting.broadcastType === "Location") {
+        if (!collegeCity) return false; // Hide location-restricted jobs if city is unknown
+
+        const jobCities = posting.venue || [];
+        const isMatch =
+          posting.city === collegeCity || jobCities.includes(collegeCity);
+
+        if (!isMatch) return false;
+      }
+
+      return true;
+    });
+
+    // 4. Filter out already applied postings for logged-in users
+    if (collegeProfileId) {
+      const jobIds = filteredByLocation.map((p) => p._id);
+      const applications = await Application.find({
+        applicant: collegeProfileId,
+        job: { $in: jobIds },
+      })
+        .select("job")
+        .lean();
+
+      const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+      const finalPostings = filteredByLocation.filter(
+        (p) => !appliedJobIds.has(String(p._id)),
+      );
+
+      return sendResponse(res, 200, { data: finalPostings });
+    }
+
+    // 5. Fallback for Guests
+    return sendResponse(res, 200, {
+      data: filteredByLocation,
+      message: "Showing jobs based on guest visibility.",
+    });
+  } catch (error) {
+    console.error("Error in getPoolCampusForCollege:", error.message);
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 export const getPoolCampusJobByIdForCollege = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const response = await JobPostingTable.findById(id)
-            .populate({
-                path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
-            })
-            .lean();
-        
-        // Add debug logging
-        console.log('🔍 Pool Campus Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
-        
-        res.status(200).json(response);
-    }
-    catch (err) {
-        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
-        res.status(500).json({ error: err.message });
-    }
-}
+  const { id } = req.params;
+  try {
+    const response = await JobPostingTable.findById(id)
+      .populate({
+        path: "companyPosted",
+        select: "companyDetails profileImageUrl hiringPreferences", // Changed from profileImage to profileImageUrl
+      })
+      .lean();
 
-{/*export const getPoolCampusForCompany = async (req, res) => {
+    // Add debug logging
+    console.log("🔍 Pool Campus Backend Response:", {
+      jobId: id,
+      hasCompanyPosted: !!response?.companyPosted,
+      profileImageUrl: response?.companyPosted?.profileImageUrl,
+      companyName: response?.companyPosted?.companyDetails?.companyName,
+    });
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error("❌ Error in getPoolCampusJobByIdForCollege:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+{
+  /*export const getPoolCampusForCompany = async (req, res) => {
  // Safely handle guest users
 const userId = req.user ? req.user._id : null;
     console.log('j')
@@ -1075,10 +1089,10 @@ const userId = req.user ? req.user._id : null;
         console.error('Error:', err);
         res.status(500).json({ success: false, error: err.message });
     }
-}*/}
+}*/
+}
 
-
-//comapny-> employer parenmt child working 
+//comapny-> employer parenmt child working
 export const getPoolCampusForCompany = async (req, res) => {
   const userId = req.user ? req.user._id : null;
   console.log("🧭 ENTRY getPoolCampusForCompany", {
@@ -1114,12 +1128,12 @@ export const getPoolCampusForCompany = async (req, res) => {
     // Get all pool-campus postings
     const postings = await getJobPostingsByCollegeService(
       "Pool-campus",
-      userId
+      userId,
     );
 
     // Visible to company
     const filteredPostings = postings.filter(
-      (posting) => posting.visibleTo === "Company"
+      (posting) => posting.visibleTo === "Company",
     );
 
     // Guest view
@@ -1139,9 +1153,9 @@ export const getPoolCampusForCompany = async (req, res) => {
 
     if (companyProfileId) {
       // company OR employer-on-behalf
-     applicationQuery.$or = [
+      applicationQuery.$or = [
         { appliedForCompany: companyProfileId },
-        { applicant: companyProfileId }
+        { applicant: companyProfileId },
       ];
     } else if (employerProfileId) {
       // employer individual
@@ -1157,7 +1171,7 @@ export const getPoolCampusForCompany = async (req, res) => {
 
     const appliedJobIds = new Set(applications.map((a) => String(a.job)));
     const finalPostings = filteredPostings.filter(
-      (p) => !appliedJobIds.has(String(p._id))
+      (p) => !appliedJobIds.has(String(p._id)),
     );
 
     return sendResponse(res, 200, { data: finalPostings });
@@ -1167,31 +1181,30 @@ export const getPoolCampusForCompany = async (req, res) => {
   }
 };
 
-
 export const getPoolCampusJobByIdForCompany = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const response = await JobPostingTable.findById(id)
-            .populate({ 
-                path: 'collegePosted', 
-                select: 'collegeUniversityDetails profileImage profileAchievements placementCoordinatorDetails userId'
-            })
-            .lean();
-            if (response && response.collegePosted && response.collegePosted.userId) {
-            const authUser = await Auth.findById(response.collegePosted.userId)
-                .select('name email profileImage userType')
-                .lean();
-            
-            if (authUser) {
-                response.collegePosted.authUser = authUser;
-            }
-        }
-        res.status(200).json(response);
+  const { id } = req.params;
+  try {
+    const response = await JobPostingTable.findById(id)
+      .populate({
+        path: "collegePosted",
+        select:
+          "collegeUniversityDetails profileImage profileAchievements placementCoordinatorDetails userId",
+      })
+      .lean();
+    if (response && response.collegePosted && response.collegePosted.userId) {
+      const authUser = await Auth.findById(response.collegePosted.userId)
+        .select("name email profileImage userType")
+        .lean();
+
+      if (authUser) {
+        response.collegePosted.authUser = authUser;
+      }
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // export const getJobPostings = async (req, res) => {
@@ -1204,22 +1217,30 @@ export const getPoolCampusJobByIdForCompany = async (req, res) => {
 // };
 
 export const getJobPostings = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        let studentLocations = [];
+  try {
+    const userId = req.user._id;
+    let studentLocations = [];
 
-        const studentProfile = await getStudentService(userId);
+    const studentProfile = await getStudentService(userId);
 
-        if (studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations) {
-            studentLocations = studentProfile.data[0].locations;
-        }
-        console.log("userId.....:\n", userId);
-        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing", studentLocations, userId);
-
-        sendResponse(res, 200, { data: postings });
-    } catch (error) {
-        sendError(res, 500, "Internal server error");
+    if (
+      studentProfile.success &&
+      studentProfile.data.length > 0 &&
+      studentProfile.data[0].locations
+    ) {
+      studentLocations = studentProfile.data[0].locations;
     }
+    console.log("userId.....:\n", userId);
+    const postings = await getJobPostingsByJobTypeWithLocationBasedService(
+      "Job-listing",
+      studentLocations,
+      userId,
+    );
+
+    sendResponse(res, 200, { data: postings });
+  } catch (error) {
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 // export const getInternshipPostings = async (req, res) => {
@@ -1232,7 +1253,8 @@ export const getJobPostings = async (req, res) => {
 // };
 
 //Backup controller for internship get
-{/*export const getInternshipPostings = async (req, res) => {
+{
+  /*export const getInternshipPostings = async (req, res) => {
     try {
         const userId = req.user._id;
         let studentLocations = [];
@@ -1248,7 +1270,8 @@ export const getJobPostings = async (req, res) => {
     } catch (error) {
         sendError(res, 500, "Internal server error");
     }
-};*/}
+};*/
+}
 
 // export const getInternshipPostings = async (req, res) => {
 //     try {
@@ -1354,12 +1377,6 @@ export const getJobPostings = async (req, res) => {
 //     }
 // };
 
-
-
-
-
-
-
 /*
  * WEIGHT DISTRIBUTION — loaded dynamically from RelevancyWeights collection
  * ─────────────────────────────────────────────────────────────────────────
@@ -1382,7 +1399,12 @@ export const getJobPostings = async (req, res) => {
 
 // ─── Helper: normalise strings for loose comparison ──────────────────────────
 const norm = (v) =>
-  v ? String(v).toLowerCase().replace(/[\s.\-_]/g, "").trim() : "";
+  v
+    ? String(v)
+        .toLowerCase()
+        .replace(/[\s.\-_]/g, "")
+        .trim()
+    : "";
 
 // ─── Fetch weights from DB with fallback to hardcoded defaults ───────────────
 const fetchWeights = async () => {
@@ -1390,26 +1412,31 @@ const fetchWeights = async () => {
     const config = await RelevancyWeights.findOne().lean();
     if (config) {
       return {
-        jobRoles:  config.internshipJobRoles  ?? config.jobRoles   ?? 30,
-        skills:    config.internshipSkills    ?? config.skills     ?? 25,
-        cgpa:      config.internshipCgpa      ?? config.cgpa       ??  7,
-        batchYear: config.internshipBatchYear ?? config.batchYear  ??  8,
-        location:  config.internshipLocation  ?? config.location   ?? 15,
-        salary:    config.internshipSalary    ?? config.salary     ?? 10,
-        tools:     config.internshipTools     ?? config.tools      ??  5,
+        jobRoles: config.internshipJobRoles ?? config.jobRoles ?? 30,
+        skills: config.internshipSkills ?? config.skills ?? 25,
+        cgpa: config.internshipCgpa ?? config.cgpa ?? 7,
+        batchYear: config.internshipBatchYear ?? config.batchYear ?? 8,
+        location: config.internshipLocation ?? config.location ?? 15,
+        salary: config.internshipSalary ?? config.salary ?? 10,
+        tools: config.internshipTools ?? config.tools ?? 5,
         _source: "database",
       };
     }
   } catch (err) {
     console.error(
       "\x1b[31m[WEIGHTS] DB fetch failed, using defaults:\x1b[0m",
-      err.message
+      err.message,
     );
   }
   // Hardcoded fallback defaults
   return {
-    jobRoles: 30, skills: 25, cgpa: 7,
-    batchYear: 8, location: 15, salary: 10, tools: 5,
+    jobRoles: 30,
+    skills: 25,
+    cgpa: 7,
+    batchYear: 8,
+    location: 15,
+    salary: 10,
+    tools: 5,
     _source: "hardcoded-defaults",
   };
 };
@@ -1423,15 +1450,15 @@ const fetchThreshold = async () => {
 
     if (adminDoc) {
       return {
-        value:      adminDoc.jobVisibilityThreshold ?? 0,
+        value: adminDoc.jobVisibilityThreshold ?? 0,
         adminEmail: adminDoc.email || "unknown",
-        _source:    "database",
+        _source: "database",
       };
     }
   } catch (err) {
     console.error(
       "\x1b[31m[THRESHOLD] DB fetch failed, defaulting to 0:\x1b[0m",
-      err.message
+      err.message,
     );
   }
   return { value: 0, adminEmail: "N/A", _source: "hardcoded-default" };
@@ -1440,32 +1467,75 @@ const fetchThreshold = async () => {
 // ─── Pretty-print weights & threshold for verification ───────────────────────
 const logConfig = (W, threshold) => {
   const total =
-    W.jobRoles + W.skills + W.cgpa + W.batchYear +
-    W.location + W.salary + W.tools;
+    W.jobRoles +
+    W.skills +
+    W.cgpa +
+    W.batchYear +
+    W.location +
+    W.salary +
+    W.tools;
 
-  console.log("\n\x1b[33m╔══════════════════════════════════════════════╗\x1b[0m");
-  console.log(  "\x1b[33m║    INTERNSHIP RELEVANCY ENGINE CONFIG        ║\x1b[0m");
-  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
-  console.log(`\x1b[33m║  Source (Weights)   : ${String(W._source).padEnd(22)}\x1b[0m║`);
-  console.log(`\x1b[33m║  Source (Threshold) : ${String(threshold._source).padEnd(22)}\x1b[0m║`);
-  console.log(`\x1b[33m║  Admin Email        : ${String(threshold.adminEmail).padEnd(22)}\x1b[0m║`);
-  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
-  console.log(  "\x1b[33m║  WEIGHTS                                     ║\x1b[0m");
-  console.log(`\x1b[33m║    Job Roles     : ${String(W.jobRoles  + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    Skills        : ${String(W.skills    + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    CGPA          : ${String(W.cgpa      + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    Batch Year    : ${String(W.batchYear + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    Location      : ${String(W.location  + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    Salary        : ${String(W.salary    + "%").padEnd(26)}\x1b[0m║`);
-  console.log(`\x1b[33m║    Tools         : ${String(W.tools     + "%").padEnd(26)}\x1b[0m║`);
-  console.log(  "\x1b[33m║    ─────────────────────────────────         ║\x1b[0m");
+  console.log(
+    "\n\x1b[33m╔══════════════════════════════════════════════╗\x1b[0m",
+  );
+  console.log(
+    "\x1b[33m║    INTERNSHIP RELEVANCY ENGINE CONFIG        ║\x1b[0m",
+  );
+  console.log(
+    "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m",
+  );
+  console.log(
+    `\x1b[33m║  Source (Weights)   : ${String(W._source).padEnd(22)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║  Source (Threshold) : ${String(threshold._source).padEnd(22)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║  Admin Email        : ${String(threshold.adminEmail).padEnd(22)}\x1b[0m║`,
+  );
+  console.log(
+    "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m",
+  );
+  console.log(
+    "\x1b[33m║  WEIGHTS                                     ║\x1b[0m",
+  );
+  console.log(
+    `\x1b[33m║    Job Roles     : ${String(W.jobRoles + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    Skills        : ${String(W.skills + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    CGPA          : ${String(W.cgpa + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    Batch Year    : ${String(W.batchYear + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    Location      : ${String(W.location + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    Salary        : ${String(W.salary + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    `\x1b[33m║    Tools         : ${String(W.tools + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    "\x1b[33m║    ─────────────────────────────────         ║\x1b[0m",
+  );
   console.log(
     `\x1b[33m║    TOTAL         : ${String(total + "%").padEnd(26)}\x1b[0m` +
-    `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`
+      `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`,
   );
-  console.log(  "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m");
-  console.log(`\x1b[33m║  THRESHOLD       : ${String(threshold.value + "%").padEnd(26)}\x1b[0m║`);
-  console.log(  "\x1b[33m╚══════════════════════════════════════════════╝\x1b[0m\n");
+  console.log(
+    "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m",
+  );
+  console.log(
+    `\x1b[33m║  THRESHOLD       : ${String(threshold.value + "%").padEnd(26)}\x1b[0m║`,
+  );
+  console.log(
+    "\x1b[33m╚══════════════════════════════════════════════╝\x1b[0m\n",
+  );
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1496,15 +1566,15 @@ export const getInternshipPostings = async (req, res) => {
         studentProfileId = student._id;
         studentLocations = student.locations || [];
 
-        appliedJobIds = await Application
-          .find({ applicant: studentProfileId })
-          .distinct("job");
+        appliedJobIds = await Application.find({
+          applicant: studentProfileId,
+        }).distinct("job");
       }
     }
 
     // ── STEP 3: Fetch base internship postings ────────────────────────────
     let postings = await getJobPostingsByJobTypeService("Internship", userId);
-    postings = postings.filter(posting => posting.inactive !== true);
+    postings = postings.filter((posting) => posting.inactive !== true);
 
     // ── STEP 4: Strict visibility + broadcast filter (preserved) ─────────
     const filteredByBroadcast = postings.filter((posting) => {
@@ -1514,7 +1584,7 @@ export const getInternshipPostings = async (req, res) => {
         if (!studentLocations.length) return false;
 
         const jVenue = norm(posting.location);
-        const sLocs  = studentLocations.map(norm);
+        const sLocs = studentLocations.map(norm);
 
         if (!sLocs.includes(jVenue)) return false;
       }
@@ -1526,7 +1596,7 @@ export const getInternshipPostings = async (req, res) => {
     const afterAppliedFilter =
       userId && appliedJobIds.length > 0
         ? filteredByBroadcast.filter(
-            (p) => !appliedJobIds.some((id) => id.equals(p._id))
+            (p) => !appliedJobIds.some((id) => id.equals(p._id)),
           )
         : filteredByBroadcast;
 
@@ -1537,21 +1607,12 @@ export const getInternshipPostings = async (req, res) => {
         .map((p) => ({ ...p, matchScore: 0 }))
         .filter((p) => p.matchScore >= visibilityThreshold);
 
-      const total =
-        guestPostings.length;
+      const total = guestPostings.length;
 
-      const paginatedPostings =
-        guestPostings.slice(
-          skip,
-          skip + limit
-        );
+      const paginatedPostings = guestPostings.slice(skip, skip + limit);
 
       return sendResponse(res, 200, {
-        ...paginatedResponse(
-          paginatedPostings,
-          total,
-          { page, limit }
-        ),
+        ...paginatedResponse(paginatedPostings, total, { page, limit }),
       });
     }
 
@@ -1562,17 +1623,23 @@ export const getInternshipPostings = async (req, res) => {
     // ── STEP 7: Score every internship ────────────────────────────────────
     const scoredPostings = afterAppliedFilter.map((job) => {
       let breakdown = {
-        roles: 0, skills: 0, cgpa: 0,
-        batchYear: 0, location: 0, salary: 0, tools: 0,
+        roles: 0,
+        skills: 0,
+        cgpa: 0,
+        batchYear: 0,
+        location: 0,
+        salary: 0,
+        tools: 0,
       };
-      
 
       const fullJobText = (
-        (job.description || "") + " " + (job.eligibilityCriteria || "")
+        (job.description || "") +
+        " " +
+        (job.eligibilityCriteria || "")
       ).toLowerCase();
 
       const normJobText = norm(
-        (job.description || "") + " " + (job.eligibilityCriteria || "")
+        (job.description || "") + " " + (job.eligibilityCriteria || ""),
       );
 
       const jobReqSkills = (job.skills || []).map(norm);
@@ -1593,7 +1660,7 @@ export const getInternshipPostings = async (req, res) => {
         if (matchedRoles.length > 0) {
           breakdown.roles = Math.min(
             Math.round((matchedRoles.length / jRoles.length) * W.jobRoles),
-            W.jobRoles
+            W.jobRoles,
           );
           // logs.roles = `[${matchedRoles.join(", ")}] → ${breakdown.roles}/${W.jobRoles}`;
         } else {
@@ -1615,10 +1682,10 @@ export const getInternshipPostings = async (req, res) => {
         // logs.skills = `Full Credit (no skills listed) → ${W.skills}/${W.skills}`;
       } else {
         const matchedSkills = jobReqSkills.filter(
-          (s) => studentSkills.includes(s) || normJobText.includes(s)
+          (s) => studentSkills.includes(s) || normJobText.includes(s),
         );
         breakdown.skills = Math.round(
-          (matchedSkills.length / jobReqSkills.length) * W.skills
+          (matchedSkills.length / jobReqSkills.length) * W.skills,
         );
         // logs.skills = `[${matchedSkills.join(", ") || "none"}] → ${breakdown.skills}/${W.skills}`;
       }
@@ -1665,7 +1732,7 @@ export const getInternshipPostings = async (req, res) => {
       const sLocs = (student.locations || []).map(norm);
       const jLocs = (job.workLocation || []).map(norm);
       const isRemote = (job.workMode || []).some((m) =>
-        norm(m).includes("remote")
+        norm(m).includes("remote"),
       );
 
       if (jLocs.length === 0 && !job.city && !job.venue && !job.location) {
@@ -1680,7 +1747,7 @@ export const getInternshipPostings = async (req, res) => {
             jLocs.includes(l) ||
             norm(job.city) === l ||
             norm(job.venue).includes(l) ||
-            norm(job.location) === l       // internship-specific field
+            norm(job.location) === l, // internship-specific field
         );
         if (matchedLocs.length > 0) {
           breakdown.location = W.location;
@@ -1716,7 +1783,7 @@ export const getInternshipPostings = async (req, res) => {
         // logs.tools = `Full Credit (no tools specified) → ${W.tools}/${W.tools}`;
       } else {
         const matchedTools = studentTools.filter(
-          (t) => jobTools.includes(t) || normJobText.includes(t)
+          (t) => jobTools.includes(t) || normJobText.includes(t),
         );
         if (matchedTools.length >= 2) {
           breakdown.tools = W.tools;
@@ -1735,7 +1802,7 @@ export const getInternshipPostings = async (req, res) => {
           breakdown.location +
           breakdown.salary +
           breakdown.tools,
-        100
+        100,
       );
 
       // ── PER-JOB CONSOLE LOG ──────────────────────────────────────────
@@ -1762,39 +1829,42 @@ export const getInternshipPostings = async (req, res) => {
     });
 
     const enrichedPostings = await Promise.all(
-    scoredPostings.map(async (job) => {
-    let alumniCount = 0;
+      scoredPostings.map(async (job) => {
+        let alumniCount = 0;
 
-    const companyName =
-      job.companyPosted?.companyDetails?.companyName ||
-      job.companyName ||
-      "Company";
+        const companyName =
+          job.companyPosted?.companyDetails?.companyName ||
+          job.companyName ||
+          "Company";
 
-    if (student?.college && companyName && companyName !== "Company") {
-      try {
-        alumniCount = await OnboardingModel.countDocuments({
-          college: student.college,
-          userId: { $ne: userId },
-          profileType: "professional",
-          currentCompany: { $regex: new RegExp(`^${companyName}$`, "i") },
-        });
-      } catch (err) {
-        console.error(`[ALUMNI] Failed to count for ${companyName}:`, err.message);
-      }
-    }
+        if (student?.college && companyName && companyName !== "Company") {
+          try {
+            alumniCount = await OnboardingModel.countDocuments({
+              college: student.college,
+              userId: { $ne: userId },
+              profileType: "professional",
+              currentCompany: { $regex: new RegExp(`^${companyName}$`, "i") },
+            });
+          } catch (err) {
+            console.error(
+              `[ALUMNI] Failed to count for ${companyName}:`,
+              err.message,
+            );
+          }
+        }
 
-    return { ...job, alumniCount };
-  })
-);
+        return { ...job, alumniCount };
+      }),
+    );
 
-// ── STEP 8: Apply threshold & sort ────────────────────────────────────
-// const belowThreshold = enrichedPostings.filter(       // ← changed
-//   (j) => j.matchScore < visibilityThreshold
-// ).length;
+    // ── STEP 8: Apply threshold & sort ────────────────────────────────────
+    // const belowThreshold = enrichedPostings.filter(       // ← changed
+    //   (j) => j.matchScore < visibilityThreshold
+    // ).length;
 
-const finalPostings = enrichedPostings               // ← changed
-  .filter((j) => j.matchScore >= visibilityThreshold)
-  .sort((a, b) => b.matchScore - a.matchScore);
+    const finalPostings = enrichedPostings // ← changed
+      .filter((j) => j.matchScore >= visibilityThreshold)
+      .sort((a, b) => b.matchScore - a.matchScore);
 
     // ── Summary log ───────────────────────────────────────────────────────
     // console.log("\x1b[33m╔══════════════════ FINAL SUMMARY ═════════════════╗\x1b[0m");
@@ -1803,30 +1873,24 @@ const finalPostings = enrichedPostings               // ← changed
     // console.log(`\x1b[33m║  Returned to client        : ${String(finalPostings.length).padEnd(20)}\x1b[0m║`);
     // console.log("\x1b[33m╚══════════════════════════════════════════════════╝\x1b[0m\n");
 
-    const total =
-      finalPostings.length;
+    const total = finalPostings.length;
 
-    const paginatedPostings =
-      finalPostings
-        .slice(skip, skip + limit)
-        .map((job) => {
-          const {
-            _scoreBreakdown,
-            _gateMultiplier,
-            _skillMatchPct,
-            _profileType,
-            ...cleanJob
-          } = job;
+    const paginatedPostings = finalPostings
+      .slice(skip, skip + limit)
+      .map((job) => {
+        const {
+          _scoreBreakdown,
+          _gateMultiplier,
+          _skillMatchPct,
+          _profileType,
+          ...cleanJob
+        } = job;
 
-          return cleanJob;
-        });
+        return cleanJob;
+      });
 
     return sendResponse(res, 200, {
-      ...paginatedResponse(
-        paginatedPostings,
-        total,
-        { page, limit }
-      ),
+      ...paginatedResponse(paginatedPostings, total, { page, limit }),
     });
   } catch (error) {
     console.error("\x1b[31m[INTERNSHIP RELEVANCY ERROR]\x1b[0m", error);
@@ -1835,21 +1899,21 @@ const finalPostings = enrichedPostings               // ← changed
 };
 
 export const getIntershipById = async (req, res) => {
-    console.log('in internship section')
-    const { id } = req.params;
-    try {
-        const response = await JobPostingTable.findById(id)
-            .populate('companyPosted')
-            .lean();
-        res.status(200).json(response);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
-}
+  console.log("in internship section");
+  const { id } = req.params;
+  try {
+    const response = await JobPostingTable.findById(id)
+      .populate("companyPosted")
+      .lean();
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
-{/*export const getIntershipById = async (req, res) => {
+{
+  /*export const getIntershipById = async (req, res) => {
     const { id } = req.params;
     
     console.log('🔍 in internship section - fetching job ID:', id);
@@ -1916,7 +1980,8 @@ export const getIntershipById = async (req, res) => {
         });
     }
 }
-     */}
+     */
+}
 
 // export const getReferralJobs = async (req, res) => {
 //   try {
@@ -1924,17 +1989,17 @@ export const getIntershipById = async (req, res) => {
 //     if (!req.user) {
 //        // Optional: Return a limited set of jobs for guests to see what's available
 //        const publicData = await JobPostingTable.find({ jobType: "Referral" }).populate("candidatePosted", "currentCompany").lean();
-//        return res.status(200).json({ 
-//          success: true, 
-//          data: publicData, 
+//        return res.status(200).json({
+//          success: true,
+//          data: publicData,
 //          isGuest: true,
-//          message: "Login to see all referrals from your college" 
+//          message: "Login to see all referrals from your college"
 //        });
 //     }
 
 //     const userId = req.user._id;
 //     const postId = await getStudentService(userId);
-    
+
 //     if (!postId.data || postId.data.length === 0) {
 //         return res.status(404).json({ message: "Student profile not found" });
 //     }
@@ -1952,9 +2017,8 @@ export const getIntershipById = async (req, res) => {
 export const getReferralJobs = async (req, res) => {
   try {
     // 1. Guest handling — shows limited public jobs
-  
+
     if (!req.user) {
-     
       const publicData = await JobPostingTable.find({ jobType: "Referral" })
         .populate("candidatePosted", "currentCompany")
         .lean();
@@ -1971,28 +2035,26 @@ export const getReferralJobs = async (req, res) => {
       });
     }
 
-    const userId = req.user._id;  
+    const userId = req.user._id;
     const limit = parseInt(req.query.limit, 10) || 10;
-    const cursor =
-      req.query.cursor || null;
+    const cursor = req.query.cursor || null;
     // 2. Get student profile
     const postId = await getStudentService(userId);
     if (!postId.data || postId.data.length === 0) {
-          return res.status(404).json({ message: "Student profile not found" });
-        }
+      return res.status(404).json({ message: "Student profile not found" });
+    }
 
     // data is an array from .find(), so use index [0]
     const candidatePostedId = postId.data[0]._id;
     // 4. Fetch scored referral jobs — matchScore & alumniCount already attached by service
-    const result =
-      await getReferralJobsCursorService(
-        candidatePostedId,
-        userId,
-        {
-          limit,
-          cursor,
-        }
-      );
+    const result = await getReferralJobsCursorService(
+      candidatePostedId,
+      userId,
+      {
+        limit,
+        cursor,
+      },
+    );
 
     return res.status(200).json({
       success: true,
@@ -2001,25 +2063,23 @@ export const getReferralJobs = async (req, res) => {
 
       ...result,
     });
-
   } catch (err) {
     console.error("[getReferralJobs]", err);
     return res.status(500).json({ error: err.message });
   }
 };
 export const getReferralJobById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const response = await JobPostingTable.findById(id)
-            .populate('candidatePosted')
-            .lean();
-        res.status(200).json(response);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
-}
+  const { id } = req.params;
+  try {
+    const response = await JobPostingTable.findById(id)
+      .populate("candidatePosted")
+      .lean();
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const getJobById = async (req, res) => {
   try {
@@ -2036,17 +2096,15 @@ export const getJobById = async (req, res) => {
       .populate({
         path: "candidatePosted",
         select:
-          "fullName name profileImage currentCompany currentRole college userId"
+          "fullName name profileImage currentCompany currentRole college userId",
       })
       .populate({
         path: "companyPosted",
-        select:
-          "companyDetails profileImageUrl companyType"
+        select: "companyDetails profileImageUrl companyType",
       })
       .populate({
         path: "collegePosted",
-        select:
-          "collegeName logo"
+        select: "collegeName logo",
       })
       .populate({
         path: "postedByUser",
