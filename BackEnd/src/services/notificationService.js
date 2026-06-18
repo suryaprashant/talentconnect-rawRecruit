@@ -275,7 +275,18 @@ export async function getNotificationService(Id) {
     throw new Error("Failed");
   }
 }
+export const getUnreadNotificationService = async (userId) => {
+  const notifications = await Notification.find({
+    recipientId: userId,
+    read: false,
+  }).sort({ createdAt: -1 });
 
+  return {
+    success: true,
+    count: notifications.length,
+    data: notifications,
+  };
+};
 export async function getNotificationByIdService(Id) {
   try {
     return await Notification.findById(Id);

@@ -1,5 +1,5 @@
 import Notification from '../models/notificationModel.js';
-import { getNotificationByIdService, getNotificationService } from '../services/notificationService.js';
+import { getNotificationByIdService, getNotificationService, getUnreadNotificationService } from '../services/notificationService.js';
 
 // Get all notifications for the logged-in user
 export const getNotifications = async (req, res) => {
@@ -15,7 +15,22 @@ export const getNotifications = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+export const getUnreadNotifications = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
 
+    const notifications = await getUnreadNotificationService(userId);
+
+    return res.status(200).json(notifications);
+  } catch (error) {
+    console.error("Error fetching unread notifications:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 // Mark a single notification as read
 export const markAsRead = async (req, res) => {
     const Id = req.params.id;
