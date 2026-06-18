@@ -21,16 +21,7 @@ import {
 export const addCompanyWithCareer = async (req, res) => {
   try {
     const senderUserId = req.user?._id || req.user?.id;
-    const careerPageUrl = String(req.body.careerPageUrl || "").trim();
-
-    const urlValidation = await validateCareerPageUrl(careerPageUrl);
-
-    if (!urlValidation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: urlValidation.message,
-      });
-    }
+    const rawCareerPageUrl = String(req.body.careerPageUrl || "").trim();
 
     if (!senderUserId) {
       return res.status(401).json({
@@ -39,15 +30,25 @@ export const addCompanyWithCareer = async (req, res) => {
       });
     }
 
-    if (!careerPageUrl) {
+    if (!rawCareerPageUrl) {
       return res.status(400).json({
         success: false,
         message: "careerPageUrl is required.",
       });
     }
-    const safeCareerPageUrl = urlValidation.normalizedUrl;
 
-    const companyName = extractCompanyNameFromCareerUrl(safeCareerPageUrl);
+    const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
+
+    if (!urlValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: urlValidation.message,
+      });
+    }
+
+    const careerPageUrl = urlValidation.normalizedUrl;
+
+    const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
 
     if (!companyName) {
       return res.status(400).json({
@@ -126,17 +127,6 @@ export const addCompanyWithCareer = async (req, res) => {
 
       const receiverStudentProfile = await getStudentService(receiverUserId);
 
-      requests.push(request);
-
-      // Get user profile for job posting
-      const userProfile = await getStudentService(receiverUserId);
-
-      if (!userProfile?.data?.length) {
-        console.warn(`Professional profile not found for user: ${receiverUserId}`);
-        continue; // Skip this alumni but continue with others
-      }
-
-      // Check for existing referral job
       if (!receiverStudentProfile?.data?.length) {
         console.warn(
           `Professional profile not found for user: ${receiverUserId}`,
@@ -189,18 +179,6 @@ export const addCompanyWithCareer = async (req, res) => {
 
       referralJobs.push(referralJob);
 
-      if (isNewReferralJob) {
-        notifyAlumniOnNewReferralRequest({
-          alumniAuthId: receiverUserId,
-          senderUserId,
-          senderName: senderProfile?.name || "Someone",
-          companyName,
-          requestId: referralJob._id,
-        }).catch((err) =>
-          console.error("Referral notification failed:", err.message),
-        );
-      }
-
       let application = await Application.findOne({
         applicant: senderProfile._id,
         job: referralJob._id,
@@ -248,21 +226,16 @@ export const addCompanyWithCareer = async (req, res) => {
 
       applications.push(populatedApplication);
 
-      // Send notification for new requests only
-      if (
-        request.createdAt &&
-        request.updatedAt &&
-        request.createdAt.getTime() === request.updatedAt.getTime()
-      ) {
+      if (isNewReferralJob) {
         notifyAlumniOnNewReferralRequest({
-          alumniAuthId: alumni.userId,
+          alumniAuthId: receiverUserId,
           senderUserId,
           senderName: senderProfile?.name || "Someone",
           companyName,
-          requestId: request._id,
-          applicationId: application._id,   
+          requestId: referralJob._id,
+          applicationId: application._id,
         }).catch((err) =>
-          console.error("Referral request notification failed:", err.message),
+          console.error("Referral notification failed:", err.message),
         );
       }
     }
