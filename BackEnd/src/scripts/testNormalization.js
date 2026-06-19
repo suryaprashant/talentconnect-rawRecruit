@@ -41,20 +41,20 @@ console.log(
 //   )
 // );
 
-// console.log(
-//   await resolveCollege(
-//     "IITD"
-//   )
-// );
+console.log(
+  await resolveCollege(
+    "IIT-D"
+  )
+);
 
 // console.log(
 //   await resolveCollege(
 //     "Indian Institute Technology Delhi"
 //   )
 // );
-console.log(
-  await resolveCompany(
-    "Raw Recruit"
-  )
-);
+// console.log(
+//   await resolveCompany(
+//     "Raw Recruit"
+//   )
+// );
 process.exit(0);
