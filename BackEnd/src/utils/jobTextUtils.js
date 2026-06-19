@@ -1,5 +1,6 @@
 import dns from "dns/promises";
 import net from "net";
+import DiscoveredCompany from "../models/DiscoveredCompany.js";
 
 
 
@@ -53,6 +54,18 @@ const isPrivateIp = (ip) => {
   return false;
 };
 
+const normalizeUrlForCompare = (url = "") => {
+  try {
+    const parsed = new URL(String(url).trim());
+
+    return `${parsed.protocol}//${parsed.hostname}${parsed.pathname}`
+      .toLowerCase()
+      .replace(/\/$/, "");
+  } catch {
+    return "";
+  }
+};
+
 export const validateCareerPageUrl = async (careerPageUrl = "") => {
   if (!careerPageUrl || typeof careerPageUrl !== "string") {
     return {
@@ -81,6 +94,40 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
     };
   }
 
+  const normalizedInputUrl = normalizeUrlForCompare(trimmedUrl);
+
+  const existingCompany = await DiscoveredCompany.findOne({
+    careerPageUrl: {
+      $exists: true,
+      $ne: "",
+    },
+  }).lean();
+
+  const allCompanies = await DiscoveredCompany.find({
+    careerPageUrl: {
+      $exists: true,
+      $ne: "",
+    },
+  }).lean();
+
+  const matchedCompany = allCompanies.find(
+    (company) =>
+      normalizeUrlForCompare(company.careerPageUrl) === normalizedInputUrl
+  );
+
+  if (matchedCompany) {
+    return {
+      valid: false,
+      alreadyExists: true,
+      message:
+        "This is the company career page URL. Please enter a specific job URL, not the main career page URL.",
+      data: {
+        companyName: matchedCompany.companyName,
+        careerPageUrl: matchedCompany.careerPageUrl,
+      },
+    };
+  }
+
   const hostname = parsed.hostname.toLowerCase();
 
   if (
@@ -99,9 +146,7 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
       all: true,
     });
 
-    const hasPrivateIp = addresses.some((item) =>
-      isPrivateIp(item.address)
-    );
+    const hasPrivateIp = addresses.some((item) => isPrivateIp(item.address));
 
     if (hasPrivateIp) {
       return {
@@ -117,8 +162,7 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
   }
 
   const isKnownAts = KNOWN_ATS_DOMAINS.some(
-    (domain) =>
-      hostname === domain || hostname.endsWith(`.${domain}`)
+    (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
   );
 
   const fullUrl = `${hostname}${parsed.pathname}${parsed.search}`.toLowerCase();
@@ -139,6 +183,7 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
     normalizedUrl: parsed.toString(),
   };
 };
+
 
 // export const normalize = (value = "") => {
 //   return String(value || "")

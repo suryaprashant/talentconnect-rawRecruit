@@ -82,12 +82,7 @@ const jobPostingSchema = new mongoose.Schema(
       type: String,
       enum: ["Job", "Internship", "Both"],
     },
-    status: {
-      type: String,
-      enum: ["Applied", "accepted", "rejected"],
-      default: "Applied",
-      index: true,
-    },
+   
     employmentType: {
       type: [String],
       enum: ["Part-time", "Full-time", "Contract"],
