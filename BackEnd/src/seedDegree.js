@@ -22,7 +22,7 @@ const degreeStreamMapping = {
 const seed = async () => {
   
   try {
-   
+    const MONGO_URI = "mongodb+srv://rawrecruitinfo_db_user:hX2GlCgGgEuK6Tkh@rawrecruit-prod.taazahd.mongodb.net/talentconnects?appName=RawRecruit-Prod";
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB Connected");
 
