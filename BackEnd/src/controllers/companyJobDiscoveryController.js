@@ -48,6 +48,20 @@ export const addCompanyWithCareer = async (req, res) => {
 
     const careerPageUrl = urlValidation.normalizedUrl;
 
+    const existingReferral = await JobPostingTable.findOne({
+      referralRequestId: new mongoose.Types.ObjectId(senderUserId),
+      careerPageUrl,
+      isAskForReferral: true,
+      jobType: "Referral",
+    }).lean();
+
+    if (existingReferral) {
+      return res.status(409).json({
+        success: false,
+        message: "This URL already exists with this user.",
+      });
+    }
+
     const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
 
     if (!companyName) {
@@ -171,7 +185,6 @@ export const addCompanyWithCareer = async (req, res) => {
 
           referralRequestId: senderUserId,
 
-          status: "Applied",
           isAskForReferral: true,
           inactive: false,
         });
@@ -305,7 +318,7 @@ export const getReceivedCareerPageRequests = async (req, res) => {
 
     const requests = await JobPostingTable.find(filter)
       .select(
-        "referralRequestId postedByUser companyName careerPageUrl senderProfile receiverProfile jobTitle description status isAskForReferral createdAt updatedAt",
+        "referralRequestId postedByUser companyName careerPageUrl senderProfile receiverProfile jobTitle description  isAskForReferral createdAt updatedAt",
       )
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -332,9 +345,7 @@ export const getReceivedCareerPageRequests = async (req, res) => {
 export const updateCareerPageRequestStatus = async (req, res) => {
   try {
     const receiverUserId = req.user?._id || req.user?.id;
-    console.log(receiverUserId);
     const { requestId } = req.params;
-    console.log(requestId);
     const { status } = req.body;
 
     if (!receiverUserId) {
@@ -367,38 +378,11 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       });
     }
 
-    const request = await JobPostingTable.findOneAndUpdate(
-      {
-        _id: new mongoose.Types.ObjectId(requestId),
-        postedByUser: new mongoose.Types.ObjectId(receiverUserId),
-        isAskForReferral: true,
-        jobType: "Referral",
-      },
-      {
-        $set: {
-          status,
-        },
-      },
-      {
-        new: true,
-      },
-    );
-
-    console.log(request);
-
-    if (!request) {
-      return res.status(404).json({
-        success: false,
-        message:
-          "Referral request not found or you are not allowed to update it.",
-      });
-    }
-
     const applicationStatus = status === "accepted" ? "Accepted" : "Rejected";
 
-    const updatedApplication = await Application.findOneAndUpdate(
+    const application = await Application.findOneAndUpdate(
       {
-        job: request._id,
+        _id: new mongoose.Types.ObjectId(requestId),
         jobType: "Referral",
         isAskForReferral: true,
       },
@@ -415,26 +399,45 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       },
       {
         new: true,
-      },
-    );
+      }
+    )
+      .populate({
+        path: "job",
+        select:
+          "companyName careerPageUrl jobTitle description isAskForReferral referralRequestId postedByUser senderProfile receiverProfile",
+      })
+      .lean();
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Referral application not found.",
+      });
+    }
+
+    const job = application.job;
+
+    if (!job || String(job.postedByUser) !== String(receiverUserId)) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to update this referral request.",
+      });
+    }
 
     notifySenderOnReferralRequestStatusChange({
-      senderAuthId: request.referralRequestId,
+      senderAuthId: job.referralRequestId,
       receiverAuthId: receiverUserId,
       status,
-      requestId: request._id,
-      companyName: request.companyName,
+      requestId: application._id,
+      companyName: job.companyName,
     }).catch((err) =>
-      console.error("Referral status notification failed:", err.message),
+      console.error("Referral status notification failed:", err.message)
     );
 
     return res.status(200).json({
       success: true,
       message: `Referral request ${status} successfully.`,
-      data: {
-        request,
-        application: updatedApplication,
-      },
+      data: application,
     });
   } catch (error) {
     console.error("updateCareerPageRequestStatus error:", error);
@@ -464,12 +467,25 @@ export const getSentCareerPageRequests = async (req, res) => {
       });
     }
 
+    const senderObjectId = new mongoose.Types.ObjectId(senderUserId);
+
+    const receiverStudentProfile = await getStudentService(senderUserId);
+
+    const applicantId = receiverStudentProfile?.data?.[0]?._id;
+
+    if (!applicantId) {
+      return res.status(404).json({
+        success: false,
+        message: "Applicant onboarding profile not found.",
+      });
+    }
+
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.max(parseInt(req.query.limit, 10) || 20, 1);
     const skip = (page - 1) * limit;
 
     const filter = {
-      referralRequestId: new mongoose.Types.ObjectId(senderUserId),
+      referralRequestId: senderObjectId,
       isAskForReferral: true,
       jobType: "Referral",
       inactive: false,
@@ -479,14 +495,35 @@ export const getSentCareerPageRequests = async (req, res) => {
 
     const requests = await JobPostingTable.find(filter)
       .select(
-        "referralRequestId postedByUser companyName careerPageUrl senderProfile receiverProfile jobTitle description status isAskForReferral createdAt updatedAt",
+        "referralRequestId postedByUser companyName careerPageUrl senderProfile receiverProfile jobTitle description isAskForReferral createdAt updatedAt",
       )
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    const result = paginatedResponse(requests, total, { page, limit });
+    const requestsWithApplicationStatus = await Promise.all(
+      requests.map(async (request) => {
+        const application = await Application.findOne({
+          applicant: applicantId,
+          job: request._id,
+        })
+          .select("currentStatus createdAt updatedAt")
+          .sort({ createdAt: -1 })
+          .lean();
+
+        return {
+          ...request,
+          currentStatus: application?.currentStatus || null,
+          application,
+        };
+      }),
+    );
+
+    const result = paginatedResponse(requestsWithApplicationStatus, total, {
+      page,
+      limit,
+    });
 
     return res.status(200).json({
       success: true,
