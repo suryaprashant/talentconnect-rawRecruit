@@ -69,17 +69,11 @@ const AdminNormalization = () => {
         "Canonical entity created ✅"
       );
 
-      setLogs((prev) =>
-        prev.filter(
-          (item) =>
-            item._id !== selectedLog._id
-        )
-      );
-
       setShowCreateModal(false);
       setSelectedLog(null);
       setDisplayName("");
 
+      await fetchLogs();
     } catch (err) {
 
       console.error(err);
@@ -108,12 +102,7 @@ const AdminNormalization = () => {
           "Approved successfully ✅"
         );
 
-        setLogs((prev) =>
-          prev.filter(
-            (item) =>
-              item._id !== id
-          )
-        );
+        await fetchLogs();
 
       } catch (err) {
         console.error(err);
@@ -142,12 +131,7 @@ const AdminNormalization = () => {
           "Rejected successfully ❌"
         );
 
-        setLogs((prev) =>
-          prev.filter(
-            (item) =>
-              item._id !== id
-          )
-        );
+        await fetchLogs();
 
       } catch (err) {
         console.error(err);
