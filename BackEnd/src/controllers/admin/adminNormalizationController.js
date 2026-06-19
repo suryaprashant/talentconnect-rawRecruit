@@ -9,6 +9,7 @@ import CollegeMaster
 import { normalizeText }
   from "../../utils/normalizeText.js";
 import {refreshFuseIndex} from "../../services/fuseIndexService.js";
+import {backfillCompanyCanonical, backfillCollegeCanonical} from "../../services/backfillNormalizationService.js";
 export const getPendingNormalizations =  async (req, res) => {
     try {
       const logs =
@@ -112,6 +113,15 @@ export const approveNormalization =  async (req, res) => {
         // await refreshFuseIndex();
       }
       await refreshFuseIndex();
+      if (log.entity_type === "company") {
+        await backfillCompanyCanonical(
+          log.suggested_canonical_id
+        );
+      } else {
+        await backfillCollegeCanonical(
+          log.suggested_canonical_id
+        );
+      }
       log.accepted = true;
 
       log.reviewed = true;
@@ -265,6 +275,15 @@ export const createCanonicalEntity =  async (req, res) => {
       await log.save();
 
       await refreshFuseIndex();
+      if (log.entity_type === "company") {
+        await backfillCompanyCanonical(
+          canonicalId
+        );
+      } else {
+        await backfillCollegeCanonical(
+          canonicalId
+        );
+      }
 
       return res.status(200).json({
         success: true,

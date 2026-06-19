@@ -16,7 +16,7 @@ export const COLLEGE_ALIAS_MAP = {
   ],
 
   "iit_delhi": [
-    "iit delhi", "iitd",
+    "iit delhi", "iitd", "iit d", "iit-d",
     "indian institute of technology delhi",
     "indian institute of technology, delhi",
     "indian institute of technology (delhi)",
