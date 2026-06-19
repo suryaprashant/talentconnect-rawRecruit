@@ -63,6 +63,23 @@ const roleContent = {
       }
     ]
   },
+  employer: {
+    title: "Hire Fresher Talent Independently",
+    points: [
+      {
+        title: "Work with Companies or Independently",
+        desc: "Join existing companies as a hiring partner or create your own hiring presence to source fresher talent directly."
+      },
+      {
+        title: "Manage Hiring End-to-End",
+        desc: "Post On-Campus, Pool-Campus, and Off-Campus opportunities, review applications, shortlist candidates, and coordinate interviews."
+      },
+      {
+        title: "Build Your Hiring Network",
+        desc: "Connect with colleges, access verified student talent, and establish your professional hiring brand across India."
+      }
+    ]
+  },
 
   student: {
     title: "Find Fresher Jobs and Internships Faster",

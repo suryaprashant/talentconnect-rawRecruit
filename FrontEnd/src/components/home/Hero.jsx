@@ -79,7 +79,7 @@ export default function HeroSection() {
     apply: {
       title: "Become a",
       highlight: "Hiring Partner",
-      desc: "Collaborate with companies and colleges, provide referrals, conduct interviews, and help organizations discover high-potential fresher talent."
+      desc: "Operate independently or on behalf of organizations to run On-Campus, Pool-Campus, and Off-Campus hiring — post opportunities, manage applications, connect with colleges, and hire fresher talent faster."
     }
   };
   const videoMap = {
