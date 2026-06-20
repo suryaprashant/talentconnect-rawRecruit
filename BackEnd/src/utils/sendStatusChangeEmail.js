@@ -12,7 +12,7 @@ const sendStatusChangeEmail = async (to, status, appId, jobRole, companyName = "
     subject: "Your application status has changed",
     html: `
       <p>Dear Candidate,</p>
-      <p>Your application${appId ? ` (ID: ${appId})` : ''} for <strong>${jobRole}</strong> ${companyName ? ` at ${companyName}` : ''} status has been updated to: <strong>${status}</strong>.</p>
+      <p>Your application${appId ? ` (ID: ${appId})` : ''} for <strong>${jobRole}</strong> ${companyName ? ` at ${companyName}` : ''} has been updated to: <strong>${status}</strong>.</p>
       <p>Please log in to your account for more details.</p>
       <p>Thanks</p>
       <p>From</p>
