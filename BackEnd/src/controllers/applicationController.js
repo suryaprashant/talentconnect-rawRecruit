@@ -376,9 +376,11 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     // Find application with job populated
     const application = await Application.findById(applicationId).populate({
       path: "job",
-      select: "candidatePosted jobTitle",
+      select: "candidatePosted jobTitle referralCompany",
     });
-
+    const companyName =
+      application?.referralCompany ||
+      "Company";
     if (!application) {
       return res.status(404).json({
         success: false,
@@ -513,7 +515,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
         notifyOnApplicationStatusChange({
           recipientId: recipientAuthId,
           senderId: req.user._id,
-          companyName: "Professional Referral",
+          companyName,
           status: response.data.currentStatus,
           applicationId: response.data._id,
           jobType: response.data.jobType,
