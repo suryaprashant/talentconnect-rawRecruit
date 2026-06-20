@@ -352,7 +352,7 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
 export const updateReferralCandidateStatus = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
-    const { status, jobRole } = req.body;
+    const { status } = req.body;
 
     if (!applicationId || !status) {
       return res.status(400).json({
@@ -381,6 +381,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     const companyName =
       application?.referralCompany ||
       "Company";
+    const jobRole = application?.job?.jobTitle || "";
     if (!application) {
       return res.status(404).json({
         success: false,
@@ -476,7 +477,8 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
         applicantMail.email,
         response.data.currentStatus,
         response.data._id,
-        jobRole
+        jobRole,
+        companyName
       ).catch((err) => {
         console.error("Email sending failed:", err.message);
       });
