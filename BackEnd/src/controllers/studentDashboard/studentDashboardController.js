@@ -43,16 +43,8 @@ export const fetchMetricsForJob = async (jobId) => {
       job: jobId,
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: {
-        $in: [
-          "Referred To Company",
-          "Shortlisted",
-          "Interview Scheduled",
-          "Offer Extended",
-          "Accepted",
-          "Rejected",
-        ],
-      },
+      "statusHistory.status": "Referred To Company",
+      
     }),
 
     // Total interview scheduled
@@ -67,7 +59,14 @@ export const fetchMetricsForJob = async (jobId) => {
       job: jobId,
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: "Accepted",
+      currentStatus: {
+        $in: [          
+          "Offer Extended",
+          "Accepted",
+          "Offer Accepted",
+          "Joined the Company",
+        ],
+      },
     }),
   ]);
 

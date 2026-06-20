@@ -415,7 +415,20 @@ export const notifyOnApplicationStatusChange = async ({
   jobType,
 }) => {
   const statusMessageMap = {
-    "Shortlisted": `${companyName} shortlisted your application`,
+    "Saved":
+      `${companyName} saved your application`,
+
+    "Applied":
+      `Your application was submitted to ${companyName}`,
+
+    "Application Sent":
+      `${companyName} received your application`,
+
+    "Awaiting Recruiter Action":
+      `Your application is awaiting recruiter review at ${companyName}`,
+
+    "Shortlisted":
+      `${companyName} shortlisted your application`,
 
     "Interview Scheduled":
       `${companyName} scheduled an interview for your application`,
@@ -431,6 +444,15 @@ export const notifyOnApplicationStatusChange = async ({
 
     "Referred To Company":
       `${companyName} referred your application to the company`,
+
+    "Offer Accepted":
+      `Your offer from ${companyName} has been accepted`,
+
+    "Offer Rejected":
+      `Your offer from ${companyName} has been declined`,
+
+    "Joined the Company":
+      `Congratulations! You joined ${companyName}`,
   };
 
   const message = statusMessageMap[status];
