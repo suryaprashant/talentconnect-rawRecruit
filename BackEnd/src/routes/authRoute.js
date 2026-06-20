@@ -21,7 +21,7 @@ router.get('/linkedin', redirectToLinkedIn);
 router.get('/linkedin/callback', handleLinkedInCallback)
 
 router.post("/getcount/toteluser", getCountOfTotalUsers) ;
-router.post("/logout", logout) ;
+router.post("/logout", secureRoute, logout) ;
 
 router.post('/send-otp',sendSignupOtp) ;
 

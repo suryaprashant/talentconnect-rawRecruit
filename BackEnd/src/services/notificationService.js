@@ -65,6 +65,30 @@ export const NOTIFICATION_SCREEN_MAP = {
     subtopic: "Applied By Me",
     body: { applicationId: "referenceId", jobId: "jobId" },
   },
+  APPLICATION_OFFER_ACCEPTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: {
+      applicationId: "referenceId",
+      jobId: "jobId",
+    },
+  },
+  APPLICATION_OFFER_REJECTED: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: {
+      applicationId: "referenceId",
+      jobId: "jobId",
+    },
+  },
+  APPLICATION_JOINED_THE_COMPANY: {
+    topic: "Referrer",
+    subtopic: "Applied By Me",
+    body: {
+      applicationId: "referenceId",
+      jobId: "jobId",
+    },
+  },
   APPLICATION_REFERRED_TO_COMPANY: {
     topic: "Referrer",
     subtopic: "Applied By Me",
