@@ -622,7 +622,8 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
           adminApprovalStatus: 1,
           job: {
             _id: "$jobInfo._id",
-            jobTitle: "$jobInfo.jobTitle"
+            jobTitle: "$jobInfo.jobTitle",
+            companyName:"$jobInfo.companyName"
           },
           currentStatus: 1,
           matchScore: 1,
