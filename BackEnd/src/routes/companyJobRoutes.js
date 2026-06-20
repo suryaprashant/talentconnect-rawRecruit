@@ -1,6 +1,7 @@
 import express from "express";
 import {
-  addCompanyWithCareer,
+   sendCareerPageReferralRequest,
+   getAlumniForCareerPageUrl,
   getReceivedCareerPageRequests,
   updateCareerPageRequestStatus,
   adminAddCompanyCareerPage,
@@ -11,7 +12,17 @@ import secureRoute from "../middlewares/secureRouteMiddleware.js";
 
 const router = express.Router();
 
-router.post("/career-page-referral", secureRoute, addCompanyWithCareer);
+router.post(
+  "/career-page-referral",
+  secureRoute,
+  getAlumniForCareerPageUrl
+);
+
+router.post(
+  "/career-page-referral/send",
+  secureRoute,
+  sendCareerPageReferralRequest
+);
 router.post("/addCompany-carrer",secureRoute,adminAddCompanyCareerPage)
 
 router.get(
