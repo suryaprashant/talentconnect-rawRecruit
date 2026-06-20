@@ -505,7 +505,8 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
       {
         $match: {
           jobType: "Referral",
-          adminApprovalStatus: "Approved"
+          adminApprovalStatus: "Approved",
+          currentStatus: "Application Sent"
         }
       },
 
@@ -770,7 +771,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       job: { $in: jobIds },
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: { $in: ["Referred To Company", "Accepted"] },
+      "statusHistory.status": "Referred To Company",
     }),
  
     // Admin approved AND accepted by company
@@ -778,7 +779,14 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
       job: { $in: jobIds },
       jobType: "Referral",
       adminApprovalStatus: "Approved",
-      currentStatus: "Accepted",
+      currentStatus: {
+        $in: [          
+          "Offer Extended",
+          "Accepted",
+          "Offer Accepted",
+          "Joined the Company",
+        ],
+      },
     }),
   ]);
  
