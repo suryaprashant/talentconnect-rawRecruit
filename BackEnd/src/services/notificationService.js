@@ -534,6 +534,7 @@ export const notifyOnApplicationStatusChange = async ({
       .replace(/\s+/g, "_")}`,
     message,
     referenceId: applicationId,
+    jobId: application.job,
     jobType,
   });
 };

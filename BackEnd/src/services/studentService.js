@@ -903,16 +903,7 @@ export const getOnboardingByUserIdService = async (
           job: { $in: jobIds },
           jobType: "Referral",
           adminApprovalStatus: "Approved",
-          currentStatus: {
-            $in: [
-              "Referred To Company",
-              "Shortlisted",
-              "Interview Scheduled",
-              "Offer Extended",
-              "Accepted",
-              "Rejected",
-            ],
-          },
+          "statusHistory.status": "Referred To Company",
         }),
       ]);
 
@@ -938,6 +929,7 @@ export const getOnboardingByUserIdService = async (
       jobType: "Referral",
       approvalStatus: "Approved",
       inactive: false,
+      isAskForReferral: { $ne: true },
     })
       .sort({ createdAt: -1 })
       .lean();

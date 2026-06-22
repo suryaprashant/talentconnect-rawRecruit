@@ -973,7 +973,7 @@ export async function fetchApplicationStatusService(
       {
         $lookup: {
           from: "onboardings",
-          localField: "jobDetails.postedBy",
+          localField: "jobDetails.candidatePosted",
           foreignField: "_id",
           as: "referralPosterProfile",
         },
@@ -981,6 +981,7 @@ export async function fetchApplicationStatusService(
 
       {
         $addFields: {
+          
           companyProfile: {
             $arrayElemAt: ["$companyProfile", 0],
           },
@@ -992,7 +993,13 @@ export async function fetchApplicationStatusService(
           referralPosterProfile: {
             $arrayElemAt: ["$referralPosterProfile", 0],
           },
-
+          
+          "jobDetails.receiverProfile": {
+            $ifNull: [
+              "$jobDetails.receiverProfile",
+              "$referralPosterProfile"
+            ]
+          },
           displayCompanyName: {
             $cond: {
               if: { $eq: ["$jobType", "Referral"] },
