@@ -68,13 +68,13 @@ export const getInterviews = async (req, res) => {
      */
     const interviews = await InterviewSchedule
       .find(query)
-      .populate("jobId", "jobType jobRoles companyName") // safe
+      .populate("jobId", "jobType jobTitle companyName") // safe
       .sort({ date: 1, time: 1 }); // upcoming first
     const formattedInterviews = interviews.map((item) => ({
       ...item.toObject(),
       jobId: {
         ...item.jobId.toObject(),
-        title: item.jobId.jobRoles?.[0] || "",
+        title: item.jobId.jobTitle?.[0] || "",
       },
     }));
     return res.status(200).json({
