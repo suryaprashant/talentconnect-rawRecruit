@@ -993,13 +993,6 @@ export async function fetchApplicationStatusService(
           referralPosterProfile: {
             $arrayElemAt: ["$referralPosterProfile", 0],
           },
-          
-          "jobDetails.receiverProfile": {
-            $ifNull: [
-              "$jobDetails.receiverProfile",
-              "$referralPosterProfile"
-            ]
-          },
           displayCompanyName: {
             $cond: {
               if: { $eq: ["$jobType", "Referral"] },
@@ -1022,8 +1015,23 @@ export async function fetchApplicationStatusService(
             },
           },
         },
+        
       },
-
+      {
+        $addFields: {
+          "jobDetails.receiverProfile": {
+            $ifNull: [
+              "$jobDetails.receiverProfile",
+              "$referralPosterProfile",
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          referralPosterProfile: 0,
+        },
+      },
       {
         $sort: {
           createdAt: -1,
