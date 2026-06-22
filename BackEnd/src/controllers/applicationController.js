@@ -2350,6 +2350,19 @@ export const getApplicationDetailsById = async (req, res) => {
       })
 
       .lean();
+      if (
+        application?.job?.jobType === "Referral" &&
+        !application?.job?.receiverProfile &&
+        application?.job?.candidatePosted?._id
+      ) {
+        const receiverProfile = await Onboarding.findById(
+          application.job.candidatePosted._id
+        )
+          .select("-categorizedSkills")
+          .lean();
+
+        application.job.receiverProfile = receiverProfile;
+      }
 
     if (!application) {
       return res.status(404).json({
