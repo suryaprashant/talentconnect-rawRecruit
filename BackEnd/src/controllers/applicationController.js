@@ -2363,7 +2363,9 @@ export const getApplicationDetailsById = async (req, res) => {
 
         application.job.receiverProfile = receiverProfile;
       }
-
+    application.applied =
+      application?.applicant?.userId?.toString() ===
+      req.user._id.toString();
     if (!application) {
       return res.status(404).json({
         success: false,
