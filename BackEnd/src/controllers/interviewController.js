@@ -66,6 +66,7 @@ export const getInterviews = async (req, res) => {
     /**
      * FETCH INTERVIEWS
      */
+    query.date = { $gte: new Date().toISOString().split("T")[0] };
     const interviews = await InterviewSchedule
       .find(query)
       .populate("jobId", "jobType jobTitle companyName") // safe
