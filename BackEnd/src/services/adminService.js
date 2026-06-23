@@ -506,7 +506,9 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
         $match: {
           jobType: "Referral",
           adminApprovalStatus: "Approved",
-          currentStatus: "Application Sent"
+          currentStatus: {
+            $in: ["Applied", "Application Sent"]
+          }
         }
       },
 
