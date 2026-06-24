@@ -14,16 +14,20 @@ export const AuthContextRole = ({ children }) => {
 
   // 🔁 Restore auth on page refresh
   const fetchMe = async () => {
+    console.log('fetchMe START');
     try {
       const res = await axios.get("/api/auth/me", {
         withCredentials: true,
       });
       console.log(res.data.user)
+      console.log('fetchMe RESULT', res.data.user);
       setUser(res.data.user);
     } catch (err) {
+      console.log('fetchMe ERROR', err.response?.status);
       if (err.response?.status === 401) {
         setUser(null);
       }
+      
     } finally {
       setLoading(false);
     }

@@ -167,7 +167,7 @@ function LoginPage() {
     setLinkedinLoading(true);
     // Note: We pass a default userType. Backend will prioritize 
     // the user's ACTUAL role found in the database.
-    window.location.href = `${import.meta.env.VITE_Backend_URL}/api/auth/linkedin?userType=candidate`;
+    window.location.href = `${import.meta.env.VITE_Backend_URL}/api/auth/linkedin?userType=company`;
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });

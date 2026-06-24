@@ -269,7 +269,7 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
         .populate("job")
         .populate({
           path: "applicant",
-          select: "name email",
+          select: "userId name email profileImage",
         })
         .sort({ updatedAt: -1 })
         .skip(skip)
@@ -320,6 +320,7 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
           benefits,
           tags,
           views,
+          senderProfile,
           ...cleanJob
         } = app.job;
 

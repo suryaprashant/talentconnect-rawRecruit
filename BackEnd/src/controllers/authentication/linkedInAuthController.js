@@ -82,6 +82,6 @@ export const handleLinkedInCallback = async (req, res) => {
   } catch (err) {
     console.error("LinkedIn Callback Controller Error:", err);
     const errorMsg = encodeURIComponent("Authentication failed. Please try again.");
-    return res.redirect(`${process.env.Frontend_URL}/signup?error=${errorMsg}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/signup?error=${errorMsg}`);
   }
 };
