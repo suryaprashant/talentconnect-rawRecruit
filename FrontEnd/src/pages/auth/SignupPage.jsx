@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLegacyAuth } from '../../context/AuthProvider';
+import { useAuth } from '../../context/AuthContext'; 
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
 import ReactGA from "react-ga4";
@@ -185,7 +186,7 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [linkedinLoading, setLinkedinLoading] = useState(false);
-
+  const { login } = useAuth();
   // Role display names
   const roleDisplayNames = {
     candidate: 'Candidate',
@@ -232,11 +233,12 @@ function SignupPage() {
     profileImage: queryParams.get('profileImage'),
     onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
   };
-
+  login(user);
   // Save to local storage
   setAuthUser({ user });
   localStorage.setItem('ChatAppUser', JSON.stringify(user));
   localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType); // ← add this
   
   // Set axios header
   axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -246,13 +248,14 @@ function SignupPage() {
   // Google Analytics event for LinkedIn signup
   trackGAEvent("Auth", "Signup Success", "LinkedIn");
 
-  // Clear the URL query params
-  navigate(location.pathname, { replace: true });
+  // ✅ Single navigate
+const route = user.onboardingCompleted
+  ? (DASHBOARD_ROUTES[user.userType] || '/home')
+  : (ONBOARDING_ROUTES[user.userType] || '/onboarding');
 
-  // Handle redirection
-  handleAuthRedirect(user, navigate);
+navigate(route, { replace: true });
 }
-}, [location.search, navigate]); // Dependencies are correct
+}, [location.search]); // Dependencies are correct
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 

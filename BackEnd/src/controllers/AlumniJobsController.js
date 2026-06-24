@@ -2116,7 +2116,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
                       person._id,
 
                     jobType: "Referral",
-
+                    isAskForReferral: { $ne: true },
                     approvalStatus:
                       "Approved",
 

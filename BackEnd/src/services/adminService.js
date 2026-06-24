@@ -738,6 +738,7 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
   const referralJobs = await JobPostingTable.find({
     candidatePosted: professionalProfileId,
     jobType: "Referral",
+    isAskForReferral: { $ne: true },
   })
     .select("_id")
     .lean();
