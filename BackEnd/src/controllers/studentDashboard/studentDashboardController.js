@@ -1882,10 +1882,15 @@ export const getInternshipPostings = async (req, res) => {
           _gateMultiplier,
           _skillMatchPct,
           _profileType,
+          jobRoles,
           ...cleanJob
         } = job;
 
-        return cleanJob;
+        return {
+          ...cleanJob,
+          jobTitle: jobRoles, // or jobRoles?.[0] if you want only the first role
+        };
+
       });
 
     return sendResponse(res, 200, {

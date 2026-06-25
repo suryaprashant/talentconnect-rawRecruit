@@ -1491,6 +1491,7 @@ export const getCollegeAlumni = async (req, res) => {
               candidatePosted: person._id,
               jobType: "Referral",
               approvalStatus: "Approved",
+              isAskForReferral: { $ne: true },
               inactive: false,
             })
               .sort({ createdAt: -1 })
@@ -1803,6 +1804,7 @@ export const getCompanyAlumni = async (req, res) => {
               jobType: "Referral",
               approvalStatus: "Approved",
               inactive: false,
+              isAskForReferral: { $ne: true },
             })
               .sort({ createdAt: -1 })
               .lean(),

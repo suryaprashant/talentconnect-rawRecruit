@@ -588,10 +588,14 @@ const finalData = enrichedJobs                               // ← changed
             _skillMatchPct,
             _profileType,
             _broadcastAllowed,
+            jobRoles,
             ...cleanJob
           } = job;
 
-          return cleanJob;
+          return {
+            ...cleanJob,
+            jobTitle: jobRoles, // or jobRoles?.[0] if you want only the first role
+          };
         });
 
     return res.status(200).json(
