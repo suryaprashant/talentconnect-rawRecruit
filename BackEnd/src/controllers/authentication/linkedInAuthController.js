@@ -41,11 +41,11 @@ export const redirectToLinkedIn = (req, res) => {
 export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
-    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+    const FRONTEND_URLS = process.env.FRONTEND_URLS || "http://localhost:5173";
 
     // Handle user cancellation or LinkedIn errors
     if (error) {
-      return res.redirect(`${FRONTEND_URL}/signup?error=${encodeURIComponent(error_description || error)}`);
+      return res.redirect(`${FRONTEND_URLS}/signup?error=${encodeURIComponent(error_description || error)}`);
     }
 
     // Call your handleLinkedInLogin service (which fetches profile & upserts user)
@@ -67,7 +67,7 @@ export const handleLinkedInCallback = async (req, res) => {
     });
 
     // Redirect to Frontend with query params so your React useEffect can save data
-    const redirectUrl = `${FRONTEND_URL}/signup?` + new URLSearchParams({
+    const redirectUrl = `${FRONTEND_URLS}/signup?` + new URLSearchParams({
       token: token,
       userId: user._id.toString(),
       email: user.email,
@@ -82,6 +82,6 @@ export const handleLinkedInCallback = async (req, res) => {
   } catch (err) {
     console.error("LinkedIn Callback Controller Error:", err);
     const errorMsg = encodeURIComponent("Authentication failed. Please try again.");
-    return res.redirect(`${process.env.FRONTEND_URL}/signup?error=${errorMsg}`);
+    return res.redirect(`${process.env.FRONTEND_URLS}/signup?error=${errorMsg}`);
   }
 };
