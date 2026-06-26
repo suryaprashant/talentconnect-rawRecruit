@@ -3,7 +3,7 @@ import { getAlumniByCompanyForCandidate } from "../services/alumniService.js";
 import Onboarding from "../models/studentonboardingModel.js";
 import DiscoveredCompany from "../models/DiscoveredCompany.js";
 import {
-  extractCompanyNameFromCareerUrl,
+  resolveCompanyNameFromCareerUrl,
   validateCareerPageUrl,
 } from "../utils/jobTextUtils.js";
 import { paginatedResponse } from "../utils/paginate.js";
@@ -17,8 +17,6 @@ import {
   notifyAlumniOnNewReferralRequest,
   notifySenderOnReferralRequestStatusChange,
 } from "../services/notificationService.js";
-
-
 
 // export const getAlumniForCareerPageUrl  = async (req, res) => {
 //   try {
@@ -150,12 +148,16 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
     }
 
     const careerPageUrl = urlValidation.normalizedUrl;
-    const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
+
+    const companyName = await resolveCompanyNameFromCareerUrl(careerPageUrl);
 
     if (!companyName) {
       return res.status(400).json({
         success: false,
-        message: "Invalid career page URL. Company name not found.",
+        message: "Unable to extract company name from this job URL.",
+        data: {
+          careerPageUrl,
+        },
       });
     }
 
@@ -206,8 +208,7 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
 
     alumniList = alumniList.filter(
       (alumni) =>
-        alumni?.userId &&
-        String(alumni.userId) !== String(senderUserId)
+        alumni?.userId && String(alumni.userId) !== String(senderUserId),
     );
 
     if (!alumniResult?.alumFound || alumniList.length === 0) {
@@ -242,7 +243,6 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
     });
   }
 };
-
 
 export const sendCareerPageReferralRequest = async (req, res) => {
   const session = await mongoose.startSession();
@@ -305,12 +305,13 @@ export const sendCareerPageReferralRequest = async (req, res) => {
     }
 
     const careerPageUrl = urlValidation.normalizedUrl;
-    const companyName = extractCompanyNameFromCareerUrl(careerPageUrl);
+
+    const companyName = await resolveCompanyNameFromCareerUrl(careerPageUrl);
 
     if (!companyName) {
       return res.status(400).json({
         success: false,
-        message: "Invalid career page URL. Company name not found.",
+        message: "Unable to extract company name from this job URL.",
       });
     }
 
@@ -395,7 +396,7 @@ export const sendCareerPageReferralRequest = async (req, res) => {
             inactive: false,
           },
         ],
-        { session }
+        { session },
       );
 
       const createdReferralJob = referralJob[0];
@@ -430,7 +431,7 @@ export const sendCareerPageReferralRequest = async (req, res) => {
             rating: 0,
           },
         ],
-        { session }
+        { session },
       );
 
       const createdApplication = application[0];
@@ -449,7 +450,7 @@ export const sendCareerPageReferralRequest = async (req, res) => {
         requestId: createdReferralJob._id,
         applicationId: createdApplication._id,
       }).catch((err) =>
-        console.error("Referral notification failed:", err.message)
+        console.error("Referral notification failed:", err.message),
       );
     }
 
@@ -603,7 +604,7 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       },
       {
         new: true,
-      }
+      },
     )
       .populate({
         path: "job",
@@ -635,7 +636,7 @@ export const updateCareerPageRequestStatus = async (req, res) => {
       requestId: application._id,
       companyName: job.companyName,
     }).catch((err) =>
-      console.error("Referral status notification failed:", err.message)
+      console.error("Referral status notification failed:", err.message),
     );
 
     return res.status(200).json({
