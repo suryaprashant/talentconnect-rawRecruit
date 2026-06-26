@@ -3,7 +3,7 @@ import { getAlumniByCompanyForCandidate } from "../services/alumniService.js";
 import Onboarding from "../models/studentonboardingModel.js";
 import DiscoveredCompany from "../models/DiscoveredCompany.js";
 import {
-  resolveCompanyNameFromCareerUrl,
+  
   validateCareerPageUrl,
 } from "../utils/jobTextUtils.js";
 import { paginatedResponse } from "../utils/paginate.js";
@@ -138,6 +138,8 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       });
     }
 
+    
+
     const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
 
     if (!urlValidation.valid) {
@@ -148,8 +150,7 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
     }
 
     const careerPageUrl = urlValidation.normalizedUrl;
-
-    const companyName = await resolveCompanyNameFromCareerUrl(careerPageUrl);
+    const companyName = urlValidation.companyName;
 
     if (!companyName) {
       return res.status(400).json({
@@ -297,16 +298,15 @@ export const sendCareerPageReferralRequest = async (req, res) => {
 
     const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
 
-    if (!urlValidation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: urlValidation.message,
-      });
-    }
+if (!urlValidation.valid) {
+  return res.status(400).json({
+    success: false,
+    message: urlValidation.message,
+  });
+}
 
-    const careerPageUrl = urlValidation.normalizedUrl;
-
-    const companyName = await resolveCompanyNameFromCareerUrl(careerPageUrl);
+const careerPageUrl = urlValidation.normalizedUrl;
+const companyName = urlValidation.companyName;
 
     if (!companyName) {
       return res.status(400).json({
