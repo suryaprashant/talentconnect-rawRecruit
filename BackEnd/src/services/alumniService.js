@@ -231,11 +231,11 @@ export const getAlumniByCompanyForCandidate = async ({
           },
         },
 
-        {
-          "experiences.company_canonical_id": {
-            $in: myCompanies,
-          },
-        },
+        // {
+        //   "experiences.company_canonical_id": {
+        //     $in: myCompanies,
+        //   },
+        // },
       ],
     }).lean();
 }
@@ -247,13 +247,13 @@ const networkMatchedUsers =
   networkUsers.filter(
     (person) =>
       person.currentCompany_canonical_id ===
-        canonicalCompanyId ||
+        canonicalCompanyId 
 
-      person.experiences?.some(
-        (exp) =>
-          exp.company_canonical_id ===
-          canonicalCompanyId
-      )
+      // person.experiences?.some(
+      //   (exp) =>
+      //     exp.company_canonical_id ===
+      //     canonicalCompanyId
+      // )
   );
 
   let sourceType = "network";
@@ -274,10 +274,10 @@ const networkMatchedUsers =
               canonicalCompanyId,
           },
 
-          {
-            "experiences.company_canonical_id":
-              canonicalCompanyId,
-          },
+          // {
+          //   "experiences.company_canonical_id":
+          //     canonicalCompanyId,
+          // },
         ],
       }).lean();
   }
