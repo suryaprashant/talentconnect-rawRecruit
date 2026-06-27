@@ -85,7 +85,7 @@
 
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
+import { useNavigate, useSearchParams } from 'react-router-dom'; // NEW: Added useNavigate
 import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
@@ -93,6 +93,7 @@ import RequestInfo from './RequestInfo';
 
 export default function OnCampusHiring() {
   const navigate = useNavigate(); // NEW: Added navigate
+  const [searchParams, setSearchParams] = useSearchParams();
   const [authUser] = useLegacyAuth(); // NEW: Added auth context
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
@@ -120,24 +121,22 @@ export default function OnCampusHiring() {
   }
   return true;
 };
+  const view = searchParams.get('view'); // null | 'register' | 'requestInfo'
 
   // NEW: Updated click handlers to check authentication
   const handleRegisterClick = () => {
     if (checkAuthentication('register')) {
-      setShowRegistration(true);
+      setSearchParams({ view: 'register' })
     }
   };
 
   const handleRequestInfoClick = () => {
     if (checkAuthentication('requestInfo')) {
-      setShowRequestInfo(true);
+      setSearchParams({ view: 'requestInfo' });
     }
   };
 
-  const handleBackClick = () => {
-    setShowRegistration(false);
-    setShowRequestInfo(false);
-  };
+  const  handleBackClick = () => setSearchParams({});
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -163,7 +162,7 @@ export default function OnCampusHiring() {
      
       if (response.ok) {
         alert("Form submitted successfully!");
-        setShowRegistration(false);
+        setSearchParams({});
       } else {
         const errorText = await response.text();
         let errorData;
@@ -181,9 +180,9 @@ export default function OnCampusHiring() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {showRequestInfo ? (
+      {view === 'register' ? (
         <RequestInfo onBackClick={handleBackClick} />
-      ) : showRegistration ? (
+      ) : view === 'requestInfo' ? (
         <RegisterPage 
           onBackClick={handleBackClick}
           formData={formData}

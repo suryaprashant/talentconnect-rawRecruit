@@ -7,7 +7,7 @@ import CreatableSelect from 'react-select/creatable';
 import DatePicker from 'react-datepicker';
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 import { useNavigate } from 'react-router-dom';
-
+import { getMasterDataByType } from "../../../../lib/User_AxiosInstance";
 export default function EmployerPostIntership() {
   const navigate = useNavigate();
   const initialState = {
@@ -26,6 +26,7 @@ export default function EmployerPostIntership() {
     skills: [],
     certifications: [],
     workAuthorization: '',
+    degree: [],
     studentStreams: [],
     eligibilityCriteria: '',
     internshipDuration: '',
@@ -37,7 +38,12 @@ export default function EmployerPostIntership() {
   const [formData, setFormData] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [descriptionError, setDescriptionError] = useState("");
+  const [degreeOptions, setDegreeOptions] = useState([]);
+  const [streamOptions, setStreamOptions] = useState([]);
+  const [selectedDegreeIds, setSelectedDegreeIds] = useState([]);
 
+  const [isLoadingDegrees, setIsLoadingDegrees] = useState(false);
+  const [isLoadingStreams, setIsLoadingStreams] = useState(false);
   {/*const jobTitleOptions = [
     "Software Engineer", "Data Analyst", "DevOps Engineer", "UX/UI Designer", "Product Manager", 
     "QA Engineer", "System Administrator", "Network Engineer", "Business Analyst", "Machine Learning Engineer",
@@ -107,7 +113,65 @@ export default function EmployerPostIntership() {
 
     fetchSkills();
   }, []);
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      setIsLoadingDegrees(true);
 
+      try {
+        const res = await getMasterDataByType("DEGREE");
+
+        setDegreeOptions(
+          res.data.data.map(item => ({
+            value: item._id,
+            label: item.value
+          }))
+        );
+      } catch (err) {
+        console.error("Error fetching degrees", err);
+      } finally {
+        setIsLoadingDegrees(false);
+      }
+    };
+
+    fetchDegrees();
+  }, []);
+  useEffect(() => {
+    if (selectedDegreeIds.length === 0) {
+      setStreamOptions([]);
+      return;
+    }
+
+    const fetchStreams = async () => {
+      setIsLoadingStreams(true);
+
+      try {
+        const results = await Promise.all(
+          selectedDegreeIds.map(id =>
+            getMasterDataByType("STREAM", id)
+          )
+        );
+
+        const merged = new Map();
+
+        results.forEach(res =>
+          res.data.data.forEach(item =>
+            merged.set(item._id, {
+              value: item._id,
+              label: item.value
+            })
+          )
+        );
+
+        setStreamOptions([...merged.values()]);
+      } catch (err) {
+        console.error("Error fetching streams", err);
+      } finally {
+        setIsLoadingStreams(false);
+      }
+    };
+
+    fetchStreams();
+  }, [selectedDegreeIds]);
   const addNewSkill = async () => {
     const trimmed = customSkill.trim();
     if (!trimmed) return;
@@ -287,7 +351,9 @@ export default function EmployerPostIntership() {
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
         tags: formData.tags,
         jobType: "Internship",
-        broadcastType: formData.broadcastType
+        broadcastType: formData.broadcastType,
+        degree: formData.degree.map(d => d.label),
+        studentStreams: formData.studentStreams.map(s => s.label),
       };
 
       const response = await axios.post(
@@ -307,6 +373,8 @@ export default function EmployerPostIntership() {
         toast.success('This internship will expire after 30 days');
       }, 2000);
       setFormData(initialState);
+      setSelectedDegreeIds([]);
+      setStreamOptions([]);
 
     } catch (error) {
       console.error("Detailed error:", error);
@@ -318,6 +386,8 @@ export default function EmployerPostIntership() {
 
   const handleCancel = () => {
     setFormData(initialState);
+    setSelectedDegreeIds([]);
+    setStreamOptions([]);
   };
 
   const selectStyles = {
@@ -784,81 +854,61 @@ export default function EmployerPostIntership() {
                 
                 <div className="space-y-4">
                   {/* Preferred Field of Study */}
-                  <div ref={studentStreamsRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">
-                      Preferred Field of Study
-                    </label>
-                    
-                    <div className="flex flex-wrap gap-1 mb-1">
-                      {formData.studentStreams.map(stream => (
-                        <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{stream}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeSelectedItem('studentStreams', stream)}
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                          >
-                            <X size={12} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('studentStreams')}>
-                      <span className="text-sm text-gray-500">Select preferred fields of study</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    
-                    {dropdownOpen.studentStreams && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                        <div className="p-2 border-b border-gray-100 bg-gray-50">
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              placeholder="Add custom field..."
-                              value={customStream}
-                              onChange={(e) => setCustomStream(e.target.value)}
-                              onClick={(e) => e.stopPropagation()}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleCustomAdd('studentStreams', customStream, setCustomStream);
-                                }
-                              }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:outline-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCustomAdd('studentStreams', customStream, setCustomStream);
-                              }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                            >
-                              Add
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="overflow-y-auto max-h-48">
-                          {fieldOfStudyOptions.map(stream => (
-                            <div
-                              key={stream}
-                              onClick={() => handleMultiSelect('studentStreams', stream)}
-                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
-                              }`}
-                            >
-                              <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#143694] font-semibold" : "text-gray-700"}`}>
-                                {stream}
-                              </span>
-                              {formData.studentStreams.includes(stream) && <span className="text-[#143694] font-bold">✓</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <div>
+<label className="block font-medium mb-2 text-sm text-gray-700">
+Degree
+</label>
+
+<CreatableSelect
+  isMulti
+  isClearable
+  isLoading={isLoadingDegrees}
+  options={degreeOptions}
+  value={formData.degree}
+  styles={selectStyles}
+  placeholder="Select or add degree(s)"
+
+  onChange={(selected) => {
+    const selections = selected || [];
+
+    setFormData(prev => ({
+      ...prev,
+      degree: selections,
+      studentStreams: []
+    }));
+
+    setSelectedDegreeIds(selections.map(s => s.value));
+  }}
+/>
+</div>
+
+<div>
+<label className="block font-medium mb-2 text-sm text-gray-700">
+Preferred Streams
+</label>
+
+<CreatableSelect
+  isMulti
+  isClearable
+  isLoading={isLoadingStreams}
+  isDisabled={formData.degree.length === 0}
+  options={streamOptions}
+  value={formData.studentStreams}
+  styles={selectStyles}
+  placeholder={
+    formData.degree.length === 0
+      ? "Select degree first"
+      : "Select streams"
+  }
+
+  onChange={(selected) => {
+    setFormData(prev => ({
+      ...prev,
+      studentStreams: selected || []
+    }));
+  }}
+/>
+</div>
 
                   {/* Skills and Benefits */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

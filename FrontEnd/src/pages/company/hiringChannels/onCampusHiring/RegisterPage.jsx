@@ -8,6 +8,7 @@ export default function RegisterPage({
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
+      
       <div className="container mx-auto px-4 py-10 max-w-2xl">
 
         {/* Header Section */}

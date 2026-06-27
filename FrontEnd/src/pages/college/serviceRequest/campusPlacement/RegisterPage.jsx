@@ -239,18 +239,19 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
     // ─── Helpers ───────────────────────────────────────────────────────────────
     
 useEffect(() => {
-    const combinations = [];
+    setFormData(prev => {
+        const combinations = [];
 
-    formData.degree.forEach((deg) => {
-        formData.stream.forEach((str) => {
-            combinations.push({
-                degree: deg.label,
-                stream: str.label,
+        prev.degree.forEach((deg) => {
+            prev.stream.forEach((str) => {
+                combinations.push({
+                    degree: deg.label,
+                    stream: str.label,
+                });
             });
         });
-    });
 
-    setFormData(prev => {
+        if (prev.stream.length === 0) return prev; // ← ADD THIS
         let rows = [...prev.rounds];
 
         // 1. Remove auto rows whose combination no longer exists
@@ -356,20 +357,23 @@ useEffect(() => {
     };
 
     const handleMultiToggle = (field, value) => {
-        const currentValues = formData[field];
-        const newValues = currentValues.includes(value)
-            ? currentValues.filter(item => item !== value)
-            : [...currentValues, value];
-        setFormData({ ...formData, [field]: newValues });
+        setFormData(prev => {
+            const currentValues = prev[field] || [];
+            const newValues = currentValues.includes(value)
+                ? currentValues.filter(item => item !== value)
+                : [...currentValues, value];
+            return { ...prev, [field]: newValues };
+        });
     };
 
     const handleRoundChange = (id, field, value) => {
-        const updatedRounds = formData.rounds.map(round =>
-            round.id === id ? { ...round, [field]: value } : round
-        );
-        setFormData({ ...formData, rounds: updatedRounds });
+        setFormData(prev => ({
+            ...prev,
+            rounds: prev.rounds.map(round =>
+                round.id === id ? { ...round, [field]: value } : round
+            )
+        }));
     };
-
     const addRound = () => {
         const newId = formData.rounds.length > 0
             ? Math.max(...formData.rounds.map(r => r.id)) + 1
@@ -1238,10 +1242,12 @@ useEffect(() => {
                                                                 value={round.degree}
                                                                 onChange={(e) => {
                                                                     const newDegree = e.target.value;
-                                                                    const updatedRounds = formData.rounds.map(r =>
-                                                                        r.id === round.id ? { ...r, degree: newDegree, stream: '' } : r
-                                                                    );
-                                                                    setFormData(prev => ({ ...prev, rounds: updatedRounds }));
+                                                                    setFormData(prev => ({        // ← use functional update
+                                                                        ...prev,
+                                                                        rounds: prev.rounds.map(r =>
+                                                                            r.id === round.id ? { ...r, degree: newDegree, stream: '' } : r
+                                                                        )
+                                                                    }));
                                                                     fetchStreamsForRow(newDegree);
                                                                 }}
                                                             >

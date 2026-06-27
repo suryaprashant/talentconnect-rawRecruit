@@ -1,9 +1,10 @@
 import React from 'react';
 import ServiceCard from './ServiceCard';
 import { Building2, Users, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   // SEO Card Content
   const serviceData = [
     {
@@ -160,14 +161,15 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
           {/* CTA Section */}
           <section className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
             <button
-              onClick={onRequestInfoClick}
+              
+              onClick={onRegisterClick}
               className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all text-base flex items-center justify-center gap-2"
             >
               <span>Register Now</span>
               {/* <span className="text-sm opacity-80">– Start On-Campus Hiring</span> */}
             </button>
             <button
-              onClick={onRegisterClick}
+              onClick={onRequestInfoClick}
               className="bg-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:bg-primaryBrand hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
             >
               <span>Request Info</span>

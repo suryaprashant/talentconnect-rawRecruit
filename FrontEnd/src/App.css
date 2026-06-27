@@ -4,7 +4,10 @@
   padding: 2rem;
   text-align: center;
 } */
-
+/* Prevent fixed messaging floater from overlapping page content */
+body {
+  padding-bottom: 80px; /* height of the floater ~70px + breathing room */
+}
 .marquee-wrapper {
   display: flex;
   justify-content: center;   /* centers the whole ticker */

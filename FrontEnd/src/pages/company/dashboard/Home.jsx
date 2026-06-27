@@ -812,7 +812,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
                   <p className="text-xl font-bold group-hover:text-white">
                     {dashboardData.totalScheduledInterviews || 0}
                   </p>
-                  <p className="text-xs opacity-80 group-hover:text-white">Scheduled Interviews</p>
+                  <p className="text-xs opacity-80 group-hover:text-white">Appointments</p>
                 </div>
               </div>
 
@@ -1107,7 +1107,7 @@ const [activeTab, setActiveTab] = useState('On-Campus');
             <div className="space-y-4">
               <div className="relative">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Total Applied</span>
+                  <span className="text-sm font-medium text-gray-700">Total Applications</span>
                   <span className="text-sm font-bold text-gray-900">{dashboardData.totalApplied}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">

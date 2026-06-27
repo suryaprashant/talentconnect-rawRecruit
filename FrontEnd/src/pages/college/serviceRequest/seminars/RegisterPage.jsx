@@ -88,8 +88,8 @@ export default function RegisterPage({ onBackClick, formData = {}, handleInputCh
             <div className="flex items-start gap-3 bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/5 p-3 rounded-xl border border-[#143694]/20">
               <input
                 type="checkbox"
-                name="termsAccepted"
-                checked={formData.termsAccepted || false}
+                name="acceptTerms"
+                checked={formData.acceptTerms || false}
                 onChange={handleInputChange}
                 className="w-5 h-5 mt-1"
               />

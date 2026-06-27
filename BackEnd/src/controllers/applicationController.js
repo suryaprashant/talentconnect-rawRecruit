@@ -2373,7 +2373,7 @@ export const getApplicationDetailsById = async (req, res) => {
         message: "Application not found",
       });
     }
-
+    application.job.jobTitle = application.job.jobRoles;
     return res.status(200).json({
       success: true,
       data: application,

@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import DashboardMock from "@/components/home/DashboardMock";
 import image1 from "../../assets/companyDashboard.png";
 import image2 from "../../assets/collegeDashboard.png";
-import image3 from "../../assets/CandidateDashboard.png";
+import image3 from "../../assets/employerDashboard.png";
 import OnboardingForm from "./OnboardingRequestForm";
 import { CirclePlay, HelpCircle, Star } from "lucide-react";
 // import demoVideo2 from "../../assets/college.mp4";

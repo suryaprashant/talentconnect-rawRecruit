@@ -67,7 +67,7 @@ select: 'userId name jobRoles experiences currentCompany college profileImage'
 
     let matchScore = 0;
     if (student) {
-      const W = await fetchWeights();
+      const W = await fetchWeights(student?.profileType ?? "student");
       const scored = scoreJob(enriched, student, W, 0, "Referral Job Detail");
       matchScore = scored.matchScore;
     }

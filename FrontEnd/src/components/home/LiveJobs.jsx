@@ -15,7 +15,7 @@ const subFiltersMap = {
   // Student: [ "Off-Campus", "Internship"],
   Company: ["On-Campus", "Pool-Campus"],
   College: ["On-Campus", "Pool-Campus"],
-  Employer: ["On-Campus", "Off-Campus", "Referral", "Internship"],
+  Employer: ["On-Campus", "Off-Campus"],
   // Employer: ["Off-Campus", "Referral", "Internship"],
 };
 
@@ -152,7 +152,7 @@ const LiveJobs = () => {
     }
 
     // COMPANY
-    if (role === "Company") {
+    if (role === "Company" || role === "Employer") {
       if (type === "On-Campus") return "/api/student-dashboard/on-campus";
       if (type === "Pool-Campus") return "/api/student-dashboard/pool-campus/company";
     }
@@ -223,7 +223,7 @@ const LiveJobs = () => {
     let path = "/jobs"; // fallback
 
     // COMPANY
-    if (activeRole === "Company") {
+  if (activeRole === "Company" || activeRole === "Employer") {
       if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
       if (activeType === "Pool-Campus") path = "/company-dashboard/Pool-campus";
     }
@@ -258,7 +258,7 @@ const LiveJobs = () => {
   const getJobHref = () => {
     let path = "/student-dashboard/Off-campus";
     // COMPANY
-    if (activeRole === "Company") {
+    if (activeRole === "Company" || activeRole === "Employer") {
       if (activeType === "On-Campus") path = "/company-dashboard/On-campus";
       if (activeType === "Pool-Campus") path = "/company-dashboard/Pool-campus";
     }
@@ -382,7 +382,7 @@ const LiveJobs = () => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3)
             .map((job, i) => {
-              if (activeRole === "Company") {
+              if (activeRole === "Company" || activeRole === "Employer") {
                 return (
                   <a
                     href={getJobHref()}

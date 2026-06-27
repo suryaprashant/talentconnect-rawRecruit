@@ -25,7 +25,10 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         tentativeStartDate: '',
         tentativeEndDate: '',
      //   rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '' })),
-     rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '', _auto: false })),
+    //  rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', branch: '', skills: '', _auto: false })),
+        rounds: Array.from({ length: 3 }, (_, i) => ({ 
+            id: i + 1, students: '', degree: '', stream: '', skills: '', _auto: false 
+        })),
         contactPerson: {
             name: '',
             designation: '',
@@ -189,7 +192,9 @@ useEffect(() => {
         };
         fetchDegrees();
     }, []);
-
+    useEffect(() => {
+        setSelectedDegreeIds(formData.degree.map(d => d.value));
+    }, [formData.degree]);
     // ─── Fetch streams when selected degrees change (Section 2) ───────────────
     useEffect(() => {
         if (selectedDegreeIds.length === 0) {
@@ -217,50 +222,113 @@ useEffect(() => {
         };
         fetchStreams();
     }, [selectedDegreeIds]);
-useEffect(() => {
-    const selectedStreams = formData.stream.map(s => s.label);
+    // useEffect(() => {
+    //     const selectedStreams = formData.stream.map(s => s.label);
+    //     setFormData(prev => {
+    //         let rows = [...prev.rounds];
 
-    setFormData(prev => {
-        let rows = [...prev.rounds];
+    //         // 1. Reset auto rows whose stream was removed
+    //         rows = rows.map(r => {
+    //             if (!r._auto) return r;
+    //             const stillExists = selectedStreams.includes(r.stream); // ← fixed
+    //             if (stillExists) return r;
+    //             return { ...r, stream: '', _auto: false };              // ← fixed
+    //         });
 
-        // 1. Reset auto rows whose stream was removed
-        rows = rows.map(r => {
-            if (!r._auto) return r;
-            const stillExists = selectedStreams.includes(r.branch);
-            if (stillExists) return r;
-            return { ...r, branch: '', _auto: false };
-        });
+    //         // 2. Fill selected streams into empty slots
+    //         selectedStreams.forEach((stream) => {
+    //             const alreadyExists = rows.some(r => r.stream === stream); // ← fixed
+    //             if (alreadyExists) return;
+    //             const emptyIndex = rows.findIndex(r => !r.stream);         // ← fixed
+    //             if (emptyIndex !== -1) {
+    //                 rows[emptyIndex] = { ...rows[emptyIndex], stream, _auto: true }; // ← fixed
+    //             } else {
+    //                 const newId = Math.max(...rows.map(r => r.id)) + 1;
+    //                 rows.push({
+    //                     id: newId,
+    //                     degree: '',
+    //                     stream,          // ← fixed
+    //                     students: '',
+    //                     skills: '',
+    //                     _auto: true,
+    //                 });
+    //             }
+    //         });
 
-        // 2. Fill selected streams into empty slots
-        selectedStreams.forEach((stream) => {
-            const alreadyExists = rows.some(r => r.branch === stream);
-            if (alreadyExists) return;
+    //         return { ...prev, rounds: rows };
+    //     });
+    // }, [formData.stream]);
+    
+    useEffect(() => {
+        setFormData(prev => {
+            const combinations = [];
 
-            const emptyIndex = rows.findIndex(r => !r.branch);
-
-            if (emptyIndex !== -1) {
-                rows[emptyIndex] = {
-                    ...rows[emptyIndex],
-                    branch: stream,
-                    _auto: true,
-                };
-            } else {
-                const newId = Math.max(...rows.map(r => r.id)) + 1;
-                rows.push({
-                    id: newId,
-                    branch: stream,
-                    students: '',
-                    skills: '',
-                    _auto: true,
+            prev.degree.forEach((deg) => {
+                prev.stream.forEach((str) => {
+                    combinations.push({
+                        degree: deg.label,
+                        stream: str.label,
+                    });
                 });
-            }
+            });
+
+            if (prev.stream.length === 0) return prev;
+
+            let rows = [...prev.rounds];
+
+            rows = rows.map(r => {
+                if (!r._auto) return r;
+
+                const stillExists = combinations.some(
+                    c => c.degree === r.degree && c.stream === r.stream
+                );
+
+                if (stillExists) return r;
+
+                return {
+                    ...r,
+                    degree: '',
+                    stream: '',
+                    _auto: false,
+                };
+            });
+
+            combinations.forEach((c) => {
+                const alreadyExists = rows.some(
+                    r => r.degree === c.degree && r.stream === c.stream
+                );
+
+                if (alreadyExists) return;
+
+                const emptyIndex = rows.findIndex(r => !r.degree);
+
+                if (emptyIndex !== -1) {
+                    rows[emptyIndex] = {
+                        ...rows[emptyIndex],
+                        degree: c.degree,
+                        stream: c.stream,
+                        _auto: true,
+                    };
+                } else {
+                    const newId = Math.max(...rows.map(r => r.id)) + 1;
+
+                    rows.push({
+                        id: newId,
+                        degree: c.degree,
+                        stream: c.stream,
+                        students: '',
+                        skills: '',
+                        _auto: true,
+                    });
+                }
+            });
+
+            return {
+                ...prev,
+                rounds: rows,
+            };
         });
-
-        return { ...prev, rounds: rows };
-    });
-
-}, [formData.stream]);
-
+    }, [formData.degree, formData.stream]);
     // ─── Per-row stream fetch for Section 6 table ─────────────────────────────
     const fetchStreamsForRow = async (degreeLabel) => {
         if (!degreeLabel) return;
@@ -279,25 +347,50 @@ useEffect(() => {
 
     const getRowStreams = (degreeLabel) => {
         if (!degreeLabel) return [];
+
         const matched = degreeOptions.find(d => d.label === degreeLabel);
         if (!matched) return [];
-        return rowStreamCache[matched.value] || [];
+
+        const degreeId = matched.value;
+
+        if (!rowStreamCache[degreeId]) {
+            fetchStreamsForRow(degreeLabel);
+            return [];
+        }
+
+        return rowStreamCache[degreeId];
     };
 
     // ─── Rounds helpers ────────────────────────────────────────────────────────
     const handleAddRound = () => {
+        const newId =
+            formData.rounds.length > 0
+                ? Math.max(...formData.rounds.map(r => r.id)) + 1
+                : 1;
+
         setFormData(prev => ({
             ...prev,
-            //rounds: [...prev.rounds, { id: Date.now(), branch: '', students: '', skills: '' }]
-            rounds: [...prev.rounds, { id: Date.now(), branch: '', students: '', skills: '', _auto: false }]
+            rounds: [
+                ...prev.rounds,
+                {
+                    id: newId,
+                    degree: '',
+                    stream: '',
+                    students: '',
+                    skills: '',
+                    _auto: false,
+                },
+            ],
         }));
     };
 
     const handleRemoveRound = (id) => {
-        setFormData(prev => ({
-            ...prev,
-            rounds: prev.rounds.filter(round => round.id !== id)
-        }));
+        if (formData.rounds.length > 1) {
+            setFormData(prev => ({
+                ...prev,
+                rounds: prev.rounds.filter(round => round.id !== id),
+            }));
+        }
     };
 
     // ─── Generic handlers ──────────────────────────────────────────────────────
@@ -522,14 +615,15 @@ useEffect(() => {
         let studentCounts    = [];
         let roundSkills      = [];
 
-        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.branch || round.skills);
+        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.degree || round.stream || round.skills );
         nonEmptyRounds.forEach(round => {
             if (round.skills) {
                 roundSkills.push(round.skills);
                 aggregatedSkills.push(...round.skills.split(',').map(s => s.trim()).filter(Boolean));
             }
-            if (round.branch)    studentStreams.push(round.branch);
+            if (round.stream)    studentStreams.push(round.stream);
             if (round.students)  studentCounts.push(round.students);
+            if (round.degree) studentStreams.push(round.degree);
             roundNames.push(`Round ${round.id}`);
         });
 
@@ -1203,63 +1297,82 @@ useEffect(() => {
                                     <table className="min-w-full divide-y divide-white/50 text-xs">
                                         <thead className="bg-white/50">
                                             <tr>
-                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">S.No</th>
-                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500 w-8">#</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Degree</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Stream</th>
                                                 <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
                                                 <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
-                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action</th>
+                                                <th className="px-2 py-1.5 w-6"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white/30 divide-y divide-white/50">
-                                            {formData.rounds.map((round, index) => {
-                                                const rowStreams = getRowStreams(round.branch);
+                                            {formData.rounds.map((round) => {
+                                                const rowStreamLabels = getRowStreams(round.degree); // uses degree not branch
                                                 return (
                                                     <tr key={round.id}>
-                                                        <td className="px-2 py-1.5 text-center">{index + 1}</td>
-                                                        <td className="px-2 py-1.5">
-                                                            <select
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
-                                                                value={round.branch}
-                                                                onChange={(e) => {
-                                                                    const newBranch = e.target.value;
-                                                                    handleRoundChange(round.id, 'branch', newBranch);
-                                                                    fetchStreamsForRow(newBranch);
-                                                                }}
-                                                            >
-                                                                <option value="">Select</option>
-                                                                {degreeOptions.map(opt => (
-                                                                    <option key={opt.value} value={opt.label}>{opt.label}</option>
-                                                                ))}
-                                                            </select>
-                                                        </td>
-                                                        <td className="px-2 py-1.5">
-                                                            <input
-                                                                type="number"
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
-                                                                value={round.students}
-                                                                onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)}
-                                                                min="0" placeholder="0"
-                                                            />
-                                                        </td>
-                                                        <td className="px-2 py-1.5">
-                                                            <input
-                                                                type="text"
-                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
-                                                                value={round.skills}
-                                                                onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)}
-                                                                placeholder="e.g., React, Node.js, MongoDB"
-                                                            />
-                                                        </td>
-                                                        <td className="px-2 py-1.5 text-center">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleRemoveRound(round.id)}
-                                                                className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                                                                title="Remove"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </td>
+                                                    <td className="px-2 py-1.5 text-gray-500">#{round.id}</td>
+                                                    <td className="px-2 py-1.5">
+                                                        <select
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694]"
+                                                        value={round.degree}
+                                                        onChange={(e) => {
+                                                            const newDegree = e.target.value;
+
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                rounds: prev.rounds.map(r =>
+                                                                    r.id === round.id
+                                                                        ? { ...r, degree: newDegree, stream: '' }
+                                                                        : r
+                                                                )
+                                                            }));
+
+                                                            fetchStreamsForRow(newDegree);
+                                                        }}
+                                                        >
+                                                        <option value="">Select</option>
+                                                        {degreeOptions.map(opt => (
+                                                            <option key={opt.value} value={opt.label}>{opt.label}</option>
+                                                        ))}
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <select
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        value={round.stream}
+                                                        disabled={!round.degree}
+                                                        onChange={(e) => handleRoundChange(round.id, 'stream', e.target.value)}
+                                                        >
+                                                        <option value="">{round.degree ? 'Select' : 'Degree first'}</option>
+                                                        {rowStreamLabels.map(label => (
+                                                            <option key={label} value={label}>{label}</option>
+                                                        ))}
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input type="number"
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694]"
+                                                        value={round.students}
+                                                        onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)}
+                                                        min="0"
+                                                        />
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input type="text"
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#143694]"
+                                                        value={round.skills}
+                                                        onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)}
+                                                        placeholder="e.g., Java, Python, React"
+                                                        />
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        {formData.rounds.length > 1 && (
+                                                        <button type="button" onClick={() => handleRemoveRound(round.id)}
+                                                            className="text-red-400 hover:text-red-600 transition-colors">
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                        )}
+                                                    </td>
                                                     </tr>
                                                 );
                                             })}
