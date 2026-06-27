@@ -41,8 +41,11 @@ export const redirectToLinkedIn = (req, res) => {
 export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
-    const FRONTEND_URLS = process.env.FRONTEND_URLS || "http://localhost:5173";
-
+    // const FRONTEND_URLS = process.env.FRONTEND_URLS || "http://localhost:5173";
+    const FRONTEND_URLS =
+      (process.env.FRONTEND_URLS || "http://localhost:5173")
+        .split(",")[0]
+        .trim();
     // Handle user cancellation or LinkedIn errors
     if (error) {
       return res.redirect(`${FRONTEND_URLS}/signup?error=${encodeURIComponent(error_description || error)}`);
