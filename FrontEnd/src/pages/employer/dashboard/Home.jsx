@@ -65,7 +65,7 @@ import {
   getShortlistedCandidates, 
   getAcceptedCandidates 
 } from '@/lib/Company_AxiosInstance'
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import ActivationBlock from '@/components/dashboard/ActivationBlock'
 function Home() {
   const navigate = useNavigate()

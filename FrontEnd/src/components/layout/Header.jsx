@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 import { useLegacyAuth } from '@/context/AuthProvider';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import NotificationsDropdown from './NotificationDropdown';
 import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown';

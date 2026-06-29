@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { useLegacyAuth } from '../../context/AuthProvider';
 import { useAuth } from '../../context/AuthContext'; 
 import toast from 'react-hot-toast';

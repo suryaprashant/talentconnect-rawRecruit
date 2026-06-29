@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../lib/axiosInstance";
 import { useState } from "react";
 
 export default function OnboardingRequestForm({ onClose }) {

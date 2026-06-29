@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X, Briefcase, BookOpen, Award, GraduationCap, Link, Mail } from 'lucide-react';
-import axios from 'axios';
+import axios from "../../../lib/axiosInstance";
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
 import { getHackathonById, updateHackathon } from '@/lib/Company_AxiosInstance';
@@ -567,7 +567,7 @@ const HostHackathon = () => {
     setLoading(true);
     
     try {
-      const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
+      // const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
       const payload = {
         ...formData,
         faqs,
@@ -580,15 +580,9 @@ const HostHackathon = () => {
         response = await updateHackathon(hackathonId, payload);
       } else {
         // Create new hackathon
-        response = await axios.post(
-          `${backendUrl}/hackathon/create`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+        response = await axiosClient.post(
+          "/hackathon/create",
+          payload
         );
       }
   

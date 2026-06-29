@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUserPlus, FiFile, FiDownload, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from "../../context/ChatContext";
 

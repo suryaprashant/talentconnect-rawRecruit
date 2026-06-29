@@ -171,7 +171,7 @@ import DefineHiringPreferences from "./HiringPrefrences";
 import Welcome from "./Welcome";
 import TermsAndConditions from "./TermsCondition";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { useLegacyAuth  } from "@/context/AuthProvider";
 import { useAuth } from "@/context/AuthContext";
 

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance.js';
 import toast from 'react-hot-toast';
-
+import { useChat } from '@/context/ChatContext';
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
     

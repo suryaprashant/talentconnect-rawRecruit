@@ -1,26 +1,14 @@
-import axios from 'axios';
+import createAxiosClient from "./createAxiosClient";
 
-const axiosClient = axios.create();
+const axiosClient = createAxiosClient();
 
-axiosClient.defaults.baseURL = import.meta.env.VITE_Backend_URL;
-
-axiosClient.defaults.headers = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-
-};
-
-// default 10sec
-axiosClient.defaults.timeout = 10000;
-axiosClient.defaults.withCredentials = true;
-
-const publicAxios = axios.create({
-  baseURL: import.meta.env.VITE_Backend_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  }
-});
+// const publicAxios = axios.create({
+//   baseURL: import.meta.env.VITE_Backend_URL,
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Accept: 'application/json',
+//   }
+// });
 // student dashboard
 export function viewed(jobId) {
   return axiosClient.post(`/api/hiring-channels/view/${jobId}`)
@@ -270,29 +258,11 @@ export function resetPassword(token, newPassword) {
 }
 
 export const getStudentDashboardMetrics = async () => {
-  try {
-    const response = await axios.get('/api/student/dashboard/metrics', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  return axiosClient.get("/api/student/dashboard/metrics");
 };
 
 export const getProfessionalDashboardMetrics = async () => {
-  try {
-    const response = await axiosClient.get('/application/professional/metrics', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  return axiosClient.get("/application/professional/metrics");
 };
 
 // Add these functions to your User_AxiosInstance.js file

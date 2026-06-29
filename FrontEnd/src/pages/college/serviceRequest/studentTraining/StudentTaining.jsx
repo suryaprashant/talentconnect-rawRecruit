@@ -4,7 +4,7 @@ import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added 
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance';
 import { createStudentTrainingRequest } from '@/lib/College_AxiosIntance';
 export default function StudentTraining() {
   const navigate = useNavigate(); 

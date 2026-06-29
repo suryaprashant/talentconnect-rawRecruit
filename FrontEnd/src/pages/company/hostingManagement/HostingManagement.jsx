@@ -3,7 +3,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash, Calendar, MapPin, Users,
 import { getCompanyHackathonsWithRegistrations, getCompanyCasestudiesWithRegistrations, getCompanyWorkshopsWithRegistrations, deleteHackathon, deleteCasestudy, deleteWorkshop, sendFileToHackathonUsers, sendFileToCasestudyUsers, sendFileToWorkshopUsers, getHackathonRegistrations, getCasestudyRegistrations, getWorkshopRegistrations } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import HackathonApplicantDetails from './HackathonApplicantDetails';
 import CasestudyApplicantDetails from './CasestudyApplicantDetails';
 import WorkshopApplicantDetails from './WorkshopApplicantDetails';

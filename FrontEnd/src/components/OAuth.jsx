@@ -3,7 +3,7 @@ import { app } from '../firebase';
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
-import axios from 'axios';
+import axios from '../lib/axiosInstance';
 
 
 const OAuth = () => {

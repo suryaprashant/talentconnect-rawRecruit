@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, X, Briefcase, MapPin, DollarSign, Users, BookOpen, Target, Award, Shield, Clock, GraduationCap, Calendar, IndianRupee } from 'lucide-react';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance';
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';

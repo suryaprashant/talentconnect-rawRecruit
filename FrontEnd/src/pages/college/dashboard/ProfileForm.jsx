@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { Country, State, City } from 'country-state-city';
 import { ChevronDown, X, Check, Upload, Calendar, Globe, Link, Award, Users, Briefcase, Home, Mail, Phone, MapPin, ExternalLink, Edit2, Save, Trash2, Plus, User } from 'lucide-react';

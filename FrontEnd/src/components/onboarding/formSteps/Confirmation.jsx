@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/context/RoleContext/RoleContext";
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { useLegacyAuth } from "@/context/AuthProvider";
 import { useAuth } from "@/context/AuthContext";
 import { TermsModal } from '../Terms&conditionModal';

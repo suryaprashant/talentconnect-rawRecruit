@@ -1,20 +1,27 @@
 import bcrypt from "bcryptjs";
-import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
+// import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
 import Otp from "../../models/otpModel.js";
 import StudentProfile from '../../models/studentProfileModel.js';
 import FresherProfile from '../../models/fresherProfileModel.js';
 import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
 import Auth from "../../models/authModel.js";
+import {
+    loginUser,
+    registerUser,
+    getTotalUsersCount,
+    sendSignupOtpService
+} from "../../services/authService.js";
 
-const setJwtCookie = (res, token) => {
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: true, 
-        sameSite: 'none',
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
-        path: '/'
-    });
-};
+import { createUserSession, refreshUserSession, destroyUserSession} from "../../services/sessionService.js";
+// const setJwtCookie = (res, token) => {
+//     res.cookie('jwt', token, {
+//         httpOnly: true,
+//         secure: true, 
+//         sameSite: 'none',
+//         maxAge: 7 * 24 * 60 * 60 * 1000, 
+//         path: '/'
+//     });
+// };
 
 
 
@@ -40,22 +47,21 @@ export const signup = async (req, res) => {
 
         await Otp.deleteOne({ _id: validOtp._id });
         
-        const token = generateToken({
-            userId: newUser._id,
-            email: newUser.email,
-            userType: newUser.userType
+        const { accessToken } = await createUserSession({
+            user: newUser,
+            req,
+            res,
         });
-      
-        setJwtCookie(res, token);
+
         res.status(201).json({
             message: "Signup successful",
             user: {
                 _id: newUser._id,
                 email: newUser.email,
                 userType: newUser.userType,
-                onboardingCompleted: newUser.onboardingCompleted
+                onboardingCompleted: newUser.onboardingCompleted,
             },
-            token
+            token: accessToken,
         });
     } catch (error) {
       console.error("Signup Error:", error); 
@@ -88,25 +94,23 @@ export const login = async (req, res) => {
           await Auth.findByIdAndUpdate(user._id, { deviceToken: req.body.deviceToken });
         }
 
-        const token = generateToken({
-            userId: user._id,
-            email: user.email,
-            userType: user.userType
+        const { accessToken } = await createUserSession({
+            user,
+            req,
+            res,
         });
 
-        setJwtCookie(res, token);
-        
         res.status(200).json({
-            message: 'Login successful',
-            token,
+            message: "Login successful",
+            token: accessToken,
             user: {
                 _id: user._id,
                 email: user.email,
                 userType: user.userType,
                 name: user.name,
                 basicDetails: user,
-                onboardingCompleted: user.onboardingCompleted
-            }
+                onboardingCompleted: user.onboardingCompleted,
+            },
         });
     } catch (error) {
         console.error('Login Error:', error);
@@ -127,11 +131,9 @@ export const logout = async (req, res) => {
         }
       );
     }
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/'
+    await destroyUserSession({
+      req,
+      res,
     });
     //localStorage.removeItem() ;
     res.status(200).json({ message: "User logged out successfully" });
@@ -141,6 +143,27 @@ export const logout = async (req, res) => {
   }
 };
 
+export const refreshToken = async (req, res) => {
+  try {
+    const { accessToken } = await refreshUserSession({
+      req,
+      res,
+    });
+
+    return res.status(200).json({
+      success: true,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.error("Refresh Token Error:", error);
+
+    return res.status(401).json({
+      success: false,
+      code: "INVALID_REFRESH_TOKEN",
+      message: error.message,
+    });
+  }
+};
 
 
 export const deleteAccount = async (req, res) => {

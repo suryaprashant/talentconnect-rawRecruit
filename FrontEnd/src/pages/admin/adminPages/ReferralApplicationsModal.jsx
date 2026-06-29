@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, GraduationCap, Briefcase, FileText, Loader2, Award, BookOpen } from 'lucide-react';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import StudentDetailModal from './StudentDetailModal'; // Importing the new component
 import { getApplicationForReferral } from '@/lib/Admin_AxiosInstance';
 export default function ReferralApplicationsModal({ isOpen, jobId, onClose, jobTitle }) {

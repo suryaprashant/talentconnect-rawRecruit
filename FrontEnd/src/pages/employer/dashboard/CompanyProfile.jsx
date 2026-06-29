@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
+import axios from '../.../../../../lib/axiosInstance';
 import { Globe, Users, Calendar, Upload, Building2, Briefcase, MapPin } from 'lucide-react';
 import CompanyOverview from './CompanyOverview';
 import CompanyProfileForm from './CompanyProfileForm';

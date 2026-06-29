@@ -1,29 +1,51 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { FiUser, FiSettings, FiBell, FiHelpCircle, FiLogOut } from 'react-icons/fi';
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import { useLegacyAuth } from '@/context/AuthProvider';
 
 function StandardProfileDropdown() {
   const navigate = useNavigate();
 const [authUser, setAuthUserStable] = useLegacyAuth();
-  const handleLogout = async () => {
-    try {
-      await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });
-      localStorage.clear();
-      Cookies.remove("jwt", { path: '/' });
-     //setAuth({ user: null, token: null });
-     setAuthUserStable(null);
-      navigate('/', { replace: true });
-     //window.location.href = "/";
-    } catch (error) {
-      console.error('Logout failed:', error);
-      localStorage.clear();
-      alert('Logout failed. Please try again.');
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await axios.post("/api/auth/logout");
+  //     localStorage.clear();
+  //     // Cookies.remove("jwt", { path: '/' });
+  //    //setAuth({ user: null, token: null });
+  //    setAuthUserStable(null);
+  //     navigate('/', { replace: true });
+  //    //window.location.href = "/";
+  //   } catch (error) {
+  //     console.error('Logout failed:', error);
+  //     localStorage.clear();
+  //     alert('Logout failed. Please try again.');
+  //   }
+  // };
+const handleLogout = async () => {
+  try {
+    console.log("1");
 
+    await axios.post("/api/auth/logout");
+
+    console.log("2");
+
+    localStorage.clear();
+
+    console.log("3");
+
+    setAuthUserStable(null);
+
+    console.log("4");
+
+    navigate("/", { replace: true });
+
+    console.log("5");
+  } catch (error) {
+    console.error(error);
+  }
+};
   const getProfileRoute = () => {
     if (!authUser || !authUser.user) return '/';
 

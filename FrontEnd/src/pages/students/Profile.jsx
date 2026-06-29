@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
 import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { Country, State, City } from 'country-state-city';
 import { Calendar } from "lucide-react";
 import CreatableSelect from 'react-select/creatable';

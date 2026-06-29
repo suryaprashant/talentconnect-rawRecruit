@@ -1,5 +1,5 @@
 {/*import { useEffect, useState } from "react";
-import axios from "axios";
+
 import { useLocation, useParams, useNavigate, Link  } from "react-router-dom";
 
 
@@ -226,7 +226,7 @@ const fetchJobById = async (id) => {
 export default JobDetail;*/}
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { MapPin, Building2, Briefcase, Calendar, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";

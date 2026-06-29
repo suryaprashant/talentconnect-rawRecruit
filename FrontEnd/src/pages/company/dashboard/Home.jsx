@@ -9,7 +9,7 @@ import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus, getShortlis
 import ActivationBlock from '@/components/dashboard/ActivationBlock'
 // ADD this line after existing imports
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { getPoolCampusForCompany } from '@/lib/College_AxiosIntance';
 function Home() {
   const onCampusColleges = [

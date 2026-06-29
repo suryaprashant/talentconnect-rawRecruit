@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Briefcase, Search, ChevronDown } from "lucide-react";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 
 const JobDriveManagement = () => {

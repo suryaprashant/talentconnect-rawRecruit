@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../lib/axiosInstance";
 
 const API_BASE_URL = import.meta.env.VITE_Backend_URL;
 

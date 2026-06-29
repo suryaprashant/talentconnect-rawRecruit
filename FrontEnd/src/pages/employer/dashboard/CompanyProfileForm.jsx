@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { Mail, Phone, Globe, Linkedin, Save, Edit, ChevronDown } from 'lucide-react';
 import Select from 'react-select';
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Mail, Phone, Upload, Globe, Linkedin, X, Save, Edit } from 'lucide-react';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { Country, State, City } from 'country-state-city';
 
 export default function CompanyProfileForm({ profileData, onProfileUpdate }) {

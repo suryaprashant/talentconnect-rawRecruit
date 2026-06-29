@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2, X, Users, Filter, UserPlus } from 'lucide-react'; 
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 
 export default function EmployerUserManagement() {
     const [users, setUsers] = useState([]);

@@ -5,7 +5,7 @@ import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
 //import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave } from 'react-icons/fi';
 import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave, FiCalendar } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 import DatePicker from 'react-datepicker';

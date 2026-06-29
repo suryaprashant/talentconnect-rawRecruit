@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FileText, Search, Filter } from "lucide-react";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 
 const ApplicationManagement = () => {

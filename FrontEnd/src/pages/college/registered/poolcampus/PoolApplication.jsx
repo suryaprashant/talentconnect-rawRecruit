@@ -92,7 +92,11 @@ function PoolApplicationsPage() {
     if (!jobs || !Array.isArray(jobs)) return [];
 
     return jobs.filter(job => {
-      const jobTitle = job.jobTitle || '';
+      const jobTitle = Array.isArray(job.jobRoles)
+        ? job.jobRoles.join(", ")
+        : typeof job.jobTitle === "string"
+        ? job.jobTitle
+        : "";
       const degree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
       // FIX: Use venue field for location (same as second component)
       const location = job.venue || '';

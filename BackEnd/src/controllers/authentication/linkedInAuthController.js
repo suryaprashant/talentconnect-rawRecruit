@@ -1,9 +1,8 @@
 import {
   generateLinkedInAuthUrl,
   handleLinkedInLogin,
-  generateToken,
 } from "../../services/authService.js";
-
+import { createUserSession } from "../../services/sessionService.js";
 export const redirectToLinkedIn = (req, res) => {
   try {
     const { userType } = req.query;
@@ -54,31 +53,23 @@ export const handleLinkedInCallback = async (req, res) => {
     // Call your handleLinkedInLogin service (which fetches profile & upserts user)
     const { user, isNewUser } = await handleLinkedInLogin({ code, state });
 
-    // Generate JWT token using your service
-    const token = generateToken({
-      userId: user._id,
-      email: user.email,
-      userType: user.userType,
+    const { accessToken } = await createUserSession({
+      user,
+      req,
+      res,
     });
-
-    // Set the JWT cookie (matches your Google Auth logic)
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
     // Redirect to Frontend with query params so your React useEffect can save data
-    const redirectUrl = `${FRONTEND_URLS}/signup?` + new URLSearchParams({
-      token: token,
-      userId: user._id.toString(),
-      email: user.email,
-      name: user.name || "",
-      userType: user.userType,
-      profileImage: user.profileImage || "",
-      onboardingCompleted: (!!user.onboardingCompleted).toString(),
-    }).toString();
+    const redirectUrl =
+      `${FRONTEND_URLS}/signup?` +
+      new URLSearchParams({
+        token: accessToken,
+        userId: user._id.toString(),
+        email: user.email,
+        name: user.name || "",
+        userType: user.userType,
+        profileImage: user.profileImage || "",
+        onboardingCompleted: (!!user.onboardingCompleted).toString(),
+      }).toString();
 
     return res.redirect(redirectUrl);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../lib/axiosInstance';
 import { FiCheck, FiX } from 'react-icons/fi';
 import AcceptInvitationModal from '../components/layout/AcceptInvitationalModal'
 
