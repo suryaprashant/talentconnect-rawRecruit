@@ -1,10 +1,11 @@
 import { OAuth2Client } from 'google-auth-library';
 import Auth from '../models/authModel.js';
 
-const googleClient = new OAuth2Client({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-});
+// const googleClient = new OAuth2Client({
+//     clientId: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+// });
+
 
 const ALLOWED_USER_TYPES = [
   "student",
@@ -17,8 +18,23 @@ const ALLOWED_USER_TYPES = [
 ];
 
 
-export const authenticateWithGoogle = async ({ code, userType }) => {
-    
+export const authenticateWithGoogle = async ({ code, userType, isApp }) => {
+    let googleClient;
+    if(isApp)
+    {
+      googleClient = new OAuth2Client({
+      clientId: process.env.MOBILE_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.MOBILE_GOOGLE_CLIENT_SECRET,
+    });
+    }
+    else
+    {
+      googleClient = new OAuth2Client({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      });
+    }
+    // console.log("Google ",googleClient);
     const { tokens } = await googleClient.getToken({
         code,
         redirect_uri: 'postmessage'
@@ -26,7 +42,8 @@ export const authenticateWithGoogle = async ({ code, userType }) => {
 
     const ticket = await googleClient.verifyIdToken({
         idToken: tokens.id_token,
-        audience: process.env.GOOGLE_CLIENT_ID
+        // audience: process.env.GOOGLE_CLIENT_ID
+        audience: isApp ? process.env.MOBILE_GOOGLE_CLIENT_ID : process.env.GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();

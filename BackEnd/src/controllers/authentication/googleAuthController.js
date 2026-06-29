@@ -16,13 +16,13 @@ const ALLOWED_USER_TYPES = [
 
 export const googleAuth = async (req, res) => {
     try {
-        const { code, userType } = req.body;
+        const { code, userType,isApp} = req.body;
 
         if (!code) {
             return res.status(400).json({ message: 'Authorization code is required' });
         }
 
-        const { user, isNewUser } = await authenticateWithGoogle({ code, userType });
+        const { user, isNewUser } = await authenticateWithGoogle({ code, userType,isApp });
 
         if (req.body.deviceToken) {
           await Auth.findByIdAndUpdate(user._id, { deviceToken: req.body.deviceToken });
@@ -72,3 +72,7 @@ export const googleAuth = async (req, res) => {
         });
     }
 };
+
+
+
+
