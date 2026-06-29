@@ -1,5 +1,6 @@
 import { authenticateWithGoogle } from "../../services/googleAuthService.js";
-import { generateToken } from "../..//services/authService.js";
+// import { generateToken } from "../..//services/authService.js";
+import { createUserSession } from "../../services/sessionService.js";
 import Auth from "../../models/authModel.js";
 
 const ALLOWED_USER_TYPES = [
@@ -9,7 +10,6 @@ const ALLOWED_USER_TYPES = [
   "company",
   "college",
   "employer",
-  "admin"
 ];
 
 
@@ -34,20 +34,11 @@ export const googleAuth = async (req, res) => {
           });
         }
 
-        const token = generateToken({
-            userId: user._id,
-            email: user.email,
-            userType: user.userType
+        const { accessToken } = await createUserSession({
+            user,
+            req,
+            res,
         });
-
-     
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
-        
 
         res.status(200).json({
             success: true,
@@ -59,9 +50,9 @@ export const googleAuth = async (req, res) => {
                 userType: user.userType,
                 profileImage: user.profileImage,
                 onboardingCompleted: user.onboardingCompleted,
-                onboardingStep: user.onboardingStep
+                onboardingStep: user.onboardingStep,
             },
-            token
+            token: accessToken,
         });
 
     } catch (error) {

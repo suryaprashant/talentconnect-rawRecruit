@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
 import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { Plus, Upload, X } from 'lucide-react';
 
 // Memoized child component for performance

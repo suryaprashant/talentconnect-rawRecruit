@@ -4,7 +4,7 @@ import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added 
 import MainPage from './Main';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance';
 import { createOnCampusPlacementRequest } from '@/lib/College_AxiosIntance';
 
 

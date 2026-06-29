@@ -4,7 +4,7 @@ import { useLegacyAuth } from '../context/AuthProvider';
 import Right from "./Rightpart/Right";
 import Left from "./Leftpart/Left";
 import { MessageCircle, ArrowLeft, X, ChevronUp, ChevronDown } from "lucide-react";
-import axios from "axios";
+import axios from "../lib/axiosInstance";
 import { useChat } from "../context/ChatContext";
 
 function FloatingMessenger() {
@@ -50,15 +50,16 @@ function FloatingMessenger() {
             return;
         }
 
-        const backendUrl = import.meta.env.VITE_Backend_URL;
+        // const backendUrl = import.meta.env.VITE_Backend_URL;
 
-        const response = await axios.get(`${backendUrl}${endpoint}`, {
-          withCredentials: true,
-          headers:
-            userType === "company" || userType === "employer"
-              ? { Authorization: `Bearer ${localStorage.getItem("token")}` }
-              : {},
-        });
+        // const response = await axios.get(`${backendUrl}${endpoint}`, {
+        //   withCredentials: true,
+        //   headers:
+        //     userType === "company" || userType === "employer"
+        //       ? { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        //       : {},
+        // });
+        const response = await axios.get(endpoint);
 
         let imageUrl = null;
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AlertCircle, Search, Check, X, Send, Eye, Link as LinkIcon } from "lucide-react";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 
 const ServiceRequestManagement = () => {

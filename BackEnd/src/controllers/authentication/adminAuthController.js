@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import Auth from "../../models/authModel.js";
-
+import { createUserSession, destroyUserSession } from "../../services/sessionService.js";
 // Admin login controller
 export const adminLogin = async (req, res) => {
   try {
@@ -40,39 +39,23 @@ export const adminLogin = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      { 
-        userId: admin._id, 
-        email: admin.email, 
-        userType: admin.userType 
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-
-    console.log(process.env.JWT_SECRET);
-
-    // Set cookie
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    const { accessToken } = await createUserSession({
+      user: admin,
+      req,
+      res,
     });
-
-    console.log(process.env.NODE_ENV);
 
     res.status(200).json({
       success: true,
       message: "Admin login successful",
-      token,
+      token: accessToken,
       user: {
         _id: admin._id,
         email: admin.email,
         name: admin.name,
         userType: admin.userType,
-        profileImage: admin.profileImage
-      }
+        profileImage: admin.profileImage,
+      },
     });
 
   } catch (error) {
@@ -147,10 +130,11 @@ export const createAdmin = async (req, res) => {
 // Admin logout
 export const adminLogout = async (req, res) => {
   try {
-    res.clearCookie('jwt');
-    res.status(200).json({
+    await destroyUserSession(req, res);
+
+    return res.status(200).json({
       success: true,
-      message: "Admin logged out successfully"
+      message: "Admin logged out successfully",
     });
   } catch (error) {
     console.error('Admin Logout Error:', error);

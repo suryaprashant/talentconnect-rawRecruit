@@ -15,7 +15,7 @@ const subFiltersMap = {
   // Student: [ "Off-Campus", "Internship"],
   Company: ["On-Campus", "Pool-Campus"],
   College: ["On-Campus", "Pool-Campus"],
-  Employer: ["On-Campus", "Off-Campus"],
+  Employer: ["On-Campus", "Pool-Campus"],
   // Employer: ["Off-Campus", "Referral", "Internship"],
 };
 

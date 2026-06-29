@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X, Briefcase, BookOpen, Award, GraduationCap, Link, Mail } from 'lucide-react';
-import axios from 'axios';
+import axiosClient from "@/lib/Company_AxiosInstance";
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
 import { getCasestudyById, updateCasestudy } from '@/lib/Company_AxiosInstance';
@@ -625,7 +625,7 @@ const HostCasestudies = () => {
     setLoading(true);
     
     try {
-      const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
+      // const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
       console.log('inputType from first round:', formData.rounds[0]?.inputType);
       const payload = {
         ...formData,
@@ -639,15 +639,9 @@ const HostCasestudies = () => {
         response = await updateCasestudy(casestudyId, payload);
       } else {
         // Create new case study
-        response = await axios.post(
-          `${backendUrl}/casestudy/create`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+        response = await axiosClient.post(
+          "/casestudy/create",
+          payload
         );
       }
   

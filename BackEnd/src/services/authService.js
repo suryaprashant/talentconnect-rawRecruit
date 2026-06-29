@@ -10,7 +10,11 @@ import OtpModel from "../models/otpModel.js";
 import { sendPasswordResetEmail , sendPasswordChangedConfirmation } from "../utils/sendPasswordResetEmail.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_ACCESS_SECRET =
+  process.env.JWT_ACCESS_SECRET;
 
+const JWT_REFRESH_SECRET =
+  process.env.JWT_REFRESH_SECRET;
 // Total number of all users
 export const getUserCount = async () => {
   return await Auth.countDocuments();
@@ -267,7 +271,25 @@ export const loginUser = async ({ email, password }) => {
 export const generateToken = ({ userId, email, userType }) => {
   return jwt.sign({ userId, email, userType }, JWT_SECRET, { expiresIn: "7d" });
 };
+export const generateAccessToken = ({ userId, email, userType }) => {
+  return jwt.sign(
+    { userId, email, userType },
+    JWT_ACCESS_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
+};
 
+export const generateRefreshToken = ({ userId }) => {
+  return jwt.sign(
+    { userId },
+    JWT_REFRESH_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+};
 const generateRandomString = (length) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

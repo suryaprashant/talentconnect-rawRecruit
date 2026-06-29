@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from 'axios';
+import axios from '../../lib/axiosInstance';
 import { useLegacyAuth  } from '@/context/AuthProvider'
 import { useAuth } from "@/context/AuthContext";
 

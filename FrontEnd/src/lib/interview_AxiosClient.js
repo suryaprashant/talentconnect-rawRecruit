@@ -1,19 +1,6 @@
-import axios from 'axios';
+import createAxiosClient from "./createAxiosClient";
 
-const axiosClient = axios.create();
-
-axiosClient.defaults.baseURL = import.meta.env.VITE_Backend_URL;
-
-axiosClient.defaults.headers = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json'
-};
-
-// default 10sec
-axiosClient.defaults.timeout = 10000;
-// in case of tokens
-axiosClient.defaults.withCredentials = true;
-
+const axiosClient = createAxiosClient();
 export const getInterviews = () =>
   axiosClient.get("/interviews");
 

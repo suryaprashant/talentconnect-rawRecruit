@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axiosInstance";
 import Navbar from "@/components/home/Navbar";
 import Footer from "@/components/home/Footer";
 import { Helmet } from "react-helmet-async";

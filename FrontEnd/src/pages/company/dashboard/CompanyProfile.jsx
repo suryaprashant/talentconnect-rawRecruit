@@ -3,7 +3,7 @@ import { Globe, Users, Calendar, Image, Upload, Building2, Briefcase, MapPin } f
 import CompanyOverview from './CompanyOverview';
 import CompanyProfileForm from './CompanyProfileForm';
 import UserManagement from './UserManagement';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { useLegacyAuth } from '@/context/AuthProvider';
 
 export default function CompanyProfile() {

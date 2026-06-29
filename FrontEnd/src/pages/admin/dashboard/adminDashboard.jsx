@@ -8,7 +8,7 @@ import {
   Eye, X, CheckCircle2, AlertCircle, RotateCcw, Briefcase,
   Plus
 } from 'lucide-react';
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 
 
 

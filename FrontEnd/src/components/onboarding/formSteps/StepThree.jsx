@@ -2,7 +2,7 @@ import React, { useState, useEffect ,useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import { UploadIcon, GraduationCap } from "lucide-react";
 import colleges from "../../../assets/colleges.json";
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { getMasterDataByType, createMasterData } from "../../../lib/User_AxiosInstance";
 
 

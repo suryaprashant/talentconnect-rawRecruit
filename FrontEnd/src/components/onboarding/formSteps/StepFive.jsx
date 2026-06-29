@@ -1,6 +1,6 @@
 import React, { useState, useEffect ,useMemo } from "react";
 import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code, Wrench } from "lucide-react";
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 //import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
 import toast from 'react-hot-toast';
 const isValidLinkedIn = (url) => {

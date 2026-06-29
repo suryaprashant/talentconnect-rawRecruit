@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Users, Target, Monitor, BarChart, Clock, ArrowLeft, Send, CheckSquare } from 'lucide-react';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance';
 
 export default function RequestInfo({ onBackClick }) {
   const [numberOfEmployees, setNumberOfEmployees] = useState('');

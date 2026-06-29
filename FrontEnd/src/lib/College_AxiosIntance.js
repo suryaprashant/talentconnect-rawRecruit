@@ -1,19 +1,6 @@
-import axios from 'axios';
+import createAxiosClient from "./createAxiosClient";
 
-const axiosClient = axios.create();
-
-axiosClient.defaults.baseURL = import.meta.env.VITE_Backend_URL;
-
-axiosClient.defaults.headers = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json'
-};
-
-// default 10sec
-axiosClient.defaults.timeout = 10000;
-// in case of tokens
-axiosClient.defaults.withCredentials = true;
-
+const axiosClient = createAxiosClient();
 // Add this to your API library
 // lib/College_AxiosInstance.js
 // Inside your lib/College_AxiosInstance.js
@@ -262,18 +249,15 @@ export function getCollegePostingForPoolcampus() {
 }
 
 export const createCollegeMasterData = async (payload) => {
-  return axiosClient.post("/api/college-onboarding/college-master-data", payload, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+  return axiosClient.post(
+    "/api/college-onboarding/college-master-data",
+    payload
+  );
 };
 
 // GET BY TYPE
 export const getCollegeMasterDataByType = async (type) => {
-  return axiosClient.get(`/api/college-onboarding/college-master-data/${type}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+  return axiosClient.get(
+    `/api/college-onboarding/college-master-data/${type}`
+  );
 };

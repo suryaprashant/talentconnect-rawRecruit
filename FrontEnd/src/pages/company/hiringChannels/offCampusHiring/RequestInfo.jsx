@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance';
 import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, MapPin, Target, IndianRupee, Clock, MessageSquare, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';

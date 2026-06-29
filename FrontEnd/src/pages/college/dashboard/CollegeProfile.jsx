@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Globe, Users, Calendar, Upload, Edit2, Building2, MapPin, ExternalLink, Briefcase } from 'lucide-react';
 import CollegeDescription from './CollegeDescription';
 import ProfileForm from './ProfileForm';
-import axios from 'axios';
+import axios from '../../../lib/axiosInstance';
 import { useLegacyAuth } from '@/context/AuthProvider';
 
 // Configure axios to send cookies with requests

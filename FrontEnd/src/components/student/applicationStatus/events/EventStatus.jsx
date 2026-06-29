@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRight, Filter, Users, Upload, Link as LinkIcon } from 'lucide-react';
 import { getEventApplicationStatus } from '@/lib/User_AxiosInstance';
 import { statusSteps } from '../../../../constants/data.js';
-import axios from 'axios';
+import axios from '../../../../lib/axiosInstance.js';
 
 const EventStatus = () => {
   const [events, setEvents] = useState([]);

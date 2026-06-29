@@ -3,7 +3,7 @@ import useConversation from "../../statemanage/useConversation.js";
 import { useChat } from "../../context/ChatContext";
 import { useSocketContext } from "../../context/SocketContext.jsx";
 import { Circle } from 'lucide-react';
-import axios from 'axios';
+import axios from '../../lib/axiosInstance.js';
 
 function Chatuser() {
   const { selectedConversation } = useChat();

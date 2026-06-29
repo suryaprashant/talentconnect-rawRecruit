@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import axios from "../lib/axiosInstance";
 
 function useGetAllUsers() {
@@ -10,21 +10,11 @@ function useGetAllUsers() {
   const refreshUsers = async () => {
     setLoading(true);
     try {
-      const token = Cookies.get("jwt");
+      
       
       const [usersResponse, unreadResponse] = await Promise.all([
-        axios.get(`/api/messages/allusers`, {
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(`/api/messages/unread-count`, {
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        axios.get("/api/messages/allusers"),
+        axios.get("/api/messages/unread-count"),
       ]);
       
       const unreadMap = {};

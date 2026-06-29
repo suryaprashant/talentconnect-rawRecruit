@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserCheck, Building2, Briefcase, Users, Search, ChevronDown, Eye, Check, X, Trash2 } from "lucide-react";
-import axios from "axios";
+import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import { useAdmin } from "../../../context/AdminProvider";
 

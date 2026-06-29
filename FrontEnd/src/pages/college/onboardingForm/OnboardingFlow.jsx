@@ -217,7 +217,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
+import axios from '../../../lib/axiosInstance'; 
 import {useLegacyAuth } from '../../../context/AuthProvider'
 import toast from 'react-hot-toast';
 import { useAuth } from "@/context/AuthContext";

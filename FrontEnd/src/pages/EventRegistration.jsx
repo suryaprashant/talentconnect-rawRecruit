@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../lib/axiosInstance';
 import { getEventDetail } from '@/lib/User_AxiosInstance';
 
 // Dummy participants for suggestion filtering (you can replace with live data)

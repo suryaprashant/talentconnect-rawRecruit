@@ -126,7 +126,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
       if (response.data && response.data.success) {
         const newStatus = 'Shortlisted';
         setCurrentStatus(newStatus);
-        onStatusChange(applicationId, newStatus);
+        await onStatusChange();
         toast.success(`Successfully Shortlisted ${companyDetails?.companyName}.`);
       } else {
         toast.error(response.data?.msg || 'Failed to shortlist company.');
@@ -155,7 +155,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
       if (response.data && response.data.success) {
         const newStatus = 'Rejected';
         setCurrentStatus(newStatus);
-        onStatusChange(applicationId, newStatus);
+        await onStatusChange();
         toast.success(`Successfully Rejected ${companyDetails?.companyName}.`);
       } else {
         toast.error(response.data?.msg || 'Failed to reject company.');
@@ -184,7 +184,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
       if (response.data && response.data.success) {
         const newStatus = 'Accepted';
         setCurrentStatus(newStatus);
-        onStatusChange(applicationId, newStatus);
+        await onStatusChange();
         toast.success(`Successfully Accepted ${companyDetails?.companyName}.`);
       } else {
         toast.error(response.data?.msg || 'Failed to accept company.');
@@ -341,22 +341,10 @@ const CompanyApplicantsPage = () => {
   const [error, setError] = useState(null);
   const [jobRole, setJobRole] = useState("On-campus");
 
-  const handleApplicantStatusChange = (applicationId, newStatus) => {
-    setApplicants(prevApplicants =>
-      prevApplicants.map(app =>
-        app._id === applicationId ? { ...app, currentStatus: newStatus } : app
-      )
-    );
+  const handleApplicantStatusChange = async () => {
+    await fetchApplicants();
   };
-
-  useEffect(() => {
-    if (!jobId) {
-      setError("Job ID is missing from the URL.");
-      setLoading(false);
-      return;
-    }
-
-    const fetchApplicants = async () => {
+  const fetchApplicants = async () => {
       try {
         const response = await getApplicationByJobOfManagement(
           jobId, 
@@ -380,6 +368,12 @@ const CompanyApplicantsPage = () => {
         setLoading(false);
       }
     };
+  useEffect(() => {
+    if (!jobId) {
+      setError("Job ID is missing from the URL.");
+      setLoading(false);
+      return;
+    }
 
     fetchApplicants();
   }, [jobId, targetStatus, isVisited]);
