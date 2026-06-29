@@ -18,7 +18,7 @@ const useJobs = () => {
       console.log("Saved jobs array:", data?.data);
 
      
-        setJobs(data.data.savedJobs || []);
+        setJobs(data.data.data || []);
       } catch (err) {
         setError("Failed to load jobs. Please try again later.");
       } finally {
@@ -27,7 +27,7 @@ const useJobs = () => {
     };
     loadJobs();
   }, []);
-
+  console.log(jobs)
   return { jobs, loading, error };
 };
 

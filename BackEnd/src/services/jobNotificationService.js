@@ -31,7 +31,11 @@ export const processJobNotificationService = async (jobId) => {
     const studentWeights = await fetchWeights("student");
     const professionalWeights = await fetchWeights("professional");
 
-    const candidates = await OnboardingModel.find({})
+    const candidates = await OnboardingModel.find({
+        profileType: {
+          $in: ["student", "fresher", "professional"],
+        },
+      })
       .select(
         `
         userId

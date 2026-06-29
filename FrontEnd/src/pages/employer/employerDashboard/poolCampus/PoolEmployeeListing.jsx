@@ -201,7 +201,7 @@ import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, C
 import PoolCollegeCard from '@/components/employer/employerDashboard/poolCampus/PoolCollegeCard';
 import { getPoolCampusForCompany } from '../../../../lib/College_AxiosIntance';
 import EmployerPoolDetailsModal from '@/components/employer/employerDashboard/poolCampus/EmployerPoolDetailsModal';
-
+import { useNavigate } from 'react-router-dom';
 const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId }) => {
   const [postings, setPostings] = useState([]);
   const [filteredPostings, setFilteredPostings] = useState([]);
@@ -217,7 +217,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
-  
+  const navigate = useNavigate();
   // Modal state
   const [selectedPool, setSelectedPool] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

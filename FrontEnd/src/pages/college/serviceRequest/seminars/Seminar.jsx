@@ -78,7 +78,7 @@ const handleInputChange = (e) => {
 //       setShowRegistration(false);
 //     } else {
 //       const error = await response.text();
-//       alert("Submission failed: " + error);
+//       alert("Submion failed: " + error);
 //     }
 //   } catch (err) {
 //     console.error("Submission error:", err);
@@ -114,7 +114,10 @@ const handleSubmitRequestInfo = async () => {
     {showRequestInfo ? (
       <RequestInfo 
         onBackClick={handleBackClick}
+        formData={formData}
+        handleInputChange={handleInputChange}
         handleSubmit={handleSubmitRequestInfo}
+        
       />
     ) : showRegistration ? (
       <RegisterPage 

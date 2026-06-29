@@ -3,7 +3,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, MapPin, Calen
 import CollegeRequestDetail from './collegeApplicationListItem';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function PoolCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +15,7 @@ export default function PoolCampusJobManagement() {
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isVisited, setIsVisited] = useState('');
-
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 

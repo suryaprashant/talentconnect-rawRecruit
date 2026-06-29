@@ -488,11 +488,14 @@ export const notifyOnApplicationStatusChange = async ({
 
   // 🔍 Check if recipientId is actually Auth ID
   const authExists = await Auth.findById(recipientId).select("_id");
+  let application = null;
 
+  if (applicationId) {
+    application = await Application.findById(applicationId).lean();
+  }
   if (!authExists && applicationId) {
     console.log("⚠️ recipientId is not Auth. Resolving via application...");
 
-    const application = await Application.findById(applicationId).lean();
     if (!application) return;
 
     switch (application.applicantType) {
@@ -534,7 +537,7 @@ export const notifyOnApplicationStatusChange = async ({
       .replace(/\s+/g, "_")}`,
     message,
     referenceId: applicationId,
-    jobId: application.job,
+    jobId: application?.job,
     jobType,
   });
 };

@@ -123,6 +123,7 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
         throw new Error("Failed to fetch");
     }
 }*/
+
 //Prathmesh
 export async function getSavedJobsService(userId, pagination) {
   try {
@@ -131,9 +132,10 @@ export async function getSavedJobsService(userId, pagination) {
     const student = await OnboardingModel.findById(userId).lean();
 
     // Fetch weights
-    const [W] = await Promise.all([
-      fetchWeights(),
-    ]);
+    // const [W] = await Promise.all([
+    //   fetchWeights(),
+    // ]);
+    const W = await fetchWeights(student?.profileType ?? "student");
     const { page, limit, skip } = pagination;
     const applications = await Application.find({
       currentStatus: "Saved",
@@ -1494,7 +1496,8 @@ export async function fetchCompanyDashboardMetrics(user) {
         const allApplicationsByType = await Application.aggregate([
             {
                 $match: {
-                    job: { $in: allJobIds }
+                    job: { $in: allJobIds },
+                    currentStatus: { $ne: "Saved" }
                     // REMOVED: currentStatus: 'Applied' - This was the bug!
                 }
             },
@@ -1519,7 +1522,8 @@ export async function fetchCompanyDashboardMetrics(user) {
         const applicationsByStatusAndType = await Application.aggregate([
             {
                 $match: {
-                    job: { $in: allJobIds }
+                    job: { $in: allJobIds },
+                    currentStatus: { $ne: "Saved" }
                 }
             },
             {

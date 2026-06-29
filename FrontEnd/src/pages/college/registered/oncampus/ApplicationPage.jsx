@@ -97,9 +97,18 @@ function ApplicationPage() {
   // Memoized filtering logic
   const filteredJobs = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
-
+    console.log(jobs);
+console.log(jobs.map(j => ({
+    id: j._id,
+    jobTitle: j.jobTitle,
+    type: typeof j.jobTitle
+})));
     return jobs.filter(job => {
-      const jobTitle = job.jobTitle || '';
+      const jobTitle = Array.isArray(job.jobRoles)
+  ? job.jobRoles.join(", ")
+  : typeof job.jobTitle === "string"
+  ? job.jobTitle
+  : "";
       const degree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
       const location = Array.isArray(job.location) ? job.location.join(', ') : job.location || '';
 

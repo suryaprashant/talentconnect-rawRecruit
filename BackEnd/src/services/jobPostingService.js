@@ -191,17 +191,17 @@ export const getJobPostingsByJobTypeService = async (
     }
 
     // DEBUG: Log what we're getting
-    if (processedPostings.length > 0) {
-      console.log("Sample posting company data:", {
-        hasCompanyPosted: !!processedPostings[0].companyPosted,
-        companyPostedKeys: processedPostings[0].companyPosted
-          ? Object.keys(processedPostings[0].companyPosted)
-          : "none",
-        companyDetails: processedPostings[0].companyPosted?.companyDetails,
-        companyName:
-          processedPostings[0].companyPosted?.companyDetails?.companyName,
-      });
-    }
+    // if (processedPostings.length > 0) {
+    //   console.log("Sample posting company data:", {
+    //     hasCompanyPosted: !!processedPostings[0].companyPosted,
+    //     companyPostedKeys: processedPostings[0].companyPosted
+    //       ? Object.keys(processedPostings[0].companyPosted)
+    //       : "none",
+    //     companyDetails: processedPostings[0].companyPosted?.companyDetails,
+    //     companyName:
+    //       processedPostings[0].companyPosted?.companyDetails?.companyName,
+    //   });
+    // }
 
     return processedPostings;
   } catch (error) {

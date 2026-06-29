@@ -83,6 +83,7 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    
   }
 
   /* Basic Typography */
@@ -266,3 +267,12 @@ body.modal-open {
   background: #555;
 }
 
+/* Make sure background covers the padding gap */
+body, html {
+  background-color: #f0f2f5; /* match your app's bg color */
+  min-height: 100%;
+}
+
+#root {
+  padding-bottom: 30px;
+}

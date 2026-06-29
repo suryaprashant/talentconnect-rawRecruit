@@ -28,7 +28,7 @@ export default function RequestInfo() {
 
   //const degreeOptions = Object.keys(degreeStreamMapping).sort();
   
-  const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
+  const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All'];
   const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
   //const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
@@ -572,6 +572,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
   };
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
@@ -826,7 +827,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Offering</label>
                     <div className="flex gap-2">
-                      {['Job', 'Internship', 'Both (Job+Internship)'].map(type => (
+                      {['Job', 'Internship', 'Both'].map(type => (
                         <button 
                           key={type} 
                           type="button" 
