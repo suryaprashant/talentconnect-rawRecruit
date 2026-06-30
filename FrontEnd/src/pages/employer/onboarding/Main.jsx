@@ -305,9 +305,8 @@ const OnboardingFlowForm = () => {
       finalFormData.append("hiringPreferences", JSON.stringify(hiringPreferences));
       
       const response = await axios.post(
-        `${import.meta.env.VITE_Backend_URL}/api/dashboard/employerOnboarding`,
-        finalFormData,
-        { withCredentials: true }
+        '/api/dashboard/employerOnboarding',
+        finalFormData
       );
 
       if (response.data && response.data.user) {
