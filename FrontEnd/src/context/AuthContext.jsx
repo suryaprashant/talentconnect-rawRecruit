@@ -78,7 +78,7 @@ export const AuthContextRole = ({ children }) => {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  console.log(ctx)
+  // console.log(ctx)
   if (!ctx) {
     throw new Error("useAuth must be used inside AuthProvider");
   }
