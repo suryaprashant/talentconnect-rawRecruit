@@ -8,6 +8,7 @@ import ReactGA from "react-ga4";
 import heroImage from "../../assets/rawrecruit_transparent.png";
 import logo from "../../assets/logo1.png";
 import { Briefcase, CheckCircle, ShieldCheck } from 'lucide-react';
+import { useAuth } from "@/context/AuthContext";
 // --- Reusable Onboarding/Dashboard Routes ---
 const ONBOARDING_ROUTES = {
   candidate: '/student-form',
@@ -106,7 +107,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [linkedinLoading, setLinkedinLoading] = useState(false);
-
+  const { login } = useAuth();
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
@@ -143,6 +144,7 @@ function LoginPage() {
 
   // 1. Save to Context & Storage
   setAuthUser({ user });
+  login(user);
   localStorage.setItem('ChatAppUser', JSON.stringify(user));
   localStorage.setItem('token', token);
   localStorage.setItem('selectedRole', user.userType);
@@ -161,7 +163,7 @@ function LoginPage() {
   // 4. Redirect based on onboarding status
   handleAuthRedirect(user, navigate);
 }
-  }, [navigate, setAuthUser]);
+  }, [navigate, setAuthUser, login]);
 
   const handleLinkedInLogin = () => {
     setLinkedinLoading(true);
@@ -200,6 +202,14 @@ function LoginPage() {
       onboardingCompleted: user.onboardingCompleted
     },
     token: token
+  });
+  login({
+    _id: user._id,
+    email: user.email,
+    userType: user.userType,
+    name: user.basicDetails?.name,
+    profileImage: user.profileImage,
+    onboardingCompleted: user.onboardingCompleted,
   });
 
   localStorage.setItem('ChatAppUser', JSON.stringify(user));
@@ -252,7 +262,14 @@ function LoginPage() {
     },
     token: token
   });
-
+  login({
+    _id: user._id,
+    email: user.email,
+    userType: user.userType,
+    name: user.name,
+    profileImage: user.profileImage,
+    onboardingCompleted: user.onboardingCompleted,
+  });
   localStorage.setItem('ChatAppUser', JSON.stringify(user));
   localStorage.setItem('token', token);
   localStorage.setItem('selectedRole', user.userType);
