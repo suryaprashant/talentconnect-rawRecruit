@@ -60,6 +60,11 @@ export const authenticateWithGoogle = async ({ code, userType, isApp, googleToke
     const isNewUser = !user;
 
     if (isNewUser) {
+      if (!userType) {
+        const error = new Error("No account found. Please sign up first.");
+        error.statusCode = 404;
+        throw error;
+      }
       if (!ALLOWED_USER_TYPES.includes(userType)) {
         const error = new Error("Invalid user type for registration");
         error.statusCode = 400;
