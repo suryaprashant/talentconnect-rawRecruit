@@ -14,7 +14,7 @@ const ALLOWED_USER_TYPES = [
 
 
 
-export const cgoogleAuth = async (req, res) => {
+export const googleAuth = async (req, res) => {
     try {
         const { code, userType,isApp, googleToken} = req.body;
 
