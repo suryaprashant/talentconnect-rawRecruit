@@ -48,6 +48,10 @@ const CAREER_KEYWORDS = [
   "join-us",
   "work-with-us",
   "viewjob",
+  "details",
+  "internship",
+  "internships",
+  "search-results",
 ];
 
 const GENERIC_COMPANY_NAMES = [
@@ -65,6 +69,7 @@ const GENERIC_COMPANY_NAMES = [
   "cutshort",
   "greenhouse",
   "lever",
+  "workday",
   "workdayjobs",
   "myworkdayjobs",
   "ashbyhq",
@@ -73,6 +78,26 @@ const GENERIC_COMPANY_NAMES = [
   "recruitee",
   "workable",
   "jobvite",
+  "jobs",
+  "careers",
+  "hiring",
+];
+
+const LEGAL_ENTITY_HINTS = [
+  "s. de r.l",
+  "s de rl",
+  "c.v",
+  "cv",
+  "private limited",
+  "pvt ltd",
+  "pvt. ltd",
+  "limited",
+  "ltd",
+  "llc",
+  "llp",
+  "inc",
+  "corp",
+  "corporation",
 ];
 
 export const cleanText = (value = "") =>
@@ -94,6 +119,7 @@ export const normalizeCompanyName = (companyName = "") =>
     .replace(/\blimited\b/g, "")
     .replace(/\bltd\.?\b/g, "")
     .replace(/\bllp\b/g, "")
+    .replace(/\bllc\b/g, "")
     .replace(/\bopc\b/g, "")
     .replace(/\binc\.?\b/g, "")
     .replace(/\bcorp\.?\b/g, "")
@@ -107,17 +133,46 @@ export const normalizeCompanyName = (companyName = "") =>
 const isGenericCompany = (value = "") =>
   GENERIC_COMPANY_NAMES.includes(normalizeCompanyName(value));
 
+const isLegalEntityName = (value = "") => {
+  const text = String(value || "").toLowerCase();
+  return LEGAL_ENTITY_HINTS.some((hint) => text.includes(hint));
+};
+
+const isWorkdayUrl = (hostname = "") =>
+  hostname.includes("myworkdayjobs.com") || hostname.includes("workdayjobs.com");
+
 const cleanCompanyName = (value = "") => {
   const cleaned = cleanText(value)
     .replace(/\|.*$/g, "")
-    .replace(/\s*-\s*(LinkedIn|Naukri|Indeed|Unstop|Wellfound|Glassdoor).*$/gi, "")
+    .replace(
+      /\s*-\s*(LinkedIn|Naukri|Indeed|Unstop|Wellfound|Glassdoor|Internshala|Foundit|Monster|Cutshort).*$/gi,
+      "",
+    )
     .replace(/\s*-\s*Jobs.*$/gi, "")
-    .replace(/\s*(Careers|Hiring|Openings|Job).*$/gi, "")
+    .replace(
+      /\s*(Careers|Hiring|Openings|Opening|Job|Jobs|Internship|Internships|Reviews).*$/gi,
+      "",
+    )
     .replace(/\s*reviews?.*$/gi, "")
     .trim();
 
   if (!cleaned) return "";
-  if (cleaned.length < 2 || cleaned.length > 80) return "";
+  if (cleaned.length < 2 || cleaned.length > 160) return "";
+  if (isGenericCompany(cleaned)) return "";
+
+  return cleaned;
+};
+
+const cleanJobTitle = (value = "") => {
+  const cleaned = cleanText(value)
+    .replace(/\|.*$/g, "")
+    .replace(/\s*-\s*Workday.*$/gi, "")
+    .replace(/\s*-\s*Careers.*$/gi, "")
+    .replace(/\s*-\s*Jobs.*$/gi, "")
+    .trim();
+
+  if (!cleaned) return "";
+  if (cleaned.length < 2 || cleaned.length > 180) return "";
   if (isGenericCompany(cleaned)) return "";
 
   return cleaned;
@@ -127,7 +182,6 @@ const getHost = (urlOrParsed) => {
   try {
     const parsed =
       typeof urlOrParsed === "string" ? new URL(urlOrParsed) : urlOrParsed;
-
     return parsed.hostname.replace(/^www\./, "").toLowerCase();
   } catch {
     return "";
@@ -136,12 +190,11 @@ const getHost = (urlOrParsed) => {
 
 const isKnownJobPlatform = (hostname = "") =>
   KNOWN_JOB_DOMAINS.some(
-    (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
+    (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
   );
 
 const isPrivateIp = (ip = "") => {
   if (!net.isIP(ip)) return true;
-
   if (["0.0.0.0", "::1"].includes(ip)) return true;
 
   if (
@@ -163,7 +216,6 @@ const isPrivateIp = (ip = "") => {
 const normalizeUrlForCompare = (url = "") => {
   try {
     const parsed = new URL(normalizeInputUrl(url));
-
     return `${parsed.protocol}//${parsed.hostname}${parsed.pathname}`
       .toLowerCase()
       .replace(/\/$/, "");
@@ -173,7 +225,9 @@ const normalizeUrlForCompare = (url = "") => {
 };
 
 const hasJobKeywordInUrl = (parsed) => {
-  const value = `${parsed.hostname}${parsed.pathname}${parsed.search}`.toLowerCase();
+  const value =
+    `${parsed.hostname}${parsed.pathname}${parsed.search}`.toLowerCase();
+
   return CAREER_KEYWORDS.some((keyword) => value.includes(keyword));
 };
 
@@ -189,7 +243,7 @@ const isPlainCompanyHomepage = (parsed) => {
     pathParts.length <= 1 &&
     !hasSearch &&
     !CAREER_KEYWORDS.some((keyword) =>
-      String(pathParts[0] || "").toLowerCase().includes(keyword)
+      String(pathParts[0] || "").toLowerCase().includes(keyword),
     )
   );
 };
@@ -210,13 +264,36 @@ const getLinkedInPublicJobUrl = (jobUrl = "") => {
   }
 };
 
+const titleFromUrlPath = (jobUrl = "") => {
+  try {
+    const url = new URL(normalizeInputUrl(jobUrl));
+    const parts = url.pathname.split("/").filter(Boolean);
+    const detailsIndex = parts.findIndex((p) => p.toLowerCase() === "details");
+
+    if (detailsIndex !== -1 && parts[detailsIndex + 1]) {
+      return cleanJobTitle(
+        decodeURIComponent(parts[detailsIndex + 1])
+          .replace(/_[A-Z]{1,8}-?\d+.*/i, "")
+          .replace(/[-_]+/g, " "),
+      );
+    }
+
+    return "";
+  } catch {
+    return "";
+  }
+};
+
 const extractCompanyNameFromPlatformUrl = (jobUrl = "") => {
   try {
     const url = new URL(normalizeInputUrl(jobUrl));
     const hostname = getHost(url);
     const pathParts = url.pathname.split("/").filter(Boolean);
 
-    if (hostname === "boards.greenhouse.io" || hostname === "job-boards.greenhouse.io") {
+    if (
+      hostname === "boards.greenhouse.io" ||
+      hostname === "job-boards.greenhouse.io"
+    ) {
       return cleanCompanyName(pathParts[0]);
     }
 
@@ -232,6 +309,20 @@ const extractCompanyNameFromPlatformUrl = (jobUrl = "") => {
       return cleanCompanyName(hostname.split(".")[0]);
     }
 
+    if (isWorkdayUrl(hostname)) {
+      const pathSegments = url.pathname.split("/").filter(Boolean);
+
+      const localeIndex = pathSegments.findIndex((seg) =>
+        /^[a-z]{2}-[A-Z]{2}$/.test(seg),
+      );
+
+      if (localeIndex !== -1 && pathSegments.length > localeIndex + 1) {
+        return cleanCompanyName(pathSegments[localeIndex + 1]);
+      }
+
+      return "";
+    }
+
     if (hostname === "jobs.ashbyhq.com") {
       return cleanCompanyName(pathParts[0]);
     }
@@ -240,12 +331,15 @@ const extractCompanyNameFromPlatformUrl = (jobUrl = "") => {
       return cleanCompanyName(hostname.split(".")[0]);
     }
 
-    if (hostname.includes("myworkdayjobs.com") || hostname.includes("workdayjobs.com")) {
-      return cleanCompanyName(hostname.split(".")[0]);
-    }
-
     if (hostname.includes("smartrecruiters.com")) {
       return cleanCompanyName(pathParts[0]);
+    }
+
+    if (hostname === "wellfound.com" || hostname === "angel.co") {
+      const companyIndex = pathParts.indexOf("company");
+      if (companyIndex !== -1 && pathParts.length > companyIndex + 1) {
+        return cleanCompanyName(pathParts[companyIndex + 1]);
+      }
     }
 
     if (
@@ -276,7 +370,6 @@ export const extractCompanyNameFromCareerUrl = (careerPageUrl = "") => {
     if (isKnownJobPlatform(hostname)) return "";
 
     const parts = hostname.split(".").filter(Boolean);
-
     if (parts.length < 2) return "";
 
     const ignoredSubdomains = [
@@ -301,21 +394,48 @@ export const extractCompanyNameFromCareerUrl = (careerPageUrl = "") => {
   }
 };
 
-const findCompanyNameDeep = (obj, depth = 0) => {
-  if (!obj || depth > 10) return "";
+const findDeepValue = (obj, keys = [], depth = 0) => {
+  if (!obj || depth > 12) return "";
 
   if (Array.isArray(obj)) {
     for (const item of obj) {
-      const found = findCompanyNameDeep(item, depth + 1);
+      const found = findDeepValue(item, keys, depth + 1);
       if (found) return found;
     }
-
     return "";
   }
 
   if (typeof obj !== "object") return "";
 
-  const possibleKeys = [
+  for (const key of keys) {
+    const value = obj[key];
+
+    if (typeof value === "string") return value;
+
+    if (value && typeof value === "object") {
+      const nested = value.name || value.displayName || value.title;
+      if (typeof nested === "string") return nested;
+    }
+  }
+
+  for (const value of Object.values(obj)) {
+    const found = findDeepValue(value, keys, depth + 1);
+    if (found) return found;
+  }
+
+  return "";
+};
+
+const extractJobInfoFromJson = (json) => {
+  const titleKeys = [
+    "title",
+    "jobTitle",
+    "job_title",
+    "postingTitle",
+    "jobPostingTitle",
+  ];
+
+  const companyKeys = [
     "companyName",
     "company_name",
     "employerName",
@@ -327,106 +447,69 @@ const findCompanyNameDeep = (obj, depth = 0) => {
     "employer",
     "organization",
     "organisation",
+    "siteName",
+    "tenantDisplayName",
   ];
 
-  for (const key of possibleKeys) {
-    const value = obj[key];
-
-    if (typeof value === "string") {
-      const cleaned = cleanCompanyName(value);
-      if (cleaned) return cleaned;
-    }
-
-    if (value && typeof value === "object") {
-      const nestedName = cleanCompanyName(
-        value.name || value.displayName || value.title
-      );
-
-      if (nestedName) return nestedName;
-    }
-  }
-
-  for (const value of Object.values(obj)) {
-    const found = findCompanyNameDeep(value, depth + 1);
-    if (found) return found;
-  }
-
-  return "";
+  return {
+    jobTitle: cleanJobTitle(findDeepValue(json, titleKeys)),
+    companyName: cleanCompanyName(findDeepValue(json, companyKeys)),
+  };
 };
 
-const extractJsonCompany = (json) => {
-  if (!json) return "";
-
-  const items = Array.isArray(json) ? json : [json];
-
-  for (const item of items) {
-    const company =
-      item?.hiringOrganization?.name ||
-      item?.organization?.name ||
-      item?.company?.name ||
-      item?.companyName ||
-      item?.employer?.name ||
-      item?.employerName;
-
-    const cleaned = cleanCompanyName(company);
-    if (cleaned) return cleaned;
-
-    if (item?.["@graph"]) {
-      const found = extractJsonCompany(item["@graph"]);
-      if (found) return found;
-    }
-
-    const deepFound = findCompanyNameDeep(item);
-    if (deepFound) return deepFound;
-  }
-
-  return "";
-};
-
-const extractCompanyFromTitle = (title = "") => {
+const extractJobInfoFromTitle = (title = "") => {
   const text = cleanText(title);
-  if (!text) return "";
 
-  const patterns = [
-    /\bat\s+(.+?)(?:\s+\||\s+-|\s+–|\s+—|$)/i,
-    /job\s+at\s+(.+?)(?:\s+\||\s+-|\s+–|\s+—|$)/i,
-    /career\s+at\s+(.+?)(?:\s+\||\s+-|\s+–|\s+—|$)/i,
-    /^(.+?)\s+is\s+hiring/i,
-    /^(.+?)\s+hiring/i,
-    /^(.+?)\s+jobs/i,
-    /^(.+?)\s+careers/i,
-  ];
-
-  for (const pattern of patterns) {
-    const matched = text.match(pattern)?.[1];
-    const cleaned = cleanCompanyName(matched);
-    if (cleaned) return cleaned;
-  }
-
-  return "";
+  return {
+    jobTitle: cleanJobTitle(
+      text
+        .replace(/\s*-\s*Workday.*$/i, "")
+        .replace(/\s*\|\s*.*$/i, ""),
+    ),
+    companyName: "",
+  };
 };
 
-const extractCompanyNameFromHtml = (html = "") => {
+const extractJobInfoFromHtml = (html = "") => {
   const $ = cheerio.load(html);
 
-  const directSelectors = [
+  const titleSelectors = [
+    '[data-automation-id="jobPostingHeader"]',
+    '[data-automation-id="jobPostingTitle"]',
+    '[data-automation-id="job-title"]',
+    '[data-testid="job-title"]',
+    ".topcard__title",
+    ".jobsearch-JobInfoHeader-title",
+    ".heading_4_5",
+    "h1",
+  ];
+
+  const companySelectors = [
     ".topcard__org-name-link",
     ".topcard__flavor",
     '[data-tracking-control-name="public_jobs_topcard-org-name"]',
     '[data-testid="company-name"]',
     '[data-testid="inlineHeader-companyName"]',
-    '[data-testid="jobsearch-CompanyInfoContainer"] a',
+    '[data-testid="jobsearch-CompanyInfoContainer"]',
     ".jobsearch-InlineCompanyRating-companyHeader",
     ".jobsearch-CompanyInfoContainer a",
-    ".icl-u-lg-mr--sm",
     ".styles_jd-header-comp-name__MvqAI",
     ".jd-header-comp-name",
+    ".company_name",
     ".company-name",
+    ".heading_6.company_name",
+    ".internship_meta .company",
+    ".individual_internship .company",
+    "#company_name",
+    '[data-automation-id="jobPostingCompany"]',
+    '[data-automation-id="company"]',
+    '[data-automation-id="companyName"]',
+    '[data-automation-id="jobCompany"]',
+    '[data-testid="job-company"]',
     ".comp-name",
     ".organisation-name",
     ".organization-name",
     ".opp-company-name",
-    ".c-name",
     ".employer-name",
     ".job-company",
     ".posting-company",
@@ -437,18 +520,24 @@ const extractCompanyNameFromHtml = (html = "") => {
     "[class*=employer-name]",
   ];
 
-  for (const selector of directSelectors) {
-    const value = cleanCompanyName($(selector).first().text());
-    if (value) return value;
+  let jobTitle = "";
+  let companyName = "";
+
+  for (const selector of titleSelectors) {
+    jobTitle = cleanJobTitle($(selector).first().text());
+    if (jobTitle) break;
   }
 
-  const jsonLdScripts = $('script[type="application/ld+json"]').toArray();
+  for (const selector of companySelectors) {
+    companyName = cleanCompanyName($(selector).first().text());
+    if (companyName) break;
+  }
 
-  for (const script of jsonLdScripts) {
+  for (const script of $('script[type="application/ld+json"]').toArray()) {
     try {
-      const parsed = JSON.parse($(script).contents().text());
-      const company = extractJsonCompany(parsed);
-      if (company) return company;
+      const info = extractJobInfoFromJson(JSON.parse($(script).contents().text()));
+      if (!jobTitle && info.jobTitle) jobTitle = info.jobTitle;
+      if (!companyName && info.companyName) companyName = info.companyName;
     } catch {}
   }
 
@@ -456,47 +545,75 @@ const extractCompanyNameFromHtml = (html = "") => {
 
   if (nextData) {
     try {
-      const company = findCompanyNameDeep(JSON.parse(nextData));
-      if (company) return company;
+      const info = extractJobInfoFromJson(JSON.parse(nextData));
+      if (!jobTitle && info.jobTitle) jobTitle = info.jobTitle;
+      if (!companyName && info.companyName) companyName = info.companyName;
     } catch {}
   }
 
   for (const script of $("script").toArray()) {
     const scriptText = $(script).contents().text();
+    if (!scriptText || scriptText.length > 900000) continue;
 
-    if (!scriptText || scriptText.length > 500000) continue;
+    const titleMatches = [
+      scriptText.match(/"jobTitle"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"job_title"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"title"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"postingTitle"\s*:\s*"([^"]+)"/i)?.[1],
+    ];
 
-    const matches = [
+    const companyMatches = [
       scriptText.match(/"companyName"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"company_name"\s*:\s*"([^"]+)"/i)?.[1],
       scriptText.match(/"employerName"\s*:\s*"([^"]+)"/i)?.[1],
-      scriptText.match(/"company"\s*:\s*\{[^}]*"name"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"employer_name"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"siteName"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"tenantDisplayName"\s*:\s*"([^"]+)"/i)?.[1],
+      scriptText.match(/"organizationName"\s*:\s*"([^"]+)"/i)?.[1],
       scriptText.match(/"hiringOrganization"\s*:\s*\{[^}]*"name"\s*:\s*"([^"]+)"/i)?.[1],
     ];
 
-    for (const match of matches) {
-      const cleaned = cleanCompanyName(match);
-      if (cleaned) return cleaned;
+    if (!jobTitle) {
+      for (const match of titleMatches) {
+        const cleaned = cleanJobTitle(match);
+        if (cleaned) {
+          jobTitle = cleaned;
+          break;
+        }
+      }
     }
+
+    if (!companyName) {
+      for (const match of companyMatches) {
+        const cleaned = cleanCompanyName(match);
+        if (cleaned) {
+          companyName = cleaned;
+          break;
+        }
+      }
+    }
+
+    if (jobTitle && companyName) break;
   }
 
-  const candidates = [
-    $('meta[property="og:title"]').attr("content"),
-    $('meta[name="title"]').attr("content"),
-    $('meta[name="twitter:title"]').attr("content"),
-    $('meta[property="twitter:title"]').attr("content"),
-    $("title").text(),
-    $("h1").first().text(),
-  ].filter(Boolean);
+  const metaTitle =
+    $('meta[property="og:title"]').attr("content") ||
+    $('meta[name="title"]').attr("content") ||
+    $('meta[name="twitter:title"]').attr("content") ||
+    $('meta[property="twitter:title"]').attr("content") ||
+    $("title").text();
 
-  for (const text of candidates) {
-    const company = extractCompanyFromTitle(text);
-    if (company) return company;
+  if (!jobTitle && metaTitle) {
+    jobTitle = extractJobInfoFromTitle(metaTitle).jobTitle;
   }
 
-  return "";
+  return {
+    jobTitle,
+    companyName,
+  };
 };
 
-const scrapeCompanyNameWithPlaywright = async (url) => {
+const scrapeJobInfoWithPlaywright = async (url) => {
   let browser;
 
   try {
@@ -513,26 +630,69 @@ const scrapeCompanyNameWithPlaywright = async (url) => {
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: 35000,
+      timeout: 45000,
     });
 
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(7000);
 
-    const html = await page.content();
+    const htmlInfo = extractJobInfoFromHtml(await page.content());
 
-    return extractCompanyNameFromHtml(html);
+    const visibleInfo = await page.evaluate(() => {
+      const clean = (v) => String(v || "").replace(/\s+/g, " ").trim();
+
+      const pick = (selectors) => {
+        for (const selector of selectors) {
+          const el = document.querySelector(selector);
+          const text = clean(el?.textContent);
+          if (text) return text;
+        }
+        return "";
+      };
+
+      return {
+        jobTitle: pick([
+          '[data-automation-id="jobPostingHeader"]',
+          '[data-automation-id="jobPostingTitle"]',
+          '[data-automation-id="job-title"]',
+          '[data-testid="job-title"]',
+          ".topcard__title",
+          ".jobsearch-JobInfoHeader-title",
+          "h1",
+        ]),
+        companyName: pick([
+          ".topcard__org-name-link",
+          ".topcard__flavor",
+          '[data-testid="inlineHeader-companyName"]',
+          '[data-testid="company-name"]',
+          '[data-automation-id="jobPostingCompany"]',
+          '[data-automation-id="company"]',
+          '[data-automation-id="companyName"]',
+          ".company_name",
+          ".company-name",
+          ".jd-header-comp-name",
+        ]),
+      };
+    });
+
+    return {
+      jobTitle: htmlInfo.jobTitle || cleanJobTitle(visibleInfo.jobTitle),
+      companyName: htmlInfo.companyName || cleanCompanyName(visibleInfo.companyName),
+    };
   } catch (error) {
     console.log("Playwright scraping failed:", error.message);
-    return "";
+    return {
+      jobTitle: "",
+      companyName: "",
+    };
   } finally {
     if (browser) await browser.close();
   }
 };
 
-const scrapeCompanyNameFromUrl = async (url) => {
+const scrapeJobInfoFromUrl = async (url) => {
   try {
     const response = await axios.get(url, {
-      timeout: 20000,
+      timeout: 22000,
       maxRedirects: 5,
       validateStatus: (status) => status >= 200 && status < 400,
       headers: {
@@ -544,38 +704,59 @@ const scrapeCompanyNameFromUrl = async (url) => {
       },
     });
 
-    const companyName = extractCompanyNameFromHtml(response.data);
-    if (companyName) return companyName;
+    const info = extractJobInfoFromHtml(response.data);
+    if (info.jobTitle || info.companyName) return info;
   } catch (error) {
     console.log("Axios scraping failed:", error.message);
   }
 
-  return await scrapeCompanyNameWithPlaywright(url);
+  return await scrapeJobInfoWithPlaywright(url);
 };
 
-export const resolveCompanyNameFromCareerUrl = async (careerPageUrl = "") => {
+export const resolveJobInfoFromCareerUrl = async (careerPageUrl = "") => {
   try {
     const normalizedUrl = normalizeInputUrl(careerPageUrl);
     const parsed = new URL(normalizedUrl);
     const hostname = getHost(parsed);
 
-    const platformCompany = extractCompanyNameFromPlatformUrl(normalizedUrl);
-    if (platformCompany) return platformCompany;
+    const isLinkedIn = hostname.includes("linkedin.com");
+    const isWorkday = isWorkdayUrl(hostname);
 
-    const finalUrl = hostname.includes("linkedin.com")
+    const finalUrl = isLinkedIn
       ? getLinkedInPublicJobUrl(normalizedUrl)
       : normalizedUrl;
 
-    const scrapedCompany = await scrapeCompanyNameFromUrl(finalUrl);
-    if (scrapedCompany) return scrapedCompany;
+    const scraped = await scrapeJobInfoFromUrl(finalUrl);
 
+    const urlCompany = extractCompanyNameFromPlatformUrl(normalizedUrl);
     const fallbackCompany = extractCompanyNameFromCareerUrl(normalizedUrl);
-    if (fallbackCompany) return fallbackCompany;
+    const fallbackTitle = titleFromUrlPath(normalizedUrl);
 
-    return "";
+    const jobTitle = scraped.jobTitle || fallbackTitle;
+    const companyName = scraped.companyName || urlCompany || fallbackCompany;
+
+    const shouldUseTitleForWorkday =
+      isWorkday && jobTitle && (!companyName || isLegalEntityName(companyName));
+
+    return {
+      jobTitle,
+      companyName,
+      searchCompanyName: shouldUseTitleForWorkday
+        ? jobTitle
+        : companyName || jobTitle,
+    };
   } catch {
-    return "";
+    return {
+      jobTitle: "",
+      companyName: "",
+      searchCompanyName: "",
+    };
   }
+};
+
+export const resolveCompanyNameFromCareerUrl = async (careerPageUrl = "") => {
+  const info = await resolveJobInfoFromCareerUrl(careerPageUrl);
+  return info.searchCompanyName;
 };
 
 export const validateCareerPageUrl = async (careerPageUrl = "") => {
@@ -637,7 +818,7 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
 
   const matchedCompany = allCompanies.find(
     (company) =>
-      normalizeUrlForCompare(company.careerPageUrl) === normalizedInputUrl
+      normalizeUrlForCompare(company.careerPageUrl) === normalizedInputUrl,
   );
 
   if (matchedCompany) {
@@ -679,9 +860,9 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
     };
   }
 
-  const companyName = await resolveCompanyNameFromCareerUrl(trimmedUrl);
+  const jobInfo = await resolveJobInfoFromCareerUrl(trimmedUrl);
 
-  if (!companyName) {
+  if (!jobInfo.searchCompanyName) {
     return {
       valid: false,
       message: "Unable to extract company name from this job URL.",
@@ -691,6 +872,8 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
   return {
     valid: true,
     normalizedUrl: parsed.toString(),
-    companyName,
+    companyName: jobInfo.searchCompanyName,
+    actualCompanyName: jobInfo.companyName,
+    jobTitle: jobInfo.jobTitle,
   };
 };

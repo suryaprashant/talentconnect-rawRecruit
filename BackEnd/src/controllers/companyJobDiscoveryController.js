@@ -178,7 +178,7 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
 
       return res.status(404).json({
         success: false,
-        message: "No alumni found. Company has been submitted for review.",
+        message: `No alumni found for Company ${companyName}.`,
         companyName,
         careerPageUrl,
         pendingReview: true,
