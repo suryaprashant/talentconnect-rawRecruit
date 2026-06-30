@@ -18,30 +18,33 @@ const ALLOWED_USER_TYPES = [
 ];
 
 
-export const authenticateWithGoogle = async ({ code, userType, isApp }) => {
+export const authenticateWithGoogle = async ({ code, userType, isApp, googleToken }) => {
     let googleClient;
+    let tokens;
     if(isApp)
     {
       googleClient = new OAuth2Client({
-      clientId: process.env.MOBILE_GOOGLE_CLIENT_ID,
-      clientSecret: process.env.MOBILE_GOOGLE_CLIENT_SECRET,
-    });
+        clientId: process.env.MOBILE_GOOGLE_CLIENT_ID,
+        clientSecret: process.env.MOBILE_GOOGLE_CLIENT_SECRET,
+      });
     }
     else
     {
       googleClient = new OAuth2Client({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       });
+      const tokenResponse = await googleClient.getToken({
+          code,
+          redirect_uri: 'postmessage'
+      });
+      tokens = tokenResponse.tokens
     }
     // console.log("Google ",googleClient);
-    const { tokens } = await googleClient.getToken({
-        code,
-        redirect_uri: 'postmessage'
-    });
-
+    
+    const idToken = isApp ? googleToken : tokens.id_token;
     const ticket = await googleClient.verifyIdToken({
-        idToken: tokens.id_token,
+        idToken,
         // audience: process.env.GOOGLE_CLIENT_ID
         audience: isApp ? process.env.MOBILE_GOOGLE_CLIENT_ID : process.env.GOOGLE_CLIENT_ID
     });
