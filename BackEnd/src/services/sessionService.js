@@ -27,6 +27,8 @@ export const createUserSession = async ({
     userType: user.userType,
   });
 
+  
+
   const refreshToken = generateRefreshToken({
     userId: user._id,
   });
@@ -62,6 +64,8 @@ export const refreshUserSession = async ({ req, res }) => {
   if (!refreshToken) {
     throw new Error("Refresh token missing");
   }
+
+ 
 
   // Verify refresh token
   const decoded = jwt.verify(

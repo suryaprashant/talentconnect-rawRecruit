@@ -11,10 +11,14 @@ const adminAuth = async (req, res, next) => {
     if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
+
+    
     // Check for token in cookies
     else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
+
+    console.log("token",token);
 
     if (!token) {
       return res.status(401).json({
@@ -24,7 +28,7 @@ const adminAuth = async (req, res, next) => {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     const user = await Auth.findById(decoded.userId);
     console.log("Decoded token:", decoded);
     console.log("User from DB:", user?._id, user?.userType);

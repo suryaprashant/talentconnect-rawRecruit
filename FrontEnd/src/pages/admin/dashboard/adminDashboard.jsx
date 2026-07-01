@@ -1499,6 +1499,8 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+
+      console.log("admintoken",localStorage.getItem("adminToken"));
       const response = await axios.get(
         `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/overview`,
         {

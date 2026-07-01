@@ -20,6 +20,34 @@ export default function createAxiosClient() {
     withCredentials: true,
   });
 
+  // ============================
+  // REQUEST INTERCEPTOR
+  // ============================
+  axiosClient.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("adminToken");
+
+      console.log("================================");
+      console.log("Request URL:", config.url);
+      console.log("Token from localStorage:", token);
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+        console.log("Authorization Header:", config.headers.Authorization);
+      } else {
+        console.warn("No accessToken found in localStorage");
+      }
+
+      console.log("================================");
+
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  // ============================
+  // RESPONSE INTERCEPTOR
+  // ============================
   axiosClient.interceptors.response.use(
     (response) => response,
 
