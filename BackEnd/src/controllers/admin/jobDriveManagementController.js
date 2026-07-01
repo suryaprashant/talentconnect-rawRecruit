@@ -1,13 +1,20 @@
-import { getTotalJobPostedCount, getAll } from "../../services/jobPostingService.js";
+import {
+  getTotalJobPostedCount,
+  getAll,
+} from "../../services/jobPostingService.js";
 import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
 import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import { notifyReferralJobPosterOnApproval } from "../../services/notificationService.js";
-import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
+import {
+  getPendingReferralJobsService,
+  updateReferralApprovalStatusService,
+  getAcceptedReferralJobsService,
+} from "../../services/adminService.js";
 import { ok } from "assert";
 import Auth from "../../models/authModel.js";
-import {jobNotificationQueue} from "../../queue/jobNotificationQueue.js";
+import { jobNotificationQueue } from "../../queue/jobNotificationQueue.js";
 export const getJobDriveOverView = async (req, res) => {
   try {
     const [
@@ -18,10 +25,12 @@ export const getJobDriveOverView = async (req, res) => {
       totalOnCampusDrives,
       totalHackathon,
       totalWorkshop,
-      totalCaseStudy
+      totalCaseStudy,
     ] = await Promise.all([
       getTotalJobPostedCount(),
-      getTotalJobPostedCount({ jobType: { $in: ["Pool-campus", "Job-listing", "Referral"] } }),
+      getTotalJobPostedCount({
+        jobType: { $in: ["Pool-campus", "Job-listing", "Referral"] },
+      }),
       getTotalJobPostedCount({ jobType: "Internship" }),
       getTotalJobPostedCount({ jobType: "Off-campus" }),
       getTotalJobPostedCount({ jobType: "On-campus" }),
@@ -30,7 +39,8 @@ export const getJobDriveOverView = async (req, res) => {
       CaseStudyHostingService.getTotalCaseStudyCount(),
     ]);
 
-    const totalEventInvitation = totalHackathon + totalWorkshop + totalCaseStudy;
+    const totalEventInvitation =
+      totalHackathon + totalWorkshop + totalCaseStudy;
 
     return res.status(200).json({
       success: true,
@@ -44,8 +54,8 @@ export const getJobDriveOverView = async (req, res) => {
         totalEventInvitation,
         totalHackathon,
         totalWorkshop,
-        totalCaseStudy
-      }
+        totalCaseStudy,
+      },
     });
   } catch (error) {
     console.error("Error fetching job drive overview:", error);
@@ -74,8 +84,8 @@ export const getJobsBoardOverView = async (req, res) => {
 
     // Add search functionality
     if (search && search.trim()) {
-      const searchRegex = new RegExp(search.trim(), 'i');
-      
+      const searchRegex = new RegExp(search.trim(), "i");
+
       // Create a complex filter for searching across multiple fields
       filter.$or = [
         { jobTitle: searchRegex },
@@ -84,7 +94,7 @@ export const getJobsBoardOverView = async (req, res) => {
         { skills: { $in: [searchRegex] } },
         { jobType: searchRegex },
         { location: searchRegex },
-        { venue: searchRegex }
+        { venue: searchRegex },
       ];
     }
 
@@ -94,16 +104,17 @@ export const getJobsBoardOverView = async (req, res) => {
     // Fetch jobs with pagination and populate company, college, and candidate info
     const jobs = await JobPostingTable.find(filter)
       .populate({
-        path: 'companyPosted',
-        select: 'companyDetails.companyName employerDetails.name'
+        path: "companyPosted",
+        select: "companyDetails.companyName employerDetails.name",
       })
       .populate({
-        path: 'collegePosted',
-        select: 'collegeUniversityDetails.collegeName placementCoordinatorDetails.coordinatorName'
+        path: "collegePosted",
+        select:
+          "collegeUniversityDetails.collegeName placementCoordinatorDetails.coordinatorName",
       })
       .populate({
-        path: 'candidatePosted',
-        select: 'name'
+        path: "candidatePosted",
+        select: "name",
       })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -111,10 +122,10 @@ export const getJobsBoardOverView = async (req, res) => {
       .lean();
 
     // Format jobs with proper field names
-    const formattedJobs = jobs.map(job => {
+    const formattedJobs = jobs.map((job) => {
       // Get job title - try multiple sources
-      let jobTitle = 'N/A';
-      
+      let jobTitle = "N/A";
+
       if (job.jobTitle) {
         jobTitle = job.jobTitle;
       } else if (job.jobRoles && job.jobRoles.length > 0) {
@@ -129,26 +140,28 @@ export const getJobsBoardOverView = async (req, res) => {
         // Last resort: use job type
         jobTitle = job.jobType;
       }
-      
+
       // Get poster name based on who posted (company, college, or candidate)
-      let posterName = 'N/A';
-      
+      let posterName = "N/A";
+
       if (job.companyPosted) {
-        posterName = job.companyPosted.companyDetails?.companyName || 
-                    job.companyPosted.employerDetails?.name || 
-                    'N/A';
+        posterName =
+          job.companyPosted.companyDetails?.companyName ||
+          job.companyPosted.employerDetails?.name ||
+          "N/A";
       } else if (job.collegePosted) {
-        posterName = job.collegePosted.collegeUniversityDetails?.collegeName || 
-                    job.collegePosted.placementCoordinatorDetails?.coordinatorName || 
-                    'N/A';
+        posterName =
+          job.collegePosted.collegeUniversityDetails?.collegeName ||
+          job.collegePosted.placementCoordinatorDetails?.coordinatorName ||
+          "N/A";
       } else if (job.candidatePosted) {
-        posterName = job.candidatePosted.name || 'N/A';
+        posterName = job.candidatePosted.name || "N/A";
       }
-      
+
       // Get location - join array or use venue or single value
-      let location = 'N/A';
+      let location = "N/A";
       if (Array.isArray(job.location) && job.location.length > 0) {
-        location = job.location.join(', ');
+        location = job.location.join(", ");
       } else if (job.venue) {
         location = job.venue;
       } else if (job.location) {
@@ -160,9 +173,9 @@ export const getJobsBoardOverView = async (req, res) => {
         jobTitle,
         companyName: posterName, // Using generic name since it could be company/college/candidate
         location,
-        jobType: job.jobType || 'N/A',
-        jobStatus: job.jobStatus || 'Pending',
-        createdAt: job.createdAt
+        jobType: job.jobType || "N/A",
+        jobStatus: job.jobStatus || "Pending",
+        createdAt: job.createdAt,
       };
     });
 
@@ -177,7 +190,7 @@ export const getJobsBoardOverView = async (req, res) => {
       offcampusCount,
       poolCampusCount,
       jobListingCount,
-      referralCount
+      referralCount,
     ] = await Promise.all([
       JobPostingTable.countDocuments({}), // Total jobs (all statuses)
       JobPostingTable.countDocuments({ jobType: "Internship" }),
@@ -185,7 +198,7 @@ export const getJobsBoardOverView = async (req, res) => {
       JobPostingTable.countDocuments({ jobType: "Off-campus" }),
       JobPostingTable.countDocuments({ jobType: "Pool-campus" }),
       JobPostingTable.countDocuments({ jobType: "Job-listing" }),
-      JobPostingTable.countDocuments({ jobType: "Referral" })
+      JobPostingTable.countDocuments({ jobType: "Referral" }),
     ]);
 
     return res.status(200).json({
@@ -197,7 +210,7 @@ export const getJobsBoardOverView = async (req, res) => {
           currentPage: parseInt(page),
           totalPages: Math.ceil(totalJobs / limit),
           totalJobs,
-          jobsPerPage: parseInt(limit)
+          jobsPerPage: parseInt(limit),
         },
         statistics: {
           total: totalCount,
@@ -206,15 +219,15 @@ export const getJobsBoardOverView = async (req, res) => {
           offcampus: offcampusCount,
           poolCampus: poolCampusCount,
           jobListing: jobListingCount,
-          referral: referralCount
-        }
-      }
+          referral: referralCount,
+        },
+      },
     });
   } catch (error) {
     console.error("Error fetching jobs board overview:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 };
@@ -250,43 +263,38 @@ export const getPendingReferralJobsForAdmin = async (req, res) => {
     // 3. Response
     return res.status(200).json({
       count: jobs.length,
-      data: jobs
+      data: jobs,
     });
-
   } catch (error) {
-    console.error(
-      "Error in getPendingReferralJobsForAdmin:",
-      error.message
-    );
+    console.error("Error in getPendingReferralJobsForAdmin:", error.message);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-export const getAcceptedReferralJobsForAdmin= async (req, res) => {
+export const getAcceptedReferralJobsForAdmin = async (req, res) => {
   try {
     // 1. Authorization
+
     if (req.user.userType !== "admin") {
       return res.status(403).json({ error: "Access denied" });
     }
 
+    
+
     // 2. Call service
     const jobs = await getAcceptedReferralJobsService();
 
+  
     // 3. Response
     return res.status(200).json({
       count: jobs.length,
-      data: jobs
+      data: jobs,
     });
-
   } catch (error) {
-    console.error(
-      "Error in getPendingReferralJobsForAdmin:",
-      error.message
-    );
+    console.error("Error in getPendingReferralJobsForAdmin:", error.message);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 export const updateReferralJobApprovalStatus = async (req, res) => {
   try {
@@ -301,7 +309,10 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
       });
     }
 
-    const updatedJob = await updateReferralApprovalStatusService(jobId, approvalStatus);
+    const updatedJob = await updateReferralApprovalStatusService(
+      jobId,
+      approvalStatus,
+    );
 
     if (!updatedJob) {
       return res.status(404).json({
@@ -317,7 +328,7 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
         approvalStatus,
         adminAuthId,
       }).catch((err) =>
-        console.error("Job poster notification failed:", err.message)
+        console.error("Job poster notification failed:", err.message),
       );
     }
     if (approvalStatus === "Approved") {
@@ -329,10 +340,10 @@ export const updateReferralJobApprovalStatus = async (req, res) => {
         {
           removeOnComplete: 100,
           removeOnFail: 100,
-        }
+        },
       );
       console.log(
-        `✅ Job notification worker queued for job ${updatedJob._id}`
+        `✅ Job notification worker queued for job ${updatedJob._id}`,
       );
     }
     res.status(200).json({
@@ -355,11 +366,16 @@ export const updateJobVisibilityThreshold = async (req, res) => {
     const { threshold } = req.body;
 
     if (threshold === undefined || threshold < 0 || threshold > 100) {
-      return res.status(400).json({ error: "Threshold must be between 0 and 100" });
+      return res
+        .status(400)
+        .json({ error: "Threshold must be between 0 and 100" });
     }
 
     // Updates all admin accounts (global config pattern)
-    await Auth.updateMany({ userType: "admin" }, { jobVisibilityThreshold: threshold });
+    await Auth.updateMany(
+      { userType: "admin" },
+      { jobVisibilityThreshold: threshold },
+    );
 
     res.status(200).json({ message: `Threshold updated to ${threshold}%` });
   } catch (error) {
