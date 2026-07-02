@@ -35,16 +35,28 @@ import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
-import { notifyCollegeOnCompanyApply, notifyCollegeOnInterviewScheduled, notifyCompanyOnCollegeApply, notifyCompanyOnStudentApply, notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
+import {
+  notifyCollegeOnCompanyApply,
+  notifyCollegeOnInterviewScheduled,
+  notifyCompanyOnCollegeApply,
+  notifyCompanyOnStudentApply,
+  notifyOnApplicationStatusChange,
+  notifyOnCollegeApplicationStatusChange,
+} from "../services/notificationService.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
-import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
+import InterviewSchedule from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
-import { fetchReferralApplicationsService,getAllProfessionalReferralsService,getCompanyReferralFeedService,fetchProfessionalReferralMetrics } from "../controllers/../services/adminService.js";
+import {
+  fetchReferralApplicationsService,
+  getAllProfessionalReferralsService,
+  getCompanyReferralFeedService,
+  fetchProfessionalReferralMetrics,
+} from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
-import Onboarding from "../models/studentonboardingModel.js"
+import Onboarding from "../models/studentonboardingModel.js";
 import { scheduleScoreUpdate } from "../utils/scheduleScoreUpdate.js";
 import { paginatedResponse } from "../utils/paginate.js";
 /// export const getReferralsForCompany = async (req, res, next) => {
@@ -54,7 +66,7 @@ import { paginatedResponse } from "../utils/paginate.js";
 
 //     // Resolve Professional Profile if not in token
 //     if (!professionalProfileId) {
-//       const profile = await getStudentService(userId); 
+//       const profile = await getStudentService(userId);
 //       if (profile?.success && profile.data?.length > 0) {
 //         professionalProfileId = profile.data[0]._id;
 //       }
@@ -100,28 +112,32 @@ export async function getCandidateDashboardStats(req, res) {
 export const getProfessionalReferralMetrics = async (req, res) => {
   try {
     const userId = req.user._id;
- 
+
     // Resolve the professional's onboarding profile ID
     const userProfile = await getStudentService(userId);
- 
+
     if (!userProfile?.data?.length) {
       return res.status(404).json({
         success: false,
         message: "Professional profile not found.",
       });
     }
- 
+
     const professionalProfileId = userProfile.data[0]._id;
- 
-    const metrics = await fetchProfessionalReferralMetrics(professionalProfileId);
- 
+
+    const metrics = await fetchProfessionalReferralMetrics(
+      professionalProfileId,
+    );
+
     return res.status(200).json({
       success: true,
       data: metrics,
     });
   } catch (error) {
     console.error("❌ getProfessionalReferralMetrics error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -130,27 +146,42 @@ export const getReferralsForCompany = async (req, res, next) => {
     const userId = req.user._id;
 
     const userProfile = await getStudentService(userId);
-    console.log("👤 userProfile:", JSON.stringify(userProfile?.data?.[0], null, 2));
+    console.log(
+      "👤 userProfile:",
+      JSON.stringify(userProfile?.data?.[0], null, 2),
+    );
 
     if (!userProfile?.data?.length) {
-      return res.status(404).json({ success: false, message: "Professional profile not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Professional profile not found." });
     }
 
     const professionalProfileId = userProfile.data[0]._id;
     console.log("🔑 professionalProfileId:", professionalProfileId);
 
     // ✅ DEBUG: Check raw applications
-    const rawApps = await Application.find({ jobType: "Referral" }).limit(5).lean();
-    console.log("📋 Raw Referral Applications:", JSON.stringify(rawApps, null, 2));
+    const rawApps = await Application.find({ jobType: "Referral" })
+      .limit(5)
+      .lean();
+    console.log(
+      "📋 Raw Referral Applications:",
+      JSON.stringify(rawApps, null, 2),
+    );
 
     // ✅ DEBUG: Check jobs posted by this professional
-    const jobs = await JobPostingTable.find({ 
+    const jobs = await JobPostingTable.find({
       candidatePosted: professionalProfileId,
-      jobType: "Referral"
+      jobType: "Referral",
     }).lean();
-    console.log("💼 Jobs posted by professional:", JSON.stringify(jobs, null, 2));
+    console.log(
+      "💼 Jobs posted by professional:",
+      JSON.stringify(jobs, null, 2),
+    );
 
-    const response = await getAllProfessionalReferralsService(professionalProfileId);
+    const response = await getAllProfessionalReferralsService(
+      professionalProfileId,
+    );
     return res.status(200).json(response);
   } catch (error) {
     next(error);
@@ -166,8 +197,6 @@ export const getGlobalReferralApplications = async (req, res, next) => {
     // Resolve professional profile
     const userProfile = await getStudentService(userId);
 
-
-
     if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
       return res.status(404).json({
         success: false,
@@ -178,11 +207,11 @@ export const getGlobalReferralApplications = async (req, res, next) => {
     const professionalProfileId = userProfile.data[0]._id;
 
     console.log(professionalProfileId);
-    
+
     // Fetch all referrals
     const response = await getAllProfessionalReferralsService(
       professionalProfileId,
-      req.pagination
+      req.pagination,
     );
 
     return res.status(200).json(response);
@@ -192,13 +221,18 @@ export const getGlobalReferralApplications = async (req, res, next) => {
 };
 
 // controllers/professionalController.js
-export const getReferralApplicationsForProfessional = async (req, res, next) => {
+export const getReferralApplicationsForProfessional = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const professionalProfileId = req.user.profileId;
     const { jobId, adminApprovalStatus, isVisited } = req.query;
 
     // ✅ FIX: declare isVisitedBool properly
-    const isVisitedBool = isVisited === "true" ? true : isVisited === "false" ? false : undefined;
+    const isVisitedBool =
+      isVisited === "true" ? true : isVisited === "false" ? false : undefined;
 
     const response = await fetchReferralApplicationsService({
       professionalProfileId,
@@ -211,8 +245,13 @@ export const getReferralApplicationsForProfessional = async (req, res, next) => 
     // ✅ Mark as visited AFTER fetching new ones
     if (isVisitedBool === false && jobId) {
       await Application.updateMany(
-        { job: jobId, isVisited: false, jobType: "Referral", currentStatus: "Application Sent", },
-        { $set: { isVisited: true } }
+        {
+          job: jobId,
+          isVisited: false,
+          jobType: "Referral",
+          currentStatus: "Application Sent",
+        },
+        { $set: { isVisited: true } },
       );
     }
 
@@ -279,9 +318,7 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
     ]);
 
     const cleanedApplications = applications.map((application) => {
-      const app = application.toObject
-        ? application.toObject()
-        : application;
+      const app = application.toObject ? application.toObject() : application;
 
       if (app.job) {
         const {
@@ -332,14 +369,10 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      ...paginatedResponse(
-        cleanedApplications,
-        total,
-        {
-          page,
-          limit,
-        }
-      ),
+      ...paginatedResponse(cleanedApplications, total, {
+        page,
+        limit,
+      }),
     });
   } catch (error) {
     console.error("Error fetching referred candidates:", error);
@@ -379,9 +412,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
       path: "job",
       select: "candidatePosted jobTitle referralCompany",
     });
-    const companyName =
-      application?.referralCompany ||
-      "Company";
+    const companyName = application?.referralCompany || "Company";
     const jobRole = application?.job?.jobTitle || "";
     if (!application) {
       return res.status(404).json({
@@ -406,47 +437,33 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     if (!response.success) {
       return res.status(400).json(response);
     }
-    if (
-        status === "Referred To Company"
-      ) {
-        try {
-          const job =
-            await JobPostingTable.findById(
-              response.data.job
-            )
-            .populate(
-              "candidatePosted",
-              "userId"
-            );
+    if (status === "Referred To Company") {
+      try {
+        const job = await JobPostingTable.findById(response.data.job).populate(
+          "candidatePosted",
+          "userId",
+        );
 
-          const referrerAuthId =
-            job?.candidatePosted?.userId;
+        const referrerAuthId = job?.candidatePosted?.userId;
 
-          if (referrerAuthId) {
-            await Onboarding.updateOne(
-              {
-                userId:
-                  referrerAuthId,
+        if (referrerAuthId) {
+          await Onboarding.updateOne(
+            {
+              userId: referrerAuthId,
+            },
+            {
+              $inc: {
+                totalCandidatesReferred: 1,
               },
-              {
-                $inc: {
-                  totalCandidatesReferred: 1,
-                },
-              }
-            );
-
-            await handleReferralMilestone(
-              referrerAuthId
-            );
-          }
-        } catch (err) {
-          console.error(
-            "Referral milestone failed:",
-            err
+            },
           );
+
+          await handleReferralMilestone(referrerAuthId);
         }
+      } catch (err) {
+        console.error("Referral milestone failed:", err);
       }
-    
+    }
 
     // =========================
     // SEND EMAIL
@@ -479,7 +496,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
         response.data.currentStatus,
         response.data._id,
         jobRole,
-        companyName
+        companyName,
       ).catch((err) => {
         console.error("Email sending failed:", err.message);
       });
@@ -499,7 +516,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
         response.data.applicantType === "professional"
       ) {
         const onboarding = await Onboarding.findById(
-          response.data.applicant
+          response.data.applicant,
         ).select("userId");
 
         recipientAuthId = onboarding?.userId || null;
@@ -508,7 +525,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
       // COLLEGE
       else if (response.data.applicantType === "college") {
         const collegeOnboarding = await CollegeOnboarding.findById(
-          response.data.applicant
+          response.data.applicant,
         ).select("userId");
 
         recipientAuthId = collegeOnboarding?.userId || null;
@@ -535,48 +552,48 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
   }
 };
 export async function unsaveJobByUser(req, res) {
-    const { jobId } = req.params; // jobId passed in the URL
-    const userId = req.user._id;
-    const userType = req.user?.userType;
+  const { jobId } = req.params; // jobId passed in the URL
+  const userId = req.user._id;
+  const userType = req.user?.userType;
 
-    try {
-        let userProfile;
-        // Identify the profile ID (matches your saveJobByUser logic)
-        switch (userType) {
-            case "student":
-            case "fresher":
-            case "professional":
-                userProfile = await getStudentService(userId);
-                break;
-            case "college":
-                userProfile = await getCollegeService(userId);
-                break;
-            case "company":
-                userProfile = await getCompanyService(userId);
-                break;
-            case "employer":
-                userProfile = await getEmployerService(userId);
-                break;
-        }
-
-        if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
-            return res.status(404).json({ msg: "User profile not found!" });
-        }
-
-        const applicantId = userProfile.data[0]._id;
-
-        // Call the unsave service
-        const result = await unsaveJobService(applicantId, jobId);
-
-        if (result.success) {
-            return res.status(200).json(result);
-        } else {
-            return res.status(400).json(result);
-        }
-    } catch (error) {
-        console.error("Unsave Controller Error:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    let userProfile;
+    // Identify the profile ID (matches your saveJobByUser logic)
+    switch (userType) {
+      case "student":
+      case "fresher":
+      case "professional":
+        userProfile = await getStudentService(userId);
+        break;
+      case "college":
+        userProfile = await getCollegeService(userId);
+        break;
+      case "company":
+        userProfile = await getCompanyService(userId);
+        break;
+      case "employer":
+        userProfile = await getEmployerService(userId);
+        break;
     }
+
+    if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+      return res.status(404).json({ msg: "User profile not found!" });
+    }
+
+    const applicantId = userProfile.data[0]._id;
+
+    // Call the unsave service
+    const result = await unsaveJobService(applicantId, jobId);
+
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error("Unsave Controller Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 // save opportunity r
@@ -617,7 +634,7 @@ export async function saveJobByUser(req, res) {
       user?.data[0]._id,
       userType,
       jobId,
-      jobType
+      jobType,
     );
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
@@ -631,7 +648,7 @@ export async function saveJobByUser(req, res) {
 // get saved opportunities
 export async function fetchSavedJobs(req, res) {
   // const { applicantType } = req.params;
-  
+
   const userId = req.user._id;
   const userType = req.user.userType;
 
@@ -668,14 +685,10 @@ export async function fetchSavedJobs(req, res) {
 
     // ✅ company saved colleges
     else if (["company", "employer"].includes(userType)) {
-  result = await getSavedCollegesService(user.data[0]._id, userType);
-}
+      result = await getSavedCollegesService(user.data[0]._id, userType);
+    }
 
-
-  
-
-    if (result?.success)
-      return res.status(200).json(result);
+    if (result?.success) return res.status(200).json(result);
 
     return res.status(503).json(result);
   } catch (error) {
@@ -684,11 +697,11 @@ export async function fetchSavedJobs(req, res) {
   }
 }
 
-
 // apply for opportunity
 
 // offcampus
-{/*export async function createOffcampusApplication(req, res) {
+{
+  /*export async function createOffcampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
 
@@ -713,11 +726,12 @@ export async function fetchSavedJobs(req, res) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}*/}
+}*/
+}
 
-//updated for debounced score update 
+//updated for debounced score update
 export async function createOffcampusApplication(req, res) {
-  console.log('applied offcampus');
+  console.log("applied offcampus");
 
   const { jobId, matchScore } = req.body;
   const userId = req.user._id;
@@ -749,8 +763,7 @@ export async function createOffcampusApplication(req, res) {
 
     const actorProfile = user.data[0];
 
-    const job = await JobPostingTable.findById(jobId)
-      .populate("companyPosted");
+    const job = await JobPostingTable.findById(jobId).populate("companyPosted");
 
     if (!job) {
       return res.status(404).json({ msg: "Job not found" });
@@ -778,13 +791,10 @@ export async function createOffcampusApplication(req, res) {
     try {
       if (job.companyPosted?.userId) {
         const studentName =
-          actorProfile?.fullName ||
-          actorProfile?.name ||
-          "A candidate";
+          actorProfile?.fullName || actorProfile?.name || "A candidate";
 
         const jobTitle =
-          job.jobTitle ||
-          `${job.jobType} ${job.lookingFor || "Job"}`;
+          job.jobTitle || `${job.jobType} ${job.lookingFor || "Job"}`;
 
         await notifyCompanyOnStudentApply({
           companyAuthId: job.companyPosted.userId,
@@ -800,13 +810,11 @@ export async function createOffcampusApplication(req, res) {
     }
 
     return res.status(201).json(application);
-
   } catch (error) {
     console.log("❌ createOffcampusApplication error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }
-
 
 // joblisting
 export async function createJobListingApplication(req, res) {
@@ -825,7 +833,7 @@ export async function createJobListingApplication(req, res) {
       user.data[0]._id,
       req.user.userType,
       jobId,
-      "Off-campus"
+      "Off-campus",
     );
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
@@ -866,8 +874,8 @@ export async function createIntershipApplication(req, res) {
 
     const actorProfile = user.data[0];
 
-    const internship = await JobPostingTable.findById(internshipId)
-      .populate("companyPosted");
+    const internship =
+      await JobPostingTable.findById(internshipId).populate("companyPosted");
 
     if (!internship) {
       return res.status(404).json({ msg: "Internship not found" });
@@ -895,9 +903,7 @@ export async function createIntershipApplication(req, res) {
     try {
       if (internship.companyPosted?.userId) {
         const studentName =
-          actorProfile?.fullName ||
-          actorProfile?.name ||
-          "A candidate";
+          actorProfile?.fullName || actorProfile?.name || "A candidate";
 
         const jobTitle =
           internship.jobTitle ||
@@ -917,7 +923,6 @@ export async function createIntershipApplication(req, res) {
     }
 
     res.status(201).json(application);
-
   } catch (error) {
     console.log("❌ createIntershipApplication error: ", error);
     res.status(500).json({ error: "Internal server error" });
@@ -938,7 +943,11 @@ export async function createReferralApplication(req, res) {
     }
 
     if (matchScore !== undefined) {
-      if (typeof matchScore !== "number" || matchScore < 0 || matchScore > 100) {
+      if (
+        typeof matchScore !== "number" ||
+        matchScore < 0 ||
+        matchScore > 100
+      ) {
         return res.status(400).json({ msg: "Invalid match score" });
       }
     }
@@ -964,15 +973,13 @@ export async function createReferralApplication(req, res) {
     });
 
     res.status(201).json(application);
-
   } catch (error) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
 
-// oncampus 
-
+// oncampus
 
 // oncampus -> notification done
 export async function createOncampusApplication(req, res) {
@@ -983,8 +990,7 @@ export async function createOncampusApplication(req, res) {
   const authUser = req.user;
   const userId = req.user._id;
   const userType = req.user.userType;
- 
-  
+
   try {
     let user;
     switch (userType) {
@@ -1005,7 +1011,7 @@ export async function createOncampusApplication(req, res) {
       return res.status(404).json({ msg: "job not found!" });
     }
 
-    if (!user || !user.data || user.data.length === 0 ) {
+    if (!user || !user.data || user.data.length === 0) {
       return res.status(404).json({ msg: "User not found!" });
     }
 
@@ -1018,7 +1024,6 @@ export async function createOncampusApplication(req, res) {
     if (!job) return res.status(404).json({ msg: "Job not found" });
 
     const appliedByUserId = actorProfile._id;
-
 
     const isEmployeeWithCompany =
       authUser.userType === "employer" && authUser.activeCompanyId;
@@ -1035,8 +1040,6 @@ export async function createOncampusApplication(req, res) {
       appliedForCompanyId = actorProfile._id;
     }
 
-    
-
     const jobType = job.jobType;
 
     const application = await createApplicationService({
@@ -1045,30 +1048,24 @@ export async function createOncampusApplication(req, res) {
       appliedForCompanyId,
       jobId,
       jobType: "On-campus",
-  });
+    });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
 
-   
-       //🔔 NOTIFICATIONS (ISOLATED – NEVER BREAK API)
-    
+    //🔔 NOTIFICATIONS (ISOLATED – NEVER BREAK API)
+
     try {
       // 🟢 College → Company
       if (userType === "college" && job.companyPosted?.userId) {
-        
-
         const collegeName =
           actorProfile?.collegeUniversityDetails?.collegeName ||
           actorProfile?.collegeName ||
           "A college";
 
         const jobTitle =
-          job.jobTitle ||
-          `${job.jobType} ${job.lookingFor || "Job"}`;
-
-        
+          job.jobTitle || `${job.jobType} ${job.lookingFor || "Job"}`;
 
         await notifyCompanyOnCollegeApply({
           companyAuthId: job.companyPosted.userId, // ✅ FIXED
@@ -1085,17 +1082,15 @@ export async function createOncampusApplication(req, res) {
         (userType === "company" || userType === "employer") &&
         job.collegePosted?.userId
       ) {
-        
         const companyName =
           actorProfile?.companyName ||
           actorProfile?.companyDetails?.companyName ||
           actorProfile?.companyBasicDetails?.companyName ||
           actorProfile?.organizationName ||
           "A company";
-              
+
         const jobTitle =
-          job.jobTitle ||
-          `${job.jobType} ${job.lookingFor || "Job"}`;
+          job.jobTitle || `${job.jobType} ${job.lookingFor || "Job"}`;
 
         await notifyCollegeOnCompanyApply({
           collegeAuthId: job.collegePosted.userId, // ✅ FIXED
@@ -1117,9 +1112,7 @@ export async function createOncampusApplication(req, res) {
   }
 }
 
-
 // poolcampus
-
 
 //pool campus notification done
 export async function createPoolcampusApplication(req, res) {
@@ -1129,22 +1122,22 @@ export async function createPoolcampusApplication(req, res) {
   const authUser = req.user;
 
   // who clicked apply
- 
 
   // employee acting for a company
   const isEmployeeWithCompany =
     authUser.userType === "employer" && authUser.activeCompanyId;
 
   // who the application belongs to
-  {/*const appliedForCompanyId = isEmployeeWithCompany
+  {
+    /*const appliedForCompanyId = isEmployeeWithCompany
     ? authUser.activeCompanyId
     : authUser.userType === "company"
       ? user.data?.[0]?._id
-      : null;*/}
+      : null;*/
+  }
 
   // how it was applied
   const appliedByType = isEmployeeWithCompany ? "employer" : authUser.userType;
-
 
   try {
     let user;
@@ -1169,17 +1162,13 @@ export async function createPoolcampusApplication(req, res) {
     const actorProfile = user.data[0];
     let appliedForCompanyId = null;
 
-     const appliedByUserId = actorProfile._id;
+    const appliedByUserId = actorProfile._id;
 
     if (authUser.userType === "employer") {
       appliedForCompanyId = authUser.activeCompanyId || actorProfile._id;
-    }
-
-    else if (authUser.userType === "company") {
+    } else if (authUser.userType === "company") {
       appliedForCompanyId = actorProfile._id;
     }
-
-
 
     const job = await JobPostingTable.findById(jobId)
       .populate("companyPosted")
@@ -1197,18 +1186,15 @@ export async function createPoolcampusApplication(req, res) {
       jobType: "Pool-campus",
     });
 
-
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
 
-    
-       //🔔 NOTIFICATIONS (NON-BLOCKING)
-   
+    //🔔 NOTIFICATIONS (NON-BLOCKING)
+
     try {
       const jobTitle =
-        job.jobTitle ||
-        `${job.jobType} ${job.lookingFor || "Job"}`;
+        job.jobTitle || `${job.jobType} ${job.lookingFor || "Job"}`;
 
       // 🟢 College → Company
       if (userType === "college" && job.companyPosted?.userId) {
@@ -1259,7 +1245,6 @@ export async function createPoolcampusApplication(req, res) {
   }
 }
 
-
 // campus-internship
 export async function createCampusInternshipApplication(req, res) {
   const { jobId } = req.body;
@@ -1275,7 +1260,7 @@ export async function createCampusInternshipApplication(req, res) {
         user.data[0]._id,
         req.user.userType,
         jobId,
-        "Internship"
+        "Internship",
       )) === true
     )
       return res.status(403).json({ msg: "Already Applied" });
@@ -1284,7 +1269,7 @@ export async function createCampusInternshipApplication(req, res) {
       user.data[0]._id,
       req.user.userType,
       jobId,
-      "Internship"
+      "Internship",
     );
     if (application.success === false) return res.status(403).json(application);
 
@@ -1304,14 +1289,14 @@ export async function getUserApplicationStatus(req, res) {
     }
     ///
 
-  const userId = req.user._id;
-  const userType = req.user.userType;
-  const { jobType } = req.params;
+    const userId = req.user._id;
+    const userType = req.user.userType;
+    const { jobType } = req.params;
 
-  if (!jobType) {
+    if (!jobType) {
       return res.status(400).json({ error: "jobType is required" });
     }
-    
+
     let user;
     switch (userType) {
       case "college":
@@ -1342,13 +1327,13 @@ export async function getUserApplicationStatus(req, res) {
       activeCompanyId = req.user.activeCompanyId;
     }
 
-    console.log('this pipeline')
+    console.log("this pipeline");
     const response = await fetchApplicationStatusService(
       user.data[0]._id,
       jobType,
       userType,
       activeCompanyId,
-      req.pagination
+      req.pagination,
     );
 
     // console.log(response);
@@ -1363,7 +1348,7 @@ export async function getUserApplicationStatus(req, res) {
 
 // action by company
 // offcampus and joblisting
-export async function getApplicationsByJob(req, res) { 
+export async function getApplicationsByJob(req, res) {
   const { jobId, jobType, targetStatus, isVisited } = req.query;
   const userType = req.user.userType;
   if (!jobId || !jobType)
@@ -1375,7 +1360,7 @@ export async function getApplicationsByJob(req, res) {
       jobType,
       userType,
       targetStatus,
-      isVisited
+      isVisited,
     );
 
     // to be implement -- sorting feature like ATS
@@ -1389,26 +1374,32 @@ export async function getApplicationsByJob(req, res) {
 
 // oncampus and poolcampus
 
-
 //past new working for company prathmesh
-export async function getCollegeApplicationsByJob(req, res) { 
-  console.log("hello")
-  
-  const { jobId, jobType, targetStatus, isVisited } = req.query; 
-  const userType = req.user.userType; if (!jobId || !jobType || !targetStatus) 
-    return res.status(404).json({ msg: "Job not found with given criteria!" }); 
-  
-  try { const response = await fetchCollegeApplicationsByJobService( jobId, jobType, userType, targetStatus, isVisited ); 
-    // to be implement -- sorting feature like ATS 
-    console.log(response)
-    
-      res.status(200).json(response.data); 
-    } catch (error) 
-    { 
-      console.log("Error: ", error); res.status(500).json({ Error: "Internal server error" }); 
-    } 
-  }
+export async function getCollegeApplicationsByJob(req, res) {
+  console.log("hello");
 
+  const { jobId, jobType, targetStatus, isVisited } = req.query;
+  const userType = req.user.userType;
+  if (!jobId || !jobType || !targetStatus)
+    return res.status(404).json({ msg: "Job not found with given criteria!" });
+
+  try {
+    const response = await fetchCollegeApplicationsByJobService(
+      jobId,
+      jobType,
+      userType,
+      targetStatus,
+      isVisited,
+    );
+    // to be implement -- sorting feature like ATS
+    console.log(response);
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({ Error: "Internal server error" });
+  }
+}
 
 // shortlist candidate/college
 export async function shortlistApplicant(req, res) {
@@ -1417,10 +1408,7 @@ export async function shortlistApplicant(req, res) {
   if (!applicationId)
     return res.status(404).json({ msg: "Application not found!" });
   try {
-    
-
     const response = await ChangeStatusService(applicationId, "Shortlisted");
-   
 
     if (response.success === true) {
       // service -> send mail to candidate
@@ -1445,53 +1433,52 @@ export async function shortlistApplicant(req, res) {
           applicantMail.email,
           response.data.currentStatus,
           response.data._id,
-          jobRole /*companyName*/
-        ).catch(err => {
-            console.error("Email sending failed:", err.message);
+          jobRole /*companyName*/,
+        ).catch((err) => {
+          console.error("Email sending failed:", err.message);
         });
       }
 
-      
       // 🔔 SEND NOTIFICATION TO COLLEGE
       if (response.data.applicantType === "college") {
         try {
           // get company name (keep your existing logic)
           const companyResult = await getEmployerService(req.user);
           if (!companyResult.success) return;
-        
+
           const companyId = companyResult.data[0]._id;
-        
-          const companyProfile = await CompanyProfile.findById(companyId)
-            .select("companyDetails.companyName");
-        
+
+          const companyProfile = await CompanyProfile.findById(
+            companyId,
+          ).select("companyDetails.companyName");
+
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
-        
+
           // ✅ THIS IS THE KEY FIX
           const collegeOnboarding = await CollegeOnboarding.findById(
-            response.data.applicant
+            response.data.applicant,
           ).select("userId");
-        
+
           if (!collegeOnboarding?.userId) {
             console.error(
               "❌ College auth userId missing for onboardingId:",
-              response.data.applicant
+              response.data.applicant,
             );
             return;
           }
-        
+
           const collegeAuthId = collegeOnboarding.userId;
-        
+
           // ✅ Send notification using AUTH ID
           notifyOnApplicationStatusChange({
-            recipientId: collegeAuthId,      // ✅ AUTH _id
-            senderId: req.user._id,          // company/employer AUTH _id
+            recipientId: collegeAuthId, // ✅ AUTH _id
+            senderId: req.user._id, // company/employer AUTH _id
             companyName,
             status: response.data.currentStatus, // Shortlisted
             applicationId: response.data._id,
-            jobType: response.data.jobType
+            jobType: response.data.jobType,
           });
-        
         } catch (err) {
           console.error("Shortlist notification failed:", err);
         }
@@ -1505,35 +1492,41 @@ export async function shortlistApplicant(req, res) {
         try {
           const companyResult = await getEmployerService(req.user);
           if (!companyResult.success) return;
-        
+
           const companyId = companyResult.data[0]._id;
-        
-          const companyProfile = await CompanyProfile.findById(companyId)
-            .select("companyDetails.companyName");
-        
+
+          const companyProfile = await CompanyProfile.findById(
+            companyId,
+          ).select("companyDetails.companyName");
+
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
-        
+
           const resolveStudentAuthId = async (onboardingId) => {
-            const onboarding = await Onboarding.findById(onboardingId).select("userId");
+            const onboarding =
+              await Onboarding.findById(onboardingId).select("userId");
             return onboarding?.userId || null;
           };
 
-         const studentAuthId = await resolveStudentAuthId(response.data.applicant);
+          const studentAuthId = await resolveStudentAuthId(
+            response.data.applicant,
+          );
           if (!studentAuthId) {
-            console.error("❌ Student authId not found:", response.data.applicant);
+            console.error(
+              "❌ Student authId not found:",
+              response.data.applicant,
+            );
             return;
           }
-        
+
           notifyOnApplicationStatusChange({
             recipientId: studentAuthId,
             senderId: req.user._id,
             companyName,
             status: "Shortlisted",
             applicationId: response.data._id,
-            jobType: response.data.jobType
+            jobType: response.data.jobType,
           });
-          
         } catch (err) {
           console.error("Student shortlist notification failed:", err);
         }
@@ -1555,17 +1548,15 @@ export async function shortlistApplicantForCompany(req, res) {
   if (!applicationId)
     return res.status(404).json({ msg: "Application not found!" });
   try {
-    
     const response = await ChangeStatusService(applicationId, "Shortlisted");
 
-   if (response.success === true) {
-
+    if (response.success === true) {
       // 🔔 Notify company/employer (NON-BLOCKING)
-      
+
       notifyOnCollegeApplicationStatusChange({
         application: response.data,
         newStatus: "Shortlisted",
-        actorAuthId: req.user._id
+        actorAuthId: req.user._id,
       });
 
       // ✅ ONLY NOW return response
@@ -1613,8 +1604,8 @@ export async function rejectApplicant(req, res) {
           applicantMail.email,
           response.data.currentStatus,
           response.data._id,
-          jobRole /*companyName*/
-        ).catch(err => {
+          jobRole /*companyName*/,
+        ).catch((err) => {
           console.error("Email sending failed:", err.message);
         });
       }
@@ -1624,37 +1615,37 @@ export async function rejectApplicant(req, res) {
         try {
           const companyResult = await getEmployerService(req.user);
           if (!companyResult.success) return;
-        
+
           const companyId = companyResult.data[0]._id;
-        
-          const companyProfile = await CompanyProfile.findById(companyId)
-            .select("companyDetails.companyName");
-        
+
+          const companyProfile = await CompanyProfile.findById(
+            companyId,
+          ).select("companyDetails.companyName");
+
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
-        
+
           // ✅ Convert CollegeOnboarding → Auth ID
           const collegeOnboarding = await CollegeOnboarding.findById(
-            response.data.applicant
+            response.data.applicant,
           ).select("userId");
-        
+
           if (!collegeOnboarding?.userId) {
             console.error(
               "❌ College auth userId missing for onboardingId:",
-              response.data.applicant
+              response.data.applicant,
             );
             return;
           }
-        
+
           notifyOnApplicationStatusChange({
             recipientId: collegeOnboarding.userId, // ✅ AUTH ID
-            senderId: req.user._id,                // company AUTH ID
+            senderId: req.user._id, // company AUTH ID
             companyName,
             status: "Rejected",
             applicationId: response.data._id,
-            jobType: response.data.jobType
+            jobType: response.data.jobType,
           });
-        
         } catch (err) {
           console.error("Reject notification failed:", err);
         }
@@ -1668,34 +1659,41 @@ export async function rejectApplicant(req, res) {
         try {
           const companyResult = await getEmployerService(req.user);
           if (!companyResult.success) return;
-        
+
           const companyId = companyResult.data[0]._id;
-        
-          const companyProfile = await CompanyProfile.findById(companyId)
-            .select("companyDetails.companyName");
-        
+
+          const companyProfile = await CompanyProfile.findById(
+            companyId,
+          ).select("companyDetails.companyName");
+
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
-        
-            const resolveStudentAuthId = async (onboardingId) => {
-              const onboarding = await Onboarding.findById(onboardingId).select("userId");
-              return onboarding?.userId || null;
-            };
-          
-            const studentAuthId = await resolveStudentAuthId(response.data.applicant);
-          
-            if (!studentAuthId) {
-              console.error("❌ Student authId not found:", response.data.applicant);
-              return;
-            }
-        
+
+          const resolveStudentAuthId = async (onboardingId) => {
+            const onboarding =
+              await Onboarding.findById(onboardingId).select("userId");
+            return onboarding?.userId || null;
+          };
+
+          const studentAuthId = await resolveStudentAuthId(
+            response.data.applicant,
+          );
+
+          if (!studentAuthId) {
+            console.error(
+              "❌ Student authId not found:",
+              response.data.applicant,
+            );
+            return;
+          }
+
           notifyOnApplicationStatusChange({
             recipientId: studentAuthId,
             senderId: req.user._id,
             companyName,
             status: "Rejected",
             applicationId: response.data._id,
-            jobType: response.data.jobType
+            jobType: response.data.jobType,
           });
         } catch (err) {
           console.error("Student reject notification failed:", err);
@@ -1748,9 +1746,7 @@ export async function rejectCompanyApplicationByCollege(req, res) {
   }
 }
 
-
 //incase below fails
-
 
 //important fixed
 export async function acceptApplicant(req, res) {
@@ -1782,17 +1778,21 @@ export async function acceptApplicant(req, res) {
     if (application.applicantType === "college") {
       try {
         // Resolve college AUTH ID
-        const college = await CollegeOnboarding.findById(application.applicant)
-          .select("userId");
+        const college = await CollegeOnboarding.findById(
+          application.applicant,
+        ).select("userId");
 
         if (!college?.userId) {
-          console.error("❌ College authId not found for:", application.applicant);
+          console.error(
+            "❌ College authId not found for:",
+            application.applicant,
+          );
         } else {
           // Resolve company name (actor side)
           let companyName = "Company";
 
           const companyProfile = await CompanyProfile.findOne({
-            userId: actorAuthId
+            userId: actorAuthId,
           }).select("companyDetails.companyName");
 
           if (companyProfile?.companyDetails?.companyName) {
@@ -1801,12 +1801,12 @@ export async function acceptApplicant(req, res) {
 
           // 🔔 Notify college
           notifyOnApplicationStatusChange({
-            recipientId: college.userId,   // AUTH ID
-            senderId: actorAuthId,          // company/employer AUTH
+            recipientId: college.userId, // AUTH ID
+            senderId: actorAuthId, // company/employer AUTH
             companyName,
             status: "Accepted",
             applicationId: application._id,
-            jobType: response.data.jobType
+            jobType: response.data.jobType,
           });
         }
       } catch (err) {
@@ -1822,7 +1822,7 @@ export async function acceptApplicant(req, res) {
       notifyOnCollegeApplicationStatusChange({
         application,
         newStatus: "Accepted",
-        actorAuthId
+        actorAuthId,
       });
     }
 
@@ -1834,38 +1834,37 @@ export async function acceptApplicant(req, res) {
     ) {
       try {
         const resolveStudentAuthId = async (onboardingId) => {
-          const onboarding = await Onboarding.findById(onboardingId).select("userId");
+          const onboarding =
+            await Onboarding.findById(onboardingId).select("userId");
           return onboarding?.userId || null;
         };
         const studentAuthId = await resolveStudentAuthId(application.applicant);
         if (!studentAuthId) return;
-      
+
         let companyName = "Company";
-      
+
         const companyProfile = await CompanyProfile.findOne({
-          userId: actorAuthId
+          userId: actorAuthId,
         }).select("companyDetails.companyName");
-      
+
         if (companyProfile?.companyDetails?.companyName) {
           companyName = companyProfile.companyDetails.companyName;
         }
-      
+
         notifyOnApplicationStatusChange({
           recipientId: studentAuthId,
           senderId: actorAuthId,
           companyName,
           status: "Accepted",
           applicationId: application._id,
-          jobType: response.data.jobType
+          jobType: response.data.jobType,
         });
       } catch (err) {
         console.error("Accept → Student notification failed:", err);
       }
     }
 
-
     return res.status(200).json(response);
-
   } catch (error) {
     console.error("❌ acceptApplicant error:", error);
     res.status(500).json({ Error: "Internal server error" });
@@ -1912,7 +1911,7 @@ export async function getShortlistedCandidatesByCompany(req, res) {
       "Shortlisted",
       applicantType,
       jobType,
-      "companyPosted"
+      "companyPosted",
     );
     // console.log(response);
     res.status(200).json(response);
@@ -1936,7 +1935,7 @@ export async function getShortlistedCompaniesForCollege(req, res) {
       "Shortlisted",
       applicantType,
       jobType,
-      "collegePosted"
+      "collegePosted",
     );
     res.status(200).json(response);
   } catch (error) {
@@ -1960,7 +1959,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
       "Accepted",
       applicantType,
       jobType,
-      "companyPosted"
+      "companyPosted",
     );
     // console.log(response);
     res.status(200).json(response);
@@ -1969,8 +1968,6 @@ export async function getAcceptedCandidatesByCompany(req, res) {
     res.status(500).json({ Error: "Internal server error" });
   }
 }
-
-
 
 //Prathmesh interview schedule fix
 export async function scheduleInterview(req, res) {
@@ -1983,8 +1980,8 @@ export async function scheduleInterview(req, res) {
       applicationId,
       jobId,
       jobType,
-      applicantId,        // profile id (college / student / etc)
-      applicantAuthId,    // auth id (already provided)
+      applicantId, // profile id (college / student / etc)
+      applicantAuthId, // auth id (already provided)
       applicantType,
       jobRole = [],
       coordinator,
@@ -2040,30 +2037,29 @@ export async function scheduleInterview(req, res) {
     };
 
     console.log("🧠 Interview Save Check:", {
-  collegeProfileId: applicantId,
-  collegeAuthId: applicantAuthId,
-});
+      collegeProfileId: applicantId,
+      collegeAuthId: applicantAuthId,
+    });
 
-  // 🔹 Applicant snapshot (for display purpose only)
-  let applicantSnapshot = {};
+    // 🔹 Applicant snapshot (for display purpose only)
+    let applicantSnapshot = {};
 
-  if (finalApplicantType === "college") {
-    // College → use coordinator info
-    applicantSnapshot = {
-      name: coordinator?.name || "",
-      designation: coordinator?.designation || "",
-      collegeName: coordinator?.collegeName || "",
-      profileType: "college",
-    };
-  } else {
-    // Student / Fresher / Professional
-    applicantSnapshot = {
-      name: req.body?.applicantName || "",        // frontend will pass this
-      collegeName: req.body?.applicantCollege || "",
-      profileType: finalApplicantType,
-    };
-  }
-
+    if (finalApplicantType === "college") {
+      // College → use coordinator info
+      applicantSnapshot = {
+        name: coordinator?.name || "",
+        designation: coordinator?.designation || "",
+        collegeName: coordinator?.collegeName || "",
+        profileType: "college",
+      };
+    } else {
+      // Student / Fresher / Professional
+      applicantSnapshot = {
+        name: req.body?.applicantName || "", // frontend will pass this
+        collegeName: req.body?.applicantCollege || "",
+        profileType: finalApplicantType,
+      };
+    }
 
     // 1️⃣ SAVE INTERVIEW (SOURCE OF TRUTH)
     const interview = await InterviewSchedule.create({
@@ -2078,11 +2074,11 @@ export async function scheduleInterview(req, res) {
       coordinator: coordinatorSnapshot,
       companySnapshot: {
         companyName,
-            scheduledBy: {
-              name: req.user.name,
-              email: req.user.email,
-              designation: req.user.designation || "Recruiter",
-            }
+        scheduledBy: {
+          name: req.user.name,
+          email: req.user.email,
+          designation: req.user.designation || "Recruiter",
+        },
       },
       jobRole,
       date,
@@ -2141,7 +2137,7 @@ export async function scheduleInterview(req, res) {
           message,
           meetLink,
           jobRole,
-          companyName
+          companyName,
         );
 
         interview.emailStatus = "SENT";
@@ -2159,30 +2155,24 @@ export async function scheduleInterview(req, res) {
       msg: "Interview scheduled successfully",
       data: interview,
     });
-
   } catch (error) {
     console.error("❌ scheduleInterview error:", error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
 
-
 // In controllers/applicationController.js
 export const getCompanyDashboardMetrics = async (req, res) => {
   try {
-    
-    
     const user = req.user;
     const metricsData = await fetchCompanyDashboardMetrics(user);
-    
-    
 
     res.status(200).json({
       success: true,
       data: metricsData,
     });
   } catch (error) {
-    console.error('❌ Error in getCompanyDashboardMetrics:', error);
+    console.error("❌ Error in getCompanyDashboardMetrics:", error);
     const statusCode = error.statusCode || 500;
 
     res.status(statusCode).json({
@@ -2274,7 +2264,6 @@ export async function submitAlternateDates(req, res) {
   }
 }
 
-
 export const updateApplicationStatus = async (req, res) => {
   const { applicationId } = req.params;
   const { status } = req.body;
@@ -2282,28 +2271,29 @@ export const updateApplicationStatus = async (req, res) => {
   try {
     const application = await Application.findById(applicationId);
     if (!application) {
-      return res.status(404).json({ success: false, message: "Application not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found" });
     }
 
     // Update the status and push to history
     application.currentStatus = status;
     application.statusHistory.push({
       status: status,
-      date: new Date()
+      date: new Date(),
     });
 
     await application.save();
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       message: `Status updated to ${status}`,
-      data: application 
+      data: application,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
 
 export const getApplicationDetailsById = async (req, res) => {
   try {
@@ -2320,21 +2310,19 @@ export const getApplicationDetailsById = async (req, res) => {
 
       .populate({
         path: "job",
+
         populate: [
           {
             path: "companyPosted",
-            select:
-              "companyDetails.companyName profileImageUrl companyType",
+            select: "companyDetails.companyName profileImageUrl companyType",
           },
           {
             path: "candidatePosted",
-            select:
-              "fullName name currentCompany currentRole profileImage",
+            select: "fullName name currentCompany currentRole profileImage",
           },
           {
             path: "collegePosted",
-            select:
-              "collegeName logo profileImage",
+            select: "collegeName logo profileImage",
           },
         ],
       })
@@ -2346,43 +2334,46 @@ export const getApplicationDetailsById = async (req, res) => {
 
       .populate({
         path: "appliedForCompany",
-        select:
-          "companyDetails.companyName profileImageUrl",
+        select: "companyDetails.companyName profileImageUrl",
       })
 
       .lean();
-      if (
-        application?.job?.jobType === "Referral" &&
-        !application?.job?.receiverProfile &&
-        application?.job?.candidatePosted?._id
-      ) {
-        const receiverProfile = await Onboarding.findById(
-          application.job.candidatePosted._id
-        )
-          .select("-categorizedSkills")
-          .lean();
+    if (
+      application?.job?.jobType === "Referral" &&
+      !application?.job?.receiverProfile &&
+      application?.job?.candidatePosted?._id
+    ) {
+      const receiverProfile = await Onboarding.findById(
+        application.job.candidatePosted._id,
+      )
+        .select("-categorizedSkills")
+        .lean();
 
-        application.job.receiverProfile = receiverProfile;
-      }
+      application.job.receiverProfile = receiverProfile;
+    }
     application.applied =
-      application?.applicant?.userId?.toString() ===
-      req.user._id.toString();
+      application?.applicant?.userId?.toString() === req.user._id.toString();
     if (!application) {
       return res.status(404).json({
         success: false,
         message: "Application not found",
       });
     }
-    application.job.jobTitle = application.job.jobRoles;
+    if (application.job) {
+      if (application.job.candidatePosted) {
+        // Candidate jobs already use jobTitle
+        application.job.jobTitle = application.job.jobTitle;
+      } else {
+        // Company/College jobs use jobRoles
+        application.job.jobTitle = application.job.jobRoles;
+      }
+    }
     return res.status(200).json({
       success: true,
       data: application,
     });
   } catch (error) {
-    console.error(
-      "Error fetching application:",
-      error
-    );
+    console.error("Error fetching application:", error);
 
     return res.status(500).json({
       success: false,
