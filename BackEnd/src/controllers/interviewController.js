@@ -232,6 +232,8 @@ export const getUnreadInterviews = async (req, res) => {
       });
     }
 
+    query.date = { $gte: new Date().toISOString().split("T")[0] };
+
     const interviews = await InterviewSchedule.find(query)
       .populate("jobId", "jobType title companyName")
       .sort({ createdAt: -1 });

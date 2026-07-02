@@ -70,7 +70,7 @@ const jobPostingSchema = new mongoose.Schema(
     location: { type: [String], required: true },
 
     collegeTypes: [{ type: String }],
-    jobTitle: { type: [String] },
+    jobTitle: { type: [String],required: true },
     jobCategory: { type: String },
     venue: { type: String },
     jobStatus: {
