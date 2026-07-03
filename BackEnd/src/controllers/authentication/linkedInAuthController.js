@@ -71,8 +71,11 @@ export const handleLinkedInCallback = async (req, res) => {
         onboardingCompleted: (!!user.onboardingCompleted).toString(),
       }).toString();
 
+      console.log("isApp:", isApp);
+      console.log("Redirecting to app with URL:", redirectUrl);
+
     if (isApp === "true") {
-      return res.send(`
+return res.send(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,15 +83,15 @@ export const handleLinkedInCallback = async (req, res) => {
   <title>Redirecting...</title>
 </head>
 <body>
+  <p>Redirecting you back to the app...</p>
+  <p><a id="continueLink" href="${redirectUrl}" style="display:inline-block;padding:12px 24px;background:#0A66C2;color:#fff;border-radius:6px;text-decoration:none;font-family:sans-serif;">Continue</a></p>
   <script>
+    // Attempt auto-redirect
     window.location.replace(${JSON.stringify(redirectUrl)});
   </script>
-  <noscript>
-    <a href="${redirectUrl}">Continue</a>
-  </noscript>
 </body>
 </html>
-  `);
+`);
     }
 
     return res.redirect(redirectUrl);
