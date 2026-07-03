@@ -331,7 +331,7 @@ export const handleLinkedInLogin = async ({ code, state }) => {
       throw new Error("Invalid state parameter");
     }
 
-    const [originalState, userType] = stateParts;
+    const [originalState, userType, isApp = "false"] = stateParts;
 
     const tokenResponse = await axios.post(process.env.LINKEDIN_URL, null, {
       params: {
@@ -374,7 +374,7 @@ export const handleLinkedInLogin = async ({ code, state }) => {
       userType,
     });
 
-    return { user, isNewUser };
+    return { user, isNewUser, isApp };
   } catch (error) {
     console.error(
       "LinkedIn login error:",

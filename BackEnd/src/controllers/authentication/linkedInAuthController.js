@@ -23,7 +23,7 @@ export const redirectToLinkedIn = (req, res) => {
     }
 
     const linkedInAuthUrl = generateLinkedInAuthUrl({ userType });
-        console.log("LinkedIn Auth URL:", linkedInAuthUrl);
+    console.log("LinkedIn Auth URL:", linkedInAuthUrl);
     return res.redirect(linkedInAuthUrl);
   } catch (error) {
     console.error("Error redirecting to LinkedIn:", error);
@@ -35,7 +35,7 @@ export const redirectToLinkedIn = (req, res) => {
 
 
 
- 
+
 
 export const handleLinkedInCallback = async (req, res) => {
   try {
@@ -51,7 +51,7 @@ export const handleLinkedInCallback = async (req, res) => {
     }
 
     // Call your handleLinkedInLogin service (which fetches profile & upserts user)
-    const { user, isNewUser } = await handleLinkedInLogin({ code, state });
+    const { user, isNewUser, isApp } = await handleLinkedInLogin({ code, state });
 
     const { accessToken } = await createUserSession({
       user,
@@ -70,6 +70,26 @@ export const handleLinkedInCallback = async (req, res) => {
         profileImage: user.profileImage || "",
         onboardingCompleted: (!!user.onboardingCompleted).toString(),
       }).toString();
+
+    if (isApp === "true") {
+      return res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <script>
+    window.location.replace(${JSON.stringify(redirectUrl)});
+  </script>
+  <noscript>
+    <a href="${redirectUrl}">Continue</a>
+  </noscript>
+</body>
+</html>
+  `);
+    }
 
     return res.redirect(redirectUrl);
 
