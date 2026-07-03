@@ -5,7 +5,7 @@ import {
 import { createUserSession } from "../../services/sessionService.js";
 export const redirectToLinkedIn = (req, res) => {
   try {
-    const { userType } = req.query;
+    const { userType, isApp } = req.query;
 
     // Validate userType
     const validUserTypes = [
@@ -22,7 +22,7 @@ export const redirectToLinkedIn = (req, res) => {
         .json({ message: "Invalid or missing userType for LinkedIn signup." });
     }
 
-    const linkedInAuthUrl = generateLinkedInAuthUrl({ userType });
+    const linkedInAuthUrl = generateLinkedInAuthUrl({ userType, isApp });
     console.log("LinkedIn Auth URL:", linkedInAuthUrl);
     return res.redirect(linkedInAuthUrl);
   } catch (error) {
