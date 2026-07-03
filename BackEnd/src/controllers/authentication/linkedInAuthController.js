@@ -33,10 +33,6 @@ export const redirectToLinkedIn = (req, res) => {
   }
 };
 
-
-
-
-
 export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
@@ -58,10 +54,8 @@ export const handleLinkedInCallback = async (req, res) => {
       req,
       res,
     });
-    // Redirect to Frontend with query params so your React useEffect can save data
-    const redirectUrl =
-      `${FRONTEND_URLS}/signup?` +
-      new URLSearchParams({
+
+    const params = new URLSearchParams({
         token: accessToken,
         userId: user._id.toString(),
         email: user.email,
@@ -70,29 +64,17 @@ export const handleLinkedInCallback = async (req, res) => {
         profileImage: user.profileImage || "",
         onboardingCompleted: (!!user.onboardingCompleted).toString(),
       }).toString();
+    let redirectUrl = '';
+    if(isApp === "true"){
+      redirectUrl = 
+      `referd://signup?` +params;
+    }else{
+      redirectUrl = 
+      `${FRONTEND_URLS}/signup?` +params;
+    }
 
       console.log("isApp:", isApp);
       console.log("Redirecting to app with URL:", redirectUrl);
-
-    if (isApp === "true") {
-return res.send(`
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Redirecting...</title>
-</head>
-<body>
-  <p>Redirecting you back to the app...</p>
-  <p><a id="continueLink" href="${redirectUrl}" style="display:inline-block;padding:12px 24px;background:#0A66C2;color:#fff;border-radius:6px;text-decoration:none;font-family:sans-serif;">Continue</a></p>
-  <script>
-    // Attempt auto-redirect
-    window.location.replace(${JSON.stringify(redirectUrl)});
-  </script>
-</body>
-</html>
-`);
-    }
 
     return res.redirect(redirectUrl);
 
