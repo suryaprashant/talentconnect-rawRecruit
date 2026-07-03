@@ -298,7 +298,7 @@ const generateRandomString = (length) => {
   ).join("");
 };
 
-export const generateLinkedInAuthUrl = ({ userType }) => {
+export const generateLinkedInAuthUrl = ({ userType, isApp = "false" }) => {
   const validUserTypes = [
     "student",
     "fresher",
@@ -312,7 +312,7 @@ export const generateLinkedInAuthUrl = ({ userType }) => {
   }
 
   const state = generateRandomString(16);
-  const combinedState = `${state}_${userType}`;
+  const combinedState = `${state}_${userType}_${isApp}`;
   const linkedInAuthUrl =
     `https://www.linkedin.com/oauth/v2/authorization` +
     `?response_type=code` +
