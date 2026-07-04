@@ -70,7 +70,7 @@ export const handleLinkedInCallback = async (req, res) => {
       `referd://signup?` +params;
     }else{
       redirectUrl = 
-      `${FRONTEND_URLS}/signup?` +params;
+      `${FRONTEND_URLS}/${isNewUser?'signup':'login'}?` +params;
     }
 
       console.log("isApp:", isApp);
