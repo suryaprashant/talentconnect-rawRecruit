@@ -286,7 +286,7 @@ export const generateRefreshToken = ({ userId }) => {
     { userId },
     JWT_REFRESH_SECRET,
     {
-      expiresIn: "7d",
+      expiresIn: "30d",
     }
   );
 };

@@ -9,6 +9,7 @@ export const redirectToLinkedIn = (req, res) => {
 
     // Validate userType
     const validUserTypes = [
+      "student",
       "candidate",
       "fresher",
       "professional",
