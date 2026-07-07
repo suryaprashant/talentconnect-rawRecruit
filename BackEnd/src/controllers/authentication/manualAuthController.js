@@ -1,135 +1,147 @@
 import bcrypt from "bcryptjs";
 // import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
 import Otp from "../../models/otpModel.js";
-import StudentProfile from '../../models/studentProfileModel.js';
-import FresherProfile from '../../models/fresherProfileModel.js';
-import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
+import StudentProfile from "../../models/studentProfileModel.js";
+import FresherProfile from "../../models/fresherProfileModel.js";
+import CollegeProfile from "../../models/collegeDashboard/collegeProfileModel.js";
 import Auth from "../../models/authModel.js";
 import {
-    loginUser,
-    registerUser,
-    getTotalUsersCount,
-    sendSignupOtpService
+  loginUser,
+  registerUser,
+  getTotalUsersCount,
+  sendSignupOtpService,
 } from "../../services/authService.js";
 
-import { createUserSession, refreshUserSession, destroyUserSession} from "../../services/sessionService.js";
+import {
+  createUserSession,
+  refreshUserSession,
+  destroyUserSession,
+} from "../../services/sessionService.js";
 // const setJwtCookie = (res, token) => {
 //     res.cookie('jwt', token, {
 //         httpOnly: true,
-//         secure: true, 
+//         secure: true,
 //         sameSite: 'none',
-//         maxAge: 7 * 24 * 60 * 60 * 1000, 
+//         maxAge: 7 * 24 * 60 * 60 * 1000,
 //         path: '/'
 //     });
 // };
 
-
-
 export const signup = async (req, res) => {
-    try {
-        const { email, password, userType , otp } = req.body;
+  try {
+    const { email, password, userType, otp } = req.body;
 
-        if (!email || !password || !userType || !otp) {
-            return res.status(400).json({
-                message: "Email, password and userType are required"
-            });
-        }
-
-        const validOtp = await Otp.findOne({ email, otp });
-        if (!validOtp) {
-            return res.status(400).json({ message: "Invalid or expired OTP" });
-        }
-
-        const newUser = await registerUser({ email, password, userType });
-        if (req.body.deviceToken) {
-          await Auth.findByIdAndUpdate(newUser._id, { deviceToken: req.body.deviceToken });
-        }
-
-        await Otp.deleteOne({ _id: validOtp._id });
-        
-        const { accessToken } = await createUserSession({
-            user: newUser,
-            req,
-            res,
-        });
-
-        res.status(201).json({
-            message: "Signup successful",
-            user: {
-                _id: newUser._id,
-                email: newUser.email,
-                userType: newUser.userType,
-                onboardingCompleted: newUser.onboardingCompleted,
-            },
-            token: accessToken,
-        });
-    } catch (error) {
-      console.error("Signup Error:", error); 
-      res.status(error.statusCode || 500).json({ message: error.message || "Internal Server Error" });
+    if (!email || !password || !userType || !otp) {
+      return res.status(400).json({
+        message: "Email, password and userType are required",
+      });
     }
+
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    const newUser = await registerUser({ email, password, userType });
+    if (req.body.deviceToken) {
+      await Auth.findByIdAndUpdate(newUser._id, {
+        deviceToken: req.body.deviceToken,
+      });
+    }
+
+    await Otp.deleteOne({ _id: validOtp._id });
+
+    const { accessToken } = await createUserSession({
+      user: newUser,
+      req,
+      res,
+    });
+
+    res.status(201).json({
+      message: "Signup successful",
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        userType: newUser.userType,
+        onboardingCompleted: newUser.onboardingCompleted,
+      },
+      token: accessToken,
+    });
+  } catch (error) {
+    console.error("Signup Error:", error);
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal Server Error" });
+  }
 };
 
 export const sendSignupOtp = async (req, res) => {
-    try {  
-        const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-        const response = await sendSignupOtpService({ email });
-        res.status(200).json(response);
-    } catch (error) {
-        console.error("Send Signup OTP Error:", error);
-        res.status(error.statusCode || 500).json({ message: error.message || "Internal Server Error" });
-    }
+    const response = await sendSignupOtpService({ email });
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Send Signup OTP Error:", error);
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal Server Error" });
+  }
 };
 
-  
-
 export const login = async (req, res) => {
-    try {
-       
-        const { email, password } = req.body;
-        
-        const user = await loginUser({ email, password });
+  try {
+    const { email, password } = req.body;
 
-        if (req.body.deviceToken) {
-          await Auth.findByIdAndUpdate(user._id, { deviceToken: req.body.deviceToken });
-        }
+    const user = await loginUser({ email, password });
 
-        const { accessToken } = await createUserSession({
-            user,
-            req,
-            res,
-        });
-
-        res.status(200).json({
-            message: "Login successful",
-            token: accessToken,
-            user: {
-                _id: user._id,
-                email: user.email,
-                userType: user.userType,
-                name: user.name,
-                basicDetails: user,
-                onboardingCompleted: user.onboardingCompleted,
-            },
-        });
-    } catch (error) {
-        console.error('Login Error:', error);
-        res.status(error.statusCode || 500).json({ message: error.message || 'Internal Server Error' });
+    if (req.body.deviceToken) {
+      await Auth.findByIdAndUpdate(user._id, {
+        deviceToken: req.body.deviceToken,
+      });
     }
+
+    const { accessToken } = await createUserSession({
+      user,
+      req,
+      res,
+    });
+
+    const { refreshToken } = await refreshUserSession({
+      req,
+      res,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      token: accessToken,
+      refreshToken:refreshToken,
+      user: {
+        _id: user._id,
+        email: user.email,
+        userType: user.userType,
+        name: user.name,
+        basicDetails: user,
+        onboardingCompleted: user.onboardingCompleted,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal Server Error" });
+  }
 };
 
 export const logout = async (req, res) => {
   // console.log("hero");
   try {
     if (req.user?._id) {
-      await Auth.findByIdAndUpdate(
-        req.user._id,
-        {
-          $unset: {
-            deviceToken: 1,
-          },
-        }
-      );
+      await Auth.findByIdAndUpdate(req.user._id, {
+        $unset: {
+          deviceToken: 1,
+        },
+      });
     }
     await destroyUserSession({
       req,
@@ -138,8 +150,8 @@ export const logout = async (req, res) => {
     //localStorage.removeItem() ;
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
-    console.error('Logout Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Logout Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -165,23 +177,23 @@ export const refreshToken = async (req, res) => {
   }
 };
 
-
 export const deleteAccount = async (req, res) => {
-  console.log('here')
-    try {
-   if (!req.user || !req.user._id) {
-  return res.status(401).json({ message: "Session expired, please login again" });
-}
+  console.log("here");
+  try {
+    if (!req.user || !req.user._id) {
+      return res
+        .status(401)
+        .json({ message: "Session expired, please login again" });
+    }
 
-    
-   const userId = req.user._id;
+    const userId = req.user._id;
     const { password } = req.body;
 
     const user = await Auth.findById(userId);
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -191,7 +203,7 @@ export const deleteAccount = async (req, res) => {
 
       if (!isMatch) {
         return res.status(401).json({
-          message: "Invalid password"
+          message: "Invalid password",
         });
       }
     }
@@ -199,7 +211,7 @@ export const deleteAccount = async (req, res) => {
     await Promise.all([
       StudentProfile.deleteOne({ userId }),
       FresherProfile.deleteOne({ userId }),
-      CollegeProfile.deleteOne({ userId })
+      CollegeProfile.deleteOne({ userId }),
     ]);
 
     await Auth.deleteOne({ _id: userId });
@@ -208,26 +220,25 @@ export const deleteAccount = async (req, res) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      path: "/"
+      path: "/",
     });
 
     res.status(200).json({
-      message: "Account deleted successfully"
+      message: "Account deleted successfully",
     });
-
   } catch (error) {
     console.error("Delete Account Error:", error);
 
     res.status(500).json({
-      message: "Internal Server Error"
+      message: "Internal Server Error",
     });
   }
 };
 
-export const getCountOfTotalUsers= async (req, res, next) =>{
+export const getCountOfTotalUsers = async (req, res, next) => {
   try {
     // If you want filters from req (e.g. by userType), you can parse them
-    const { userType } = req.body;  // or req.query, etc.
+    const { userType } = req.body; // or req.query, etc.
     const filter = {};
     if (userType) {
       filter.userType = userType;
@@ -245,16 +256,18 @@ export const getCountOfTotalUsers= async (req, res, next) =>{
       message: "Internal server error",
     });
   }
-}
+};
 
 export const getMe = async (req, res) => {
   try {
     // req.user is set by auth middleware
     const user = req.user;
 
-    {/*if (!user) {
+    {
+      /*if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
-    }*/}
+    }*/
+    }
     if (!user) {
       return res.status(200).json({ user: null });
     }
@@ -279,90 +292,93 @@ export const getMe = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const userId = req.params.id;
-    
+
     // First, get the basic user info from Auth model
-    const user = await Auth.findById(userId).select('-password');
-    
+    const user = await Auth.findById(userId).select("-password");
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
-    
+
     let profileImage = null;
     let additionalData = {};
     let logoUrl = null; // Use consistent variable name
-    
+
     // Try to fetch profile image based on user type
     switch (user.userType) {
-      case 'student':
+      case "student":
         const studentProfile = await StudentProfile.findOne({ userId });
         if (studentProfile) {
           // Try multiple possible image fields
-          logoUrl = studentProfile.profileImageUrl || 
-                    studentProfile.profileImage || 
-                    studentProfile.avatar ||
-                    studentProfile.profile?.profileImageUrl;
+          logoUrl =
+            studentProfile.profileImageUrl ||
+            studentProfile.profileImage ||
+            studentProfile.avatar ||
+            studentProfile.profile?.profileImageUrl;
           additionalData = {
             profileCompleted: !!studentProfile,
             about: studentProfile.about,
-            skills: studentProfile.skills
+            skills: studentProfile.skills,
           };
         }
         break;
-        
-      case 'fresher':
+
+      case "fresher":
         const fresherProfile = await FresherProfile.findOne({ userId });
         if (fresherProfile) {
-          logoUrl = fresherProfile.profileImageUrl || 
-                    fresherProfile.profileImage || 
-                    fresherProfile.avatar ||
-                    fresherProfile.profile?.profileImageUrl;
+          logoUrl =
+            fresherProfile.profileImageUrl ||
+            fresherProfile.profileImage ||
+            fresherProfile.avatar ||
+            fresherProfile.profile?.profileImageUrl;
           additionalData = {
             profileCompleted: !!fresherProfile,
             about: fresherProfile.about,
-            skills: fresherProfile.skills
+            skills: fresherProfile.skills,
           };
         }
         break;
-        
-      case 'college':
+
+      case "college":
         const collegeProfile = await CollegeProfile.findOne({ userId });
         if (collegeProfile) {
           // College might store image differently
-          logoUrl = collegeProfile.profileImage || 
-                    collegeProfile.collegeDetails?.collegeImageUrl ||
-                    collegeProfile.collegeLogo ||
-                    collegeProfile.logo;
+          logoUrl =
+            collegeProfile.profileImage ||
+            collegeProfile.collegeDetails?.collegeImageUrl ||
+            collegeProfile.collegeLogo ||
+            collegeProfile.logo;
           additionalData = {
             profileCompleted: !!collegeProfile,
-            collegeName: collegeProfile.collegeDetails?.collegeName
+            collegeName: collegeProfile.collegeDetails?.collegeName,
           };
         }
         break;
-        
-      case 'professional':
+
+      case "professional":
         // Add professional profile model if exists
         // const professionalProfile = await ProfessionalProfile.findOne({ userId });
         // if (professionalProfile) {
         //   logoUrl = professionalProfile.profileImageUrl || professionalProfile.avatar;
         // }
         break;
-        
-      case 'employer':
-      case 'company':
+
+      case "employer":
+      case "company":
         // These might use companyDashboard endpoints
         // Keep existing logic for these
         break;
-        
+
       default:
         // For any other user type, try the default profileImage field
         logoUrl = user.profileImage;
     }
-    
+
     // Also check if the user has a profileImage in the Auth model itself
     if (!logoUrl && user.profileImage) {
       logoUrl = user.profileImage;
     }
-    
+
     // Prepare response
     const response = {
       success: true,
@@ -373,19 +389,17 @@ export const getUserById = async (req, res) => {
         userType: user.userType,
         profileImage: logoUrl, // Use consistent field name
         avatar: logoUrl, // Add avatar field for compatibility
-        ...additionalData
-      }
+        ...additionalData,
+      },
     };
-    
+
     res.status(200).json(response);
-    
   } catch (error) {
-    console.error('Error in getUserById:', error);
-    res.status(500).json({ 
+    console.error("Error in getUserById:", error);
+    res.status(500).json({
       success: false,
-      message: 'Server error',
-      error: error.message 
+      message: "Server error",
+      error: error.message,
     });
   }
 };
-

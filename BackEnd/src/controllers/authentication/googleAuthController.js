@@ -18,6 +18,8 @@ export const googleAuth = async (req, res) => {
     try {
         const { code, userType,isApp, googleToken} = req.body;
 
+        console.log("body",req.body);
+
         // if (!code) {
         //     return res.status(400).json({ message: 'Authorization code is required' });
         // }
