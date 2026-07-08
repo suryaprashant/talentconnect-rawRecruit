@@ -276,7 +276,7 @@ export const generateAccessToken = ({ userId, email, userType }) => {
     { userId, email, userType },
     JWT_ACCESS_SECRET,
     {
-      expiresIn: "15m",
+      expiresIn: "2m",
     }
   );
 };
