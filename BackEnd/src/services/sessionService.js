@@ -1,9 +1,9 @@
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 import RefreshToken from "../models/refreshTokenModel.js";
-
-import jwt from "jsonwebtoken";
 import Auth from "../models/authModel.js";
+
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -12,74 +12,104 @@ import {
 import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
-  clearAuthCookies
+  clearAuthCookies,
 } from "../utils/cookieUtils.js";
 
-export const createUserSession = async ({
-  user,
-  req,
-  res,
-}) => {
-  // Generate tokens
+
+const isAppRequest = (req) => {
+  return (
+    req.body?.isApp === true ||
+    req.body?.isApp === "true" ||
+    req.headers["x-client-type"] === "app"
+  );
+};
+
+
+const getRefreshTokenFromRequest = (req) => {
+  
+  if (req.cookies?.refreshToken) {
+    return req.cookies.refreshToken;
+  }
+
+  
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+
+  // App: body refresh token
+  if (req.body?.refreshToken) {
+    return req.body.refreshToken;
+  }
+
+  return null;
+};
+
+const hashToken = (token) => {
+  return crypto.createHash("sha256").update(token).digest("hex");
+};
+
+const verifyRefreshToken = (refreshToken) => {
+  return jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
+  );
+};
+
+export const createUserSession = async ({ user, req, res }) => {
+  const isApp = isAppRequest(req);
+
   const accessToken = generateAccessToken({
     userId: user._id,
     email: user.email,
     userType: user.userType,
   });
 
-  
-
   const refreshToken = generateRefreshToken({
     userId: user._id,
   });
 
-  // Hash refresh token before storing
-  const tokenHash = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
+  const tokenHash = hashToken(refreshToken);
 
-  // Save refresh session
   await RefreshToken.create({
     userId: user._id,
     tokenHash,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    userAgent: req.get("user-agent"),
+    userAgent: req.get("user-agent") || "",
     ipAddress: req.ip,
   });
 
-  // Set cookies
-  setAccessTokenCookie(res, accessToken);
-  setRefreshTokenCookie(res, refreshToken);
+  
+  if (!isApp) {
+    setAccessTokenCookie(res, accessToken);
+    setRefreshTokenCookie(res, refreshToken);
+  }
 
   return {
+    success: true,
     accessToken,
-    refreshToken,
+    refreshToken: isApp ? refreshToken : undefined,
   };
 };
 
 export const refreshUserSession = async ({ req, res }) => {
-  const refreshToken = req.cookies?.refreshToken;
+  const refreshToken = getRefreshTokenFromRequest(req);
 
   if (!refreshToken) {
     throw new Error("Refresh token missing");
   }
 
- 
+  let decoded;
 
-  // Verify refresh token
-  const decoded = jwt.verify(
-    refreshToken,
-    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
-  );
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch {
+    throw new Error("Invalid or expired refresh token");
+  }
 
-  // Hash incoming refresh token
-  const tokenHash = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
+  const tokenHash = hashToken(refreshToken);
 
-  // Find refresh session
   const storedToken = await RefreshToken.findOne({
     tokenHash,
     userId: decoded.userId,
@@ -89,19 +119,32 @@ export const refreshUserSession = async ({ req, res }) => {
     throw new Error("Refresh token not found");
   }
 
-  // Fetch user
+  if (storedToken.expiresAt && storedToken.expiresAt < new Date()) {
+    await RefreshToken.deleteOne({
+      _id: storedToken._id,
+    });
+
+    throw new Error("Refresh token expired");
+  }
+
   const user = await Auth.findById(decoded.userId).select("-password");
 
   if (!user) {
+    await RefreshToken.deleteOne({
+      _id: storedToken._id,
+    });
+
     throw new Error("User not found");
   }
 
-  // Rotation
+  /**
+   * Refresh token rotation:
+   * Delete old refresh token session and create a new one.
+   */
   await RefreshToken.deleteOne({
     _id: storedToken._id,
   });
 
-  // Create completely new session
   return await createUserSession({
     user,
     req,
@@ -110,39 +153,29 @@ export const refreshUserSession = async ({ req, res }) => {
 };
 
 export const destroyUserSession = async ({ req, res }) => {
-  try {
-    const refreshToken = req.cookies?.refreshToken;
+  const refreshToken = getRefreshTokenFromRequest(req);
 
-    // If refresh cookie exists, delete only that session
-    if (refreshToken) {
-      try {
-        const decoded = jwt.verify(
-          refreshToken,
-          process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
-        );
+  if (refreshToken) {
+    try {
+      const decoded = verifyRefreshToken(refreshToken);
+      const tokenHash = hashToken(refreshToken);
 
-        const tokenHash = crypto
-          .createHash("sha256")
-          .update(refreshToken)
-          .digest("hex");
-
-        await RefreshToken.deleteOne({
-          userId: decoded.userId,
-          tokenHash,
-        });
-      } catch (err) {
-        // Ignore invalid/expired refresh token.
-        // We still want to clear cookies.
-        console.warn("Refresh token cleanup skipped:", err.message);
-      }
+      await RefreshToken.deleteOne({
+        userId: decoded.userId,
+        tokenHash,
+      });
+    } catch (err) {
+      console.warn("Refresh token cleanup skipped:", err.message);
     }
-
-    clearAuthCookies(res);
-
-    return {
-      success: true,
-    };
-  } catch (error) {
-    throw error;
   }
+
+  /**
+   * Safe for both web and app.
+   * For app, cookies may not exist, but clearing is harmless.
+   */
+  clearAuthCookies(res);
+
+  return {
+    success: true,
+  };
 };
