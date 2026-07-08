@@ -276,7 +276,7 @@ export const generateAccessToken = ({ userId, email, userType }) => {
     { userId, email, userType },
     JWT_ACCESS_SECRET,
     {
-      expiresIn: "2m",
+      expiresIn: "24h",
     }
   );
 };
@@ -286,7 +286,7 @@ export const generateRefreshToken = ({ userId }) => {
     { userId },
     JWT_REFRESH_SECRET,
     {
-      expiresIn: "3m",
+      expiresIn: "30d",
     }
   );
 };
