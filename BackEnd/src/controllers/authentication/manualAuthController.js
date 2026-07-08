@@ -1,10 +1,12 @@
 import bcrypt from "bcryptjs";
-// import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
+
 import Otp from "../../models/otpModel.js";
 import StudentProfile from "../../models/studentProfileModel.js";
 import FresherProfile from "../../models/fresherProfileModel.js";
 import CollegeProfile from "../../models/collegeDashboard/collegeProfileModel.js";
 import Auth from "../../models/authModel.js";
+import RefreshToken from "../../models/refreshTokenModel.js";
+
 import {
   loginUser,
   registerUser,
@@ -17,61 +19,90 @@ import {
   refreshUserSession,
   destroyUserSession,
 } from "../../services/sessionService.js";
-// const setJwtCookie = (res, token) => {
-//     res.cookie('jwt', token, {
-//         httpOnly: true,
-//         secure: true,
-//         sameSite: 'none',
-//         maxAge: 7 * 24 * 60 * 60 * 1000,
-//         path: '/'
-//     });
-// };
+
+import { clearAuthCookies } from "../../utils/cookieUtils.js";
+
+const buildUserResponse = (user) => {
+  const safeUser = user?.toObject ? user.toObject() : user;
+
+  if (safeUser?.password) {
+    delete safeUser.password;
+  }
+
+  return {
+    _id: safeUser._id,
+    email: safeUser.email,
+    userType: safeUser.userType,
+    name: safeUser.name,
+    fullname: safeUser.fullname,
+    authProvider: safeUser.authProvider,
+    status: safeUser.status,
+    onboardingCompleted: safeUser.onboardingCompleted,
+  };
+};
 
 export const signup = async (req, res) => {
   try {
-    const { email, password, userType, otp } = req.body;
+    const { email, password, userType, otp, deviceToken } = req.body;
 
     if (!email || !password || !userType || !otp) {
       return res.status(400).json({
-        message: "Email, password and userType are required",
+        success: false,
+        message: "Email, password, userType and OTP are required",
       });
     }
 
-    const validOtp = await Otp.findOne({ email, otp });
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    const validOtp = await Otp.findOne({
+      email: normalizedEmail,
+      otp,
+    });
+
     if (!validOtp) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
-    }
-
-    const newUser = await registerUser({ email, password, userType });
-    if (req.body.deviceToken) {
-      await Auth.findByIdAndUpdate(newUser._id, {
-        deviceToken: req.body.deviceToken,
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP",
       });
     }
 
-    await Otp.deleteOne({ _id: validOtp._id });
+    const newUser = await registerUser({
+      email: normalizedEmail,
+      password,
+      userType,
+    });
 
-    const { accessToken } = await createUserSession({
+    if (deviceToken) {
+      await Auth.findByIdAndUpdate(newUser._id, {
+        deviceToken,
+      });
+    }
+
+    await Otp.deleteOne({
+      _id: validOtp._id,
+    });
+
+    const session = await createUserSession({
       user: newUser,
       req,
       res,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
+      success: true,
       message: "Signup successful",
-      user: {
-        _id: newUser._id,
-        email: newUser.email,
-        userType: newUser.userType,
-        onboardingCompleted: newUser.onboardingCompleted,
-      },
-      token: accessToken,
+      token: session.accessToken,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      user: buildUserResponse(newUser),
     });
   } catch (error) {
     console.error("Signup Error:", error);
-    res
-      .status(error.statusCode || 500)
-      .json({ message: error.message || "Internal Server Error" });
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
   }
 };
 
@@ -79,62 +110,83 @@ export const sendSignupOtp = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const response = await sendSignupOtpService({ email });
-    res.status(200).json(response);
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const response = await sendSignupOtpService({
+      email: String(email).trim().toLowerCase(),
+    });
+
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Send Signup OTP Error:", error);
-    res
-      .status(error.statusCode || 500)
-      .json({ message: error.message || "Internal Server Error" });
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
   }
 };
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, deviceToken } = req.body;
 
-    const user = await loginUser({ email, password });
-
-    if (req.body.deviceToken) {
-      await Auth.findByIdAndUpdate(user._id, {
-        deviceToken: req.body.deviceToken,
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
       });
     }
 
-    const { accessToken } = await createUserSession({
+    const user = await loginUser({
+      email: String(email).trim().toLowerCase(),
+      password,
+    });
+
+    if (deviceToken) {
+      await Auth.findByIdAndUpdate(user._id, {
+        deviceToken,
+      });
+    }
+
+    /**
+     * IMPORTANT:
+     * Only create session here.
+     * Do NOT call refreshUserSession() immediately after login.
+     */
+    const session = await createUserSession({
       user,
       req,
       res,
     });
 
-    const { refreshToken } = await refreshUserSession({
-      req,
-      res,
-    });
-
-    res.status(200).json({
+    return res.status(200).json({
+      success: true,
       message: "Login successful",
-      token: accessToken,
-      refreshToken:refreshToken,
+      token: session.accessToken,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
       user: {
-        _id: user._id,
-        email: user.email,
-        userType: user.userType,
-        name: user.name,
-        basicDetails: user,
-        onboardingCompleted: user.onboardingCompleted,
+        ...buildUserResponse(user),
+        basicDetails: buildUserResponse(user),
       },
     });
   } catch (error) {
     console.error("Login Error:", error);
-    res
-      .status(error.statusCode || 500)
-      .json({ message: error.message || "Internal Server Error" });
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
   }
 };
 
 export const logout = async (req, res) => {
-  // console.log("hero");
   try {
     if (req.user?._id) {
       await Auth.findByIdAndUpdate(req.user._id, {
@@ -143,28 +195,39 @@ export const logout = async (req, res) => {
         },
       });
     }
-    await destroyUserSession({
-      req,
-      res,
-    });
-    //localStorage.removeItem() ;
-    res.status(200).json({ message: "User logged out successfully" });
-  } catch (error) {
-    console.error("Logout Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
-export const refreshToken = async (req, res) => {
-  try {
-    const { accessToken } = await refreshUserSession({
+    await destroyUserSession({
       req,
       res,
     });
 
     return res.status(200).json({
       success: true,
-      token: accessToken,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const session = await refreshUserSession({
+      req,
+      res,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Session refreshed successfully",
+      token: session.accessToken,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
     });
   } catch (error) {
     console.error("Refresh Token Error:", error);
@@ -172,18 +235,18 @@ export const refreshToken = async (req, res) => {
     return res.status(401).json({
       success: false,
       code: "INVALID_REFRESH_TOKEN",
-      message: error.message,
+      message: error.message || "Invalid refresh token",
     });
   }
 };
 
 export const deleteAccount = async (req, res) => {
-  console.log("here");
   try {
-    if (!req.user || !req.user._id) {
-      return res
-        .status(401)
-        .json({ message: "Session expired, please login again" });
+    if (!req.user?._id) {
+      return res.status(401).json({
+        success: false,
+        message: "Session expired, please login again",
+      });
     }
 
     const userId = req.user._id;
@@ -192,17 +255,27 @@ export const deleteAccount = async (req, res) => {
     const user = await Auth.findById(userId);
 
     if (!user) {
+      clearAuthCookies(res);
+
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
 
-    // password check only for manual users
     if (user.authProvider === "manual") {
+      if (!password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is required",
+        });
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
         return res.status(401).json({
+          success: false,
           message: "Invalid password",
         });
       }
@@ -212,45 +285,45 @@ export const deleteAccount = async (req, res) => {
       StudentProfile.deleteOne({ userId }),
       FresherProfile.deleteOne({ userId }),
       CollegeProfile.deleteOne({ userId }),
+      RefreshToken.deleteMany({ userId }),
+      Auth.deleteOne({ _id: userId }),
     ]);
 
-    await Auth.deleteOne({ _id: userId });
+    clearAuthCookies(res);
 
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
-
-    res.status(200).json({
+    return res.status(200).json({
+      success: true,
       message: "Account deleted successfully",
     });
   } catch (error) {
     console.error("Delete Account Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
       message: "Internal Server Error",
     });
   }
 };
 
-export const getCountOfTotalUsers = async (req, res, next) => {
+export const getCountOfTotalUsers = async (req, res) => {
   try {
-    // If you want filters from req (e.g. by userType), you can parse them
-    const { userType } = req.body; // or req.query, etc.
+    const { userType } = req.query;
+
     const filter = {};
+
     if (userType) {
       filter.userType = userType;
     }
 
     const total = await getTotalUsersCount(filter);
+
     return res.status(200).json({
       success: true,
       totalUsers: total,
     });
   } catch (error) {
     console.error("Error in getTotalUsersCount controller:", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -260,143 +333,134 @@ export const getCountOfTotalUsers = async (req, res, next) => {
 
 export const getMe = async (req, res) => {
   try {
-    // req.user is set by auth middleware
     const user = req.user;
 
-    {
-      /*if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }*/
-    }
     if (!user) {
-      return res.status(200).json({ user: null });
+      return res.status(200).json({
+        success: true,
+        user: null,
+      });
     }
 
     return res.status(200).json({
-      user: {
-        _id: user._id,
-        email: user.email,
-        userType: user.userType,
-        onboardingCompleted: user.onboardingCompleted,
-        authProvider: user.authProvider,
-        status: user.status,
-      },
+      success: true,
+      user: buildUserResponse(user),
     });
   } catch (error) {
     console.error("getMe error:", error);
-    res.status(500).json({ message: "Server error" });
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-// controllers/authentication/manualAuthController.js - Update getUserById
 export const getUserById = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // First, get the basic user info from Auth model
     const user = await Auth.findById(userId).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    let profileImage = null;
+    let logoUrl = null;
     let additionalData = {};
-    let logoUrl = null; // Use consistent variable name
 
-    // Try to fetch profile image based on user type
     switch (user.userType) {
-      case "student":
+      case "student": {
         const studentProfile = await StudentProfile.findOne({ userId });
+
         if (studentProfile) {
-          // Try multiple possible image fields
           logoUrl =
             studentProfile.profileImageUrl ||
             studentProfile.profileImage ||
             studentProfile.avatar ||
-            studentProfile.profile?.profileImageUrl;
+            studentProfile.profile?.profileImageUrl ||
+            null;
+
           additionalData = {
-            profileCompleted: !!studentProfile,
+            profileCompleted: true,
             about: studentProfile.about,
             skills: studentProfile.skills,
           };
         }
-        break;
 
-      case "fresher":
+        break;
+      }
+
+      case "fresher": {
         const fresherProfile = await FresherProfile.findOne({ userId });
+
         if (fresherProfile) {
           logoUrl =
             fresherProfile.profileImageUrl ||
             fresherProfile.profileImage ||
             fresherProfile.avatar ||
-            fresherProfile.profile?.profileImageUrl;
+            fresherProfile.profile?.profileImageUrl ||
+            null;
+
           additionalData = {
-            profileCompleted: !!fresherProfile,
+            profileCompleted: true,
             about: fresherProfile.about,
             skills: fresherProfile.skills,
           };
         }
-        break;
 
-      case "college":
+        break;
+      }
+
+      case "college": {
         const collegeProfile = await CollegeProfile.findOne({ userId });
+
         if (collegeProfile) {
-          // College might store image differently
           logoUrl =
             collegeProfile.profileImage ||
             collegeProfile.collegeDetails?.collegeImageUrl ||
             collegeProfile.collegeLogo ||
-            collegeProfile.logo;
+            collegeProfile.logo ||
+            null;
+
           additionalData = {
-            profileCompleted: !!collegeProfile,
+            profileCompleted: true,
             collegeName: collegeProfile.collegeDetails?.collegeName,
           };
         }
-        break;
 
-      case "professional":
-        // Add professional profile model if exists
-        // const professionalProfile = await ProfessionalProfile.findOne({ userId });
-        // if (professionalProfile) {
-        //   logoUrl = professionalProfile.profileImageUrl || professionalProfile.avatar;
-        // }
         break;
+      }
 
-      case "employer":
-      case "company":
-        // These might use companyDashboard endpoints
-        // Keep existing logic for these
+      default: {
+        logoUrl = user.profileImage || null;
         break;
-
-      default:
-        // For any other user type, try the default profileImage field
-        logoUrl = user.profileImage;
+      }
     }
 
-    // Also check if the user has a profileImage in the Auth model itself
     if (!logoUrl && user.profileImage) {
       logoUrl = user.profileImage;
     }
 
-    // Prepare response
-    const response = {
+    return res.status(200).json({
       success: true,
       data: {
         _id: user._id,
         name: user.name || user.fullname,
         email: user.email,
         userType: user.userType,
-        profileImage: logoUrl, // Use consistent field name
-        avatar: logoUrl, // Add avatar field for compatibility
+        profileImage: logoUrl,
+        avatar: logoUrl,
         ...additionalData,
       },
-    };
-
-    res.status(200).json(response);
+    });
   } catch (error) {
     console.error("Error in getUserById:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: "Server error",
       error: error.message,
