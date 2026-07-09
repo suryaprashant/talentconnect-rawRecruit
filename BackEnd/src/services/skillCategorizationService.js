@@ -158,8 +158,6 @@ export const categorizeSkillsService = async (userId, onboardingData) => {
     jobRoles = []
   } = onboardingData;
 
-  console.log("onboarding data", onboardingData);
-
   const normalizedSkills = normalizeArray(skills);
   const normalizedTools = normalizeArray(toolsAndPlatforms);
   const normalizedDomain = normalizeArray(domainKnowledge);

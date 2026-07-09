@@ -1647,9 +1647,11 @@ export const getInternshipPostings = async (req, res) => {
         job.companyName ||
         "Company";
 
+       
+
       // ── 1. JOB ROLES (W.jobRoles %) ─────────────────────────────────
       const sRoles = (student.jobRoles || []).map(norm);
-      const jRoles = (job.jobRoles || []).map(norm);
+      const jRoles = (job.jobRoles || job.jobTitle ).map(norm);
 
       if (jRoles.length === 0) {
         breakdown.roles = W.jobRoles;

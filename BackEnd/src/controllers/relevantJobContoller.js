@@ -253,7 +253,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       // ── 2. JOB ROLES (W.jobRoles %) ─────────────────────────────────
       const sRoles = (student.jobRoles || []).map(norm);
-      const jRoles = (job.jobRoles || []).map(norm);
+      const jRoles = (job.jobRoles || job.jobTitle).map(norm);
 
       if (jRoles.length === 0) {
         breakdown.roles = W.jobRoles;

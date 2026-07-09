@@ -184,6 +184,8 @@ export async function getSavedJobsService(userId, pagination) {
           application.job?.companyName ||
           application.job?.candidatePosted?.currentCompany ||
           application.job?.companyPosted?.companyDetails?.companyName;
+        
+        const jobTitle=application.job?.jobTitle;  
 
         // Alumni count
         if (companyName && student) {

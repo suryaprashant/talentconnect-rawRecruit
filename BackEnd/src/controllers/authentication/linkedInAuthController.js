@@ -38,50 +38,58 @@ export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
     // const FRONTEND_URLS = process.env.FRONTEND_URLS || "http://localhost:5173";
-    const FRONTEND_URLS =
-      (process.env.FRONTEND_URLS || "http://localhost:5173")
-        .split(",")[0]
-        .trim();
+    const FRONTEND_URLS = (process.env.FRONTEND_URLS || "http://localhost:5173")
+      .split(",")[0]
+      .trim();
     // Handle user cancellation or LinkedIn errors
     if (error) {
-      return res.redirect(`${FRONTEND_URLS}/signup?error=${encodeURIComponent(error_description || error)}`);
+      return res.redirect(
+        `${FRONTEND_URLS}/signup?error=${encodeURIComponent(error_description || error)}`,
+      );
     }
 
     // Call your handleLinkedInLogin service (which fetches profile & upserts user)
-    const { user, isNewUser, isApp } = await handleLinkedInLogin({ code, state });
+    const { user, isNewUser, isApp } = await handleLinkedInLogin({
+      code,
+      state,
+    });
 
-    const { accessToken } = await createUserSession({
+    const session = await createUserSession({
       user,
       req,
       res,
     });
 
     const params = new URLSearchParams({
-        token: accessToken,
-        userId: user._id.toString(),
-        email: user.email,
-        name: user.name || "",
-        userType: user.userType,
-        profileImage: user.profileImage || "",
-        onboardingCompleted: (!!user.onboardingCompleted).toString(),
-      }).toString();
-    let redirectUrl = '';
-    if(isApp === "true"){
-      redirectUrl = 
-      `referd://signup?` +params;
-    }else{
-      redirectUrl = 
-      `${FRONTEND_URLS}/${isNewUser?'signup':'login'}?` +params;
+      token: session.accessToken,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      userId: user._id.toString(),
+      email: user.email,
+      name: user.name || "",
+      userType: user.userType,
+      profileImage: user.profileImage || "",
+      onboardingCompleted: (!!user.onboardingCompleted).toString(),
+    }).toString();
+    let redirectUrl = "";
+    if (isApp === "true") {
+      redirectUrl = `referd://signup?` + params;
+    } else {
+      redirectUrl =
+        `${FRONTEND_URLS}/${isNewUser ? "signup" : "login"}?` + params;
     }
 
-      console.log("isApp:", isApp);
-      console.log("Redirecting to app with URL:", redirectUrl);
+    console.log("isApp:", isApp);
+    console.log("Redirecting to app with URL:", redirectUrl);
 
     return res.redirect(redirectUrl);
-
   } catch (err) {
     console.error("LinkedIn Callback Controller Error:", err);
-    const errorMsg = encodeURIComponent("Authentication failed. Please try again.");
-    return res.redirect(`${process.env.FRONTEND_URLS}/signup?error=${errorMsg}`);
+    const errorMsg = encodeURIComponent(
+      "Authentication failed. Please try again.",
+    );
+    return res.redirect(
+      `${process.env.FRONTEND_URLS}/signup?error=${errorMsg}`,
+    );
   }
 };
