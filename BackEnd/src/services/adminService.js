@@ -621,6 +621,9 @@ export const getAllProfessionalReferralsService = async (professionalProfileId) 
               }
             ]
           },
+          adminComment,
+          rating,
+
           applicantType: 1,
           adminApprovalStatus: 1,
           job: {
