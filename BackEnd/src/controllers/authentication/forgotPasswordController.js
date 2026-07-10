@@ -30,7 +30,7 @@ import {
 
 export const requestPasswordReset = async (req, res) => {
   try {
-    const { email, isreferd } = req.body;
+    const { email, isRawRecruit } = req.body;
 
     if (!email) {
       return res.status(400).json({
@@ -39,7 +39,7 @@ export const requestPasswordReset = async (req, res) => {
       });
     }
 
-    const result = await requestPasswordResetService({ email,isreferd });
+    const result = await requestPasswordResetService({ email,isRawRecruit});
 
     res.status(200).json({
       success: true,
