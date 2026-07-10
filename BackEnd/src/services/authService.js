@@ -423,7 +423,7 @@ export const getTotalUsersCount = async (filter = {}) => {
   }
 };
 
-export const requestPasswordResetService = async ({ email, isreferd }) => {
+export const requestPasswordResetService = async ({ email, isRawRecruit }) => {
   try {
     const user = await Auth.findOne({ email });
 
@@ -446,11 +446,11 @@ export const requestPasswordResetService = async ({ email, isreferd }) => {
     await user.save();
 
     let frontendUrl;
-    if (isreferd) {
-      frontendUrl = process.env.Frontend_URL || "http://localhost:3000";
-    } else {
+    if (isRawRecruit) {
       frontendUrl =
         process.env.Frontend_URL_Rawrecruit || "http://localhost:5173";
+    } else {
+      frontendUrl = process.env.Frontend_URL || "http://localhost:3000";
     }
 
     const resetLink = `${frontendUrl}/reset-password/${rawToken}`;
