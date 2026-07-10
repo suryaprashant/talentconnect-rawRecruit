@@ -7,14 +7,15 @@ import axios from "axios";
 import { sendOtpEmail } from "../utils/sendOtpEmail.js";
 import OtpModel from "../models/otpModel.js";
 
-import { sendPasswordResetEmail , sendPasswordChangedConfirmation } from "../utils/sendPasswordResetEmail.js";
+import {
+  sendPasswordResetEmail,
+  sendPasswordChangedConfirmation,
+} from "../utils/sendPasswordResetEmail.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_ACCESS_SECRET =
-  process.env.JWT_ACCESS_SECRET;
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 
-const JWT_REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 // Total number of all users
 export const getUserCount = async () => {
   return await Auth.countDocuments();
@@ -31,19 +32,21 @@ export const getCollegeCount = async () => {
 };
 
 // Total number of candidates (students / freshers / professionals etc.)
-{/*export const getCandidateCount = async () => {
+{
+  /*export const getCandidateCount = async () => {
   return await Auth.countDocuments({
     userType: {
       $in: ["candidate", "student", "fresher", "professional", "employer"],
     },
   });
-};*/}
+};*/
+}
 
 //v2 release changes
 export const getCandidateCount = async () => {
   return await Auth.countDocuments({
     userType: {
-      $in: [ "student", "fresher", "professional", "employer"],
+      $in: ["student", "fresher", "professional", "employer"],
     },
   });
 };
@@ -52,7 +55,6 @@ export const getCandidateCount = async () => {
 export const getStatusCountByUserType = async (userType = null) => {
   try {
     const validUserTypes = [
-      
       "student",
       "fresher",
       "professional",
@@ -76,7 +78,7 @@ export const getStatusCountByUserType = async (userType = null) => {
   } catch (error) {
     console.error(
       `Error getting status counts for ${userType || "all"}:`,
-      error.message
+      error.message,
     );
     throw new Error("Failed to get status counts");
   }
@@ -87,7 +89,7 @@ export const getAll = async () => {
   try {
     const users = await Auth.find()
       .select(
-        "status _id name email profileImage isNewUser onboardingCompleted onboardingStep userType activeCompanyId lastActivity createdAt"
+        "status _id name email profileImage isNewUser onboardingCompleted onboardingStep userType activeCompanyId lastActivity createdAt",
       )
       .sort({ createdAt: -1 })
       .lean();
@@ -180,15 +182,13 @@ export const registerUser = async ({ email, password, userType }) => {
     email,
     password: hashedPassword,
     userType,
-    authProvider: 'manual',
+    authProvider: "manual",
   });
 
   return newUser;
 };
 
-
 export const sendSignupOtpService = async ({ email }) => {
-
   if (!email) {
     const error = new Error("Email is required");
     error.statusCode = 400;
@@ -201,17 +201,17 @@ export const sendSignupOtpService = async ({ email }) => {
     error.statusCode = 409;
     throw error;
   }
-  const otpCode = crypto.randomInt(100000, 999999).toString(); 
+  const otpCode = crypto.randomInt(100000, 999999).toString();
   await OtpModel.findOneAndUpdate(
     { email },
-    { otp: otpCode, createdAt: new Date() }, 
-    { upsert: true, new: true, setDefaultsOnInsert: true }  
+    { otp: otpCode, createdAt: new Date() },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
   );
   await sendOtpEmail(email, otpCode);
   //console.log("OTP (DEV ONLY):", otpCode);
 
   return { success: true, msg: "OTP sent successfully" };
-}
+};
 
 // Login service
 /*export const loginUser = async ({ email, password }) => {
@@ -232,7 +232,7 @@ export const sendSignupOtpService = async ({ email }) => {
   return user;
 };*/
 
-//login Prathmesh 
+//login Prathmesh
 export const loginUser = async ({ email, password }) => {
   const user = await Auth.findOne({ email });
 
@@ -243,9 +243,9 @@ export const loginUser = async ({ email, password }) => {
   }
 
   // 🔥 IMPORTANT FIX
-  if (user.authProvider !== 'manual') {
+  if (user.authProvider !== "manual") {
     const error = new Error(
-      `This account was created using ${user.authProvider}. Please login using ${user.authProvider}.`
+      `This account was created using ${user.authProvider}. Please login using ${user.authProvider}.`,
     );
     error.statusCode = 400;
     throw error;
@@ -267,34 +267,25 @@ export const loginUser = async ({ email, password }) => {
   return user;
 };
 
-
 export const generateToken = ({ userId, email, userType }) => {
   return jwt.sign({ userId, email, userType }, JWT_SECRET, { expiresIn: "7d" });
 };
 export const generateAccessToken = ({ userId, email, userType }) => {
-  return jwt.sign(
-    { userId, email, userType },
-    JWT_ACCESS_SECRET,
-    {
-      expiresIn: "24h",
-    }
-  );
+  return jwt.sign({ userId, email, userType }, JWT_ACCESS_SECRET, {
+    expiresIn: "24h",
+  });
 };
 
 export const generateRefreshToken = ({ userId }) => {
-  return jwt.sign(
-    { userId },
-    JWT_REFRESH_SECRET,
-    {
-      expiresIn: "30d",
-    }
-  );
+  return jwt.sign({ userId }, JWT_REFRESH_SECRET, {
+    expiresIn: "30d",
+  });
 };
 const generateRandomString = (length) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from({ length }, () =>
-    characters.charAt(Math.floor(Math.random() * characters.length))
+    characters.charAt(Math.floor(Math.random() * characters.length)),
   ).join("");
 };
 
@@ -354,7 +345,7 @@ export const handleLinkedInLogin = async ({ code, state }) => {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     const profile = profileResponse.data;
@@ -378,7 +369,7 @@ export const handleLinkedInLogin = async ({ code, state }) => {
   } catch (error) {
     console.error(
       "LinkedIn login error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -432,43 +423,45 @@ export const getTotalUsersCount = async (filter = {}) => {
   }
 };
 
-
-
-export const requestPasswordResetService = async ({ email }) => {
+export const requestPasswordResetService = async ({ email, isreferd }) => {
   try {
     const user = await Auth.findOne({ email });
-    
+
     if (!user) {
-   
-      return { 
-        success: true, 
-        message: "If an account exists with this email, you will receive a reset link." 
+      return {
+        success: true,
+        message:
+          "If an account exists with this email, you will receive a reset link.",
       };
     }
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
+    const rawToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(rawToken)
-      .digest('hex');
+      .digest("hex");
 
-   
-   
-
- 
-    user.resetToken = hashedToken; 
+    user.resetToken = hashedToken;
     user.resetTokenExpires = Date.now() + 15 * 60 * 1000;
     await user.save();
 
-    const frontendUrl = process.env.Frontend_URL || 'http://localhost:3000';
+    let frontendUrl;
+    if (isreferd) {
+      frontendUrl = process.env.Frontend_URL || "http://localhost:3000";
+    } else {
+      frontendUrl =
+        process.env.Frontend_URL_Rawrecruit || "http://localhost:5173";
+    }
+
     const resetLink = `${frontendUrl}/reset-password/${rawToken}`;
 
     // Send email
     await sendPasswordResetEmail(email, resetLink, user.name);
 
-    return { 
-      success: true, 
-      message: "If an account exists with this email, you will receive a reset link." 
+    return {
+      success: true,
+      message:
+        "If an account exists with this email, you will receive a reset link.",
     };
   } catch (error) {
     console.error("Password reset request error:", error);
@@ -476,40 +469,33 @@ export const requestPasswordResetService = async ({ email }) => {
   }
 };
 
-
 export const validateResetTokenService = async ({ token }) => {
   try {
     if (!token) {
       return { valid: false, message: "Invalid or expired reset token" };
     }
 
-
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(token)
-      .digest('hex');
-
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await Auth.findOne({
       resetToken: hashedToken,
-      resetTokenExpires: { $gt: Date.now() }
+      resetTokenExpires: { $gt: Date.now() },
     });
 
     if (!user) {
       return { valid: false, message: "Invalid or expired reset token" };
     }
 
-    return { 
-      valid: true, 
+    return {
+      valid: true,
       message: "Token is valid",
-      email: user.email 
+      email: user.email,
     };
   } catch (error) {
     console.error("Token validation error:", error);
     throw new Error("Failed to validate reset token");
   }
 };
-
 
 export const resetPasswordService = async ({ token, newPassword }) => {
   try {
@@ -521,15 +507,11 @@ export const resetPasswordService = async ({ token, newPassword }) => {
       throw new Error("Password must be at least 6 characters");
     }
 
- 
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(token)
-      .digest('hex');
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await Auth.findOne({
       resetToken: hashedToken,
-      resetTokenExpires: { $gt: Date.now() }
+      resetTokenExpires: { $gt: Date.now() },
     });
 
     if (!user) {
@@ -538,24 +520,21 @@ export const resetPasswordService = async ({ token, newPassword }) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-   user.password = hashedPassword;
-    
+    user.password = hashedPassword;
+
     user.resetToken = undefined;
     user.resetTokenExpires = undefined;
     user.lastActivity = Date.now();
     await user.save();
 
- 
     sendPasswordChangedConfirmation(user.email, user.name).catch(console.error);
 
-    return { 
-      success: true, 
-      message: "Password has been reset successfully" 
+    return {
+      success: true,
+      message: "Password has been reset successfully",
     };
   } catch (error) {
     console.error("Password reset error:", error);
     throw error;
   }
 };
-
-
