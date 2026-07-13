@@ -299,6 +299,9 @@ export const getReferredCandidatesPipeline = async (req, res, next) => {
           "Offer Extended",
           "Accepted",
           "Rejected",
+          "Offer Accepted",
+          "Offer Rejected",
+          "Joined the Company",
         ],
       },
     };
