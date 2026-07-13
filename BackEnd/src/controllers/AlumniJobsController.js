@@ -1061,7 +1061,7 @@ export const getNewApplications = async (req, res) => {
 //       alumni.map(async (person) => {
 //         const [metrics, referralJobs] = await Promise.all([
 //           fetchProfessionalReferralMetrics(person._id),
-//           JobPostingTable.find({
+          // JobPostingTable.find({
 //             candidatePosted: person._id, // only hiring
 //             jobType: "Referral",
 //             approvalStatus: "Approved",
