@@ -1703,53 +1703,201 @@ export const getCollegeAlumni = async (req, res) => {
   }
 };
 
+const normalizeCompanyName = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase();
+
+/**
+ * Builds the company references used for:
+ * - companiesChecked
+ * - grouping alumni
+ * - matching canonical IDs or fallback company names
+ */
+const getProfileCompanyReferences = (profile) => {
+  const companyReferences = [];
+  const seenCompanies = new Set();
+
+  const addCompany = ({
+    canonicalId,
+    companyName,
+    displayName,
+  }) => {
+    const normalizedCanonicalId = canonicalId
+      ? String(canonicalId).trim()
+      : null;
+
+    const normalizedCompanyName = companyName
+      ? String(companyName).trim()
+      : null;
+
+    if (!normalizedCanonicalId && !normalizedCompanyName) {
+      return;
+    }
+
+    const identity = normalizedCanonicalId
+      ? `id:${normalizedCanonicalId}`
+      : `name:${normalizeCompanyName(normalizedCompanyName)}`;
+
+    if (seenCompanies.has(identity)) {
+      return;
+    }
+
+    seenCompanies.add(identity);
+
+    companyReferences.push({
+      key: normalizedCanonicalId || normalizedCompanyName,
+      canonicalId: normalizedCanonicalId,
+      companyName: normalizedCompanyName,
+      displayName:
+        displayName ||
+        normalizedCompanyName ||
+        normalizedCanonicalId,
+    });
+  };
+
+  addCompany({
+    canonicalId: profile.currentCompany_canonical_id,
+    companyName: profile.currentCompany,
+    displayName: profile.currentCompany_display,
+  });
+
+  (profile.experiences || []).forEach((experience) => {
+    addCompany({
+      canonicalId: experience.company_canonical_id,
+      companyName: experience.company,
+      displayName:
+        experience.company_display || experience.company,
+    });
+  });
+
+  return companyReferences;
+};
+
+/**
+ * Checks whether an alumni profile belongs to one of the
+ * user's company references.
+ */
+const alumniMatchesCompany = (
+  alumni,
+  companyReference
+) => {
+  const {
+    canonicalId,
+    companyName,
+  } = companyReference;
+
+  /*
+   * Match using canonical ID when the user's company has one.
+   */
+  if (canonicalId) {
+    const currentCompanyCanonicalId =
+      alumni.currentCompany_canonical_id
+        ? String(alumni.currentCompany_canonical_id)
+        : null;
+
+    if (currentCompanyCanonicalId === canonicalId) {
+      return true;
+    }
+
+    const matchedExperience =
+      alumni.experiences?.some((experience) => {
+        if (!experience.company_canonical_id) {
+          return false;
+        }
+
+        return (
+          String(experience.company_canonical_id) ===
+          canonicalId
+        );
+      });
+
+    return Boolean(matchedExperience);
+  }
+
+  /*
+   * Fall back to case-insensitive company-name matching.
+   */
+  const targetCompanyName =
+    normalizeCompanyName(companyName);
+
+  if (!targetCompanyName) {
+    return false;
+  }
+
+  if (
+    normalizeCompanyName(alumni.currentCompany) ===
+    targetCompanyName
+  ) {
+    return true;
+  }
+
+  return Boolean(
+    alumni.experiences?.some(
+      (experience) =>
+        normalizeCompanyName(experience.company) ===
+        targetCompanyName
+    )
+  );
+};
+
 export const getCompanyAlumni = async (req, res) => {
   try {
-    const userId = req.user?._id;
-    const jobPostedOnly = req.query.jobPostedOnly === "true";
+    const userId = req.user?._id || req.user?.id;
+    const jobPostedOnly =
+      req.query.jobPostedOnly === "true";
 
-    const { page, limit, skip } = req.pagination;
+    const {
+      page,
+      limit,
+      skip,
+    } = req.pagination;
 
     if (!userId) {
       return res.status(401).json({
         success: false,
         errorCode: "USER_ID_MISSING",
-        message: "userId not found in token. Please re-login.",
+        message:
+          "userId not found in token. Please re-login.",
         data: null,
       });
     }
 
-    // Step 1: Find own profile
-    const myProfile = await Onboarding.findOne({ userId });
+    /*
+     * Step 1: Find the logged-in user's profile.
+     */
+    const myProfile = await Onboarding.findOne({
+      userId,
+    }).lean();
 
     if (!myProfile) {
       return res.status(404).json({
         success: false,
         errorCode: "PROFILE_NOT_FOUND",
-        message: "Your profile does not exist. Please complete onboarding.",
+        message:
+          "Your profile does not exist. Please complete onboarding.",
         data: null,
       });
     }
 
-    const companyQuery =
-      buildCompanyAlumniQuery(
-        myProfile,
-        userId
-      );
+    /*
+     * Step 2: Build the alumni MongoDB query.
+     */
+    const companyQuery = buildCompanyAlumniQuery(
+      myProfile,
+      userId
+    );
 
-    const uniqueCompanies = [
-      ...new Set([
-        myProfile.currentCompany_canonical_id ||
-          myProfile.currentCompany,
+    const companyReferences =
+      getProfileCompanyReferences(myProfile);
 
-        ...(myProfile.experiences || [])
-          .map(
-            (exp) =>
-              exp.company_canonical_id ||
-              exp.company
-          ),
-      ].filter(Boolean)),
-    ];
+    const companiesChecked =
+      companyReferences.map((company) => ({
+        key: company.key,
+        canonicalId: company.canonicalId,
+        companyName: company.companyName,
+        displayName: company.displayName,
+      }));
 
     if (!companyQuery) {
       return res.status(404).json({
@@ -1760,139 +1908,93 @@ export const getCompanyAlumni = async (req, res) => {
         data: null,
       });
     }
-    // Step 4: Find alumni with pagination
-    const companyAlumniQuery = 
-      companyQuery;
 
-    const [companyAlumni, total] = await Promise.all([
-      Onboarding.find(companyAlumniQuery)
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+    /*
+     * Step 3: Apply the hiring filter before pagination.
+     *
+     * Previously jobPostedOnly was applied after database
+     * pagination, which produced incorrect totals and empty pages.
+     */
+    let finalAlumniQuery = companyQuery;
 
-      Onboarding.countDocuments(companyAlumniQuery),
-    ]);
+    if (jobPostedOnly) {
+      const matchingAlumniIds =
+        await Onboarding.distinct(
+          "_id",
+          companyQuery
+        );
 
-    if (!companyAlumni || companyAlumni.length === 0) {
-      return res.status(200).json({
-        success: true,
-        errorCode: null,
-        message: "No alumni found from your companies.",
-        companiesChecked: uniqueCompanies,
-        jobPostedOnly,
-        alumniByCompany: {},
+      if (matchingAlumniIds.length === 0) {
+        return res.status(200).json({
+          success: true,
+          errorCode: null,
+          message:
+            "No alumni found from your companies.",
+          companiesChecked,
+          jobPostedOnly,
+          alumniByCompany: {},
+          ...paginatedResponse([], 0, {
+            page,
+            limit,
+          }),
+        });
+      }
 
-        ...paginatedResponse([], 0, {
-          page,
-          limit,
-        }),
-      });
+      const hiringAlumniIds =
+        await JobPostingTable.distinct(
+          "candidatePosted",
+          {
+            candidatePosted: {
+              $in: matchingAlumniIds,
+            },
+            jobType: "Referral",
+            approvalStatus: "Approved",
+            inactive: false,
+            isAskForReferral: {
+              $ne: true,
+            },
+          }
+        );
+
+      finalAlumniQuery = {
+        ...companyQuery,
+        _id: {
+          $in: hiringAlumniIds,
+        },
+      };
     }
 
-    // Step 5: Fetch metrics and jobs for each alumni
-    const alumniWithMetrics = await Promise.all(
-      companyAlumni.map(async (person) => {
-        let metrics = null;
-        let referralJobs = [];
+    /*
+     * Step 4: Fetch the correct page and total count.
+     */
+    const [companyAlumni, total] =
+      await Promise.all([
+        Onboarding.find(finalAlumniQuery)
+          .sort({
+            updatedAt: -1,
+            _id: 1,
+          })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
 
-        try {
-          [metrics, referralJobs] = await Promise.all([
-            fetchProfessionalReferralMetrics(person._id),
+        Onboarding.countDocuments(
+          finalAlumniQuery
+        ),
+      ]);
 
-            JobPostingTable.find({
-              candidatePosted: person._id,
-              jobType: "Referral",
-              approvalStatus: "Approved",
-              inactive: false,
-              isAskForReferral: { $ne: true },
-            })
-              .sort({ createdAt: -1 })
-              .lean(),
-          ]);
-        } catch (innerError) {
-          console.error(
-            `Error processing alumni ${person._id}:`,
-            innerError
-          );
-        }
+    if (companyAlumni.length === 0) {
+      const message = jobPostedOnly
+        ? "No alumni from your companies are currently hiring."
+        : "No alumni found from your companies.";
 
-        return {
-          _id: person._id,
-
-          userId: person.userId,
-
-          name: person.name ?? null,
-
-          email: person.email ?? null,
-
-          phone: person.phone ?? null,
-
-          profileImage: person.profileImage ?? null,
-
-          backgroundImage: person.backgroundImage ?? null,
-
-          college: person.college ?? null,
-
-          // degree: person.degree ?? null,
-
-          // specialization: person.specialization ?? null,
-
-          // yearOfGraduation: person.yearOfGraduation ?? null,
-
-          currentCompany: person.currentCompany ?? null,
-          currentCompany_canonical_id:
-            person.currentCompany_canonical_id ?? null,
-
-          currentCompany_display:
-            person.currentCompany_display ?? null,
-          totalYearsOfExperience:
-            person.totalYearsOfExperience ?? null,
-
-          jobRoles: person.jobRoles ?? [],
-
-          // skills: person.skills ?? [],
-
-          linkedin: person.linkedin ?? null,
-
-          github: person.github ?? null,
-
-          educations: person.educations ?? [],
-
-          portfolio: person.portfolio ?? null,
-
-          about: person.about ?? null,
-
-          experiences: person.experiences ?? [],
-
-          referralMetrics: metrics ?? null,
-
-          referralJobs: referralJobs ?? [],
-
-          isHiring: referralJobs.length > 0,
-        };
-      })
-    );
-
-    // Step 6: Apply jobPostedOnly filter
-    const filteredAlumni = jobPostedOnly
-      ? alumniWithMetrics.filter(
-          (person) => person.isHiring
-        )
-      : alumniWithMetrics;
-
-    if (jobPostedOnly && filteredAlumni.length === 0) {
       return res.status(200).json({
         success: true,
         errorCode: null,
-        message:
-          "No alumni from your companies are currently hiring.",
-
-        companiesChecked: uniqueCompanies,
-
+        message,
+        companiesChecked,
         jobPostedOnly,
-
         alumniByCompany: {},
-
         ...paginatedResponse([], total, {
           page,
           limit,
@@ -1900,65 +2002,213 @@ export const getCompanyAlumni = async (req, res) => {
       });
     }
 
-    // Step 7: Group by company
+    /*
+     * Step 5: Fetch jobs for all alumni in one query.
+     *
+     * This avoids running one JobPostingTable query for
+     * every alumni profile.
+     */
+    const alumniProfileIds =
+      companyAlumni.map((person) => person._id);
+
+    const referralJobs =
+      await JobPostingTable.find({
+        candidatePosted: {
+          $in: alumniProfileIds,
+        },
+        jobType: "Referral",
+        approvalStatus: "Approved",
+        inactive: false,
+        isAskForReferral: {
+          $ne: true,
+        },
+      })
+        .sort({
+          createdAt: -1,
+        })
+        .lean();
+
+    const jobsByAlumniId = new Map();
+
+    referralJobs.forEach((job) => {
+      const alumniId = String(
+        job.candidatePosted
+      );
+
+      if (!jobsByAlumniId.has(alumniId)) {
+        jobsByAlumniId.set(alumniId, []);
+      }
+
+      jobsByAlumniId.get(alumniId).push(job);
+    });
+
+    /*
+     * Step 6: Fetch referral metrics.
+     */
+    const alumniWithMetrics =
+      await Promise.all(
+        companyAlumni.map(async (person) => {
+          let referralMetrics = null;
+
+          try {
+            referralMetrics =
+              await fetchProfessionalReferralMetrics(
+                person._id
+              );
+          } catch (metricsError) {
+            console.error(
+              `Error fetching referral metrics for alumni ${person._id}:`,
+              metricsError
+            );
+          }
+
+          const personReferralJobs =
+            jobsByAlumniId.get(
+              String(person._id)
+            ) || [];
+
+          return {
+            _id: person._id,
+
+            userId: person.userId,
+
+            name: person.name ?? null,
+
+            email: person.email ?? null,
+
+            phone: person.phone ?? null,
+
+            profileImage:
+              person.profileImage ?? null,
+
+            backgroundImage:
+              person.backgroundImage ?? null,
+
+            college: person.college ?? null,
+
+            currentCompany:
+              person.currentCompany ?? null,
+
+            currentCompany_canonical_id:
+              person.currentCompany_canonical_id ??
+              null,
+
+            currentCompany_display:
+              person.currentCompany_display ?? null,
+
+            totalYearsOfExperience:
+              person.totalYearsOfExperience ?? null,
+
+            jobRoles: person.jobRoles ?? [],
+
+            linkedin: person.linkedin ?? null,
+
+            github: person.github ?? null,
+
+            educations: person.educations ?? [],
+
+            portfolio: person.portfolio ?? null,
+
+            about: person.about ?? null,
+
+            experiences:
+              person.experiences ?? [],
+
+            referralMetrics,
+
+            referralJobs:
+              personReferralJobs,
+
+            isHiring:
+              personReferralJobs.length > 0,
+          };
+        })
+      );
+
+    /*
+     * Step 7: Group alumni by canonical ID or fallback name.
+     *
+     * Your previous code only checked canonical IDs, so
+     * alumni found through company-name fallback disappeared
+     * from alumniByCompany.
+     */
     const alumniByCompany = {};
 
-    uniqueCompanies.forEach(
-      (canonicalCompany) => {
-
-        const matched =
-          filteredAlumni.filter(
-            (alumni) => {
-
-              if (
-                alumni.currentCompany_canonical_id ===
-                canonicalCompany
-              ) {
-                return true;
-              }
-
-              return (
-                alumni.experiences?.some(
-                  (exp) =>
-                    exp.company_canonical_id ===
-                    canonicalCompany
-                ) || false
-              );
-            }
+    companyReferences.forEach(
+      (companyReference) => {
+        const matchedAlumni =
+          alumniWithMetrics.filter((alumni) =>
+            alumniMatchesCompany(
+              alumni,
+              companyReference
+            )
           );
 
-        if (matched.length > 0) {
+        if (matchedAlumni.length > 0) {
           alumniByCompany[
-            canonicalCompany
-          ] = matched;
+            companyReference.key
+          ] = matchedAlumni;
         }
       }
     );
 
-    const flattenedAlumni = Object.values(
-      alumniByCompany
-    ).flat();
+    /*
+     * An alumni can match multiple companies through their
+     * experience history. Deduplicate flattened results by _id.
+     */
+    const uniqueAlumniMap = new Map();
 
-    const pagination = paginatedResponse(
-      flattenedAlumni,
-      total,
-      { page, limit }
+    Object.values(alumniByCompany)
+      .flat()
+      .forEach((alumni) => {
+        uniqueAlumniMap.set(
+          String(alumni._id),
+          alumni
+        );
+      });
+
+    /*
+     * Safety fallback: every database result should normally
+     * be grouped, but keep unmatched records in the data array.
+     */
+    alumniWithMetrics.forEach((alumni) => {
+      if (
+        !uniqueAlumniMap.has(
+          String(alumni._id)
+        )
+      ) {
+        uniqueAlumniMap.set(
+          String(alumni._id),
+          alumni
+        );
+      }
+    });
+
+    const flattenedAlumni = Array.from(
+      uniqueAlumniMap.values()
     );
 
     return res.status(200).json({
       success: true,
       errorCode: null,
-      message: "Alumni fetched successfully.",
+      message:
+        "Alumni fetched successfully.",
 
-      companiesChecked: uniqueCompanies,
+      companiesChecked,
 
       jobPostedOnly,
 
       alumniByCompany,
 
-      ...pagination,
+      ...paginatedResponse(
+        flattenedAlumni,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
     });
-
   } catch (error) {
     console.error(
       "Error fetching company alumni:",
@@ -1967,10 +2217,10 @@ export const getCompanyAlumni = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      errorCode: "INTERNAL_SERVER_ERROR",
+      errorCode:
+        "INTERNAL_SERVER_ERROR",
       message:
         "Something went wrong. Please try again later.",
-
       data: null,
     });
   }
