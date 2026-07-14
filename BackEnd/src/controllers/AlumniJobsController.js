@@ -1313,391 +1313,426 @@ export const getNewApplications = async (req, res) => {
 // };
 
 
+const normalizeText = (value) =>
+  String(value || "").trim();
+
+/**
+ * Creates a frontend-friendly college list.
+ *
+ * Response:
+ * colleges: ["KIIT University", "Delhi University"]
+ */
+const getProfileCollegeLabels = (profile) => {
+  const collegeMap = new Map();
+
+  const addCollege = (value) => {
+    const normalizedValue = normalizeText(value);
+
+    if (!normalizedValue) {
+      return;
+    }
+
+    const key = normalizedValue.toLowerCase();
+
+    if (!collegeMap.has(key)) {
+      collegeMap.set(key, normalizedValue);
+    }
+  };
+
+  (profile.educations || []).forEach((education) => {
+    /*
+     * Prefer readable values in the API response.
+     * Canonical ID is used only when no readable name exists.
+     */
+    const collegeLabel =
+      education.college_display ||
+      education.college ||
+      education.college_canonical_id;
+
+    addCollege(collegeLabel);
+  });
+
+  return Array.from(collegeMap.values());
+};
+
 export const getCollegeAlumni = async (req, res) => {
   const debugId = `[getCollegeAlumni-${Date.now()}]`;
 
   try {
-    // console.log(`\n${debugId} ========== REQUEST START ==========`);
-    // console.log(`${debugId} Timestamp:`, new Date().toISOString());
-    // console.log(`${debugId} Method:`, req.method);
-    // console.log(`${debugId} URL:`, req.originalUrl);
-    // console.log(`${debugId} Headers:`, JSON.stringify(req.headers, null, 2));
-    // console.log(`${debugId} Cookies:`, JSON.stringify(req.cookies, null, 2));
-    // console.log(`${debugId} Query Params:`, JSON.stringify(req.query, null, 2));
-    // console.log(`${debugId} req.user:`, JSON.stringify(req.user, null, 2));
+    const userId = req.user?._id || req.user?.id;
 
-    const userId = req.user?._id;
-    const jobPostedOnly = req.query.jobPostedOnly === "true";
+    const jobPostedOnly =
+      req.query.jobPostedOnly === "true";
+
     const { page, limit, skip } = req.pagination;
-    // console.log(`${debugId} Parsed userId:`, userId);
-    // console.log(`${debugId} jobPostedOnly raw value:`, req.query.jobPostedOnly);
-    // console.log(`${debugId} jobPostedOnly parsed:`, jobPostedOnly);
 
     if (!userId) {
-      console.log(`${debugId} ❌ userId is missing from req.user`);
-
       return res.status(401).json({
         success: false,
         errorCode: "USER_ID_MISSING",
-        message: "userId not found in token. Please re-login.",
-        debug: { reqUser: req.user },
+        message:
+          "userId not found in token. Please re-login.",
         data: null,
       });
     }
 
-    // Step 1: Find own profile
-
-    // console.log(
-    //   `${debugId} 🔍 Step 1: Finding own profile for userId:`,
-    //   userId
-    // );
-
-    const myProfile = await Onboarding.findOne({ userId });
-
-    // console.log(
-    //   `${debugId} myProfile found:`,
-    //   myProfile ? "YES" : "NO"
-    // );
+    /*
+     * Step 1: Find the logged-in user's profile.
+     */
+    const myProfile = await Onboarding.findOne({
+      userId,
+    }).lean();
 
     if (!myProfile) {
-      // console.log(
-      //   `${debugId} ❌ Profile not found for userId:`,
-      //   userId
-      // );
-
       return res.status(404).json({
         success: false,
         errorCode: "PROFILE_NOT_FOUND",
         message:
           "Your profile does not exist. Please complete onboarding.",
-        debug: {
-          userId: userId?.toString(),
-        },
         data: null,
       });
     }
 
-    // =========================
-    // NEW EDUCATION LOGIC
-    // =========================
+    /*
+     * Step 2: Build the college query.
+     *
+     * This query supports:
+     * - educations.college_canonical_id
+     * - educations.college
+     * - educations.college_display
+     */
+    const collegeQuery = buildCollegeAlumniQuery(
+      myProfile,
+      userId
+    );
 
-    const collegeQuery =
-      buildCollegeAlumniQuery(
-        myProfile,
-        userId
-      );
-
-    const colleges = [
-      ...new Set(
-        (myProfile.educations || [])
-          .map(
-            (edu) =>
-              edu.college_canonical_id ||
-              edu.college
-          )
-          .filter(Boolean)
-      ),
-    ];
-
-    // console.log(`${debugId} myProfile._id:`, myProfile._id);
-    // console.log(`${debugId} myProfile.colleges:`, colleges);
-    // console.log(
-    //   `${debugId} myProfile.profileType:`,
-    //   myProfile.profileType
-    // );
+    /*
+     * Keep colleges as an array of strings so the frontend can use:
+     *
+     * colleges.join(", ")
+     */
+    const colleges =
+      getProfileCollegeLabels(myProfile);
 
     if (!collegeQuery) {
-      // console.log(
-      //   `${debugId} ❌ College field is empty on profile`
-      // );
-
       return res.status(404).json({
         success: false,
         errorCode: "COLLEGE_NOT_FOUND",
         message:
           "College info not found in your profile. Please update your profile.",
-        debug: {
-          profileId: myProfile._id?.toString(),
-          collegeValue: colleges,
-        },
+        colleges: [],
         data: null,
       });
     }
 
-    // Step 2: Find alumni
+    /*
+     * Step 3: Apply jobPostedOnly before pagination.
+     *
+     * Filtering after pagination can return an empty page even
+     * when hiring alumni exist on another page.
+     */
+    let finalAlumniQuery = collegeQuery;
 
-    // console.log(
-    //   `${debugId} 🔍 Step 2: Finding alumni for colleges:`,
-    //   colleges
-    // );
+    if (jobPostedOnly) {
+      /*
+       * First find every alumni matching the college query.
+       */
+      const matchingAlumniIds =
+        await Onboarding.distinct(
+          "_id",
+          collegeQuery
+        );
 
-    const alumniQuery = collegeQuery;
+      if (matchingAlumniIds.length === 0) {
+        return res.status(200).json({
+          success: true,
+          errorCode: null,
+          message:
+            "No alumni found from your college.",
+          colleges,
+          jobPostedOnly,
+          ...paginatedResponse([], 0, {
+            page,
+            limit,
+          }),
+        });
+      }
 
+      /*
+       * Find which matching alumni currently have an active,
+       * approved referral job.
+       */
+      const hiringAlumniIds =
+        await JobPostingTable.distinct(
+          "candidatePosted",
+          {
+            candidatePosted: {
+              $in: matchingAlumniIds,
+            },
+            jobType: "Referral",
+            approvalStatus: "Approved",
+            inactive: false,
+            isAskForReferral: {
+              $ne: true,
+            },
+          }
+        );
+
+      if (hiringAlumniIds.length === 0) {
+        return res.status(200).json({
+          success: true,
+          errorCode: null,
+          message:
+            "No alumni from your college are currently hiring.",
+          colleges,
+          jobPostedOnly,
+          ...paginatedResponse([], 0, {
+            page,
+            limit,
+          }),
+        });
+      }
+
+      finalAlumniQuery = {
+        ...collegeQuery,
+        _id: {
+          $in: hiringAlumniIds,
+        },
+      };
+    }
+
+    /*
+     * Step 4: Fetch the requested page.
+     */
     const [alumni, total] = await Promise.all([
-      Onboarding.find(alumniQuery)
+      Onboarding.find(finalAlumniQuery)
+        .sort({
+          updatedAt: -1,
+          _id: 1,
+        })
         .skip(skip)
         .limit(limit)
         .lean(),
 
-      Onboarding.countDocuments(alumniQuery),
+      Onboarding.countDocuments(
+        finalAlumniQuery
+      ),
     ]);
 
-    //console.log(`${debugId} Total alumni found:`, alumni.length);
-
-    if (!alumni || alumni.length === 0) {
-      // console.log(
-      //   `${debugId} ⚠️ No alumni found for colleges:`,
-      //   colleges
-      // );
-
+    if (alumni.length === 0) {
       return res.status(200).json({
         success: true,
         errorCode: null,
-        message: "No alumni found from your college.",
-        debug: {
-          colleges,
-          jobPostedOnly,
-        },
+        message: jobPostedOnly
+          ? "No alumni from your college are currently hiring."
+          : "No alumni found from your college.",
         colleges,
         jobPostedOnly,
-        count: 0,
-        alumni: [],
+        ...paginatedResponse([], total, {
+          page,
+          limit,
+        }),
       });
     }
 
-    // Step 3: Fetch metrics and jobs for each alumni
-
-    // console.log(
-    //   `${debugId} 🔍 Step 3: Fetching metrics and referral jobs for ${alumni.length} alumni...`
-    // );
-
-    const alumniWithMetrics = await Promise.all(
-      alumni.map(async (person, index) => {
-        console.log(
-          `${debugId} Processing alumni [${index + 1}/${alumni.length}] _id:`,
-          person._id,
-          "name:",
-          person.name
-        );
-
-        let metrics = null;
-        let referralJobs = [];
-
-        try {
-          [metrics, referralJobs] = await Promise.all([
-            fetchProfessionalReferralMetrics(person._id),
-
-            JobPostingTable.find({
-              candidatePosted: person._id,
-              jobType: "Referral",
-              approvalStatus: "Approved",
-              isAskForReferral: { $ne: true },
-              inactive: false,
-            })
-              .sort({ createdAt: -1 })
-              .lean(),
-          ]);
-
-          // console.log(
-          //   `${debugId} Alumni [${index + 1}] metrics:`,
-          //   JSON.stringify(metrics)
-          // );
-
-          // console.log(
-          //   `${debugId} Alumni [${index + 1}] referralJobs count:`,
-          //   referralJobs.length
-          // );
-        } catch (innerError) {
-          console.error(
-            `${debugId} ❌ Error processing alumni [${index + 1}] _id:`,
-            person._id
-          );
-
-          console.error(
-            `${debugId} Error:`,
-            innerError.message
-          );
-
-          console.error(
-            `${debugId} Stack:`,
-            innerError.stack
-          );
-        }
-
-        return {
-          _id: person._id,
-
-          userId: person.userId,
-
-          name: person.name ?? null,
-
-          email: person.email ?? null,
-
-          phone: person.phone ?? null,
-
-          profileImage: person.profileImage ?? null,
-
-          backgroundImage: person.backgroundImage ?? null,
-
-          // =========================
-          // EDUCATION MAPPING
-          // =========================
-
-          colleges:
-            person.educations
-              ?.map((edu) => edu.college)
-              .filter(Boolean) || [],
-
-          // degrees:
-          //   person.educations
-          //     ?.map((edu) => edu.degree)
-          //     .filter(Boolean) || [],
-
-          // specializations:
-          //   person.educations
-          //     ?.map((edu) => edu.specialization)
-          //     .filter(Boolean) || [],
-
-          // yearOfGraduation:
-          //   person.educations
-          //     ?.map((edu) => edu.yearOfGraduation)
-          //     .filter(Boolean) || [],
-
-          educations: person.educations ?? [],
-
-          currentCompany: person.currentCompany ?? null,
-
-          totalYearsOfExperience:
-            person.totalYearsOfExperience ?? null,
-
-          experiences: person.experiences ?? [],
-
-          jobRoles: person.jobRoles ?? [],
-
-          // skills: person.skills ?? [],
-
-          linkedin: person.linkedin ?? null,
-
-          github: person.github ?? null,
-
-          portfolio: person.portfolio ?? null,
-
-          about: person.about ?? null,
-
-          referralMetrics: metrics ?? null,
-
-          referralJobs: referralJobs ?? [],
-
-          isHiring: referralJobs.length > 0,
-        };
-      })
+    /*
+     * Step 5: Fetch all referral jobs for the current page
+     * in one database query.
+     */
+    const alumniIds = alumni.map(
+      (person) => person._id
     );
 
-    // console.log(
-    //   `${debugId} ✅ Step 3 complete. Processed ${alumniWithMetrics.length} alumni`
-    // );
-
-    // // Step 4: Apply jobPostedOnly filter
-
-    // console.log(
-    //   `${debugId} 🔍 Step 4: Applying jobPostedOnly filter:`,
-    //   jobPostedOnly
-    // );
-
-    const filteredAlumni = jobPostedOnly
-      ? alumniWithMetrics.filter((person) => person.isHiring)
-      : alumniWithMetrics;
-
-    // console.log(
-    //   `${debugId} After filter - alumni count:`,
-    //   filteredAlumni.length
-    // );
-
-    // console.log(`${debugId} isHiring breakdown:`, {
-    //   hiring: alumniWithMetrics.filter((p) => p.isHiring).length,
-    //   notHiring: alumniWithMetrics.filter((p) => !p.isHiring)
-    //     .length,
-    // });
-
-    if (jobPostedOnly && filteredAlumni.length === 0) {
-      // console.log(
-      //   `${debugId} ⚠️ jobPostedOnly=true but no alumni are hiring`
-      // );
-
-      return res.status(200).json({
-        success: true,
-        errorCode: null,
-        message:
-          "No alumni from your college are currently hiring.",
-        debug: {
-          colleges,
-          totalAlumniFound: alumni.length,
-          jobPostedOnly,
+    const referralJobs =
+      await JobPostingTable.find({
+        candidatePosted: {
+          $in: alumniIds,
         },
-        colleges,
-        jobPostedOnly,
-        count: 0,
-        alumni: [],
-      });
-    }
+        jobType: "Referral",
+        approvalStatus: "Approved",
+        inactive: false,
+        isAskForReferral: {
+          $ne: true,
+        },
+      })
+        .sort({
+          createdAt: -1,
+        })
+        .lean();
 
-    // console.log(
-    //   `${debugId} ✅ Sending success response with ${filteredAlumni.length} alumni`
-    // );
+    /*
+     * Group jobs by alumni profile ID.
+     */
+    const jobsByAlumniId = new Map();
 
-    // console.log(
-    //   `${debugId} ========== REQUEST END ==========\n`
-    // );
+    referralJobs.forEach((job) => {
+      const alumniId = String(
+        job.candidatePosted
+      );
 
-  const pagination = paginatedResponse(
-    filteredAlumni,
-    total,
-    { page, limit }
-  );
+      const existingJobs =
+        jobsByAlumniId.get(alumniId) || [];
 
-  return res.status(200).json({
-    success: true,
-    errorCode: null,
-    message: "Alumni fetched successfully.",
+      existingJobs.push(job);
 
-    debug: {
+      jobsByAlumniId.set(
+        alumniId,
+        existingJobs
+      );
+    });
+
+    /*
+     * Step 6: Add metrics and jobs to every alumni.
+     */
+    const alumniWithMetrics =
+      await Promise.all(
+        alumni.map(async (person) => {
+          let referralMetrics = null;
+
+          try {
+            referralMetrics =
+              await fetchProfessionalReferralMetrics(
+                person._id
+              );
+          } catch (metricsError) {
+            console.error(
+              `${debugId} Error fetching metrics for alumni ${person._id}:`,
+              metricsError
+            );
+          }
+
+          const personReferralJobs =
+            jobsByAlumniId.get(
+              String(person._id)
+            ) || [];
+
+          const personColleges = Array.from(
+            new Map(
+              (person.educations || [])
+                .map((education) => {
+                  const collegeName =
+                    normalizeText(
+                      education.college_display
+                    ) ||
+                    normalizeText(
+                      education.college
+                    ) ||
+                    normalizeText(
+                      education.college_canonical_id
+                    );
+
+                  return [
+                    collegeName.toLowerCase(),
+                    collegeName,
+                  ];
+                })
+                .filter(
+                  ([, collegeName]) =>
+                    Boolean(collegeName)
+                )
+            ).values()
+          );
+
+          return {
+            _id: person._id,
+
+            userId: person.userId,
+
+            name: person.name ?? null,
+
+            email: person.email ?? null,
+
+            phone: person.phone ?? null,
+
+            profileImage:
+              person.profileImage ?? null,
+
+            backgroundImage:
+              person.backgroundImage ?? null,
+
+            colleges: personColleges,
+
+            educations:
+              person.educations ?? [],
+
+            currentCompany:
+              person.currentCompany ?? null,
+
+            currentCompany_canonical_id:
+              person.currentCompany_canonical_id ??
+              null,
+
+            currentCompany_display:
+              person.currentCompany_display ??
+              null,
+
+            totalYearsOfExperience:
+              person.totalYearsOfExperience ??
+              null,
+
+            experiences:
+              person.experiences ?? [],
+
+            jobRoles:
+              person.jobRoles ?? [],
+
+            linkedin:
+              person.linkedin ?? null,
+
+            github:
+              person.github ?? null,
+
+            portfolio:
+              person.portfolio ?? null,
+
+            about:
+              person.about ?? null,
+
+            referralMetrics,
+
+            referralJobs:
+              personReferralJobs,
+
+            isHiring:
+              personReferralJobs.length > 0,
+          };
+        })
+      );
+
+    /*
+     * Step 7: Return standard paginated response.
+     */
+    return res.status(200).json({
+      success: true,
+      errorCode: null,
+      message:
+        "Alumni fetched successfully.",
+
       colleges,
-      totalAlumniFound: total,
-      afterFilter: filteredAlumni.length,
+
       jobPostedOnly,
-      page,
-      limit,
-    },
 
-    colleges,
-
-    jobPostedOnly,
-
-    ...pagination,
-  });
-
+      ...paginatedResponse(
+        alumniWithMetrics,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
+    });
   } catch (error) {
-    console.error(`${debugId} ❌ UNHANDLED ERROR`);
-
-    console.error(`${debugId} Message:`, error.message);
-
-    console.error(`${debugId} Stack:`, error.stack);
-
-    console.error(`${debugId} req.user:`, req.user);
-
-    console.error(`${debugId} req.query:`, req.query);
+    console.error(
+      `${debugId} Error fetching college alumni:`,
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      errorCode: "INTERNAL_SERVER_ERROR",
+      errorCode:
+        "INTERNAL_SERVER_ERROR",
       message:
         "Something went wrong. Please try again later.",
-
-      debug: {
-        error: error.message,
-        stack: error.stack,
-      },
-
       data: null,
     });
   }

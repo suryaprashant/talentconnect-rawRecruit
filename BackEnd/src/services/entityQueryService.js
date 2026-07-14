@@ -1,30 +1,92 @@
+// export const buildCollegeAlumniQuery = (
+//   profile,
+//   userId
+// ) => {
+
+//   const canonicalIds = [
+//     ...new Set(
+//       (profile.educations || [])
+//         .map(
+//           edu =>
+//             edu.college_canonical_id
+//         )
+//         .filter(Boolean)
+//     ),
+//   ];
+
+//   if (!canonicalIds.length) {
+//     return null;
+//   }
+
+//   return {
+//     userId: { $ne: userId },
+
+//     "educations.college_canonical_id":
+//       {
+//         $in: canonicalIds,
+//       },
+//   };
+// };
+
 export const buildCollegeAlumniQuery = (
   profile,
   userId
 ) => {
+  const canonicalIds = new Set();
+  const collegeNames = new Set();
 
-  const canonicalIds = [
-    ...new Set(
-      (profile.educations || [])
-        .map(
-          edu =>
-            edu.college_canonical_id
-        )
-        .filter(Boolean)
-    ),
-  ];
+  // 2. Colleges from education array
+  (profile.educations || []).forEach((edu) => {
+    // Canonical ID
+    if (edu.college_canonical_id) {
+      canonicalIds.add(edu.college_canonical_id);
+    }
+    // College name (fallback)
+    if (edu.college) {
+      collegeNames.add(edu.college);
+    }
+    // College display name (fallback)
+    if (edu.college_display) {
+      collegeNames.add(edu.college_display);
+    }
+  });
 
-  if (!canonicalIds.length) {
+  const ids = Array.from(canonicalIds);
+  const names = Array.from(collegeNames);
+
+  // If no colleges found, return null
+  if (ids.length === 0 && names.length === 0) {
     return null;
+  }
+
+  // Build OR conditions
+  const orConditions = [];
+
+  // 1. Match by canonical IDs
+  if (ids.length > 0) {
+    orConditions.push({
+      "educations.college_canonical_id": {
+        $in: ids
+      }
+    });
+  }
+
+  // 2. Match by college names (fallback)
+  if (names.length > 0) {
+    // Case-insensitive matching using regex
+    const nameRegexes = names.map(name => new RegExp(`^${name}$`, 'i'));
+    
+    orConditions.push({
+      "educations.college": { $in: nameRegexes }
+    });
+    orConditions.push({
+      "educations.college_display": { $in: nameRegexes }
+    });
   }
 
   return {
     userId: { $ne: userId },
-
-    "educations.college_canonical_id":
-      {
-        $in: canonicalIds,
-      },
+    $or: orConditions
   };
 };
 
