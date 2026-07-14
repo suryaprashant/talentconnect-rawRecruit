@@ -1,161 +1,107 @@
-// export const buildCollegeAlumniQuery = (
-//   profile,
-//   userId
-// ) => {
+export const buildCollegeAlumniQuery = (
+  profile,
+  userId
+) => {
 
-//   const canonicalIds = [
-//     ...new Set(
-//       (profile.educations || [])
-//         .map(
-//           edu =>
-//             edu.college_canonical_id
-//         )
-//         .filter(Boolean)
-//     ),
-//   ];
+  const canonicalIds = [
+    ...new Set(
+      (profile.educations || [])
+        .map(
+          edu =>
+            edu.college_canonical_id
+        )
+        .filter(Boolean)
+    ),
+  ];
 
-//   if (!canonicalIds.length) {
-//     return null;
-//   }
+  if (!canonicalIds.length) {
+    return null;
+  }
 
-//   return {
-//     userId: { $ne: userId },
+  return {
+    userId: { $ne: userId },
 
-//     "educations.college_canonical_id":
-//       {
-//         $in: canonicalIds,
-//       },
-//   };
-// };
-
-// export const buildCompanyAlumniQuery = (
-//   profile,
-//   userId
-// ) => {
-
-//   const canonicalIds =
-//     new Set();
-
-//   if (
-//     profile.currentCompany_canonical_id
-//   ) {
-//     canonicalIds.add(
-//       profile.currentCompany_canonical_id
-//     );
-//   }
-
-//   (profile.experiences || [])
-//     .forEach((exp) => {
-
-//       if (
-//         exp.company_canonical_id
-//       ) {
-//         canonicalIds.add(
-//           exp.company_canonical_id
-//         );
-//       }
-//     });
-
-//   const ids =
-//     Array.from(canonicalIds);
-
-//   if (!ids.length) {
-//     return null;
-//   }
-
-//   return {
-//     userId: { $ne: userId },
-
-//     $or: [
-//       {
-//         currentCompany_canonical_id:
-//           {
-//             $in: ids,
-//           },
-//       },
-
-//       {
-//         "experiences.company_canonical_id":
-//           {
-//             $in: ids,
-//           },
-//       },
-//     ],
-//   };
-// };
-
+    "educations.college_canonical_id":
+      {
+        $in: canonicalIds,
+      },
+  };
+};
 
 export const buildCompanyAlumniQuery = (
   profile,
   userId
 ) => {
-  const ids = [];
-  const names = [];
+  const canonicalIds = new Set();
+  const companyNames = new Set();
 
-  // Handle current company
+  // 1. Current company
   if (profile.currentCompany_canonical_id) {
-    ids.push(profile.currentCompany_canonical_id);
-  } else if (profile.currentCompany) {
-    // Fallback to company name if no canonical ID
-    names.push(profile.currentCompany.trim());
+    canonicalIds.add(profile.currentCompany_canonical_id);
+  }
+  if (profile.currentCompany) {
+    companyNames.add(profile.currentCompany);
+  }
+  if (profile.currentCompany_display) {
+    companyNames.add(profile.currentCompany_display);
   }
 
-  // Handle experiences
+  // 2. Companies from experiences
   (profile.experiences || []).forEach((exp) => {
     if (exp.company_canonical_id) {
-      ids.push(exp.company_canonical_id);
-    } else if (exp.company) {
-      // Fallback to company name if no canonical ID
-      names.push(exp.company.trim());
+      canonicalIds.add(exp.company_canonical_id);
+    }
+    if (exp.company) {
+      companyNames.add(exp.company);
+    }
+    if (exp.company_display) {
+      companyNames.add(exp.company_display);
     }
   });
 
-  // Remove duplicates
-  const uniqueIds = [...new Set(ids)];
-  const uniqueNames = [...new Set(names)];
+  const ids = Array.from(canonicalIds);
+  const names = Array.from(companyNames);
 
-  // If no criteria found, return null
-  if (!uniqueIds.length && !uniqueNames.length) {
+  // If no companies found, return null
+  if (ids.length === 0 && names.length === 0) {
     return null;
   }
 
-  // Build the query
-  const query = {
+  // Build OR conditions
+  const orConditions = [];
+
+  // 1. Match by canonical IDs (case-insensitive using regex)
+  if (ids.length > 0) {
+    const idRegexes = ids.map(id => new RegExp(`^${id}$`, 'i'));
+    
+    orConditions.push({
+      currentCompany_canonical_id: { $in: idRegexes }
+    });
+    orConditions.push({
+      "experiences.company_canonical_id": { $in: idRegexes }
+    });
+  }
+
+  // 2. Match by company names (case-insensitive)
+  if (names.length > 0) {
+    const nameRegexes = names.map(name => new RegExp(`^${name}$`, 'i'));
+    
+    orConditions.push({
+      currentCompany: { $in: nameRegexes }
+    });
+    orConditions.push({
+      currentCompany_display: { $in: nameRegexes }
+    });
+    orConditions.push({
+      "experiences.company": { $in: nameRegexes }
+    });
+    orConditions.push({
+      "experiences.company_display": { $in: nameRegexes }
+    });
+  }
+
+  return {
     userId: { $ne: userId },
-    $or: []
+    $or: orConditions
   };
-
-  // Add canonical ID conditions
-  if (uniqueIds.length) {
-    query.$or.push(
-      {
-        currentCompany_canonical_id: {
-          $in: uniqueIds,
-        },
-      },
-      {
-        "experiences.company_canonical_id": {
-          $in: uniqueIds,
-        },
-      }
-    );
-  }
-
-  // Add case-insensitive company name conditions (fallback)
-  if (uniqueNames.length) {
-    // Escape special regex characters
-    const regexPatterns = uniqueNames.map(name => 
-      new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')
-    );
-
-    query.$or.push({
-      currentCompany: { $in: regexPatterns }
-    });
-
-    query.$or.push({
-      "experiences.company": { $in: regexPatterns }
-    });
-  }
-
-  return query;
 };
