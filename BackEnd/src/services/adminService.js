@@ -1,6 +1,10 @@
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  Application  from "../models/applicationModel.js"
 import mongoose from "mongoose";
+import { createPostingService } from "./jobPostingService.js";
+import { runAutoApproveChecks } from "./referralJobAutoApproveService.js";
+import { notifyReferralJobPosterOnApproval } from "./notificationService.js";
+import { jobNotificationQueue } from "../queue/jobNotificationQueue.js";
 
 
 export const getPendingReferralJobsService = async () => {
@@ -816,4 +820,87 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
     responseRate,        // e.g. 65.50  (means 65.50%)
     referralSuccessRate, // e.g. 40.00  (means 40.00%)
   };
+};
+
+/**
+ * createReferralJobWithAutoApprove
+ *
+ * Saves a new referral job posting, immediately runs all 4 auto-approve check
+ * groups against the poster's profile, persists the decision, and fires the
+ * appropriate side-effect notifications/queue jobs.
+ *
+ * @param {object} postingData  — data to pass to createPostingService (must include candidatePosted)
+ * @param {string} userId       — auth user ID of the poster
+ * @param {object} poster       — full poster profile doc from studentonboardingModel (lean or Mongoose)
+ *
+ * @returns {object} the final saved job document with approvalStatus + autoApproveReasons set
+ */
+export const createReferralJobWithAutoApprove = async (postingData, userId, poster) => {
+  // 1. Save the job — default approvalStatus is "Pending" from schema
+  const newPosting = await createPostingService(postingData, userId);
+  if (!newPosting) {
+    throw new Error("Failed to create referral posting");
+  }
+
+  // 2. Group 2 check #0: poster missing — short-circuit, hard reject immediately
+  if (!poster) {
+    const rejected = await JobPostingTable.findByIdAndUpdate(
+      newPosting._id,
+      {
+        approvalStatus: "Rejected",
+        autoApproveReasons: ["Poster profile not found or deleted"],
+      },
+      { new: true }
+    );
+    console.warn(`[AutoApprove] Job ${newPosting._id} auto-rejected: poster profile not found`);
+    return rejected;
+  }
+
+  // 3. Run all 4 check groups (includes async CompanyMaster DB lookup)
+  let autoApproveResult;
+  try {
+    autoApproveResult = await runAutoApproveChecks(newPosting, poster);
+  } catch (checkErr) {
+    // Check engine error — leave job in Pending for manual review
+    console.error(`[AutoApprove] Check error for job ${newPosting._id}:`, checkErr.message);
+    return newPosting;
+  }
+
+  const { approvalStatus, autoApproveReasons } = autoApproveResult;
+
+  // 4. Persist the decision
+  const updatedPosting = await JobPostingTable.findByIdAndUpdate(
+    newPosting._id,
+    { approvalStatus, autoApproveReasons },
+    { new: true }
+  ).populate("candidatePosted", "userId currentCompany");
+
+  console.log(
+    `[AutoApprove] Job ${newPosting._id} → ${approvalStatus}` +
+    (autoApproveReasons.length ? ` | reasons: ${autoApproveReasons.join("; ")}` : "")
+  );
+
+  // 5. Notify poster on Approved or Rejected (non-blocking)
+  if (approvalStatus === "Approved" || approvalStatus === "Rejected") {
+    notifyReferralJobPosterOnApproval({
+      job: updatedPosting,
+      approvalStatus,
+      adminAuthId: null, // system-triggered, no admin actor
+      autoApproveReasons,
+    }).catch((err) =>
+      console.error("[AutoApprove] Poster notification failed:", err.message)
+    );
+  }
+
+  // 6. Queue job-broadcast notification only on Approved
+  if (approvalStatus === "Approved") {
+    await jobNotificationQueue.add(
+      "new-job-notification",
+      { jobId: updatedPosting._id },
+      { removeOnComplete: 100, removeOnFail: 100 }
+    );
+    console.log(`[AutoApprove] Job notification queued for job ${updatedPosting._id}`);
+  }
+
+  return updatedPosting;
 };

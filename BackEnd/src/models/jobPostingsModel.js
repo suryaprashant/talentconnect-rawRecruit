@@ -228,6 +228,12 @@ const jobPostingSchema = new mongoose.Schema(
       default: false,
     },
     batchYear: [{ type: String }],
+
+    // Auto-approve/reject audit trail — populated by referralJobAutoApproveService
+    autoApproveReasons: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true },
 );

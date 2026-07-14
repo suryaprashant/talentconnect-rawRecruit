@@ -255,6 +255,7 @@ export const notifyReferralJobPosterOnApproval = async ({
   job,
   approvalStatus,
   adminAuthId,
+  autoApproveReasons = [],
 }) => {
   try {
     // candidatePosted is the Onboarding doc of the job poster
@@ -266,10 +267,14 @@ export const notifyReferralJobPosterOnApproval = async ({
       return;
     }
 
-    const message =
-      approvalStatus === "Approved"
-        ? "Your referral job posting has been approved by admin"
-        : "Your referral job posting has been rejected by admin";
+    let message;
+    if (approvalStatus === "Approved") {
+      message = "Your referral job posting has been approved";
+    } else if (autoApproveReasons.length > 0) {
+      message = `Your referral job posting was rejected. Reasons: ${autoApproveReasons.join("; ")}`;
+    } else {
+      message = "Your referral job posting has been rejected";
+    }
 
     await sendNotification({
       recipientId: posterAuthId,
@@ -277,9 +282,9 @@ export const notifyReferralJobPosterOnApproval = async ({
       type: approvalStatus === "Approved" ? "REFERRAL_JOB_APPROVED" : "REFERRAL_JOB_REJECTED",
       message,
       referenceId: job._id,
-      jobId: job._id, 
+      jobId: job._id,
       jobType: "Referral",
-      meta: { approvalStatus },
+      meta: { approvalStatus, autoApproveReasons },
     });
 
     console.log(`✅ Notified job poster (${posterAuthId}) — ${approvalStatus}`);

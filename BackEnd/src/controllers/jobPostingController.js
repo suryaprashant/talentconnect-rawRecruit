@@ -1,4 +1,5 @@
 import { createPostingService } from "../services/jobPostingService.js";
+import { createReferralJobWithAutoApprove } from "../services/adminService.js";
 
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import OnboardingModel from "../models/studentonboardingModel.js";
@@ -314,26 +315,29 @@ export const createRefferralPosting = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User profile not found" });
         }
+
+        const poster = user.data[0];
+
         const postingData = {
             ...req.body,
             postedByUser: userId,
-            candidatePosted: user.data[0]._id,
+            candidatePosted: poster._id,
             jobType: "Referral",
             endDate: req.body.endDate ? new Date(req.body.endDate) : null,
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000),
         };
-       const newPosting = await createPostingService(postingData, userId);
-        if (!newPosting) {
+
+        const savedPosting = await createReferralJobWithAutoApprove(postingData, userId, poster);
+        if (!savedPosting) {
             return sendError(res, 500, "Failed to create referral posting");
         }
-        sendResponse(res, 201, { message: "Referral posting created successfully!", data: newPosting });
 
-    }
-    catch (error) {
+        sendResponse(res, 201, { message: "Referral posting created successfully!", data: savedPosting });
+
+    } catch (error) {
         console.error("Error in createRefferralPosting:", error.message);
         sendError(res, 500, "Internal server error");
     }
-
 }
 
