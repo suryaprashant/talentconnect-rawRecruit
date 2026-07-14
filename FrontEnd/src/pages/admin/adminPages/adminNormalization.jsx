@@ -256,7 +256,7 @@ const AdminNormalization = () => {
       {/* ─── Create Canonical Entity Modal ─── */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-[500px] max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl p-6 w-[500px]">
 
             <h2 className="text-xl font-bold mb-4">Create Canonical Entity</h2>
 
@@ -264,72 +264,81 @@ const AdminNormalization = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Raw Input</label>
 
-              {/* Tags row + dropdown trigger */}
-              <div className="border rounded-lg p-2 flex flex-wrap gap-2 min-h-[42px]">
-
-                {selectedRawInputs.map((r, i) => (
-                  <span
-                    key={r._id}
-                    className="inline-flex items-center gap-1 bg-gray-100 border border-gray-300 text-sm px-2 py-1 rounded-md"
+              {/* Search + Add dropdown — sits above the tags */}
+              {availableToAdd.length > 0 && (
+                <div className="relative mb-2" ref={dropdownRef}>
+                  <div
+                    className="flex items-center border rounded-lg px-3 py-2 gap-2 cursor-text"
+                    onClick={() => {
+                      setDropdownOpen(true);
+                    }}
                   >
-                    {r.raw_input}
-                    {/* Primary tag (index 0) cannot be removed */}
-                    {i !== 0 && (
-                      <button
-                        type="button"
-                        onClick={() => removeRawInput(r._id)}
-                        className="text-gray-400 hover:text-red-500 leading-none"
-                        aria-label="Remove"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </span>
-                ))}
-
-                {/* Add more button — only shown when there are candidates */}
-                {availableToAdd.length > 0 && (
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      type="button"
-                      onClick={() => setDropdownOpen((o) => !o)}
-                      className="inline-flex items-center gap-1 text-sm text-[#143694] border border-dashed border-[#143694] px-2 py-1 rounded-md hover:bg-blue-50"
-                    >
-                      + Add
-                    </button>
-
-                    {dropdownOpen && (
-                      <div className="absolute left-0 top-full mt-1 w-64 bg-white border rounded-lg shadow-lg z-10">
-                        <div className="p-2 border-b">
-                          <input
-                            autoFocus
-                            value={dropdownSearch}
-                            onChange={(e) => setDropdownSearch(e.target.value)}
-                            placeholder="Search..."
-                            className="w-full text-sm border rounded px-2 py-1 outline-none"
-                          />
-                        </div>
-                        <ul className="max-h-48 overflow-y-auto divide-y">
-                          {filteredAvailable.length === 0 ? (
-                            <li className="px-3 py-2 text-sm text-gray-400">No results</li>
-                          ) : (
-                            filteredAvailable.map((l) => (
-                              <li
-                                key={l._id}
-                                onClick={() => addRawInput(l)}
-                                className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
-                              >
-                                {l.raw_input}
-                              </li>
-                            ))
-                          )}
-                        </ul>
-                      </div>
-                    )}
+                    <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                    </svg>
+                    <input
+                      value={dropdownSearch}
+                      onChange={(e) => {
+                        setDropdownSearch(e.target.value);
+                        setDropdownOpen(true);
+                      }}
+                      onFocus={() => setDropdownOpen(true)}
+                      placeholder="Search and add raw inputs..."
+                      className="flex-1 text-sm outline-none bg-transparent"
+                    />
                   </div>
-                )}
 
-              </div>
+                  {dropdownOpen && (
+                    <div className="absolute left-0 top-full mt-1 w-full bg-white border rounded-lg shadow-lg z-10">
+                      <ul className="max-h-48 overflow-y-auto divide-y">
+                        {filteredAvailable.length === 0 ? (
+                          <li className="px-3 py-2 text-sm text-gray-400">No results</li>
+                        ) : (
+                          filteredAvailable.map((l) => (
+                            <li
+                              key={l._id}
+                              onMouseDown={(e) => {
+                                // prevent input blur from closing dropdown before click registers
+                                e.preventDefault();
+                                addRawInput(l);
+                              }}
+                              className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
+                            >
+                              {l.raw_input}
+                            </li>
+                          ))
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tags — listed below the search bar, wrap naturally */}
+              {selectedRawInputs.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {selectedRawInputs.map((r, i) => (
+                    <span
+                      key={r._id}
+                      className="inline-flex items-center gap-1 bg-gray-100 border border-gray-300 text-sm px-2 py-1 rounded-md"
+                    >
+                      {r.raw_input}
+                      {/* Primary tag (index 0) cannot be removed */}
+                      {i !== 0 && (
+                        <button
+                          type="button"
+                          onClick={() => removeRawInput(r._id)}
+                          className="text-gray-400 hover:text-red-500 leading-none ml-1"
+                          aria-label="Remove"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              )}
+
             </div>
 
             {/* Display Name — editable, never auto-overwritten by adding raw inputs */}
