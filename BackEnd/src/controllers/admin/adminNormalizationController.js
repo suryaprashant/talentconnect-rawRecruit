@@ -241,7 +241,9 @@ export const createCanonicalEntity = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { displayName } = req.body;
+    // additionalLogIds — optional array of other log _ids to also
+    // add as aliases under the same new canonical entity
+    const { displayName, additionalLogIds = [] } = req.body;
 
     const log = await NormalizationLog.findById(id);
 
@@ -272,8 +274,31 @@ export const createCanonicalEntity = async (req, res) => {
     const canonicalId =
       normalizeText(cleanedDisplayName);
 
-    const alias =
+    const primaryAlias =
       normalizeText(log.raw_input);
+
+    // ==========================================
+    // FETCH ADDITIONAL LOGS (if any)
+    // ==========================================
+
+    let additionalLogs = [];
+
+    if (Array.isArray(additionalLogIds) && additionalLogIds.length > 0) {
+      additionalLogs = await NormalizationLog.find({
+        _id: { $in: additionalLogIds },
+        entity_type: log.entity_type, // must match same type
+        reviewed: false,
+      });
+    }
+
+    // Build the full alias set: primary + additional raw inputs
+    const allAliases = [
+      primaryAlias,
+      ...additionalLogs.map((l) => normalizeText(l.raw_input)),
+    ];
+
+    // Deduplicate
+    const uniqueAliases = [...new Set(allAliases)];
 
     // ==========================================
     // CHECK EXISTING CANONICAL ENTITY
@@ -281,39 +306,32 @@ export const createCanonicalEntity = async (req, res) => {
 
     const existingCanonical =
       log.entity_type === "company"
-        ? await CompanyMaster.findOne({
-            canonical_id: canonicalId,
-          })
-        : await CollegeMaster.findOne({
-            canonical_id: canonicalId,
-          });
+        ? await CompanyMaster.findOne({ canonical_id: canonicalId })
+        : await CollegeMaster.findOne({ canonical_id: canonicalId });
 
     if (existingCanonical) {
       return res.status(400).json({
         success: false,
-        message:
-          "Canonical entity already exists",
+        message: "Canonical entity already exists",
       });
     }
 
     // ==========================================
-    // CHECK EXISTING ALIAS
+    // CHECK EXISTING ALIASES (across all selected)
     // ==========================================
 
-    const existingAlias =
-      log.entity_type === "company"
-        ? await CompanyMaster.findOne({
-            aliases: alias,
-          })
-        : await CollegeMaster.findOne({
-            aliases: alias,
-          });
+    for (const alias of uniqueAliases) {
+      const existingAlias =
+        log.entity_type === "company"
+          ? await CompanyMaster.findOne({ aliases: alias })
+          : await CollegeMaster.findOne({ aliases: alias });
 
-    if (existingAlias) {
-      return res.status(400).json({
-        success: false,
-        message: `Alias already belongs to ${existingAlias.display_name}`,
-      });
+      if (existingAlias) {
+        return res.status(400).json({
+          success: false,
+          message: `Alias "${alias}" already belongs to ${existingAlias.display_name}`,
+        });
+      }
     }
 
     // ==========================================
@@ -324,31 +342,41 @@ export const createCanonicalEntity = async (req, res) => {
       await CompanyMaster.create({
         canonical_id: canonicalId,
         display_name: cleanedDisplayName,
-        aliases: [alias],
+        aliases: uniqueAliases,
       });
     } else {
       await CollegeMaster.create({
         canonical_id: canonicalId,
         display_name: cleanedDisplayName,
-        aliases: [alias],
+        aliases: uniqueAliases,
       });
     }
 
     // ==========================================
-    // UPDATE LOG
+    // MARK PRIMARY LOG AS REVIEWED
     // ==========================================
 
-    log.suggested_canonical_id =
-      canonicalId;
-
-    log.matched_display_name =
-      cleanedDisplayName;
-
+    log.suggested_canonical_id = canonicalId;
+    log.matched_display_name = cleanedDisplayName;
     log.accepted = true;
-
     log.reviewed = true;
-
     await log.save();
+
+    // ==========================================
+    // MARK ADDITIONAL LOGS AS REVIEWED
+    // ==========================================
+
+    if (additionalLogs.length > 0) {
+      await NormalizationLog.updateMany(
+        { _id: { $in: additionalLogs.map((l) => l._id) } },
+        {
+          suggested_canonical_id: canonicalId,
+          matched_display_name: cleanedDisplayName,
+          accepted: true,
+          reviewed: true,
+        }
+      );
+    }
 
     // ==========================================
     // RELOAD FUSE INDEX
@@ -361,26 +389,18 @@ export const createCanonicalEntity = async (req, res) => {
     // ==========================================
 
     if (log.entity_type === "company") {
-      await backfillCompanyCanonical(
-        canonicalId
-      );
+      await backfillCompanyCanonical(canonicalId);
     } else {
-      await backfillCollegeCanonical(
-        canonicalId
-      );
+      await backfillCollegeCanonical(canonicalId);
     }
 
     return res.status(200).json({
       success: true,
-      message:
-        "Canonical entity created successfully",
+      message: "Canonical entity created successfully",
     });
 
   } catch (err) {
-    console.error(
-      "createCanonicalEntity:",
-      err
-    );
+    console.error("createCanonicalEntity:", err);
 
     return res.status(500).json({
       success: false,
