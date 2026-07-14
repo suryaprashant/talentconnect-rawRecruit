@@ -222,28 +222,29 @@ const AdminNormalization = () => {
                     </span>
                   </td>
 
-                  <td className="p-4 flex gap-2">
-                    {log.suggested_canonical_id ? (
-                      <button
-                        onClick={() => handleApprove(log._id)}
-                        className="bg-green-600 text-white px-3 py-1 rounded"
-                      >
-                        Approve
-                      </button>
-                    ) : (
+                  <td className="p-4">
+                    <div className="flex gap-1 w-full">
+                      {log.suggested_canonical_id && (
+                        <button
+                          onClick={() => handleApprove(log._id)}
+                          className={`flex-1 bg-green-600 text-white rounded ${log.suggested_canonical_id ? "px-2 py-1 text-xs" : "px-3 py-1 text-sm"}`}
+                        >
+                          Approve
+                        </button>
+                      )}
                       <button
                         onClick={() => openCreateModal(log)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded"
+                        className={`flex-1 bg-blue-600 text-white rounded ${log.suggested_canonical_id ? "px-2 py-1 text-xs" : "px-3 py-1 text-sm"}`}
                       >
                         Create
                       </button>
-                    )}
-                    <button
-                      onClick={() => handleReject(log._id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded"
-                    >
-                      Reject
-                    </button>
+                      <button
+                        onClick={() => handleReject(log._id)}
+                        className={`flex-1 bg-red-600 text-white rounded ${log.suggested_canonical_id ? "px-2 py-1 text-xs" : "px-3 py-1 text-sm"}`}
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </td>
 
                 </tr>
