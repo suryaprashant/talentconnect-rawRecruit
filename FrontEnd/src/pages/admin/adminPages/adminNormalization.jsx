@@ -4,6 +4,7 @@ import React, {
 } from "react";
 
 import axios from "../../../lib/axiosInstance";
+import AsyncSelect from "react-select/async";
 
 const AdminNormalization = () => {
   const [logs, setLogs] =
@@ -141,6 +142,40 @@ const AdminNormalization = () => {
         );
       }
     };
+
+  // Fetch colleges from canonical list and filter by what user typed
+  const loadCollegeOptions = async (inputValue) => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_Backend_URL}/api/colleges/all`
+      );
+      const allColleges = res.data || [];
+      if (!inputValue) return allColleges;
+      return allColleges.filter((c) =>
+        c.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+    } catch (err) {
+      console.error("Failed to load colleges", err);
+      return [];
+    }
+  };
+
+  // Fetch companies and filter by what user typed
+  const loadCompanyOptions = async (inputValue) => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_Backend_URL}/dropdown/companiesName`
+      );
+      const allCompanies = res.data || [];
+      if (!inputValue) return allCompanies;
+      return allCompanies.filter((c) =>
+        c.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+    } catch (err) {
+      console.error("Failed to load companies", err);
+      return [];
+    }
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -339,11 +374,51 @@ const AdminNormalization = () => {
           Raw Input
         </label>
 
-        <input
-          value={selectedLog?.raw_input || ""}
-          disabled
-          className="w-full border p-2 rounded bg-gray-100"
-        />
+        {selectedLog?.entity_type === "college" ? (
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCollegeOptions}
+            placeholder="Search college name..."
+            onChange={(option) => {
+              if (option) setDisplayName(option.label);
+            }}
+            defaultInputValue={selectedLog?.raw_input || ""}
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: "#d1d5db",
+                borderRadius: "0.375rem",
+                minHeight: "42px",
+              }),
+            }}
+          />
+        ) : selectedLog?.entity_type === "company" ? (
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCompanyOptions}
+            placeholder="Search company name..."
+            onChange={(option) => {
+              if (option) setDisplayName(option.label);
+            }}
+            defaultInputValue={selectedLog?.raw_input || ""}
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: "#d1d5db",
+                borderRadius: "0.375rem",
+                minHeight: "42px",
+              }),
+            }}
+          />
+        ) : (
+          <input
+            value={selectedLog?.raw_input || ""}
+            disabled
+            className="w-full border p-2 rounded bg-gray-100"
+          />
+        )}
 
       </div>
 
