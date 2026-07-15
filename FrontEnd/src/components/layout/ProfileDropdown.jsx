@@ -4,10 +4,12 @@ import axios from '../../lib/axiosInstance';
 import { FiUser, FiSettings, FiBell, FiHelpCircle, FiLogOut } from 'react-icons/fi';
 // import Cookies from "js-cookie";
 import { useLegacyAuth } from '@/context/AuthProvider';
+import {useAuth} from '@/context/AuthContext'
 
 function StandardProfileDropdown() {
   const navigate = useNavigate();
 const [authUser, setAuthUserStable] = useLegacyAuth();
+  const {logout} =useAuth();
   // const handleLogout = async () => {
   //   try {
   //     await axios.post("/api/auth/logout");
@@ -26,8 +28,9 @@ const [authUser, setAuthUserStable] = useLegacyAuth();
 const handleLogout = async () => {
   try {
     console.log("1");
+    await logout();
 
-    await axios.post("/api/auth/logout");
+    // await axios.post("/api/auth/logout");
 
     console.log("2");
 
@@ -38,6 +41,7 @@ const handleLogout = async () => {
     setAuthUserStable(null);
 
     console.log("4");
+    
 
     navigate("/", { replace: true });
 
