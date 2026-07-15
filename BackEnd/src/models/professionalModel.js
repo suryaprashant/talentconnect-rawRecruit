@@ -12,7 +12,7 @@ const experienceSchema = new mongoose.Schema({
 const awardSchema = new mongoose.Schema({
     awardTitle: String,
     startDate: String,
-    endDate: String,
+    // endDate: String,
     awardingOrganization: String
 });
 
