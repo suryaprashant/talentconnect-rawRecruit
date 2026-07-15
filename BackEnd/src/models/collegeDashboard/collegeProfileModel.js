@@ -70,7 +70,7 @@ const collegeProfileSchema = new mongoose.Schema({
     {
       awardTitle: String,
       startDate: Date,
-      endDate: Date,
+      // endDate: Date,
       awardingOrganization: String
     }
   ]
