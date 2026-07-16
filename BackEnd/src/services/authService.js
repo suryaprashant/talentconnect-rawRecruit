@@ -450,7 +450,7 @@ export const requestPasswordResetService = async ({ email, isRawRecruit }) => {
       frontendUrl =
         process.env.Frontend_URL_Rawrecruit || "http://localhost:5173";
     } else {
-      frontendUrl = process.env.Frontend_URLS || "http://localhost:3000";
+      frontendUrl = process.env.FRONTEND_URLS || "http://localhost:3000";
     }
 
     const resetLink = `${frontendUrl}/reset-password/${rawToken}`;
