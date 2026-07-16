@@ -30,7 +30,10 @@ import {
 
 export const requestPasswordReset = async (req, res) => {
   try {
-    const { email, isRawRecruit } = req.body;
+    // const { email, isRawRecruit } = req.body;
+    const { email} = req.body;
+    const origin = req.headers.origin;
+    const isRawRecruit = origin === "https://rawrecruit.in";
 
     if (!email) {
       return res.status(400).json({
