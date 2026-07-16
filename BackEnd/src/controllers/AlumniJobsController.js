@@ -356,9 +356,12 @@ export const getAlumniWhoCanHelp = async (req, res) => {
                 targetCanonicalId
             );
 
+          // return (
+          //   currentlyWorking ||
+          //   previouslyWorked
+          // );
           return (
-            currentlyWorking ||
-            previouslyWorked
+            currentlyWorking 
           );
         }
       );
