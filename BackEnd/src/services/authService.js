@@ -445,12 +445,21 @@ export const requestPasswordResetService = async ({ email, isRawRecruit }) => {
     user.resetTokenExpires = Date.now() + 15 * 60 * 1000;
     await user.save();
 
+    const frontendUrls = (process.env.FRONTEND_URLS || "")
+                        .split(",")
+                        .map(url => url.trim());
+                        
     let frontendUrl;
+    // if (isRawRecruit) {
+    //   frontendUrl =
+    //     process.env.Frontend_URL_Rawrecruit || "http://localhost:5173";
+    // } else {
+    //   frontendUrl = process.env.FRONTEND_URLS || "http://localhost:3000";
+    // }
     if (isRawRecruit) {
-      frontendUrl =
-        process.env.Frontend_URL_Rawrecruit || "http://localhost:5173";
+      frontendUrl = frontendUrls[1] || "http://localhost:5173";
     } else {
-      frontendUrl = process.env.FRONTEND_URLS || "http://localhost:3000";
+      frontendUrl = frontendUrls[0] || "http://localhost:3000";
     }
 
     const resetLink = `${frontendUrl}/reset-password/${rawToken}`;
