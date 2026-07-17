@@ -29,6 +29,7 @@ const normalizationLogSchema =
           "fuzzy",
           "semantic",
           "unmatched",
+          "auto-created",
         ],
       },
 

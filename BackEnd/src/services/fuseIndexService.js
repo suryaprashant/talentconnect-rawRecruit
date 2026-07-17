@@ -24,9 +24,11 @@ export const refreshFuseIndex =
       colleges,
       {
         keys: ["aliases"],
-        threshold: 0.3,
+        threshold: 0.4,
         includeScore: true,
-        minMatchCharLength: 3,
+        minMatchCharLength: 2,
+        ignoreLocation: true,
+        distance: 100,
       }
     );
 
@@ -34,9 +36,11 @@ export const refreshFuseIndex =
       companies,
       {
         keys: ["aliases"],
-        threshold: 0.3,
+        threshold: 0.4,
         includeScore: true,
-        minMatchCharLength: 3,
+        minMatchCharLength: 2,
+        ignoreLocation: true,
+        distance: 100,
       }
     );
   };

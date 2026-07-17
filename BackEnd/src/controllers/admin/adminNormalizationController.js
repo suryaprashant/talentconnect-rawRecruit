@@ -8,10 +8,67 @@ import CollegeMaster
 
 import { normalizeText }
   from "../../utils/normalizeText.js";
-import {refreshFuseIndex} from "../../services/fuseIndexService.js";
+import {refreshFuseIndex, getCompanyFuse, getCollegeFuse} from "../../services/fuseIndexService.js";
 import { resolveCompany, resolveCollege }
   from "../../services/normalizationService.js";
 import {backfillCompanyCanonical, backfillCollegeCanonical} from "../../services/backfillNormalizationService.js";
+
+// =====================================================
+// RECALCULATE MATCH WITHOUT AUTO-CREATING CANONICALS
+// Used only for the pending review loop — pure read+suggest, no writes to master
+// =====================================================
+const recalculateMatch = async (entityType, rawInput) => {
+  const normalized = normalizeText(rawInput);
+  const master = entityType === "company" ? CompanyMaster : CollegeMaster;
+
+  // Alias match — exclude self-created entities (canonical_id === normalized means
+  // it was auto-created from this exact input and is not a real external match)
+  const exactMatch = await master.findOne({ aliases: normalized }).lean();
+  if (exactMatch && exactMatch.canonical_id !== normalized) {
+    return {
+      canonicalId: exactMatch.canonical_id,
+      displayName: exactMatch.display_name,
+      confidence: 100,
+      matchType: "alias",
+    };
+  }
+
+  // Fuzzy match — skip results where the match is the entity's own auto-created record
+  const fuse = entityType === "company" ? getCompanyFuse() : getCollegeFuse();
+  if (!fuse) return null;
+
+  const results = fuse.search(normalized);
+  if (!results.length) return null;
+
+  // Find the best candidate that is NOT the entity created from this exact input
+  const candidate = results.find(
+    (r) => r.item && r.item.canonical_id !== normalized
+  );
+  if (!candidate) return null;
+
+  let confidence = Math.round((1 - candidate.score) * 100);
+  confidence = Math.min(confidence, 99);
+
+  // PREFIX BOOST: inputs sharing 4+ leading chars with a known alias
+  // get lifted above the threshold so admin can review potential merges
+  if (confidence < 70 && normalized.length >= 4) {
+    const inputPrefix = normalized.slice(0, 4);
+    const hasPrefix = (candidate.item.aliases || []).some(
+      (a) => typeof a === "string" && a.length >= 4 && a.slice(0, 4) === inputPrefix
+    );
+    if (hasPrefix) confidence = 72;
+  }
+
+  if (confidence < 70) return null;
+
+  return {
+    canonicalId: candidate.item.canonical_id,
+    displayName: candidate.item.display_name,
+    confidence,
+    matchType: "fuzzy",
+  };
+};
+
 export const getPendingNormalizations = async (req, res) => {
   try {
 
@@ -26,14 +83,7 @@ export const getPendingNormalizations = async (req, res) => {
 
     for (const log of pendingLogs) {
 
-      const result =
-        log.entity_type === "company"
-          ? await resolveCompany(
-              log.raw_input
-            )
-          : await resolveCollege(
-              log.raw_input
-            );
+      const result = await recalculateMatch(log.entity_type, log.raw_input);
 
       if (result) {
 
@@ -408,3 +458,4 @@ export const createCanonicalEntity = async (req, res) => {
     });
   }
 };
+

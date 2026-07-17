@@ -14,48 +14,37 @@ export const logNormalization =
 
     try {
 
-      const existing =
-        await NormalizationLog.findOne({
+      // Use findOneAndUpdate with upsert to atomically avoid duplicates
+      // Only one unreviewed log per (entity_type + preprocessed_input) is allowed
+      await NormalizationLog.findOneAndUpdate(
+        {
           entity_type: entityType,
-          preprocessed_input:
-            normalizedInput,
-          suggested_canonical_id:
-            canonicalId,
-          match_type:
-            matchType,
-        }).lean();
-
-      if (existing) {
-        return;
-      }
-
-      await NormalizationLog.create({
-        entity_type:
-          entityType,
-
-        raw_input:
-          rawInput,
-
-        preprocessed_input:
-          normalizedInput,
-
-        suggested_canonical_id:
-          canonicalId,
-
-        matched_display_name:
-          displayName,
-
-        confidence,
-
-        match_type:
-          matchType,
-      });
+          preprocessed_input: normalizedInput,
+          reviewed: false,
+        },
+        {
+          $set: {
+            raw_input: rawInput,
+            suggested_canonical_id: canonicalId,
+            matched_display_name: displayName,
+            confidence,
+            match_type: matchType,
+          },
+          $setOnInsert: {
+            entity_type: entityType,
+            preprocessed_input: normalizedInput,
+          },
+        },
+        { upsert: true, new: false }
+      );
 
     } catch (err) {
-
-      console.error(
-        "Normalization log failed:",
-        err.message
-      );
+      // Ignore duplicate key errors from race conditions
+      if (err.code !== 11000) {
+        console.error(
+          "Normalization log failed:",
+          err.message
+        );
+      }
     }
   };
