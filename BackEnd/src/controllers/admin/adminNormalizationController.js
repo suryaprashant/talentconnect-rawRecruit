@@ -19,53 +19,53 @@ export const getPendingNormalizations = async (req, res) => {
     // RECALCULATE PENDING LOGS
     // =====================================
 
-    const pendingLogs =
-      await NormalizationLog.find({
-        reviewed: false,
-      });
+    // const pendingLogs =
+    //   await NormalizationLog.find({
+    //     reviewed: false,
+    //   });
 
-    for (const log of pendingLogs) {
+    // for (const log of pendingLogs) {
 
-      const result =
-        log.entity_type === "company"
-          ? await resolveCompany(
-              log.raw_input
-            )
-          : await resolveCollege(
-              log.raw_input
-            );
+      // const result =
+      //   log.entity_type === "company"
+      //     ? await resolveCompany(
+      //         log.raw_input
+      //       )
+      //     : await resolveCollege(
+      //         log.raw_input
+      //       );
 
-      if (result) {
+      // if (result) {
 
-        log.suggested_canonical_id =
-          result.canonicalId;
+      //   log.suggested_canonical_id =
+      //     result.canonicalId;
 
-        log.matched_display_name =
-          result.displayName;
+      //   log.matched_display_name =
+      //     result.displayName;
 
-        log.confidence =
-          result.confidence;
+      //   log.confidence =
+      //     result.confidence;
 
-        log.match_type =
-          result.matchType;
+      //   log.match_type =
+      //     result.matchType;
 
-      } else {
+      // } else {
 
-        log.suggested_canonical_id =
-          null;
+      //   log.suggested_canonical_id =
+      //     null;
 
-        log.matched_display_name =
-          null;
+      //   log.matched_display_name =
+      //     null;
 
-        log.confidence =
-          null;
+      //   log.confidence =
+      //     null;
 
-        log.match_type =
-          "unmatched";
-      }
+      //   log.match_type =
+      //     "unmatched";
+      // }
 
-      await log.save();
-    }
+      // await log.save();
+    // }
 
     // =====================================
     // FETCH UPDATED LOGS
@@ -78,6 +78,7 @@ export const getPendingNormalizations = async (req, res) => {
           $in: [
             "fuzzy",
             "unmatched",
+            // "first_instance",
           ],
         },
       })

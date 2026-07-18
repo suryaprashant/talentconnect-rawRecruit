@@ -166,15 +166,15 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
     const canonicalCompanyId = companyResult?.canonicalId;
 
     if (!canonicalCompanyId) {
-      await logNormalization({
-        entityType: "company",
-        rawInput: companyName,
-        normalizedInput: normalizeText(companyName),
-        canonicalId: null,
-        displayName: null,
-        confidence: null,
-        matchType: "unmatched",
-      });
+      // await logNormalization({
+      //   entityType: "company",
+      //   rawInput: companyName,
+      //   normalizedInput: normalizeText(companyName),
+      //   canonicalId: null,
+      //   displayName: null,
+      //   confidence: null,
+      //   matchType: "unmatched",
+      // });
 
       return res.status(404).json({
         success: false,
