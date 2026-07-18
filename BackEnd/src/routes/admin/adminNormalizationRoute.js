@@ -5,28 +5,18 @@ import {
   approveNormalization,
   rejectNormalization,
   createCanonicalEntity,
+  mergeCanonicalEntity,
 } from "../../controllers/admin/adminNormalizationController.js";
 import adminAuth from "../../middlewares/adminMiddleware.js";
-const router =
-  express.Router();
+const router = express.Router();
 router.use(adminAuth);
-router.get(
-  "/pending",
-  getPendingNormalizations
-);
+router.get("/pending", getPendingNormalizations);
 
-router.patch(
-  "/:id/approve",
-  approveNormalization
-);
+router.patch("/:id/approve", approveNormalization);
 
-router.patch(
-  "/:id/reject",
-  rejectNormalization
-);
+router.patch("/:id/reject", rejectNormalization);
 
-router.post(
-  "/:id/create",
-  createCanonicalEntity
-);
+router.post("/:id/create", createCanonicalEntity);
+
+router.post("/merge", mergeCanonicalEntity);
 export default router;

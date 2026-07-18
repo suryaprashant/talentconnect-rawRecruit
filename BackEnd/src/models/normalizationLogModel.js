@@ -13,6 +13,13 @@ const normalizationLogSchema =
 
       preprocessed_input: String,
 
+      // The CollegeMaster or CompanyMaster record associated with this result.
+      // It is populated for exact, fuzzy, and newly-created unmatched values.
+      master_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null,
+      },
+
       suggested_canonical_id:
         String,
 
@@ -32,6 +39,8 @@ const normalizationLogSchema =
           // "first_instance",
         ],
       },
+
+      
 
       accepted: {
         type: Boolean,

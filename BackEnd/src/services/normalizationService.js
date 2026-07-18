@@ -508,6 +508,7 @@ export const resolveCompany = async (rawInput) => {
 
         await logNormalization({
           entityType: "company",
+          masterId: best.item._id,  // ADDED: pass masterId
           rawInput,
           normalizedInput: normalized,
           canonicalId: best.item.canonical_id,
@@ -516,89 +517,105 @@ export const resolveCompany = async (rawInput) => {
           matchType: "fuzzy",
         });
       } else {
+        // Create new company since fuzzy didn't meet threshold
+        console.log("Fuzzy confidence below 80, creating new company");
+        
+        const newCompany = await CompanyMaster.create({
+          canonical_id: normalized,
+          display_name: rawInput.trim(),
+          aliases: [normalized],
+        });
+
         await logNormalization({
           entityType: "company",
+          masterId: newCompany._id,  // ADDED: pass the new masterId
           rawInput,
           normalizedInput: normalized,
           canonicalId: normalized,
           displayName: rawInput.trim(),
-          confidence:100,
-          // matchType: "first_instance",
-          matchType: "unmatched",
+          confidence: 100,
+          matchType: "created",  // Changed from "unmatched" to "created"
         });
-        console.log("Fuzzy confidence below 80");
+
+        // Refresh Fuse
+        console.log("Refreshing Fuse index...");
+        await refreshFuseIndex();
+
+        return {
+          masterId: newCompany._id,
+          canonicalId: newCompany.canonical_id,
+          displayName: newCompany.display_name,
+          confidence: 100,
+          matchType: "created",
+        };
       }
     } else {
+      // No Fuse results found - create new company
+      console.log("No Fuse results found, creating new company");
+      
+      const newCompany = await CompanyMaster.create({
+        canonical_id: normalized,
+        display_name: rawInput.trim(),
+        aliases: [normalized],
+      });
+
       await logNormalization({
-          entityType: "company",
-          rawInput,
-          normalizedInput: normalized,
-          canonicalId: normalized,
-          displayName: rawInput.trim(),
-          confidence:100,
-          // matchType: "first_instance",
-          matchType: "unmatched",
-        });
-      console.log("No Fuse results found");
+        entityType: "company",
+        masterId: newCompany._id,  // ADDED: pass the new masterId
+        rawInput,
+        normalizedInput: normalized,
+        canonicalId: normalized,
+        displayName: rawInput.trim(),
+        confidence: 100,
+        matchType: "created",  // Changed from "unmatched" to "created"
+      });
+
+      // Refresh Fuse
+      console.log("Refreshing Fuse index...");
+      await refreshFuseIndex();
+
+      return {
+        masterId: newCompany._id,
+        canonicalId: newCompany.canonical_id,
+        displayName: newCompany.display_name,
+        confidence: 100,
+        matchType: "created",
+      };
     }
   } else {
-    await logNormalization({
-          entityType: "company",
-          rawInput,
-          normalizedInput: normalized,
-          canonicalId: normalized,
-          displayName: rawInput.trim(),
-          confidence:100,
-          // matchType: "first_instance",
-          matchType: "unmatched",
-
+    // Fuse is NULL - create new company
+    console.log("Company Fuse is NULL / not initialized, creating new company");
+    
+    const newCompany = await CompanyMaster.create({
+      canonical_id: normalized,
+      display_name: rawInput.trim(),
+      aliases: [normalized],
     });
-    console.log("Company Fuse is NULL / not initialized");
+
+    await logNormalization({
+      entityType: "company",
+      masterId: newCompany._id,  // ADDED: pass the new masterId
+      rawInput,
+      normalizedInput: normalized,
+      canonicalId: normalized,
+      displayName: rawInput.trim(),
+      confidence: 100,
+      matchType: "created",  // Changed from "unmatched" to "created"
+    });
+
+    // Refresh Fuse
+    console.log("Refreshing Fuse index...");
+    await refreshFuseIndex();
+
+    return {
+      masterId: newCompany._id,
+      canonicalId: newCompany.canonical_id,
+      displayName: newCompany.display_name,
+      confidence: 100,
+      matchType: "created",
+    };
   }
-
-  // 3. Create new company
-  console.log("Creating new CompanyMaster:", normalized);
-
-  const newCompany = await CompanyMaster.create({
-    canonical_id: normalized,
-    display_name: rawInput.trim(),
-    aliases: [normalized],
-  });
-
-  console.log("New company created:", newCompany.toObject());
-
-  // 4. Refresh Fuse
-  console.log("Refreshing Fuse index...");
-
-  await refreshFuseIndex();
-
-  const refreshedFuse = getCompanyFuse();
-
-  console.log("Fuse refreshed successfully");
-  console.log("Fuse exists after refresh:", !!refreshedFuse);
-
-  // Verify newly created company is searchable
-  if (refreshedFuse) {
-    const testResults = refreshedFuse.search(normalized);
-
-    console.log(
-      "Fuse results after refresh for:",
-      normalized,
-      testResults
-    );
-  }
-
-  console.log("========================================");
-
-  return {
-    masterId: newCompany._id,
-    canonicalId: newCompany.canonical_id,
-    displayName: newCompany.display_name,
-    confidence: 100,
-    matchType: "created",
-  };
 };
-
 export const resolveCollege = async (rawInput) => {
   if (!rawInput) return null;
 
@@ -657,6 +674,7 @@ export const resolveCollege = async (rawInput) => {
 
         await logNormalization({
           entityType: "college",
+          masterId: best.item._id,  // ADDED: pass masterId
           rawInput,
           normalizedInput: normalized,
           canonicalId: best.item.canonical_id,
@@ -665,87 +683,102 @@ export const resolveCollege = async (rawInput) => {
           matchType: "fuzzy",
         });
       } else {
+        // Create new college since fuzzy didn't meet threshold
+        console.log("Fuzzy confidence below 80, creating new college");
+        
+        const newCollege = await CollegeMaster.create({
+          canonical_id: normalized,
+          display_name: rawInput.trim(),
+          aliases: [normalized],
+        });
+
         await logNormalization({
           entityType: "college",
+          masterId: newCollege._id,  // ADDED: pass the new masterId
           rawInput,
           normalizedInput: normalized,
           canonicalId: normalized,
           displayName: rawInput.trim(),
           confidence: 100,
-          // matchType: "first_instance",
-          matchType: "unmatched",
+          matchType: "created",  // Changed from "unmatched" to "created"
         });
 
-        console.log("Fuzzy confidence below 80");
+        // Refresh Fuse
+        console.log("Refreshing Fuse index...");
+        await refreshFuseIndex();
+
+        return {
+          masterId: newCollege._id,
+          canonicalId: newCollege.canonical_id,
+          displayName: newCollege.display_name,
+          confidence: 100,
+          matchType: "created",
+        };
       }
     } else {
+      // No Fuse results found - create new college
+      console.log("No Fuse results found, creating new college");
+      
+      const newCollege = await CollegeMaster.create({
+        canonical_id: normalized,
+        display_name: rawInput.trim(),
+        aliases: [normalized],
+      });
+
       await logNormalization({
         entityType: "college",
+        masterId: newCollege._id,  // ADDED: pass the new masterId
         rawInput,
         normalizedInput: normalized,
         canonicalId: normalized,
         displayName: rawInput.trim(),
         confidence: 100,
-        // matchType: "first_instance",
-        matchType: "unmatched",
+        matchType: "created",  // Changed from "unmatched" to "created"
       });
 
-      console.log("No Fuse results found");
+      // Refresh Fuse
+      console.log("Refreshing Fuse index...");
+      await refreshFuseIndex();
+
+      return {
+        masterId: newCollege._id,
+        canonicalId: newCollege.canonical_id,
+        displayName: newCollege.display_name,
+        confidence: 100,
+        matchType: "created",
+      };
     }
   } else {
+    // Fuse is NULL - create new college
+    console.log("College Fuse is NULL / not initialized, creating new college");
+    
+    const newCollege = await CollegeMaster.create({
+      canonical_id: normalized,
+      display_name: rawInput.trim(),
+      aliases: [normalized],
+    });
+
     await logNormalization({
       entityType: "college",
+      masterId: newCollege._id,  // ADDED: pass the new masterId
       rawInput,
       normalizedInput: normalized,
       canonicalId: normalized,
       displayName: rawInput.trim(),
       confidence: 100,
-      // matchType: "first_instance",
-      matchType: "unmatched",
+      matchType: "created",  // Changed from "unmatched" to "created"
     });
 
-    console.log("College Fuse is NULL / not initialized");
+    // Refresh Fuse
+    console.log("Refreshing Fuse index...");
+    await refreshFuseIndex();
+
+    return {
+      masterId: newCollege._id,
+      canonicalId: newCollege.canonical_id,
+      displayName: newCollege.display_name,
+      confidence: 100,
+      matchType: "created",
+    };
   }
-
-  // 3. Create new college
-  console.log("Creating new CollegeMaster:", normalized);
-
-  const newCollege = await CollegeMaster.create({
-    canonical_id: normalized,
-    display_name: rawInput.trim(),
-    aliases: [normalized],
-  });
-
-  console.log("New college created:", newCollege.toObject());
-
-  // 4. Refresh Fuse
-  console.log("Refreshing Fuse index...");
-
-  await refreshFuseIndex();
-
-  const refreshedFuse = getCollegeFuse();
-
-  console.log("Fuse refreshed successfully");
-  console.log("Fuse exists after refresh:", !!refreshedFuse);
-
-  // Verify newly created college is searchable
-  if (refreshedFuse) {
-    const testResults = refreshedFuse.search(normalized);
-
-    console.log(
-      "Fuse results after refresh for:",
-      normalized,
-      testResults
-    );
-  }
-
-  console.log("========================================");
-
-  return {
-    masterId: newCollege._id,
-    canonicalId: newCollege.canonical_id,
-    displayName: newCollege.display_name,
-    confidence: 100,
-    matchType: "created",
-  };
 };

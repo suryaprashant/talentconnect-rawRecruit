@@ -6,6 +6,7 @@ export const logNormalization =
     entityType,
     rawInput,
     normalizedInput,
+    masterId = null,
     canonicalId = null,
     displayName = null,
     confidence = null,
@@ -14,8 +15,8 @@ export const logNormalization =
 
     try {
 
-      const existing =
-        await NormalizationLog.findOne({
+      await NormalizationLog.findOneAndUpdate(
+        {
           entity_type: entityType,
           preprocessed_input:
             normalizedInput,
@@ -23,13 +24,9 @@ export const logNormalization =
             canonicalId,
           match_type:
             matchType,
-        }).lean();
-
-      if (existing) {
-        return;
-      }
-
-      await NormalizationLog.create({
+        },
+        {
+          $set: {
         entity_type:
           entityType,
 
@@ -38,6 +35,8 @@ export const logNormalization =
 
         preprocessed_input:
           normalizedInput,
+
+        master_id: masterId,
 
         suggested_canonical_id:
           canonicalId,
@@ -49,7 +48,10 @@ export const logNormalization =
 
         match_type:
           matchType,
-      });
+          },
+        },
+        { upsert: true, setDefaultsOnInsert: true }
+      );
 
     } catch (err) {
 
