@@ -11,7 +11,6 @@ const router = express.Router();
 // GET dropdown values
 router.get("/", getCompanyMasterData);
 
-
 // POST custom value (during onboarding)
 router.post("/", secureRoute, createCompanyMasterData);
 
