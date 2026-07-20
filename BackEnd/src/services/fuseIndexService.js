@@ -41,6 +41,12 @@ export const refreshFuseIndex =
     );
   };
 
+// export const addCompanyToFuse = (company) => {
+//   if (companyFuse) {
+//     companyFuse.add(company);
+//   }
+// };
+
 export const getCollegeFuse =
   () => collegeFuse;
 
