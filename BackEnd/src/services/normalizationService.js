@@ -574,8 +574,7 @@ export const resolveCompany = async (rawInput) => {
 
   console.log("Creating new Company:", newCompany._id);
 
-
-  console.log("normalization log",normalizationLogId);
+  console.log("normalization log", normalizationLogId);
   if (normalizationLogId) {
     await NormalizationLog.findByIdAndUpdate(normalizationLogId, {
       $set: {
