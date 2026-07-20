@@ -15,42 +15,30 @@ export const logNormalization =
 
     try {
 
-      await NormalizationLog.findOneAndUpdate(
+      return await NormalizationLog.findOneAndUpdate(
         {
           entity_type: entityType,
-          preprocessed_input:
-            normalizedInput,
-          suggested_canonical_id:
-            canonicalId,
-          match_type:
-            matchType,
+          preprocessed_input: normalizedInput,
+          suggested_canonical_id: canonicalId,
+          match_type: matchType,
         },
         {
           $set: {
-        entity_type:
-          entityType,
-
-        raw_input:
-          rawInput,
-
-        preprocessed_input:
-          normalizedInput,
-
-        master_id: masterId,
-
-        suggested_canonical_id:
-          canonicalId,
-
-        matched_display_name:
-          displayName,
-
-        confidence,
-
-        match_type:
-          matchType,
+            entity_type: entityType,
+            raw_input: rawInput,
+            preprocessed_input: normalizedInput,
+            master_id: masterId,
+            suggested_canonical_id: canonicalId,
+            matched_display_name: displayName,
+            confidence,
+            match_type: matchType,
           },
         },
-        { upsert: true, setDefaultsOnInsert: true }
+        {
+          upsert: true,
+          setDefaultsOnInsert: true,
+          new: true, // return the updated/new document
+        }
       );
 
     } catch (err) {
@@ -59,5 +47,7 @@ export const logNormalization =
         "Normalization log failed:",
         err.message
       );
+
+      return null;
     }
   };
