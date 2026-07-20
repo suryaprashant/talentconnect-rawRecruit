@@ -92,6 +92,9 @@ export const getPendingNormalizations = async (req, res) => {
       .limit(100)
       .lean();
 
+
+    console.log("logs",logs);  
+
     return res.status(200).json({
       success: true,
       data: logs,
@@ -703,7 +706,7 @@ export const mergeCanonicalEntity = async (req, res) => {
           currentCompanyMasterId &&
           sourceMasterIdSet.has(currentCompanyMasterId)
         ) {
-          user.currentCompany = cleanedDisplayName;
+          // user.currentCompany = cleanedDisplayName;
           user.currentCompany_canonical_id = cleanedCanonicalId;
           user.currentCompany_display = cleanedDisplayName;
           user.currentCompany_master_id = finalMasterEntity._id;
@@ -722,7 +725,7 @@ export const mergeCanonicalEntity = async (req, res) => {
               experienceMasterId &&
               sourceMasterIdSet.has(experienceMasterId)
             ) {
-              experience.company = cleanedDisplayName;
+              // experience.company = cleanedDisplayName;
               experience.company_canonical_id = cleanedCanonicalId;
               experience.company_display = cleanedDisplayName;
               experience.company_master_id = finalMasterEntity._id;
@@ -730,7 +733,7 @@ export const mergeCanonicalEntity = async (req, res) => {
               modified = true;
 
               if (experience.isCurrent === true) {
-                user.currentCompany = cleanedDisplayName;
+                // user.currentCompany = cleanedDisplayName;
                 user.currentCompany_canonical_id = cleanedCanonicalId;
                 user.currentCompany_display = cleanedDisplayName;
                 user.currentCompany_master_id = finalMasterEntity._id;
@@ -749,7 +752,7 @@ export const mergeCanonicalEntity = async (req, res) => {
               : null;
 
             if (educationMasterId && sourceMasterIdSet.has(educationMasterId)) {
-              education.college = cleanedDisplayName;
+              // education.college = cleanedDisplayName;
               education.college_canonical_id = cleanedCanonicalId;
               education.college_display = cleanedDisplayName;
               education.college_master_id = finalMasterEntity._id;

@@ -572,6 +572,10 @@ export const resolveCompany = async (rawInput) => {
     aliases: [normalized],
   });
 
+  console.log("Creating new Company:", newCompany._id);
+
+
+  console.log("normalization log",normalizationLogId);
   if (normalizationLogId) {
     await NormalizationLog.findByIdAndUpdate(normalizationLogId, {
       $set: {
@@ -736,7 +740,7 @@ export const resolveCollege = async (rawInput) => {
   if (normalizationLogId) {
     await NormalizationLog.findByIdAndUpdate(normalizationLogId, {
       $set: {
-        masterId: newCollege._id, // change to master_id if that's your schema field
+        master_id: newCollege._id, // change to master_id if that's your schema field
       },
     });
   }
