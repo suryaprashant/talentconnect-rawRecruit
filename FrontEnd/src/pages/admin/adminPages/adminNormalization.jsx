@@ -261,6 +261,9 @@ const AdminNormalization = () => {
     }
   };
 
+  // Only show fuzzy logs in the pending table — unmatched are handled separately
+  const displayedLogs = logs.filter((l) => l.match_type !== "unmatched");
+
   // ─── Other handlers ───────────────────────────────────────────────
 
   const handleApprove = async (id) => {
@@ -308,7 +311,7 @@ const AdminNormalization = () => {
 
       {loading ? (
         <div>Loading...</div>
-      ) : logs.length === 0 ? (
+      ) : displayedLogs.length === 0 ? (
         <div className="bg-white p-6 rounded-xl shadow">No pending reviews 🎉</div>
       ) : (
         <div className="bg-white rounded-xl shadow overflow-x-auto">
@@ -325,7 +328,7 @@ const AdminNormalization = () => {
               </tr>
             </thead>
             <tbody>
-              {logs.map((log) => (
+              {displayedLogs.map((log) => (
                 <tr key={log._id} className="border-b">
 
                   <td className="p-4">
