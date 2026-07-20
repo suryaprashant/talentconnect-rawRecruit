@@ -848,3 +848,26 @@ export const mergeCanonicalEntity = async (req, res) => {
     });
   }
 };
+
+export const getAllData = async (req, res) => {
+  try {
+    const company_data = await CompanyMaster.find(
+      {},
+      { canonical_id: 1, _id: 0 }
+    ).sort({ canonical_id: 1 });
+
+    const college_data = await CollegeMaster.find(
+      {},
+      { canonical_id: 1, _id: 0 }
+    ).sort({ canonical_id: 1 });
+
+    res.status(200).json({
+      success: true,
+      company_data,
+      college_data,
+    });
+  } catch (error) {
+    console.error("Get Company Master Data Error:", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};

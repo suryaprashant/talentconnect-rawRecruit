@@ -32,8 +32,27 @@ const AdminNormalization = () => {
   // canonical-id picker dropdown
   const [mergeCanonicalOpen, setMergeCanonicalOpen] = useState(false);
   const mergeCanonicalRef = useRef(null);
-
+  const [allCanonicalIds, setAllCanonicalIds] = useState({
+    company_data: [],
+    college_data: [],
+  });
+  const [mergeCanonicalSearch, setMergeCanonicalSearch] = useState("");
   // ─────────────────────────────────────────────────────────────────
+
+  const fetchCanonicalIds = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/normalization/all`
+      );
+
+      setAllCanonicalIds({
+        company_data: res.data.company_data,
+        college_data: res.data.college_data,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchLogs = async () => {
     try {
@@ -52,6 +71,7 @@ const AdminNormalization = () => {
 
   useEffect(() => {
     fetchLogs();
+    fetchCanonicalIds();
   }, []);
 
   // Close Create dropdown on outside click
@@ -98,6 +118,7 @@ const AdminNormalization = () => {
     setDropdownOpen(false);
     setDropdownSearch("");
     setShowCreateModal(true);
+    setMergeCanonicalSearch("");
   };
 
   const closeCreateModal = () => {
@@ -107,6 +128,7 @@ const AdminNormalization = () => {
     setSelectedRawInputs([]);
     setDropdownOpen(false);
     setDropdownSearch("");
+    setMergeCanonicalSearch("");
   };
 
   const addRawInput = (log) => {
@@ -122,16 +144,16 @@ const AdminNormalization = () => {
 
   const availableToAdd = selectedLog
     ? logs.filter(
-        (l) =>
-          l.entity_type === selectedLog.entity_type &&
-          !selectedRawInputs.some((r) => r._id === l._id)
-      )
+      (l) =>
+        l.entity_type === selectedLog.entity_type &&
+        !selectedRawInputs.some((r) => r._id === l._id)
+    )
     : [];
 
   const filteredAvailable = dropdownSearch.trim()
     ? availableToAdd.filter((l) =>
-        l.raw_input.toLowerCase().includes(dropdownSearch.toLowerCase())
-      )
+      l.raw_input.toLowerCase().includes(dropdownSearch.toLowerCase())
+    )
     : availableToAdd;
 
   const handleCreateEntity = async () => {
@@ -195,31 +217,43 @@ const AdminNormalization = () => {
   // Logs available for merge: same entity_type, fuzzy match only (must have a master_id), not already selected
   const mergeAvailableToAdd = mergeLog
     ? logs.filter(
-        (l) =>
-          l.entity_type === mergeLog.entity_type &&
-          l.match_type === "fuzzy" &&
-          l.master_id &&
-          !mergeRawInputs.some((r) => r._id === l._id)
-      )
+      (l) =>
+        l.entity_type === mergeLog.entity_type &&
+        // l.match_type === "fuzzy" &&
+        l.master_id &&
+        !mergeRawInputs.some((r) => r._id === l._id)
+    )
     : [];
 
   const mergeFilteredAvailable = mergeDropdownSearch.trim()
     ? mergeAvailableToAdd.filter((l) =>
-        l.raw_input.toLowerCase().includes(mergeDropdownSearch.toLowerCase())
-      )
+      l.raw_input.toLowerCase().includes(mergeDropdownSearch.toLowerCase())
+    )
     : mergeAvailableToAdd;
 
   // Unique canonical IDs from selected merge raw inputs (for picker dropdown)
-  const mergeCanonicalOptions = [
-    ...new Set(
-      mergeRawInputs
-        .map((r) => {
-          const full = logs.find((l) => l._id === r._id);
-          return full?.suggested_canonical_id || null;
-        })
-        .filter(Boolean)
-    ),
-  ];
+  // const mergeCanonicalOptions = [
+  //   ...new Set(
+  //     mergeRawInputs
+  //       .map((r) => {
+  //         const full = logs.find((l) => l._id === r._id);
+  //         return full?.suggested_canonical_id || null;
+  //       })
+  //       .filter(Boolean)
+  //   ),
+  // ];
+  const mergeCanonicalOptions =
+    mergeLog?.entity_type === "company"
+      ? allCanonicalIds.company_data
+      : allCanonicalIds.college_data;
+
+  const filteredMergeCanonicalOptions = mergeCanonicalSearch.trim()
+    ? mergeCanonicalOptions.filter((item) =>
+      item.canonical_id
+        .toLowerCase()
+        .includes(mergeCanonicalSearch.toLowerCase())
+    )
+    : mergeCanonicalOptions;
 
   const handleMergeEntity = async () => {
     if (!mergeDisplayName.trim()) {
@@ -262,7 +296,8 @@ const AdminNormalization = () => {
   };
 
   // Only show fuzzy logs in the pending table — unmatched are handled separately
-  const displayedLogs = logs.filter((l) => l.match_type !== "unmatched");
+  // const displayedLogs = logs.filter((l) => l.match_type !== "unmatched");
+  const displayedLogs = logs;
 
   // ─── Other handlers ───────────────────────────────────────────────
 
@@ -333,11 +368,10 @@ const AdminNormalization = () => {
 
                   <td className="p-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        log.entity_type === "company"
+                      className={`px-2 py-1 rounded text-xs font-medium ${log.entity_type === "company"
                           ? "bg-blue-100 text-blue-700"
                           : "bg-green-100 text-green-700"
-                      }`}
+                        }`}
                     >
                       {log.entity_type}
                     </span>
@@ -350,13 +384,12 @@ const AdminNormalization = () => {
 
                   <td className="p-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        log.match_type === "fuzzy"
+                      className={`px-2 py-1 rounded text-xs font-medium ${log.match_type === "fuzzy"
                           ? "bg-yellow-100 text-yellow-700"
                           : log.match_type === "alias"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                     >
                       {log.match_type}
                     </span>
@@ -383,10 +416,11 @@ const AdminNormalization = () => {
                       )}
                       {log.match_type !== "fuzzy" && (
                         <button
-                          onClick={() => openCreateModal(log)}
+                          // onClick={() => openCreateModal(log)}
+                          onClick={() => openMergeModal(log)}
                           className="flex-1 bg-blue-600 text-white rounded px-2 py-1 text-xs"
                         >
-                          Create
+                          Merge
                         </button>
                       )}
                       <button
@@ -545,11 +579,11 @@ const AdminNormalization = () => {
                               className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
                             >
                               <span>{l.raw_input}</span>
-                              {l.master_id && (
-                                <span className="ml-2 text-xs text-gray-400">
-                                  master: {l.master_id}
-                                </span>
-                              )}
+                              {/* {l.master_id && (
+                                // <span className="ml-2 text-xs text-gray-400">
+                                //   master: {l.master_id}
+                                // </span>
+                              )} */}
                             </li>
                           ))
                         )}
@@ -568,11 +602,11 @@ const AdminNormalization = () => {
                       className="inline-flex items-center gap-1 bg-gray-100 border border-gray-300 text-sm px-2 py-1 rounded-md"
                     >
                       <span>{r.raw_input}</span>
-                      {r.master_id && (
+                      {/* {r.master_id && (
                         <span className="text-xs text-gray-400 ml-1">
                           ({r.master_id})
                         </span>
-                      )}
+                      )} */}
                       {i !== 0 && (
                         <button
                           type="button"
@@ -601,8 +635,12 @@ const AdminNormalization = () => {
             </div>
 
             {/* Canonical ID — text input + quick-pick dropdown */}
+                        {/* Canonical ID — text input + quick-pick dropdown */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Canonical ID</label>
+              <label className="block text-sm font-medium mb-2">
+                Canonical ID
+              </label>
+
               <div className="flex gap-2">
                 <input
                   value={mergeCanonicalId}
@@ -610,6 +648,7 @@ const AdminNormalization = () => {
                   className="flex-1 border p-2 rounded"
                   placeholder="Canonical ID"
                 />
+
                 {mergeCanonicalOptions.length > 0 && (
                   <div className="relative" ref={mergeCanonicalRef}>
                     <button
@@ -619,22 +658,42 @@ const AdminNormalization = () => {
                     >
                       ▾ Pick
                     </button>
+
                     {mergeCanonicalOpen && (
-                      <div className="absolute right-0 top-full mt-1 bg-white border rounded-lg shadow-lg z-10 min-w-[200px]">
+                      <div className="absolute right-0 top-full mt-1 bg-white border rounded-lg shadow-lg z-10 min-w-[220px]">
+                        <div className="p-2 border-b">
+                          <input
+                            value={mergeCanonicalSearch}
+                            onChange={(e) =>
+                              setMergeCanonicalSearch(e.target.value)
+                            }
+                            placeholder="Search..."
+                            className="w-full border rounded px-2 py-1 text-sm outline-none"
+                            autoFocus
+                          />
+                        </div>
+
                         <ul className="max-h-40 overflow-y-auto divide-y">
-                          {mergeCanonicalOptions.map((cid) => (
-                            <li
-                              key={cid}
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                setMergeCanonicalId(cid);
-                                setMergeCanonicalOpen(false);
-                              }}
-                              className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
-                            >
-                              {cid}
+                          {filteredMergeCanonicalOptions.length === 0 ? (
+                            <li className="px-3 py-2 text-sm text-gray-400">
+                              No results
                             </li>
-                          ))}
+                          ) : (
+                            filteredMergeCanonicalOptions.map((cid) => (
+                              <li
+                                key={cid.canonical_id}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setMergeCanonicalId(cid.canonical_id);
+                                  setMergeCanonicalOpen(false);
+                                  setMergeCanonicalSearch("");
+                                }}
+                                className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
+                              >
+                                {cid.canonical_id}
+                              </li>
+                            ))
+                          )}
                         </ul>
                       </div>
                     )}
@@ -644,18 +703,23 @@ const AdminNormalization = () => {
             </div>
 
             <div className="flex justify-end gap-3">
-              <button onClick={closeMergeModal} className="px-4 py-2 bg-gray-300 rounded">
+              <button
+                onClick={closeMergeModal}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
                 Cancel
               </button>
-              <button onClick={handleMergeEntity} className="px-4 py-2 bg-purple-600 text-white rounded">
+
+              <button
+                onClick={handleMergeEntity}
+                className="px-4 py-2 bg-purple-600 text-white rounded"
+              >
                 Merge
               </button>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };
