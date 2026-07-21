@@ -1,10 +1,13 @@
-import OnboardingModel from "../models/studentonboardingModel.js";
-import Auth from "../models/authModel.js";
-import { updateAuthUserService } from "../services/authService.js";
-import { streamUpload } from "../utils/streamUpload.js";
-import { JobPostingTable } from "../models/jobPostingsModel.js";
-import Application from "../models/applicationModel.js";
-import { resolveCollege, resolveCompany } from "./normalizationService.js";
+import OnboardingModel from '../models/studentonboardingModel.js';
+import Auth from '../models/authModel.js';
+import { updateAuthUserService } from '../services/authService.js';
+import { streamUpload } from '../utils/streamUpload.js';
+import {JobPostingTable} from '../models/jobPostingsModel.js'
+import Application  from '../models/applicationModel.js';
+import {
+  resolveCollege,
+  resolveCompany,
+} from "./normalizationService.js";
 // Get all onboarding forms
 export async function getAllOnboardingFormsService() {
   try {
@@ -18,7 +21,9 @@ export async function getAllOnboardingFormsService() {
 // Get onboarding form for a user
 export async function getOnboardingFormService(userId) {
   try {
-    const entry = await OnboardingModel.findOne({ userId }).lean();
+    const entry = await OnboardingModel
+      .findOne({ userId })
+      .lean();
 
     if (!entry) return null;
 
@@ -26,11 +31,18 @@ export async function getOnboardingFormService(userId) {
     // Sort Experiences
     // =========================
 
-    if (Array.isArray(entry.experiences) && entry.experiences.length > 0) {
+    if (
+      Array.isArray(entry.experiences) &&
+      entry.experiences.length > 0
+    ) {
       entry.experiences.sort((a, b) => {
-        const dateA = a.startDate ? new Date(a.startDate) : new Date(0);
+        const dateA = a.startDate
+          ? new Date(a.startDate)
+          : new Date(0);
 
-        const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
+        const dateB = b.startDate
+          ? new Date(b.startDate)
+          : new Date(0);
 
         return dateB - dateA;
       });
@@ -40,21 +52,30 @@ export async function getOnboardingFormService(userId) {
     // Sort Educations
     // =========================
 
-    if (Array.isArray(entry.educations) && entry.educations.length > 0) {
+    if (
+      Array.isArray(entry.educations) &&
+      entry.educations.length > 0
+    ) {
       entry.educations.sort((a, b) => {
-        const dateA = a.startDate ? new Date(a.startDate) : new Date(0);
+        const dateA = a.startDate
+          ? new Date(a.startDate)
+          : new Date(0);
 
-        const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
+        const dateB = b.startDate
+          ? new Date(b.startDate)
+          : new Date(0);
 
         return dateB - dateA;
       });
     }
 
     return entry;
+
   } catch (error) {
     throw error;
   }
 }
+
 
 // export async function submitOnboardingFormService(userId, body, files) {
 
@@ -82,19 +103,19 @@ export async function getOnboardingFormService(userId) {
 //     email: body.email,
 //     phone: body.phone,
 //     profileType: body.profileType,
-
+  
 //     college: body.college,
 //     degree: body.degree,
 //     semester: body.semester,
 //     specialization: body.specialization,
 //     cgpa: body.cgpa,
 //     yearOfGraduation: body.yearOfGraduation,
-
+  
 //     expectedSalaryCurrency: body.expectedSalaryCurrency,
 //     expectedSalaryAmount: body.expectedSalaryAmount,
 //     currentSalaryCurrency: body.currentSalaryCurrency,
 //     currentSalaryAmount: body.currentSalaryAmount,
-
+  
 //     lookingFor: parseJsonArray("lookingFor"),
 //     employmentType: parseJsonArray("employmentType"),
 //     industry: parseJsonArray("industry"),
@@ -107,17 +128,17 @@ export async function getOnboardingFormService(userId) {
 //     openToShift: Array.isArray(body.openToShift)
 //       ? body.openToShift.join(",")
 //       : body.openToShift || "",
-
+  
 //     // complex arrays
 //     education: parseJsonArray("education"),
 //     experiences: body.experiences ? JSON.parse(body.experiences) : [],
-
+  
 //     leadership: body.leadership ? JSON.parse(body.leadership) : [],
 //     internationalExperience: body.internationalExperience ? JSON.parse(body.internationalExperience) : [],
 //     awards: body.awards ? JSON.parse(body.awards) : [],
 //     publications: body.publications ? JSON.parse(body.publications) : [],
 //     achievements: body.achievements ? JSON.parse(body.achievements) : [],
-
+  
 //     about: body.about,
 //     gender: body.gender,
 //     noticePeriod: body.noticePeriod,
@@ -125,9 +146,9 @@ export async function getOnboardingFormService(userId) {
 //     totalYearsOfExperience: body.totalYearsOfExperience,
 //     currentCompany,
 //     companyEmail: body.companyEmail || "",
-
+    
 //   emailVerified: body.emailVerified === "true" || body.emailVerified === true,
-
+  
 //     certifications: body.certifications,
 //     linkedin: body.linkedin,
 //     github: body.github,
@@ -142,6 +163,7 @@ export async function getOnboardingFormService(userId) {
 
 //   return await handleOnboardingUpdate(updateData, files);
 // }
+
 
 // export async function updateOnboardingFormService(userId, body, files) {
 //   const updates = { ...body };
@@ -163,6 +185,7 @@ export async function getOnboardingFormService(userId) {
 //   return result.updatedOnboarding;
 // }
 export async function submitOnboardingFormService(userId, body, files) {
+
   const parseJsonArray = (field) => {
     if (!body[field]) return [];
 
@@ -201,14 +224,16 @@ export async function submitOnboardingFormService(userId, body, files) {
   // Derive currentCompany
   // =========================
 
-  let currentCompany = "";
+  let currentCompany = body.currentCompany || "";
 
-  if (Array.isArray(experiences)) {
-    const currentExp = experiences.find((exp) => exp.isCurrent === true);
+  if (!currentCompany && Array.isArray(experiences)) {
+    const currentExp = experiences.find(
+      (e) => e.isCurrent === true
+    );
 
-    currentCompany = currentExp?.company || "";
-  } else {
-    currentCompany = body.currentCompany || "";
+    if (currentExp?.company) {
+      currentCompany = currentExp.company;
+    }
   }
 
   // =========================
@@ -255,7 +280,8 @@ export async function submitOnboardingFormService(userId, body, files) {
 
     leadership: parseJsonArray("leadership"),
 
-    internationalExperience: parseJsonArray("internationalExperience"),
+    internationalExperience:
+      parseJsonArray("internationalExperience"),
 
     awards: parseJsonArray("awards"),
 
@@ -270,15 +296,19 @@ export async function submitOnboardingFormService(userId, body, files) {
     noticePeriod: body.noticePeriod,
 
     servingNoticePeriod:
-      body.servingNoticePeriod === "true" || body.servingNoticePeriod === true,
+      body.servingNoticePeriod === "true" ||
+      body.servingNoticePeriod === true,
 
-    totalYearsOfExperience: body.totalYearsOfExperience,
+    totalYearsOfExperience:
+      body.totalYearsOfExperience,
 
     currentCompany,
 
     companyEmail: body.companyEmail || "",
 
-    emailVerified: body.emailVerified === "true" || body.emailVerified === true,
+    emailVerified:
+      body.emailVerified === "true" ||
+      body.emailVerified === true,
 
     certifications: body.certifications,
 
@@ -294,10 +324,14 @@ export async function submitOnboardingFormService(userId, body, files) {
   return await handleOnboardingUpdate(updateData, files);
 }
 
-export async function updateOnboardingFormService(userId, body, files) {
+export async function updateOnboardingFormService(
+  userId,
+  body,
+  files
+) {
   // ✅ Helper - SAME as CREATE
   const parseJsonArray = (field) => {
-    if (!body[field]) return; // ✅ Don't set default for missing fields
+    if (!body[field]) return;  // ✅ Don't set default for missing fields
     if (Array.isArray(body[field])) return body[field];
     try {
       const parsed = JSON.parse(body[field]);
@@ -308,7 +342,7 @@ export async function updateOnboardingFormService(userId, body, files) {
   };
 
   const parseJsonObject = (field) => {
-    if (!body[field]) return; // ✅ Don't set default for missing fields
+    if (!body[field]) return;  // ✅ Don't set default for missing fields
     if (typeof body[field] === "object") return body[field];
     try {
       return JSON.parse(body[field]);
@@ -330,12 +364,11 @@ export async function updateOnboardingFormService(userId, body, files) {
     "toolsAndPlatforms",
     "domainKnowledge",
     "lookingFor",
-    "employmentType",
+    "employmentType"
   ];
 
   arrayFields.forEach((field) => {
-    if (updates[field] !== undefined) {
-      // ✅ Only if provided
+    if (updates[field] !== undefined) {  // ✅ Only if provided
       updates[field] = parseJsonArray(field);
     }
   });
@@ -349,12 +382,11 @@ export async function updateOnboardingFormService(userId, body, files) {
     "awards",
     "publications",
     "achievements",
-    "projectsHandled",
+    "projectsHandled"
   ];
 
   jsonFields.forEach((field) => {
-    if (updates[field] !== undefined) {
-      // ✅ Only if provided
+    if (updates[field] !== undefined) {  // ✅ Only if provided
       updates[field] = parseJsonObject(field);
     }
   });
@@ -363,32 +395,13 @@ export async function updateOnboardingFormService(userId, body, files) {
   // Experiences Logic
   // =========================
 
-  // if (Array.isArray(updates.experiences)) {
-  //   const currentExp = updates.experiences.find((e) => e.isCurrent === true);
-
-  //   if (currentExp?.company) {
-  //     updates.currentCompany = currentExp.company;
-  //   }
-
-  //   updates.experiences = updates.experiences.map((exp) => {
-  //     if (exp.isCurrent === true) {
-  //       return { ...exp, endDate: "" };
-  //     }
-  //     return exp;
-  //   });
-  // }
-
   if (Array.isArray(updates.experiences)) {
-    const currentExp = updates.experiences.find((e) => e.isCurrent === true);
+    const currentExp = updates.experiences.find(
+      (e) => e.isCurrent === true
+    );
 
-    // Always update current company
-    updates.currentCompany = currentExp?.company || "";
-
-    // If no current company, clear normalized fields
-    if (!currentExp) {
-      updates.currentCompany_canonical_id = "";
-      updates.currentCompany_display = "";
-      updates.currentCompany_master_id = null;
+    if (currentExp?.company) {
+      updates.currentCompany = currentExp.company;
     }
 
     updates.experiences = updates.experiences.map((exp) => {
@@ -403,37 +416,12 @@ export async function updateOnboardingFormService(userId, body, files) {
   // Education Logic
   // =========================
 
-  // if (Array.isArray(updates.educations)) {
-  //   updates.educations = updates.educations.map((edu) => {
-  //     if (edu.isCurrent === true) {
-  //       return { ...edu, endDate: "" };
-  //     }
-  //     return edu;
-  //   });
-  // }
-
-  // =========================
-  // Experiences Logic
-  // =========================
-
-  if (Array.isArray(updates.experiences)) {
-    const currentExp = updates.experiences.find((e) => e.isCurrent === true);
-
-    // Always update current company
-    updates.currentCompany = currentExp?.company || "";
-
-    // If no current company, clear normalized fields
-    if (!currentExp) {
-      updates.currentCompany_canonical_id = "";
-      updates.currentCompany_display = "";
-      updates.currentCompany_master_id = null;
-    }
-
-    updates.experiences = updates.experiences.map((exp) => {
-      if (exp.isCurrent === true) {
-        return { ...exp, endDate: "" };
+  if (Array.isArray(updates.educations)) {
+    updates.educations = updates.educations.map((edu) => {
+      if (edu.isCurrent === true) {
+        return { ...edu, endDate: "" };
       }
-      return exp;
+      return edu;
     });
   }
 
@@ -449,7 +437,8 @@ export async function updateOnboardingFormService(userId, body, files) {
 
   if (updates.emailVerified !== undefined) {
     updates.emailVerified =
-      updates.emailVerified === true || updates.emailVerified === "true";
+      updates.emailVerified === true ||
+      updates.emailVerified === "true";
   }
 
   updates.userId = userId;
@@ -458,7 +447,10 @@ export async function updateOnboardingFormService(userId, body, files) {
   // DB Update
   // =========================
 
-  const result = await handleOnboardingUpdate(updates, files);
+  const result = await handleOnboardingUpdate(
+    updates,
+    files
+  );
 
   // =========================
   // Update Auth userType
@@ -466,7 +458,10 @@ export async function updateOnboardingFormService(userId, body, files) {
 
   const allowedTypes = ["professional"];
 
-  if (updates.profileType && allowedTypes.includes(updates.profileType)) {
+  if (
+    updates.profileType &&
+    allowedTypes.includes(updates.profileType)
+  ) {
     await Auth.findByIdAndUpdate(userId, {
       userType: updates.profileType,
     });
@@ -501,6 +496,7 @@ export async function checkStudentService(studentId) {
     // console.log(student);
     if (student) return true;
     return false;
+
   } catch (error) {
     console.log("Error: ", error.message);
     throw new Error("Failed to fetch");
@@ -618,7 +614,9 @@ export async function checkStudentService(studentId) {
 //   };
 // };
 
+
 export const handleOnboardingUpdate = async (updateData, files) => {
+
   if (files?.resume?.[0]) {
     const file = files.resume[0];
     const upload = await streamUpload(file.buffer, "resumes");
@@ -630,10 +628,7 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     updateData.resumeUrl = upload.secure_url;
   }
   if (files?.degreeCertificate?.[0]) {
-    const upload = await streamUpload(
-      files.degreeCertificate[0].buffer,
-      "degreeCertificates",
-    );
+    const upload = await streamUpload(files.degreeCertificate[0].buffer, "degreeCertificates");
     updateData.degreeCertificate = upload.secure_url;
   }
   if (files?.project?.[0]) {
@@ -641,136 +636,125 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     updateData.project = upload.secure_url;
   }
   if (files?.backgroundImage?.[0]) {
-    const upload = await streamUpload(
-      files.backgroundImage[0].buffer,
-      "userBackgroundImages",
-    );
+    const upload = await streamUpload(files.backgroundImage[0].buffer, "userBackgroundImages");
     updateData.backgroundImage = upload.secure_url;
   }
   if (files?.profileImage?.[0]) {
-    const upload = await streamUpload(
-      files.profileImage[0].buffer,
-      "userProfileImages",
-    );
+    const upload = await streamUpload(files.profileImage[0].buffer, "userProfileImages");
     updateData.profileImage = upload.secure_url;
   }
 
   // Array certificates
   if (files?.experienceCertificate && updateData.experiences) {
     const experienceCerts = files.experienceCertificate;
-    for (
-      let i = 0;
-      i < updateData.experiences.length && i < experienceCerts.length;
-      i++
-    ) {
+    for (let i = 0; i < updateData.experiences.length && i < experienceCerts.length; i++) {
       const uploadedCert = await streamUpload(
         experienceCerts[i].buffer,
-        "experienceCertificates",
+        "experienceCertificates"
       );
       updateData.experiences[i].experienceCertificate = uploadedCert.secure_url;
     }
   }
   if (files?.leadershipCertificate && updateData.leadership) {
     const leadershipCerts = files.leadershipCertificate;
-    for (
-      let i = 0;
-      i < updateData.leadership.length && i < leadershipCerts.length;
-      i++
-    ) {
+    for (let i = 0; i < updateData.leadership.length && i < leadershipCerts.length; i++) {
       const uploadedCert = await streamUpload(
         leadershipCerts[i].buffer,
-        "leadershipCertificates",
+        "leadershipCertificates"
       );
       updateData.leadership[i].certificate = uploadedCert.secure_url;
     }
   }
-  if (
-    files?.internationalExperienceCertificate &&
-    updateData.internationalExperience
-  ) {
+  if (files?.internationalExperienceCertificate && updateData.internationalExperience) {
     const internationalCerts = files.internationalExperienceCertificate;
-    for (
-      let i = 0;
-      i < updateData.internationalExperience.length &&
-      i < internationalCerts.length;
-      i++
-    ) {
+    for (let i = 0; i < updateData.internationalExperience.length && i < internationalCerts.length; i++) {
       const uploadedCert = await streamUpload(
         internationalCerts[i].buffer,
-        "internationalExperienceCertificates",
+        "internationalExperienceCertificates"
       );
-      updateData.internationalExperience[i].certificate =
-        uploadedCert.secure_url;
+      updateData.internationalExperience[i].certificate = uploadedCert.secure_url;
     }
   }
   if (files?.awardCertificate && updateData.awards) {
     const awardCerts = files.awardCertificate;
-    for (
-      let i = 0;
-      i < updateData.awards.length && i < awardCerts.length;
-      i++
-    ) {
+    for (let i = 0; i < updateData.awards.length && i < awardCerts.length; i++) {
       const uploadedCert = await streamUpload(
         awardCerts[i].buffer,
-        "awardCertificates",
+        "awardCertificates"
       );
       updateData.awards[i].certificate = uploadedCert.secure_url;
     }
   }
   if (Array.isArray(updateData.educations)) {
     for (const edu of updateData.educations) {
+
       if (!edu.college) continue;
 
-      const result = await resolveCollege(edu.college);
+      const result = await resolveCollege(
+        edu.college
+      );
 
       if (!result) continue;
 
-      edu.college_master_id = result.masterId;
+      edu.college_master_id =
+        result.masterId;
 
-      edu.college_canonical_id = result.canonicalId;
+      edu.college_canonical_id =
+        result.canonicalId;
 
-      edu.college_display = result.displayName;
+      edu.college_display =
+        result.displayName;
     }
   }
   if (Array.isArray(updateData.experiences)) {
     for (const exp of updateData.experiences) {
+
       if (!exp.company) continue;
 
-      const result = await resolveCompany(exp.company);
+      const result = await resolveCompany(
+        exp.company
+      );
 
       if (!result) continue;
 
-      exp.company_master_id = result.masterId;
+      exp.company_master_id =
+        result.masterId;
 
-      exp.company_canonical_id = result.canonicalId;
+      exp.company_canonical_id =
+        result.canonicalId;
 
-      exp.company_display = result.displayName;
+      exp.company_display =
+        result.displayName;
     }
   }
   if (updateData.currentCompany) {
-    const result = await resolveCompany(updateData.currentCompany);
+
+    const result =
+      await resolveCompany(
+        updateData.currentCompany
+      );
 
     if (result) {
-      updateData.currentCompany_master_id = result.masterId;
-      updateData.currentCompany_canonical_id = result.canonicalId;
-      updateData.currentCompany_display = result.displayName;
+
+      updateData.currentCompany_master_id =
+        result.masterId;
+
+      updateData.currentCompany_canonical_id =
+        result.canonicalId;
+
+      updateData.currentCompany_display =
+        result.displayName;
     }
-  } else {
-    // Clear company details when there is no current company
-    updateData.currentCompany_master_id = null;
-    updateData.currentCompany_canonical_id = "";
-    updateData.currentCompany_display = "";
   }
   // Save onboarding data
   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
     { userId: updateData.userId },
     { $set: updateData },
-    { upsert: true, new: true, runValidators: true },
+    { upsert: true, new: true, runValidators: true }
   );
 
   // Set userType logic
-  {
-    /*let finalUserTypeForResponse = "candidate";
+  {/*let finalUserTypeForResponse = "candidate";
   let authUserType = "candidate";
   if (updateData.profileType) {
     authUserType = updateData.profileType.toLowerCase();
@@ -785,17 +769,18 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     userType: authUserType,
     onboardingCompleted: true,
     onboardingStep: 6
-  })*/
-  }
+  })*/}
 
   const updatedUser = await updateAuthUserService(updateData.userId, {
-    onboardingCompleted: true,
-    onboardingStep: 6,
-  });
+  onboardingCompleted: true,
+  onboardingStep: 6
+});
+
 
   return {
+   
     updatedUser,
-    updatedOnboarding,
+    updatedOnboarding
   };
 };
 
@@ -803,21 +788,20 @@ export const getCategorizedSkillsService = async (userId) => {
   try {
     const onboarding = await OnboardingModel.findOne(
       { userId },
-      { categorizedSkills: 1, _id: 0 },
+      { categorizedSkills: 1, _id: 0 }
     );
 
     if (!onboarding) {
       return null;
     }
 
-    return (
-      onboarding.categorizedSkills || {
-        highInDemand: [],
-        growing: [],
-        saturated: [],
-        obsolete: [],
-      }
-    );
+    return onboarding.categorizedSkills || {
+      highInDemand: [],
+      growing: [],
+      saturated: [],
+      obsolete: []
+    };
+
   } catch (error) {
     console.error("Service error (getCategorizedSkills):", error);
     throw error;
@@ -825,12 +809,16 @@ export const getCategorizedSkillsService = async (userId) => {
 };
 
 // this service gets all the details of the specific user if passed to display in app frontend
-export const getOnboardingByUserIdService = async (userId) => {
+export const getOnboardingByUserIdService = async (
+  userId
+) => {
   if (!userId) {
     throw new Error("UserId is required");
   }
 
-  const onboardingData = await OnboardingModel.findOne({ userId }).lean();
+  const onboardingData = await OnboardingModel
+    .findOne({ userId })
+    .lean();
 
   if (!onboardingData) {
     return null;
@@ -840,15 +828,22 @@ export const getOnboardingByUserIdService = async (userId) => {
   // Sort Experiences
   // =========================
 
-  if (Array.isArray(onboardingData.experiences)) {
+  if (
+    Array.isArray(onboardingData.experiences)
+  ) {
     onboardingData.experiences.sort((a, b) => {
+
       // current company first
       if (a.isCurrent) return -1;
       if (b.isCurrent) return 1;
 
-      const dateA = a.startDate ? new Date(a.startDate) : new Date(0);
+      const dateA = a.startDate
+        ? new Date(a.startDate)
+        : new Date(0);
 
-      const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
+      const dateB = b.startDate
+        ? new Date(b.startDate)
+        : new Date(0);
 
       return dateB - dateA;
     });
@@ -858,15 +853,22 @@ export const getOnboardingByUserIdService = async (userId) => {
   // Sort Educations
   // =========================
 
-  if (Array.isArray(onboardingData.educations)) {
+  if (
+    Array.isArray(onboardingData.educations)
+  ) {
     onboardingData.educations.sort((a, b) => {
+
       // current education first
       if (a.isCurrent) return -1;
       if (b.isCurrent) return 1;
 
-      const dateA = a.startDate ? new Date(a.startDate) : new Date(0);
+      const dateA = a.startDate
+        ? new Date(a.startDate)
+        : new Date(0);
 
-      const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
+      const dateB = b.startDate
+        ? new Date(b.startDate)
+        : new Date(0);
 
       return dateB - dateA;
     });
@@ -877,36 +879,40 @@ export const getOnboardingByUserIdService = async (userId) => {
       {
         postedByUser: userId,
         jobType: "Referral",
-        approvalStatus: "Approved",
+        approvalStatus: "Approved"
       },
-      { _id: 1 },
+      { _id: 1 }
     ).lean();
 
-    const jobIds = jobs.map((job) => job._id);
+    const jobIds = jobs.map(job => job._id);
 
     if (jobIds.length === 0) {
       onboardingData.responseRate = 0;
     } else {
-      const [totalApplicationsReceived, totalReferredToCompany] =
-        await Promise.all([
-          Application.countDocuments({
-            job: { $in: jobIds },
-            jobType: "Referral",
-            adminApprovalStatus: "Approved",
-          }),
+      const [
+        totalApplicationsReceived,
+        totalReferredToCompany,
+      ] = await Promise.all([
+        Application.countDocuments({
+          job: { $in: jobIds },
+          jobType: "Referral",
+          adminApprovalStatus: "Approved",
+        }),
 
-          Application.countDocuments({
-            job: { $in: jobIds },
-            jobType: "Referral",
-            adminApprovalStatus: "Approved",
-            "statusHistory.status": "Referred To Company",
-          }),
-        ]);
+        Application.countDocuments({
+          job: { $in: jobIds },
+          jobType: "Referral",
+          adminApprovalStatus: "Approved",
+          "statusHistory.status": "Referred To Company",
+        }),
+      ]);
 
       onboardingData.responseRate =
         totalApplicationsReceived > 0
           ? Math.round(
-              (totalReferredToCompany / totalApplicationsReceived) * 10000,
+              (totalReferredToCompany /
+                totalApplicationsReceived) *
+                10000
             ) / 100
           : 0;
     }
@@ -930,11 +936,12 @@ export const getOnboardingByUserIdService = async (userId) => {
   } catch (error) {
     console.error(
       `Error fetching referral jobs for onboarding ${onboardingData._id}:`,
-      error,
+      error
     );
   }
 
   onboardingData.referralJobs = referralJobs;
-  onboardingData.isHiring = referralJobs.length > 0;
+  onboardingData.isHiring =
+    referralJobs.length > 0;
   return onboardingData;
 };
