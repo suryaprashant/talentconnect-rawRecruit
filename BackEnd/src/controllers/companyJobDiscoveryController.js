@@ -17,6 +17,7 @@ import {
   notifyAlumniOnNewReferralRequest,
   notifySenderOnReferralRequestStatusChange,
 } from "../services/notificationService.js";
+import { getAlumniWhoCanHelpService } from "./AlumniJobsController.js";
 
 // export const getAlumniForCareerPageUrl  = async (req, res) => {
 //   try {
@@ -196,13 +197,20 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       });
     }
 
-    const alumniResult = await getAlumniByCompanyForCandidate({
+    // const alumniResult = await getAlumniByCompanyForCandidate({
+    //   userId: senderUserId,
+    //   companyName,
+    //   canonicalCompanyId,
+    //   page: 1,
+    //   limit: 100,
+    //   skip: 0,
+    // });
+    const alumniResult = await getAlumniWhoCanHelpService({
       userId: senderUserId,
-      companyName,
-      canonicalCompanyId,
+      postedByUser: null,
+      company: companyName,
       page: 1,
       limit: 100,
-      skip: 0,
     });
 
     let alumniList = alumniResult?.data || [];
@@ -211,8 +219,22 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       (alumni) =>
         alumni?.userId && String(alumni.userId) !== String(senderUserId),
     );
+    let alumniFound = true;
+    if (alumniList.length === 0) {
+      alumniFound = false;
+      alumniList = await Onboarding.find({
+        currentCompany_canonical_id: canonicalCompanyId,
+      }).lean();
 
-    if (!alumniResult?.alumFound || alumniList.length === 0) {
+      alumniList = alumniList.filter(
+        (alumni) =>
+          alumni?.userId &&
+          String(alumni.userId) !== String(senderUserId),
+      );
+    }
+    
+
+    if (alumniList.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No alumni or current employee found for this company.",
@@ -230,7 +252,8 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       data: {
         companyName,
         careerPageUrl,
-        sourceType: alumniResult?.sourceType,
+        alumniFound,
+        // sourceType: alumniResult?.sourceType,
         totalAlumniFound: alumniList.length,
         alumni: alumniList,
       },
