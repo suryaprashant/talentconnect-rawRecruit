@@ -408,7 +408,7 @@ export async function updateOnboardingFormService(
   // =========================
   // let currentCompany = "";
 
-  if (Array.isArray(experiences)) {
+  if (Array.isArray(updates.experiences)) {
     const currentExp = experiences.find(
       (e) => e.isCurrent === true
     );
