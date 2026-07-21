@@ -1,5 +1,5 @@
-import  Onboarding  from "../models/studentonboardingModel.js";
-import {JobPostingTable}  from "../models/jobPostingsModel.js";
+import Onboarding from "../models/studentonboardingModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
 import OpenAI from "openai";
 import Application from "../models/applicationModel.js";
 import mongoose from "mongoose";
@@ -8,12 +8,12 @@ import {
   buildCollegeAlumniQuery,
   buildCompanyAlumniQuery,
 } from "../services/entityQueryService.js";
-import {resolveCompany} from "../services/normalizationService.js";
+import { resolveCompany } from "../services/normalizationService.js";
 const openai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY, // Ensure this is in your .env file
   baseURL: "https://api.groq.com/openai/v1", // This tells the SDK to talk to Groq
 });
-import {paginatedResponse} from "../utils/paginate.js";
+import { paginatedResponse } from "../utils/paginate.js";
 
 // export const getAlumniPostedJobs = async (req, res) => {
 //   try {
@@ -117,7 +117,7 @@ import {paginatedResponse} from "../utils/paginate.js";
 //       return res.status(404).json({ message: "College info not found in your profile." });
 //     }
 
-    
+
 //     const alumni = await Onboarding.find({
 //       college: myProfile.college,
 //       userId: { $ne: userId },
@@ -125,7 +125,7 @@ import {paginatedResponse} from "../utils/paginate.js";
 //       currentCompany: { $regex: new RegExp(`^${company}$`, "i") },
 //     }).lean();
 
-    
+
 //     const alumniWithMetrics = await Promise.all(
 //       alumni.map(async (person) => {
 //         const metrics = await fetchProfessionalReferralMetrics(person._id);
@@ -149,382 +149,22 @@ import {paginatedResponse} from "../utils/paginate.js";
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
-
-
 export const getAlumniWhoCanHelp = async (req, res) => {
   try {
     const userId = req.user?._id;
-
     const { company, postedByUser } = req.params;
-    const targetCompany =
-      await resolveCompany(company);
+    const { page, limit } = req.pagination;
 
-    const targetCanonicalId =
-      targetCompany?.canonicalId || null;
-
-    if (!targetCanonicalId) {
-      return res.status(404).json({
-        success: false,
-        errorCode: "COMPANY_NOT_NORMALIZED",
-        message:
-          "Company not found in normalization database.",
-      });
-    }
-    const { page, limit, skip } =
-      req.pagination;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        errorCode: "USER_ID_MISSING",
-        message:
-          "userId not found in token. Please re-login.",
-
-        data: null,
-      });
-    }
-
-    if (!company) {
-      return res.status(400).json({
-        success: false,
-        errorCode:
-          "COMPANY_PARAM_MISSING",
-
-        message:
-          "Company name is required in params.",
-
-        data: null,
-      });
-    }
-
-    // =====================================================
-    // STEP 1: FETCH MY PROFILE
-    // =====================================================
-
-    const myProfile =
-      await Onboarding.findOne({
+    const result =
+      await getAlumniWhoCanHelpService({
         userId,
-      });
-
-    if (!myProfile) {
-      return res.status(404).json({
-        success: false,
-        errorCode:
-          "PROFILE_NOT_FOUND",
-
-        message:
-          "Your profile does not exist. Please complete onboarding.",
-
-        data: null,
-      });
-    }
-    let collegeAlumni = [];
-    let companyAlumni = [];
-    // =====================================================
-    // STEP 2: BUILD EXCLUDED IDS + COMPANY REGEX
-    // =====================================================
-
-    
-    const excludedUserIds = [userId];
-
-    if (postedByUser) {
-      excludedUserIds.push(
-        postedByUser
-      );
-    }
-
-    // =====================================================
-    // STEP 3: FETCH COLLEGE ALUMNI
-    // =====================================================
-
-    const collegeQuery =
-      buildCollegeAlumniQuery(
-        myProfile,
-        userId
-      );
-
-    const colleges = [
-      ...new Set(
-        (myProfile.educations || [])
-          .map(
-            (edu) =>
-              edu.college_canonical_id ||
-              edu.college
-          )
-          .filter(Boolean)
-      ),
-    ];
-
-    if (collegeQuery) {
-
-      collegeAlumni =
-        await Onboarding.find({
-          ...collegeQuery,
-
-          userId: {
-            $nin: excludedUserIds,
-          },
-        }).lean();
-    }
-
-    // =====================================================
-    // STEP 4: BUILD USER COMPANIES
-    // =====================================================
-
-    const companyQuery =
-    buildCompanyAlumniQuery(
-      myProfile,
-      userId
-    );
-
-    const uniqueCompanies = [
-      ...new Set([
-        myProfile.currentCompany_canonical_id ||
-          myProfile.currentCompany,
-
-        ...(myProfile.experiences || [])
-          .map(
-            (exp) =>
-              exp.company_canonical_id ||
-              exp.company
-          ),
-      ].filter(Boolean)),
-    ];
-
-    if (companyQuery) {
-
-      companyAlumni =
-        await Onboarding.find({
-          ...companyQuery,
-
-          userId: {
-            $nin: excludedUserIds,
-          },
-        }).lean();
-    }
-
-    // =====================================================
-    // STEP 6: MERGE + REMOVE DUPLICATES
-    // =====================================================
-
-    const mergedAlumni = [
-      ...collegeAlumni,
-      ...companyAlumni,
-    ];
-
-    const uniqueAlumniMap =
-      new Map();
-
-    mergedAlumni.forEach(
-      (person) => {
-        const key =
-          person.userId?.toString();
-
-        if (
-          !uniqueAlumniMap.has(key)
-        ) {
-          uniqueAlumniMap.set(
-            key,
-            person
-          );
-        }
-      }
-    );
-
-    const uniqueAlumni =
-      Array.from(
-        uniqueAlumniMap.values()
-      );
-
-    // =====================================================
-    // STEP 7: FILTER ONLY TARGET COMPANY PEOPLE
-    // =====================================================
-
-    const alumni =
-      uniqueAlumni.filter(
-        (person) => {
-
-          const currentlyWorking =
-            targetCanonicalId &&
-            person.currentCompany_canonical_id ===
-              targetCanonicalId;
-
-          const previouslyWorked =
-            person.experiences?.some(
-              (exp) =>
-                exp.company_canonical_id ===
-                targetCanonicalId
-            );
-
-          // return (
-          //   currentlyWorking ||
-          //   previouslyWorked
-          // );
-          return (
-            currentlyWorking 
-          );
-        }
-      );
-    const total = alumni.length;
-
-    // =====================================================
-    // STEP 8: APPLY PAGINATION
-    // =====================================================
-
-    const paginatedAlumni =
-      alumni.slice(
-        skip,
-        skip + limit
-      );
-
-    // =====================================================
-    // STEP 9: EMPTY RESPONSE
-    // =====================================================
-
-    if (
-      paginatedAlumni.length === 0
-    ) {
-      return res.status(200).json({
-        success: true,
-
-        errorCode: null,
-
-        message:
-          "No professionals found for this company.",
-
+        postedByUser,
         company,
-
-        collegesChecked:
-          colleges,
-
-        companiesChecked:
-          uniqueCompanies,
-
-        ...paginatedResponse(
-          [],
-          total,
-          {
-            page,
-            limit,
-          }
-        ),
+        page,
+        limit,
       });
-    }
 
-    // =====================================================
-    // STEP 10: FETCH METRICS + JOBS
-    // =====================================================
-
-    const alumniWithMetrics =
-      await Promise.all(
-        paginatedAlumni.map(
-          async (person) => {
-            let metrics = null;
-
-            let referralJobs = [];
-
-            const currentlyWorking =
-              targetCanonicalId &&
-              person.currentCompany_canonical_id ===
-                targetCanonicalId;
-
-            const previouslyWorked =
-              person.experiences?.some(
-                (exp) =>
-                  exp.company_canonical_id ===
-                  targetCanonicalId
-              );
-
-            try {
-              [
-                metrics,
-                referralJobs,
-              ] =
-                await Promise.all([
-                  fetchProfessionalReferralMetrics(
-                    person._id
-                  ),
-
-                  JobPostingTable.find(
-                    {
-                      candidatePosted:
-                        person._id,
-
-                      jobType:
-                        "Referral",
-
-                      approvalStatus:
-                        "Approved",
-
-                      inactive:
-                        false,
-                    }
-                  )
-                    .sort({
-                      createdAt:
-                        -1,
-                    })
-                    .lean(),
-                ]);
-            } catch (innerError) {
-              console.error(
-                `Error processing professional ${person._id}:`,
-                innerError
-              );
-            }
-
-            return {
-              ...person,
-
-              currentlyWorking,
-
-              previouslyWorked,
-
-              referralMetrics:
-                metrics,
-
-              referralJobs,
-
-              isHiring:
-                referralJobs.length >
-                0,
-            };
-          }
-        )
-      );
-
-    // =====================================================
-    // STEP 11: RESPONSE
-    // =====================================================
-
-    const pagination =
-      paginatedResponse(
-        alumniWithMetrics,
-        total,
-        {
-          page,
-          limit,
-        }
-      );
-
-    return res.status(200).json({
-      success: true,
-
-      errorCode: null,
-
-      message:
-        "Professionals fetched successfully.",
-
-      company,
-
-      collegesChecked:
-        colleges,
-
-      companiesChecked:
-        uniqueCompanies,
-
-      ...pagination,
-    });
+    return res.status(200).json(result);
 
   } catch (error) {
     console.error(
@@ -532,19 +172,413 @@ export const getAlumniWhoCanHelp = async (req, res) => {
       error
     );
 
-    return res.status(500).json({
+    return res.status(error.status || 500).json({
       success: false,
-
       errorCode:
+        error.errorCode ||
         "INTERNAL_SERVER_ERROR",
-
       message:
+        error.message ||
         "Something went wrong. Please try again later.",
-
       data: null,
     });
   }
 };
+
+// export const getAlumniWhoCanHelp = async (req, res) => {
+//   try {
+//     const userId = req.user?._id;
+
+//     const { company, postedByUser } = req.params;
+//     const targetCompany =
+//       await resolveCompany(company);
+
+//     const targetCanonicalId =
+//       targetCompany?.canonicalId || null;
+
+//     if (!targetCanonicalId) {
+//       return res.status(404).json({
+//         success: false,
+//         errorCode: "COMPANY_NOT_NORMALIZED",
+//         message:
+//           "Company not found in normalization database.",
+//       });
+//     }
+//     const { page, limit, skip } =
+//       req.pagination;
+
+//     if (!userId) {
+//       return res.status(401).json({
+//         success: false,
+//         errorCode: "USER_ID_MISSING",
+//         message:
+//           "userId not found in token. Please re-login.",
+
+//         data: null,
+//       });
+//     }
+
+//     if (!company) {
+//       return res.status(400).json({
+//         success: false,
+//         errorCode:
+//           "COMPANY_PARAM_MISSING",
+
+//         message:
+//           "Company name is required in params.",
+
+//         data: null,
+//       });
+//     }
+
+//     // =====================================================
+//     // STEP 1: FETCH MY PROFILE
+//     // =====================================================
+
+//     const myProfile =
+//       await Onboarding.findOne({
+//         userId,
+//       });
+
+//     if (!myProfile) {
+//       return res.status(404).json({
+//         success: false,
+//         errorCode:
+//           "PROFILE_NOT_FOUND",
+
+//         message:
+//           "Your profile does not exist. Please complete onboarding.",
+
+//         data: null,
+//       });
+//     }
+//     let collegeAlumni = [];
+//     let companyAlumni = [];
+//     // =====================================================
+//     // STEP 2: BUILD EXCLUDED IDS + COMPANY REGEX
+//     // =====================================================
+
+
+//     const excludedUserIds = [userId];
+
+//     if (postedByUser) {
+//       excludedUserIds.push(
+//         postedByUser
+//       );
+//     }
+
+//     // =====================================================
+//     // STEP 3: FETCH COLLEGE ALUMNI
+//     // =====================================================
+
+//     const collegeQuery =
+//       buildCollegeAlumniQuery(
+//         myProfile,
+//         userId
+//       );
+
+//     const colleges = [
+//       ...new Set(
+//         (myProfile.educations || [])
+//           .map(
+//             (edu) =>
+//               edu.college_canonical_id ||
+//               edu.college
+//           )
+//           .filter(Boolean)
+//       ),
+//     ];
+
+//     if (collegeQuery) {
+
+//       collegeAlumni =
+//         await Onboarding.find({
+//           ...collegeQuery,
+
+//           userId: {
+//             $nin: excludedUserIds,
+//           },
+//         }).lean();
+//     }
+
+//     // =====================================================
+//     // STEP 4: BUILD USER COMPANIES
+//     // =====================================================
+
+//     const companyQuery =
+//     buildCompanyAlumniQuery(
+//       myProfile,
+//       userId
+//     );
+
+//     const uniqueCompanies = [
+//       ...new Set([
+//         myProfile.currentCompany_canonical_id ||
+//           myProfile.currentCompany,
+
+//         ...(myProfile.experiences || [])
+//           .map(
+//             (exp) =>
+//               exp.company_canonical_id ||
+//               exp.company
+//           ),
+//       ].filter(Boolean)),
+//     ];
+
+//     if (companyQuery) {
+
+//       companyAlumni =
+//         await Onboarding.find({
+//           ...companyQuery,
+
+//           userId: {
+//             $nin: excludedUserIds,
+//           },
+//         }).lean();
+//     }
+
+//     // =====================================================
+//     // STEP 6: MERGE + REMOVE DUPLICATES
+//     // =====================================================
+
+//     const mergedAlumni = [
+//       ...collegeAlumni,
+//       ...companyAlumni,
+//     ];
+
+//     const uniqueAlumniMap =
+//       new Map();
+
+//     mergedAlumni.forEach(
+//       (person) => {
+//         const key =
+//           person.userId?.toString();
+
+//         if (
+//           !uniqueAlumniMap.has(key)
+//         ) {
+//           uniqueAlumniMap.set(
+//             key,
+//             person
+//           );
+//         }
+//       }
+//     );
+
+//     const uniqueAlumni =
+//       Array.from(
+//         uniqueAlumniMap.values()
+//       );
+
+//     // =====================================================
+//     // STEP 7: FILTER ONLY TARGET COMPANY PEOPLE
+//     // =====================================================
+
+//     const alumni =
+//       uniqueAlumni.filter(
+//         (person) => {
+
+//           const currentlyWorking =
+//             targetCanonicalId &&
+//             person.currentCompany_canonical_id ===
+//               targetCanonicalId;
+
+//           const previouslyWorked =
+//             person.experiences?.some(
+//               (exp) =>
+//                 exp.company_canonical_id ===
+//                 targetCanonicalId
+//             );
+
+//           // return (
+//           //   currentlyWorking ||
+//           //   previouslyWorked
+//           // );
+//           return (
+//             currentlyWorking 
+//           );
+//         }
+//       );
+//     const total = alumni.length;
+
+//     // =====================================================
+//     // STEP 8: APPLY PAGINATION
+//     // =====================================================
+
+//     const paginatedAlumni =
+//       alumni.slice(
+//         skip,
+//         skip + limit
+//       );
+
+//     // =====================================================
+//     // STEP 9: EMPTY RESPONSE
+//     // =====================================================
+
+//     if (
+//       paginatedAlumni.length === 0
+//     ) {
+//       return res.status(200).json({
+//         success: true,
+
+//         errorCode: null,
+
+//         message:
+//           "No professionals found for this company.",
+
+//         company,
+
+//         collegesChecked:
+//           colleges,
+
+//         companiesChecked:
+//           uniqueCompanies,
+
+//         ...paginatedResponse(
+//           [],
+//           total,
+//           {
+//             page,
+//             limit,
+//           }
+//         ),
+//       });
+//     }
+
+//     // =====================================================
+//     // STEP 10: FETCH METRICS + JOBS
+//     // =====================================================
+
+//     const alumniWithMetrics =
+//       await Promise.all(
+//         paginatedAlumni.map(
+//           async (person) => {
+//             let metrics = null;
+
+//             let referralJobs = [];
+
+//             const currentlyWorking =
+//               targetCanonicalId &&
+//               person.currentCompany_canonical_id ===
+//                 targetCanonicalId;
+
+//             const previouslyWorked =
+//               person.experiences?.some(
+//                 (exp) =>
+//                   exp.company_canonical_id ===
+//                   targetCanonicalId
+//               );
+
+//             try {
+//               [
+//                 metrics,
+//                 referralJobs,
+//               ] =
+//                 await Promise.all([
+//                   fetchProfessionalReferralMetrics(
+//                     person._id
+//                   ),
+
+//                   JobPostingTable.find(
+//                     {
+//                       candidatePosted:
+//                         person._id,
+
+//                       jobType:
+//                         "Referral",
+
+//                       approvalStatus:
+//                         "Approved",
+
+//                       inactive:
+//                         false,
+//                     }
+//                   )
+//                     .sort({
+//                       createdAt:
+//                         -1,
+//                     })
+//                     .lean(),
+//                 ]);
+//             } catch (innerError) {
+//               console.error(
+//                 `Error processing professional ${person._id}:`,
+//                 innerError
+//               );
+//             }
+
+//             return {
+//               ...person,
+
+//               currentlyWorking,
+
+//               previouslyWorked,
+
+//               referralMetrics:
+//                 metrics,
+
+//               referralJobs,
+
+//               isHiring:
+//                 referralJobs.length >
+//                 0,
+//             };
+//           }
+//         )
+//       );
+
+//     // =====================================================
+//     // STEP 11: RESPONSE
+//     // =====================================================
+
+//     const pagination =
+//       paginatedResponse(
+//         alumniWithMetrics,
+//         total,
+//         {
+//           page,
+//           limit,
+//         }
+//       );
+
+//     return res.status(200).json({
+//       success: true,
+
+//       errorCode: null,
+
+//       message:
+//         "Professionals fetched successfully.",
+
+//       company,
+
+//       collegesChecked:
+//         colleges,
+
+//       companiesChecked:
+//         uniqueCompanies,
+
+//       ...pagination,
+//     });
+
+//   } catch (error) {
+//     console.error(
+//       "Error fetching alumni who can help:",
+//       error
+//     );
+
+//     return res.status(500).json({
+//       success: false,
+
+//       errorCode:
+//         "INTERNAL_SERVER_ERROR",
+
+//       message:
+//         "Something went wrong. Please try again later.",
+
+//       data: null,
+//     });
+//   }
+// };
 // export const getAlumniWhoCanHelp = async (req, res) => {
 //   const debugId = `[getAlumniPostedJobs-${Date.now()}]`;
 
@@ -755,17 +789,17 @@ export const getAlumniWhoCanHelp = async (req, res) => {
 // };
 
 
- export const ProfileScore = async (req, res) => {
+export const ProfileScore = async (req, res) => {
   try {
     const userId = req.user._id;
-    
+
     // Fetch the full profile based on the schema provided
     const profile = await Onboarding.findOne({ userId });
 
     if (!profile || !profile.jobRoles?.length) {
-      return res.json({ 
-        success: false, 
-        message: "Profile or job roles not found. Please complete your onboarding." 
+      return res.json({
+        success: false,
+        message: "Profile or job roles not found. Please complete your onboarding."
       });
     }
 
@@ -829,7 +863,7 @@ export const getAlumniWhoCanHelp = async (req, res) => {
 
         const rawText = response.choices[0].message.content;
         const cleanJsonText = rawText.replace(/```json|```/g, "").trim();
-        
+
         return JSON.parse(cleanJsonText);
       } catch (e) {
         console.error(`Error scoring role ${role}:`, e);
@@ -845,9 +879,9 @@ export const getAlumniWhoCanHelp = async (req, res) => {
 
     const results = await Promise.all(scorePromises);
 
-    res.json({ 
-      success: true, 
-      scores: results 
+    res.json({
+      success: true,
+      scores: results
     });
 
   } catch (error) {
@@ -886,7 +920,7 @@ export const getNewApplications = async (req, res) => {
       { $unwind: "$jobData" },
       {
         $match: {
-          "jobData.candidatePosted": new mongoose.Types.ObjectId(myProfile._id), 
+          "jobData.candidatePosted": new mongoose.Types.ObjectId(myProfile._id),
         },
       },
       {
@@ -1059,12 +1093,12 @@ export const getNewApplications = async (req, res) => {
 //       profileType: "professional", 
 //     });
 
-    
+
 //     const alumniWithMetrics = await Promise.all(
 //       alumni.map(async (person) => {
 //         const [metrics, referralJobs] = await Promise.all([
 //           fetchProfessionalReferralMetrics(person._id),
-          // JobPostingTable.find({
+// JobPostingTable.find({
 //             candidatePosted: person._id, // only hiring
 //             jobType: "Referral",
 //             approvalStatus: "Approved",
@@ -2326,7 +2360,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
     const uniqueCompanies = [
       ...new Set([
         myProfile.currentCompany_canonical_id ||
-          myProfile.currentCompany,
+        myProfile.currentCompany,
 
         ...(myProfile.experiences || [])
           .map(
@@ -2472,7 +2506,7 @@ export const getAlumniHiringNetwork = async (req, res) => {
               //         edu.yearOfGraduation
               //     )
               //     .filter(Boolean) || [],
-              locations : person.locations ?? [],
+              locations: person.locations ?? [],
               educations:
                 person.educations ??
                 [],
@@ -2528,8 +2562,8 @@ export const getAlumniHiringNetwork = async (req, res) => {
     const filteredAlumni =
       jobPostedOnly
         ? alumniWithMetrics.filter(
-            (person) => person.isHiring
-          )
+          (person) => person.isHiring
+        )
         : alumniWithMetrics;
 
     const total = filteredAlumni.length;
@@ -3093,4 +3127,371 @@ function extractCompanyNameFromUrl(url) {
     console.error("Error extracting company name:", error);
     return null;
   }
+}
+
+export const getAlumniWhoCanHelpService = async ({
+  userId,
+  postedByUser,
+  company,
+  page = 1,
+  limit = Number.MAX_SAFE_INTEGER,
+}) => {
+  const targetCompany =
+    await resolveCompany(company);
+
+  const targetCanonicalId =
+    targetCompany?.canonicalId || null;
+
+  if (!targetCanonicalId) {
+    throw {
+      status: 404,
+      errorCode: "COMPANY_NOT_NORMALIZED",
+      message:
+        "Company not found in normalization database.",
+    };
+  }
+  const skip = (page - 1) * limit;
+
+  if (!userId) {
+    throw {
+      status: 401,
+      errorCode: "USER_ID_MISSING",
+      message: "userId not found in token. Please re-login.",
+    };
+  }
+
+  if (!company) {
+    throw {
+      status: 400,
+      errorCode: "COMPANY_PARAM_MISSING",
+      message: "Company name is required in params.",
+    };
+  }
+
+  // =====================================================
+  // STEP 1: FETCH MY PROFILE
+  // =====================================================
+
+  const myProfile =
+    await Onboarding.findOne({
+      userId,
+    });
+
+  if (!myProfile) {
+    throw {
+      status: 404,
+      errorCode:
+        "PROFILE_NOT_FOUND",
+
+      message:
+        "Your profile does not exist. Please complete onboarding.",
+    };
+  }
+  let collegeAlumni = [];
+  let companyAlumni = [];
+  // =====================================================
+  // STEP 2: BUILD EXCLUDED IDS + COMPANY REGEX
+  // =====================================================
+
+
+  const excludedUserIds = [userId];
+
+  if (postedByUser) {
+    excludedUserIds.push(
+      postedByUser
+    );
+  }
+
+  // =====================================================
+  // STEP 3: FETCH COLLEGE ALUMNI
+  // =====================================================
+
+  const collegeQuery =
+    buildCollegeAlumniQuery(
+      myProfile,
+      userId
+    );
+
+  const colleges = [
+    ...new Set(
+      (myProfile.educations || [])
+        .map(
+          (edu) =>
+            edu.college_canonical_id ||
+            edu.college
+        )
+        .filter(Boolean)
+    ),
+  ];
+
+  if (collegeQuery) {
+
+    collegeAlumni =
+      await Onboarding.find({
+        ...collegeQuery,
+
+        userId: {
+          $nin: excludedUserIds,
+        },
+      }).lean();
+  }
+
+  // =====================================================
+  // STEP 4: BUILD USER COMPANIES
+  // =====================================================
+
+  const companyQuery =
+    buildCompanyAlumniQuery(
+      myProfile,
+      userId
+    );
+
+  const uniqueCompanies = [
+    ...new Set([
+      myProfile.currentCompany_canonical_id ||
+      myProfile.currentCompany,
+
+      ...(myProfile.experiences || [])
+        .map(
+          (exp) =>
+            exp.company_canonical_id ||
+            exp.company
+        ),
+    ].filter(Boolean)),
+  ];
+
+  if (companyQuery) {
+
+    companyAlumni =
+      await Onboarding.find({
+        ...companyQuery,
+
+        userId: {
+          $nin: excludedUserIds,
+        },
+      }).lean();
+  }
+
+  // =====================================================
+  // STEP 6: MERGE + REMOVE DUPLICATES
+  // =====================================================
+
+  const mergedAlumni = [
+    ...collegeAlumni,
+    ...companyAlumni,
+  ];
+
+  const uniqueAlumniMap =
+    new Map();
+
+  mergedAlumni.forEach(
+    (person) => {
+      const key =
+        person.userId?.toString();
+
+      if (
+        !uniqueAlumniMap.has(key)
+      ) {
+        uniqueAlumniMap.set(
+          key,
+          person
+        );
+      }
+    }
+  );
+
+  const uniqueAlumni =
+    Array.from(
+      uniqueAlumniMap.values()
+    );
+
+  // =====================================================
+  // STEP 7: FILTER ONLY TARGET COMPANY PEOPLE
+  // =====================================================
+
+  const alumni =
+    uniqueAlumni.filter(
+      (person) => {
+
+        const currentlyWorking =
+          targetCanonicalId &&
+          person.currentCompany_canonical_id ===
+          targetCanonicalId;
+
+        const previouslyWorked =
+          person.experiences?.some(
+            (exp) =>
+              exp.company_canonical_id ===
+              targetCanonicalId
+          );
+
+        // return (
+        //   currentlyWorking ||
+        //   previouslyWorked
+        // );
+        return (
+          currentlyWorking
+        );
+      }
+    );
+  const total = alumni.length;
+
+  // =====================================================
+  // STEP 8: APPLY PAGINATION
+  // =====================================================
+
+  const paginatedAlumni =
+    alumni.slice(
+      skip,
+      skip + limit
+    );
+
+  // =====================================================
+  // STEP 9: EMPTY RESPONSE
+  // =====================================================
+
+  if (
+    paginatedAlumni.length === 0
+  ) {
+    return {
+      success: true,
+
+      errorCode: null,
+
+      message:
+        "No professionals found for this company.",
+
+      company,
+
+      collegesChecked:
+        colleges,
+
+      companiesChecked:
+        uniqueCompanies,
+
+      ...paginatedResponse(
+        [],
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
+    };
+  }
+
+  // =====================================================
+  // STEP 10: FETCH METRICS + JOBS
+  // =====================================================
+
+  const alumniWithMetrics =
+    await Promise.all(
+      paginatedAlumni.map(
+        async (person) => {
+          let metrics = null;
+
+          let referralJobs = [];
+
+          const currentlyWorking =
+            targetCanonicalId &&
+            person.currentCompany_canonical_id ===
+            targetCanonicalId;
+
+          const previouslyWorked =
+            person.experiences?.some(
+              (exp) =>
+                exp.company_canonical_id ===
+                targetCanonicalId
+            );
+
+          try {
+            [
+              metrics,
+              referralJobs,
+            ] =
+              await Promise.all([
+                fetchProfessionalReferralMetrics(
+                  person._id
+                ),
+
+                JobPostingTable.find(
+                  {
+                    candidatePosted:
+                      person._id,
+
+                    jobType:
+                      "Referral",
+
+                    approvalStatus:
+                      "Approved",
+
+                    inactive:
+                      false,
+                  }
+                )
+                  .sort({
+                    createdAt:
+                      -1,
+                  })
+                  .lean(),
+              ]);
+          } catch (innerError) {
+            console.error(
+              `Error processing professional ${person._id}:`,
+              innerError
+            );
+          }
+
+          return {
+            ...person,
+
+            currentlyWorking,
+
+            previouslyWorked,
+
+            referralMetrics:
+              metrics,
+
+            referralJobs,
+
+            isHiring:
+              referralJobs.length >
+              0,
+          };
+        }
+      )
+    );
+
+  // =====================================================
+  // STEP 11: RESPONSE
+  // =====================================================
+
+  const pagination =
+    paginatedResponse(
+      alumniWithMetrics,
+      total,
+      {
+        page,
+        limit,
+      }
+    );
+
+  return {
+    success: true,
+
+    errorCode: null,
+
+    message:
+      "Professionals fetched successfully.",
+
+    company,
+
+    collegesChecked:
+      colleges,
+
+    companiesChecked:
+      uniqueCompanies,
+
+    ...pagination,
+  };
 }
