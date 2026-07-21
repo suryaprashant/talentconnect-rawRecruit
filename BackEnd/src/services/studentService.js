@@ -406,17 +406,19 @@ export async function updateOnboardingFormService(
   // =========================
   // Experiences Logic
   // =========================
+  // let currentCompany = "";
 
-  if (Array.isArray(updates.experiences)) {
-    const currentExp = updates.experiences.find(
+  if (Array.isArray(experiences)) {
+    const currentExp = experiences.find(
       (e) => e.isCurrent === true
     );
+
+    updates.currentCompany = currentExp?.company || "";
 
     if (currentExp?.company) {
       updates.currentCompany = currentExp.company;
     }
-
-    updates.experiences = updates.experiences.map((exp) => {
+     updates.experiences = updates.experiences.map((exp) => {
       if (exp.isCurrent === true) {
         return { ...exp, endDate: "" };
       }
@@ -424,7 +426,24 @@ export async function updateOnboardingFormService(
     });
   }
 
-  // =========================
+  // if (Array.isArray(updates.experiences)) {
+  //   const currentExp = updates.experiences.find(
+  //     (e) => e.isCurrent === true
+  //   );
+
+  //   if (currentExp?.company) {
+  //     updates.currentCompany = currentExp.company;
+  //   }
+
+  //   updates.experiences = updates.experiences.map((exp) => {
+  //     if (exp.isCurrent === true) {
+  //       return { ...exp, endDate: "" };
+  //     }
+  //     return exp;
+  //   });
+  // }
+
+  // // =========================
   // Education Logic
   // =========================
 
