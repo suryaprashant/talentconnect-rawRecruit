@@ -224,12 +224,24 @@ export async function submitOnboardingFormService(userId, body, files) {
   // Derive currentCompany
   // =========================
 
-  let currentCompany = body.currentCompany || "";
+//  let currentCompany = "";
 
-  if (!currentCompany && Array.isArray(experiences)) {
+//   if (Array.isArray(experiences)) {
+//     const currentExp = experiences.find((exp) => exp.isCurrent === true);
+
+//     currentCompany = currentExp?.company || "";
+//   } else {
+//     currentCompany = body.currentCompany || "";
+//   }
+
+  let currentCompany = "";
+
+  if (Array.isArray(experiences)) {
     const currentExp = experiences.find(
       (e) => e.isCurrent === true
     );
+
+    currentCompany = currentExp?.company || "";
 
     if (currentExp?.company) {
       currentCompany = currentExp.company;
