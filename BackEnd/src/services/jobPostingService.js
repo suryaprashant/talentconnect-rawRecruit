@@ -584,18 +584,20 @@ export const getReferralJobsCursorService = async (
                   },
                 ],
               },
-
               {
-                $or: [
-                  {
-                    currentCompany_canonical_id: targetCanonicalId,
-                  },
-
-                  {
-                    "experiences.company_canonical_id": targetCanonicalId,
-                  },
-                ],
+                currentCompany_canonical_id: targetCanonicalId,
               },
+              // {
+              //   $or: [
+              //     {
+              //       currentCompany_canonical_id: targetCanonicalId,
+              //     },
+
+              //     {
+              //       "experiences.company_canonical_id": targetCanonicalId,
+              //     },
+              //   ],
+              // },
             ],
           });
         } catch (err) {
