@@ -88,7 +88,7 @@ const studentOnboardingSchema = new mongoose.Schema(
     resume: String,
     name: String,
     email: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String, required: false },
     profileType: {
       type: String,
       enum: ["student", "fresher", "professional"],
@@ -126,7 +126,7 @@ const studentOnboardingSchema = new mongoose.Schema(
    
     experiences: [
       {
-        company: String,
+        company: { type: String, required: true },
         company_canonical_id: String,
 
         company_display: String,
