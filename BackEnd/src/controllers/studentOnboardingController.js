@@ -213,7 +213,7 @@ export const updateOnboardingForm = async (req, res) => {
           .filter(Boolean);
       }
     });
-
+    const oldData = await Onboarding.findOne({ userId: req.user._id }).lean();
     // UPDATE DB
     const updated = await updateOnboardingFormService(
       req.user._id,
@@ -235,17 +235,33 @@ export const updateOnboardingForm = async (req, res) => {
     // } catch (err) {
     //   console.error("Career insights generation failed:", err.message);
     // }
+    const skillsChanged =
+      !!req.files?.resume?.length ||
 
-    categorizeSkillsService(req.user._id, updated)
-      .then(() => {
-        console.log("Career insights updated successfully");
-      })
-      .catch((err) => {
-        console.error(
-          "Career insights generation failed:",
-          err.message
-        );
-      });
+      JSON.stringify(oldData.skills ?? []) !==
+        JSON.stringify(updated.skills ?? []) ||
+
+      JSON.stringify(oldData.toolsAndPlatforms ?? []) !==
+        JSON.stringify(updated.toolsAndPlatforms ?? []) ||
+
+      JSON.stringify(oldData.domainKnowledge ?? []) !==
+        JSON.stringify(updated.domainKnowledge ?? []);
+        
+        
+      console.log(" skillsChanged :",skillsChanged);
+
+    if (skillsChanged) {
+      categorizeSkillsService(req.user._id, updated)
+        .then(() => {
+          console.log("Career insights updated successfully");
+        })
+        .catch((err) => {
+          console.error(
+            "Career insights generation failed:",
+            err.message
+          );
+        });
+    };
 
     res.json({
       message: "Form updated successfully.",
