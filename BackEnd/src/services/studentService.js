@@ -238,7 +238,7 @@ export async function submitOnboardingFormService(userId, body, files) {
 
   if (Array.isArray(experiences)) {
     const currentExp = experiences.find(
-      (e) => e.isCurrent === true
+      (e) => e.isCurrent === true || e.isCurrent === "true"
     );
 
     currentCompany = currentExp?.company || "";
@@ -410,7 +410,7 @@ export async function updateOnboardingFormService(
 
   if (Array.isArray(updates.experiences)) {
     const currentExp = updates.experiences.find(
-      (e) => e.isCurrent === true
+      (e) => e.isCurrent === true || e.isCurrent === "true"
     );
 
     updates.currentCompany = currentExp?.company || "";
@@ -419,7 +419,7 @@ export async function updateOnboardingFormService(
       updates.currentCompany = currentExp.company;
     }
      updates.experiences = updates.experiences.map((exp) => {
-      if (exp.isCurrent === true) {
+      if (exp.isCurrent === true || exp.isCurrent === "true") {
         return { ...exp, endDate: "" };
       }
       return exp;
