@@ -383,7 +383,6 @@ export async function updateOnboardingFormService(userId, body, files) {
   // let currentCompany = "";
 
   if (Array.isArray(updates.experiences)) {
-    
     const currentExp = updates.experiences.find(
       (e) => e.isCurrent === true || e.isCurrent === "true",
     );
@@ -746,19 +745,37 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     }
   }
 
-  
+  if (updateData.currentCompany !== undefined) {
+    if (!updateData.currentCompany) {
+      updateData.currentCompany_master_id = null;
+      updateData.currentCompany_canonical_id = "";
+      updateData.currentCompany_display = "";
+    } else {
+      const result = await resolveCompany(updateData.currentCompany);
 
-  if (updateData.currentCompany) {
-    const result = await resolveCompany(updateData.currentCompany);
-
-    if (result) {
-      updateData.currentCompany_master_id = result.masterId;
-
-      updateData.currentCompany_canonical_id = result.canonicalId;
-
-      updateData.currentCompany_display = result.displayName;
+      if (result) {
+        updateData.currentCompany_master_id = result.masterId;
+        updateData.currentCompany_canonical_id = result.canonicalId;
+        updateData.currentCompany_display = result.displayName;
+      } else {
+        updateData.currentCompany_master_id = null;
+        updateData.currentCompany_canonical_id = "";
+        updateData.currentCompany_display = "";
+      }
     }
   }
+
+  // if (updateData.currentCompany) {
+  //   const result = await resolveCompany(updateData.currentCompany);
+
+  //   if (result) {
+  //     updateData.currentCompany_master_id = result.masterId;
+
+  //     updateData.currentCompany_canonical_id = result.canonicalId;
+
+  //     updateData.currentCompany_display = result.displayName;
+  //   }
+  // }
   // Save onboarding data
   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
     { userId: updateData.userId },
