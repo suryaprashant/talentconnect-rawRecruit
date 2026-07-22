@@ -22,7 +22,15 @@ const educationSchema = new mongoose.Schema({
 
   educationType: {
     type: String,
-    enum: ["school", "diploma", "bachelors", "masters", "phd", "certification", "other"],
+    enum: [
+      "school",
+      "diploma",
+      "bachelors",
+      "masters",
+      "phd",
+      "certification",
+      "other",
+    ],
     default: "bachelors",
   },
 
@@ -38,18 +46,17 @@ const leadershipSchema = new mongoose.Schema({
   startDate: String,
   endDate: String,
   description: String,
-  certificate: String, 
+  certificate: String,
 });
 const internationalExperienceSchema = new mongoose.Schema({
-  country: String, 
-  organization: String,    
-  role: String,     
+  country: String,
+  organization: String,
+  role: String,
   startDate: String,
-  endDate: String, 
-  description: String, 
-  certificate: String, 
+  endDate: String,
+  description: String,
+  certificate: String,
 });
-
 
 const awardSchema = new mongoose.Schema({
   title: String,
@@ -76,14 +83,13 @@ const projectsHandledSchema = new mongoose.Schema({
   impact: String,
 });
 
-
 const studentOnboardingSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Auth",
       required: true,
-      unique: true, 
+      unique: true,
     },
     resume: String,
     name: String,
@@ -102,10 +108,10 @@ const studentOnboardingSchema = new mongoose.Schema(
     // specialization: String,
     // cgpa: String,
     // yearOfGraduation: String,
-    // degreeCertificate: String, 
+    // degreeCertificate: String,
 
     educations: [educationSchema],
-    
+
     industry: [String],
     jobRoles: [String],
     locations: [String],
@@ -113,20 +119,20 @@ const studentOnboardingSchema = new mongoose.Schema(
     expectedSalaryAmount: String,
     currentSalaryCurrency: String,
     currentSalaryAmount: String,
-    lookingFor: { type: [String], 
-      enum: ["Job", "Internship", "Job,Internship" , "Both"] ,
-      default:"Job,Internship"
+    lookingFor: {
+      type: [String],
+      enum: ["Job", "Internship", "Job,Internship", "Both"],
+      default: "Job,Internship",
     },
-    
+
     employmentType: {
       type: [String],
       enum: ["part time", "full time", "contract"],
     },
 
-   
     experiences: [
       {
-        company: { type: String, required: true },
+        company: String,
         company_canonical_id: String,
 
         company_display: String,
@@ -141,7 +147,7 @@ const studentOnboardingSchema = new mongoose.Schema(
         endDate: String,
         description: String,
         experienceCertificate: String,
-         isCurrent: { type: Boolean, default: false },  
+        isCurrent: { type: Boolean, default: false },
       },
     ],
 
@@ -160,7 +166,7 @@ const studentOnboardingSchema = new mongoose.Schema(
       highInDemand: { type: [String], default: [] },
       growing: { type: [String], default: [] },
       saturated: { type: [String], default: [] },
-      obsolete: { type: [String], default: [] }
+      obsolete: { type: [String], default: [] },
     },
     languagesKnown: [String],
     toolsAndPlatforms: [String],
@@ -174,14 +180,12 @@ const studentOnboardingSchema = new mongoose.Schema(
     openToShift: String,
     clientLocation: String,
 
-    about :String ,
+    about: String,
 
     currentCompany: String,
-    currentCompany_canonical_id:
-      String,
+    currentCompany_canonical_id: String,
 
-    currentCompany_display:
-      String,
+    currentCompany_display: String,
 
     currentCompany_master_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -192,14 +196,14 @@ const studentOnboardingSchema = new mongoose.Schema(
     noticePeriodStartDate: String,
     totalYearsOfExperience: String,
 
-companyEmail: {
-  type: String,
-  default: "",
-},
-emailVerified: {
-  type: Boolean,
-  default: false,
-},
+    companyEmail: {
+      type: String,
+      default: "",
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
     totalCandidatesReferred: {
       type: Number,
       default: 0,
@@ -218,7 +222,7 @@ emailVerified: {
     project: String,
     referralSource: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.models.Onboarding ||

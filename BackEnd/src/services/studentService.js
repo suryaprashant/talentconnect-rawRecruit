@@ -745,39 +745,19 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     }
   }
 
-  if (updateData.currentCompany !== undefined) {
-    // If currentCompany is empty string or falsy, ensure canonical fields are empty
-    if (!updateData.currentCompany) {
-      updateData.currentCompany_master_id = null;
-      updateData.currentCompany_canonical_id = "";
-      updateData.currentCompany_display = "";
-    } else {
-      // Only resolve if there's a company name
-      const result = await resolveCompany(updateData.currentCompany);
-      if (result) {
-        updateData.currentCompany_master_id = result.masterId;
-        updateData.currentCompany_canonical_id = result.canonicalId;
-        updateData.currentCompany_display = result.displayName;
-      } else {
-        // If resolution fails, set to empty
-        updateData.currentCompany_master_id = null;
-        updateData.currentCompany_canonical_id = "";
-        updateData.currentCompany_display = "";
-      }
+  
+
+  if (updateData.currentCompany) {
+    const result = await resolveCompany(updateData.currentCompany);
+
+    if (result) {
+      updateData.currentCompany_master_id = result.masterId;
+
+      updateData.currentCompany_canonical_id = result.canonicalId;
+
+      updateData.currentCompany_display = result.displayName;
     }
   }
-
-  // if (updateData.currentCompany) {
-  //   const result = await resolveCompany(updateData.currentCompany);
-
-  //   if (result) {
-  //     updateData.currentCompany_master_id = result.masterId;
-
-  //     updateData.currentCompany_canonical_id = result.canonicalId;
-
-  //     updateData.currentCompany_display = result.displayName;
-  //   }
-  // }
   // Save onboarding data
   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
     { userId: updateData.userId },
