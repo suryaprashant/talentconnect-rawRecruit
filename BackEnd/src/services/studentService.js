@@ -223,8 +223,9 @@ export async function submitOnboardingFormService(userId, body, files) {
     if (currentExp?.company) {
       currentCompany = currentExp.company;
     } else {
-      updates.currentCompany_canonical_id = "";
-      updates.currentCompany_display = "";
+      experiences.currentCompany = "";
+      experiences.currentCompany_canonical_id = "";
+      experiences.currentCompany_display = "";
     }
   }
 
