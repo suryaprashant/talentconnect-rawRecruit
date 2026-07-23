@@ -1,4 +1,32 @@
 import mongoose from "mongoose";
+import { STATUS_ENUM } from "../data/status.js";
+
+const statusSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: STATUS_ENUM,
+    default: null,
+  },
+
+  since: {
+    type: Date,
+    default: null,
+  },
+
+  note: {
+    type: String,
+    maxlength: 500,
+    default: "",
+  },
+
+  expectedReturn: {
+    type: Date,
+    default: null,
+  },
+},
+{
+    _id:false
+});
 
 const educationSchema = new mongoose.Schema({
   college: String,
@@ -191,6 +219,7 @@ const studentOnboardingSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "CompanyMaster",
     },
+    status: statusSchema,
     noticePeriod: String,
     servingNoticePeriod: Boolean,
     noticePeriodStartDate: String,

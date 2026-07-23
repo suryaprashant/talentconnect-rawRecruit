@@ -2321,7 +2321,7 @@ export const getApplicationDetailsById = async (req, res) => {
           },
           {
             path: "candidatePosted",
-            select: "fullName name currentCompany currentRole profileImage",
+            select: "fullName name currentCompany currentRole profileImage status",
           },
           {
             path: "collegePosted",
