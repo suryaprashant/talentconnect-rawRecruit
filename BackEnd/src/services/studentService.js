@@ -307,6 +307,8 @@ export async function submitOnboardingFormService(userId, body, files) {
     portfolio: body.portfolio,
 
     referralSource: body.referralSource,
+
+    status : parseJsonObject("status"),
   };
 
   return await handleOnboardingUpdate(updateData, files);
