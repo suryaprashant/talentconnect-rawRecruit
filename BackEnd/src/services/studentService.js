@@ -384,7 +384,7 @@ export async function updateOnboardingFormService(
       updates[field] = parseJsonArray(field);
     }
   });
-
+  console.log("body.status =", body.status);
   // ✅ Process ONLY JSON fields that were actually provided
   const jsonFields = [
     "educations",
@@ -394,7 +394,8 @@ export async function updateOnboardingFormService(
     "awards",
     "publications",
     "achievements",
-    "projectsHandled"
+    "projectsHandled",
+    "status"
   ];
 
   jsonFields.forEach((field) => {
@@ -407,12 +408,12 @@ export async function updateOnboardingFormService(
   // Experiences Logic
   // =========================
   // let currentCompany = "";
-
+  console.log("all company :",updates.experiences);
   if (Array.isArray(updates.experiences)) {
     const currentExp = updates.experiences.find(
       (e) => e.isCurrent === true || e.isCurrent === "true"
     );
-
+    console.log("true vala company :",currentExp?.company);
     updates.currentCompany = currentExp?.company || "";
 
     if (currentExp?.company) {
@@ -758,8 +759,13 @@ export const handleOnboardingUpdate = async (updateData, files) => {
         result.displayName;
     }
   }
+  console.log("current company is entered : ",updateData.currentCompany);
+  console.log("status : ",updateData.status);
+  
+  const existingOnboarding = await OnboardingModel.findOne({
+    userId: updateData.userId,
+  });
   if (updateData.currentCompany) {
-
     const result =
       await resolveCompany(
         updateData.currentCompany
@@ -776,7 +782,32 @@ export const handleOnboardingUpdate = async (updateData, files) => {
       updateData.currentCompany_display =
         result.displayName;
     }
+    const currentExperience = updateData.experiences?.find(
+      exp => exp.isCurrent
+    );
+    updateData.status = {
+        type: "employed",
+        since: currentExperience?.startDate || new Date(),
+        note: "",
+        expectedReturn: null,
+    };
   }
+  else if (updateData.status?.type) {
+
+    if (existingOnboarding?.status?.type !== updateData.status.type) {
+        updateData.status.since = new Date();
+    } else {
+        updateData.status.since = existingOnboarding.status.since;
+    }
+
+    if (updateData.status.type !== "career_break") {
+        updateData.status.expectedReturn = null;
+    }
+  }
+  // else
+  // {
+  //     throw new Error("Status is required when company is removed.");
+  // }
   // Save onboarding data
   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
     { userId: updateData.userId },

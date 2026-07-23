@@ -1732,6 +1732,8 @@ export const getCollegeAlumni = async (req, res) => {
 
             isHiring:
               personReferralJobs.length > 0,
+
+            status: person.status ?? null,
           };
         })
       );
@@ -2193,6 +2195,8 @@ export const getCompanyAlumni = async (req, res) => {
 
             isHiring:
               personReferralJobs.length > 0,
+
+            status: person.status ?? null,
           };
         })
       );
@@ -2550,6 +2554,8 @@ export const getAlumniHiringNetwork = async (req, res) => {
 
               isHiring:
                 referralJobs.length > 0,
+
+              status: person.status ?? null,
             };
           }
         )
