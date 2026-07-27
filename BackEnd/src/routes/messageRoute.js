@@ -1,7 +1,7 @@
 import express from "express";
 
 import secureRoute from "../middlewares/secureRouteMiddleware.js"
-import { allUsers, createConversation, getMessage, getUnreadCount, sendMessage} from "../controllers/messageController.js";
+import { allUsers, createConversation, getMessage, getUnreadCount, sendMessage ,userDetails} from "../controllers/messageController.js";
 // import { getMessages, sendMessage } from "../controllers/message.controller.js";
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.post("/conversation", secureRoute, createConversation) ;
 
 router.get("/allusers" , secureRoute , allUsers) ;
 
-
+router.get("/user/:id" , secureRoute , userDetails) ;
 
 
 
