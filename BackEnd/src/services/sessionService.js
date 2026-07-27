@@ -75,7 +75,7 @@ export const createUserSession = async ({ user, req, res }) => {
   await RefreshToken.create({
     userId: user._id,
     tokenHash,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    expiresAt: new Date(Date.now() + 3 * 60 * 1000),
     userAgent: req.get("user-agent") || "",
     ipAddress: req.ip,
   });
