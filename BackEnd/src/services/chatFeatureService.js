@@ -7,6 +7,7 @@ import { notifyOnNewChatMessage } from "./notificationService.js";
 import Onboarding from "../models/studentonboardingModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 
 const resolveToAuthId = async (userId) => {
     try {
@@ -439,3 +440,37 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
 // };
 
 
+export const getUserDetails = async ({ userId }) => {
+  const user = await Auth.findById(userId).select("-password");
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  let profileImage = "";
+  let name="";
+
+  if (user.userType === "company") {
+    const profile = await CompanyProfile.findOne({ userId });
+    name=profile?.companyDetails?.companyName || "";
+    profileImage = profile?.profileImageUrl || "";
+
+//   } else if (user.userType === "college") {
+//     const profile = await collegeOnboardingModel.findOne({ userId });
+//     name=profile?.collegeUniversityDetails?.collegeName || "";
+//     profileImage = profile?.profileImage || "";
+
+  } else {
+    const  profile = await Onboarding.findOne({ userId });
+    name=profile?.name || "";
+    profileImage = profile?.profileImage || "";
+  }
+
+  return {
+    _id: user._id,
+    name,
+    email: user.email,
+    userType: user.userType,
+    profileImage,
+  };
+};

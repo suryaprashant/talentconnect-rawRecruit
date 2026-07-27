@@ -4,7 +4,7 @@ import {
   findOrCreateConversation,
   getUnreadMessageCounts,
   getSortedUsersByConversation,
-  
+  getUserDetails,
 } from "../services/chatFeatureService.js";
 
 // Send message from one user to another
@@ -85,6 +85,15 @@ export const allUsers = async (req, res) => {
   }
 };
 
-
+export const userDetails = async (req, res) => {
+  try{
+    const userId = req.params.id;
+    const user=await getUserDetails({userId});
+    res.status(200).json(user);
+  }catch (error) {
+    console.error("Error in fetching user details:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 
 
