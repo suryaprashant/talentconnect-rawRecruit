@@ -9,25 +9,65 @@ import {
 } from '../../controllers/hostingManagement/hackathonHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import upload from '../../utils/multer.js';
+import {
+    searchLimiter,
+    adminLimiter,
+    documentUploadLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// Route to get all hackathons hosted by a company with registration counts
-router.get('/hackathons', secureRoute, getCompanyHackathonsWithRegistrations);
+// ============================================================
+// Hackathon Hosting Routes
+// ============================================================
 
-// Route to get all registrations for a specific hackathon
-router.get('/hackathons/:hackathonId/registrations', secureRoute, getHackathonRegistrations);
+// GET all hackathons hosted by a company with registration counts - uses searchLimiter (60 per minute)
+router.get(
+    '/hackathons',
+    secureRoute,
+    searchLimiter,
+    getCompanyHackathonsWithRegistrations
+);
 
-// Route to get detailed information about a specific registration
-router.get('/hackathons/registrations/:registrationId', secureRoute, getRegistrationDetails);
+// GET all registrations for a specific hackathon - uses searchLimiter (60 per minute)
+router.get(
+    '/hackathons/:hackathonId/registrations',
+    secureRoute,
+    searchLimiter,
+    getHackathonRegistrations
+);
 
-// Route to confirm a registration
-router.put('/hackathons/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
+// GET detailed information about a specific registration - uses searchLimiter (60 per minute)
+router.get(
+    '/hackathons/registrations/:registrationId',
+    secureRoute,
+    searchLimiter,
+    getRegistrationDetails
+);
 
-// Route to reject a registration
-router.put('/hackathons/registrations/:registrationId/reject', secureRoute, rejectRegistration);
+// PUT confirm a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/hackathons/registrations/:registrationId/confirm',
+    secureRoute,
+    adminLimiter,
+    confirmRegistration
+);
 
-// Route to send file to confirmed users
-router.post('/hackathons/:hackathonId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
+// PUT reject a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/hackathons/registrations/:registrationId/reject',
+    secureRoute,
+    adminLimiter,
+    rejectRegistration
+);
+
+// POST send file to confirmed users - uses documentUploadLimiter (20 per hour)
+router.post(
+    '/hackathons/:hackathonId/send-file',
+    secureRoute,
+    documentUploadLimiter,
+    upload.single('file'),
+    sendFileToConfirmedUsers
+);
 
 export default router;

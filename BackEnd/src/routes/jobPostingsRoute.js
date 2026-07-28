@@ -4,28 +4,94 @@ import secureRoute from '../middlewares/secureRouteMiddleware.js';
 import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting, createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest, createRefferralPosting } from '../controllers/jobPostingController.js';
 import { ViewController } from '../controllers/viewCountController.js';
 import { getRelevantOffCampusJobs } from '../controllers/relevantJobContoller.js';
+import {
+    applicationLimiter,
+    adminLimiter,
+    searchLimiter,
+} from "../middlewares/ratelimiter/index.js";
+
 // api.. "/api/hiring-channels"
 
 const router = express.Router();
 
-router.post("/off-campus", secureRoute, createOffCampusJobPosting);
+// ============================================================
+// Hiring Channels / Job Posting Routes
+// ============================================================
 
-router.post("/on-campus", secureRoute, createOnCampusPosting);
+// POST off-campus job - uses applicationLimiter (30 per hour)
+router.post(
+    "/off-campus",
+    secureRoute,
+    applicationLimiter,
+    createOffCampusJobPosting
+);
 
-router.post("/pool-campus", secureRoute, createPoolCampusPosting);
+// POST on-campus job - uses applicationLimiter (30 per hour)
+router.post(
+    "/on-campus",
+    secureRoute,
+    applicationLimiter,
+    createOnCampusPosting
+);
 
-router.post("/pool-campus/college-request", secureRoute, createPoolCampusCollegeRequest); // Add route for college request
+// POST pool-campus job - uses applicationLimiter (30 per hour)
+router.post(
+    "/pool-campus",
+    secureRoute,
+    applicationLimiter,
+    createPoolCampusPosting
+);
 
-router.post("/job-posting", secureRoute, createJobPosting);
+// POST pool-campus college request - uses applicationLimiter (30 per hour)
+router.post(
+    "/pool-campus/college-request",
+    secureRoute,
+    applicationLimiter,
+    createPoolCampusCollegeRequest
+);
 
-router.post("/internship-posting", secureRoute, createInternshipPosting);
+// POST job posting - uses applicationLimiter (30 per hour)
+router.post(
+    "/job-posting",
+    secureRoute,
+    applicationLimiter,
+    createJobPosting
+);
 
-router.post("/on-campus/college-request", secureRoute, createOnCampusCollegeRequest);
-router.post("/pool-campus/college-request", secureRoute, createPoolCampusCollegeRequest); // Add route for college request
+// POST internship posting - uses applicationLimiter (30 per hour)
+router.post(
+    "/internship-posting",
+    secureRoute,
+    applicationLimiter,
+    createInternshipPosting
+);
 
-router.post("/referral-posting", secureRoute, createRefferralPosting);
+// POST on-campus college request - uses applicationLimiter (30 per hour)
+router.post(
+    "/on-campus/college-request",
+    secureRoute,
+    applicationLimiter,
+    createOnCampusCollegeRequest
+);
 
-//view counter
-router.post('/view/:jobId',secureRoute,ViewController);
+// POST referral posting - uses applicationLimiter (30 per hour)
+router.post(
+    "/referral-posting",
+    secureRoute,
+    applicationLimiter,
+    createRefferralPosting
+);
+
+// POST view counter - uses searchLimiter (60 per minute)
+router.post(
+    '/view/:jobId',
+    secureRoute,
+    searchLimiter,
+    ViewController
+);
+
+// Note: getRelevantOffCampusJobs is imported but not used in this file
+// If you need it, add a GET route for it:
+// router.get("/relevant-offcampus", secureRoute, searchLimiter, getRelevantOffCampusJobs);
 
 export default router;

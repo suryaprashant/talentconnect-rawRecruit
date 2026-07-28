@@ -1,4 +1,4 @@
-// routes/studentTrainingRoutes.js
+
 import express from "express";
 import { registerStudentTraining } from "../controllers/servicerequest_studenttraining.js";
 

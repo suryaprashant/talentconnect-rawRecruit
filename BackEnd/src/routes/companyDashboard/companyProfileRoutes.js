@@ -3,6 +3,10 @@ import multer from 'multer';
 
 import { createCompanyProfile, getCompanyProfile, updateCompanyProfile, getCompanyImageByUserId, getCompanyProfileCompleteness } from '../../controllers/CompanyDashboard/companyProfileController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import {
+    profileUpdateLimiter,
+    searchLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 const upload = multer({
@@ -12,9 +16,15 @@ const upload = multer({
   },
 });
 
-// Routes for company profile creation (form-data upload)
+// ============================================================
+// Company Profile Routes
+// ============================================================
+
+// POST create company profile with file uploads - uses profileUpdateLimiter (30 per hour)
 router.post(
-  '/profiles', secureRoute ,
+  '/profiles',
+  secureRoute,
+  profileUpdateLimiter,
   upload.fields([
     { name: 'backgroundImage', maxCount: 1 },
     { name: 'kycDocuments', maxCount: 10 },
@@ -22,14 +32,36 @@ router.post(
   ]),
   createCompanyProfile
 );
-router.get('/getInformation/:userId',secureRoute, getCompanyImageByUserId)
-router.get('/getInformation', secureRoute, getCompanyProfile);
 
-router.get('/profile-completeness',secureRoute,getCompanyProfileCompleteness)
+// GET company image by userId - uses searchLimiter (60 per minute)
+router.get(
+  '/getInformation/:userId',
+  secureRoute,
+  searchLimiter,
+  getCompanyImageByUserId
+);
 
+// GET company profile - uses searchLimiter (60 per minute)
+router.get(
+  '/getInformation',
+  secureRoute,
+  searchLimiter,
+  getCompanyProfile
+);
+
+// GET company profile completeness - uses searchLimiter (60 per minute)
+router.get(
+  '/profile-completeness',
+  secureRoute,
+  searchLimiter,
+  getCompanyProfileCompleteness
+);
+
+// PUT update company profile with file uploads - uses profileUpdateLimiter (30 per hour)
 router.put(
   '/updateInformation', 
   secureRoute,
+  profileUpdateLimiter,
   upload.fields([
     { name: 'backgroundImage', maxCount: 1 },
     { name: 'kycDocuments', maxCount: 10 },
@@ -37,8 +69,8 @@ router.put(
   ]),
   updateCompanyProfile
 );
-//router.get("/profile-image/:userId",secureRoute, getCompanyImageByUserId);
 
-
+// Commented out route
+// router.get("/profile-image/:userId",secureRoute, getCompanyImageByUserId);
 
 export default router;

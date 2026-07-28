@@ -5,19 +5,39 @@ import {
     getAllApplications,
     getApplicationsBoardOverView
 } from "../../controllers/admin/applicationManagementController.js"
+import {
+    searchLimiter,
+    adminLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // Apply admin authentication 
 router.use(adminAuth);
 
-// Get application overview (statistics)
-router.get('/overviewdata', getApplicationOverView);
+// ============================================================
+// Admin Application Management Routes
+// ============================================================
 
-// Get all applications with pagination and filtering
-router.post('/applications-board', getApplicationsBoardOverView);
+// GET application overview (statistics) - uses searchLimiter (60 per minute)
+router.get(
+    '/overviewdata',
+    searchLimiter,
+    getApplicationOverView
+);
 
-// Get all applications data 
-router.get('/getrelationdata', getAllApplications);
+// POST applications board with pagination and filtering - uses searchLimiter (60 per minute)
+router.post(
+    '/applications-board',
+    searchLimiter,
+    getApplicationsBoardOverView
+);
+
+// GET all applications data - uses searchLimiter (60 per minute)
+router.get(
+    '/getrelationdata',
+    searchLimiter,
+    getAllApplications
+);
 
 export default router;

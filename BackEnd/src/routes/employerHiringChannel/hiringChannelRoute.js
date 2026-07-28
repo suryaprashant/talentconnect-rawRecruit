@@ -1,20 +1,54 @@
 import express from 'express';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import { createInternshipPosting, createJobPosting, createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting } from '../../controllers/employerHiringChannel/hiringChannelController.js';
-
+import {
+    applicationLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
+// ============================================================
+// Employer Hiring Channel Routes
+// ============================================================
 
-router.post('/create-job-postingg' , secureRoute , createJobPosting) ;
+// POST create job posting - uses applicationLimiter (30 per hour)
+router.post(
+    '/create-job-postingg',
+    secureRoute,
+    applicationLimiter,
+    createJobPosting
+);
 
-router.post('/create-Oncampusjob', secureRoute, createOnCampusPosting );
+// POST create on-campus job - uses applicationLimiter (30 per hour)
+router.post(
+    '/create-Oncampusjob',
+    secureRoute,
+    applicationLimiter,
+    createOnCampusPosting
+);
 
-router.post('/create-poolCampusJob' , secureRoute, createPoolCampusPosting )
+// POST create pool campus job - uses applicationLimiter (30 per hour)
+router.post(
+    '/create-poolCampusJob',
+    secureRoute,
+    applicationLimiter,
+    createPoolCampusPosting
+);
 
-router.post('/create-offCampusJob', secureRoute , createOffCampusJobPosting) ;
+// POST create off-campus job - uses applicationLimiter (30 per hour)
+router.post(
+    '/create-offCampusJob',
+    secureRoute,
+    applicationLimiter,
+    createOffCampusJobPosting
+);
 
-
-router.post('/create-internship-posting' , secureRoute , createInternshipPosting) ;
+// POST create internship posting - uses applicationLimiter (30 per hour)
+router.post(
+    '/create-internship-posting',
+    secureRoute,
+    applicationLimiter,
+    createInternshipPosting
+);
 
 export default router;

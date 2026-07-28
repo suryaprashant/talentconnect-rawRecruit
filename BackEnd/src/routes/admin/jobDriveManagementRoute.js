@@ -5,19 +5,38 @@ import {
     getAllPositions,
     getJobsBoardOverView
 } from "../../controllers/admin/jobDriveManagementController.js"
+import {
+    searchLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // Apply admin authentication 
 router.use(adminAuth);
 
-// Get job drive overview (statistics)
-router.get('/overviewdata', getJobDriveOverView);
+// ============================================================
+// Admin Job Drive Management Routes
+// ============================================================
 
-// Get all jobs with pagination and filtering
-router.post('/jobs-board', getJobsBoardOverView);
+// GET job drive overview (statistics) - uses searchLimiter (60 per minute)
+router.get(
+    '/overviewdata',
+    searchLimiter,
+    getJobDriveOverView
+);
 
-// Get all positions
-router.get('/getrelationdata', getAllPositions);
+// POST jobs board with pagination and filtering - uses searchLimiter (60 per minute)
+router.post(
+    '/jobs-board',
+    searchLimiter,
+    getJobsBoardOverView
+);
+
+// GET all positions - uses searchLimiter (60 per minute)
+router.get(
+    '/getrelationdata',
+    searchLimiter,
+    getAllPositions
+);
 
 export default router;

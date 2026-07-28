@@ -9,25 +9,70 @@ import {
   getByParticipantId,
   updateInputType
 } from '../controllers/eventParticipationController.js';
+import {
+    searchLimiter,
+    applicationLimiter,
+    profileUpdateLimiter,
+    deleteAccountLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
+// ============================================================
+// Event Participation Routes
+// ============================================================
+
 // @desc    Get all participants
 // @route   GET /eventParticipation
-router.get('/', getAllParticipants);
+router.get(
+    '/',
+    searchLimiter,
+    getAllParticipants
+);
 
-router.get('/byParticipent',secureRoute, getByParticipantId);
+// GET participant by ID - uses searchLimiter (60 per minute)
+router.get(
+    '/byParticipent',
+    secureRoute,
+    searchLimiter,
+    getByParticipantId
+);
 
 // @desc    Get participants by event ID
 // GET /eventParticipation/:eventID
-router.get('/:eventID', getParticipantsByEvent);
+router.get(
+    '/:eventID',
+    searchLimiter,
+    getParticipantsByEvent
+);
 
-router.post('/register',secureRoute, registerParticipant);
-router.post('/updateInputType',updateInputType)
+// POST register participant - uses applicationLimiter (30 per hour)
+router.post(
+    '/register',
+    secureRoute,
+    applicationLimiter,
+    registerParticipant
+);
 
-router.put('/update/:id', updateParticipant);
+// POST update input type - uses profileUpdateLimiter (30 per hour)
+router.post(
+    '/updateInputType',
+    profileUpdateLimiter,
+    updateInputType
+);
 
+// PUT update participant - uses profileUpdateLimiter (30 per hour)
+router.put(
+    '/update/:id',
+    profileUpdateLimiter,
+    updateParticipant
+);
 
-router.delete('/delete/:id', deleteParticipant);
+// DELETE participant - uses deleteAccountLimiter (2 per day)
+router.delete(
+    '/delete/:id',
+    deleteAccountLimiter,
+    deleteParticipant
+);
 
 export default router;

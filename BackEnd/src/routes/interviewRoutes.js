@@ -10,27 +10,80 @@ import {
   markInterviewAsRead,
   scheduleInterviewByProfessional,
 } from "../controllers/interviewController.js";
+import {
+    searchLimiter,
+    applicationLimiter,
+    adminLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-router.post("/professional/schedule",  secureRoute, scheduleInterviewByProfessional);
+// ============================================================
+// Interview Routes
+// ============================================================
 
-router.get("/", secureRoute, getInterviews);
+// POST schedule interview by professional - uses applicationLimiter (30 per hour)
+router.post(
+    "/professional/schedule",
+    secureRoute,
+    applicationLimiter,
+    scheduleInterviewByProfessional
+);
 
-// Company dashboard – scheduled interviews
-router.get("/company", secureRoute, getCompanyInterviews);
+// GET all interviews - uses searchLimiter (60 per minute)
+router.get(
+    "/",
+    secureRoute,
+    searchLimiter,
+    getInterviews
+);
 
-// College dashboard – scheduled interviews
-router.get("/college", secureRoute, getCollegeInterviews);
+// Company dashboard – scheduled interviews - uses searchLimiter (60 per minute)
+router.get(
+    "/company",
+    secureRoute,
+    searchLimiter,
+    getCompanyInterviews
+);
 
-router.get("/unread", secureRoute, getUnreadInterviews);
+// College dashboard – scheduled interviews - uses searchLimiter (60 per minute)
+router.get(
+    "/college",
+    secureRoute,
+    searchLimiter,
+    getCollegeInterviews
+);
 
-// Single interview detail (optional – for modal/detail page)
-router.get("/:interviewId", secureRoute, getInterviewById);
+// GET unread interviews - uses searchLimiter (60 per minute)
+router.get(
+    "/unread",
+    secureRoute,
+    searchLimiter,
+    getUnreadInterviews
+);
 
-// Update interview status (Completed / Cancelled)
-router.patch("/:interviewId/status", secureRoute, updateInterviewStatus);
+// Single interview detail - uses searchLimiter (60 per minute)
+router.get(
+    "/:interviewId",
+    secureRoute,
+    searchLimiter,
+    getInterviewById
+);
 
+// Update interview status (Completed / Cancelled) - uses adminLimiter (300 per minute)
+router.patch(
+    "/:interviewId/status",
+    secureRoute,
+    adminLimiter,
+    updateInterviewStatus
+);
 
-router.patch("/:interviewId/mark-read", secureRoute, markInterviewAsRead);
+// Mark interview as read - uses searchLimiter (60 per minute)
+router.patch(
+    "/:interviewId/mark-read",
+    secureRoute,
+    searchLimiter,
+    markInterviewAsRead
+);
+
 export default router;

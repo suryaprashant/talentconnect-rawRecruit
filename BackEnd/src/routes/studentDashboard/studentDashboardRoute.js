@@ -3,32 +3,156 @@ import { getInternshipPostings, getJobById, getIntershipById, getJobPostings, ge
 import secureRoute  from '../../middlewares/secureRouteMiddleware.js';
 import verifyUser from '../../middlewares/verifyUser.js';
 import { getRelevantOffCampusJobs } from '../../controllers/relevantJobContoller.js';
+import {
+    searchLimiter,
+} from "../../middlewares/ratelimiter/index.js";
+
 const router = express.Router();
 
-router.get('/off-campus', verifyUser, getRelevantOffCampusJobs);//
-router.get('/on-campus',verifyUser, getOnCampusPostingsForCompany);
-router.get('/on-campus/company/:id', secureRoute, getOnCampusPostingForCompanybyID);
+// ============================================================
+// Student Dashboard Routes (Read Operations)
+// ============================================================
 
-router.get('/on-campus/college',verifyUser, getOnCampusPostingsForCollege)
-router.get("/oncampus/college/:id", getOnCampusPostingForCollegebyID);
-// router.get('/pool-campus',secureRoute , getPoolCampusPostings); 
+// GET off-campus jobs - uses searchLimiter (60 per minute)
+router.get(
+    '/off-campus',
+    verifyUser,
+    searchLimiter,
+    getRelevantOffCampusJobs
+);
 
-router.get('/getAllPoolCampusJobs', verifyUser, getPoolCampusForCollege);
-router.get('/pool-campus/college',verifyUser, getPoolCampusForCollege);
-router.get('/getPoolCampusJob/:id', verifyUser, getPoolCampusJobByIdForCollege);
+// GET on-campus jobs for company - uses searchLimiter (60 per minute)
+router.get(
+    '/on-campus',
+    verifyUser,
+    searchLimiter,
+    getOnCampusPostingsForCompany
+);
 
-router.get('/pool-campus/company',verifyUser, getPoolCampusForCompany);//
-router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompany);
+// GET on-campus job by ID for company - uses searchLimiter (60 per minute)
+router.get(
+    '/on-campus/company/:id',
+    secureRoute,
+    searchLimiter,
+    getOnCampusPostingForCompanybyID
+);
 
-router.get('/job-postings', secureRoute, getJobPostings);
-router.get('/internship-postings', verifyUser, getInternshipPostings); //
-router.get('/getInternshipDetail/:id',getIntershipById)
+// GET on-campus jobs for college - uses searchLimiter (60 per minute)
+router.get(
+    '/on-campus/college',
+    verifyUser,
+    searchLimiter,
+    getOnCampusPostingsForCollege
+);
 
-router.get('/referral-jobs', verifyUser, getReferralJobs); // 
-router.get('/posted-referral-job', secureRoute, getProfessionalReferrals);
-router.get('/inactive-posted-referral-job', secureRoute, getProfessionalInActiveReferrals);
+// GET on-campus job by ID for college - uses searchLimiter (60 per minute)
+router.get(
+    "/oncampus/college/:id",
+    searchLimiter,
+    getOnCampusPostingForCollegebyID
+);
 
+// GET all pool campus jobs - uses searchLimiter (60 per minute)
+router.get(
+    '/getAllPoolCampusJobs',
+    verifyUser,
+    searchLimiter,
+    getPoolCampusForCollege
+);
 
-router.get('/referral-jobs/:id', secureRoute, getReferralJobById);
-router.get('/job/:jobId', secureRoute, getJobById);
+// GET pool campus jobs for college - uses searchLimiter (60 per minute)
+router.get(
+    '/pool-campus/college',
+    verifyUser,
+    searchLimiter,
+    getPoolCampusForCollege
+);
+
+// GET pool campus job by ID for college - uses searchLimiter (60 per minute)
+router.get(
+    '/getPoolCampusJob/:id',
+    verifyUser,
+    searchLimiter,
+    getPoolCampusJobByIdForCollege
+);
+
+// GET pool campus jobs for company - uses searchLimiter (60 per minute)
+router.get(
+    '/pool-campus/company',
+    verifyUser,
+    searchLimiter,
+    getPoolCampusForCompany
+);
+
+// GET pool campus job by ID for company - uses searchLimiter (60 per minute)
+router.get(
+    '/pool-campus/company/:id',
+    secureRoute,
+    searchLimiter,
+    getPoolCampusJobByIdForCompany
+);
+
+// GET job postings - uses searchLimiter (60 per minute)
+router.get(
+    '/job-postings',
+    secureRoute,
+    searchLimiter,
+    getJobPostings
+);
+
+// GET internship postings - uses searchLimiter (60 per minute)
+router.get(
+    '/internship-postings',
+    verifyUser,
+    searchLimiter,
+    getInternshipPostings
+);
+
+// GET internship by ID - uses searchLimiter (60 per minute)
+router.get(
+    '/getInternshipDetail/:id',
+    searchLimiter,
+    getIntershipById
+);
+
+// GET referral jobs - uses searchLimiter (60 per minute)
+router.get(
+    '/referral-jobs',
+    verifyUser,
+    searchLimiter,
+    getReferralJobs
+);
+
+// GET posted referral jobs (professional) - uses searchLimiter (60 per minute)
+router.get(
+    '/posted-referral-job',
+    secureRoute,
+    searchLimiter,
+    getProfessionalReferrals
+);
+
+// GET inactive posted referral jobs - uses searchLimiter (60 per minute)
+router.get(
+    '/inactive-posted-referral-job',
+    secureRoute,
+    searchLimiter,
+    getProfessionalInActiveReferrals
+);
+
+// GET referral job by ID - uses searchLimiter (60 per minute)
+router.get(
+    '/referral-jobs/:id',
+    secureRoute,
+    searchLimiter,
+    getReferralJobById
+);
+
+// GET job by ID - uses searchLimiter (60 per minute)
+router.get(
+    '/job/:jobId',
+    secureRoute,
+    searchLimiter,
+    getJobById
+);
+
 export default router;
