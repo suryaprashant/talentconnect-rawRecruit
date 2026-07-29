@@ -1,10 +1,9 @@
 import express from "express";
+import { createServiceRequest } from "../controllers/servicereequestCompanyEmployeetrainingController.js";
+import { serviceRequestLimiter } from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// import { validateServiceRequest } from "../middlewares/validateservicerequest.js";
-import { createServiceRequest } from "../controllers/servicereequestCompanyEmployeetrainingController.js";
-
-router.post("/servicerequest-employeetraining", createServiceRequest);
+router.post("/servicerequest-employeetraining", serviceRequestLimiter, createServiceRequest);
 
 export default router;

@@ -2,6 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import { JobPostingTable } from "../models/JobPosting.js";
 import Application from "../models/Application.js";
+import secureRoute from "../middlewares/secureRouteMiddleware.js";
+import {
+    deleteAccountLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
@@ -9,66 +13,76 @@ const router = express.Router();
  * DELETE /api/jobs/:jobId
  * Deletes a job and all its associated applications
  */
-router.delete("/:jobId", async (req, res) => {
-    const { jobId } = req.params;
 
-    // Validate jobId format
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid job ID format",
-        });
-    }
+// ============================================================
+// Delete Job Route (Destructive Operation)
+// ============================================================
 
-    // Use a session for atomicity — if one step fails, both roll back
-    const session = await mongoose.startSession();
-    session.startTransaction();
+router.delete(
+    "/:jobId",
+    secureRoute,
+    deleteAccountLimiter, // 2 per day - strictest for destructive operations
+    async (req, res) => {
+        const { jobId } = req.params;
 
-    try {
-        // 1. Check if job exists
-        const job = await JobPostingTable.findById(jobId).session(session);
-        if (!job) {
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(404).json({
+        // Validate jobId format
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return res.status(400).json({
                 success: false,
-                message: "Job not found",
+                message: "Invalid job ID format",
             });
         }
 
-        // 2. Delete all applications linked to this job
-        const deletedApplications = await Application.deleteMany(
-            { job: jobId },
-            { session }
-        );
+        // Use a session for atomicity — if one step fails, both roll back
+        const session = await mongoose.startSession();
+        session.startTransaction();
 
-        // 3. Delete the job itself
-        await JobPostingTable.findByIdAndDelete(jobId, { session });
+        try {
+            // 1. Check if job exists
+            const job = await JobPostingTable.findById(jobId).session(session);
+            if (!job) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).json({
+                    success: false,
+                    message: "Job not found",
+                });
+            }
 
-        // 4. Commit the transaction
-        await session.commitTransaction();
-        session.endSession();
+            // 2. Delete all applications linked to this job
+            const deletedApplications = await Application.deleteMany(
+                { job: jobId },
+                { session }
+            );
 
-        return res.status(200).json({
-            success: true,
-            message: "Job and all associated applications deleted successfully",
-            data: {
-                jobId,
-                applicationsDeleted: deletedApplications.deletedCount,
-            },
-        });
+            // 3. Delete the job itself
+            await JobPostingTable.findByIdAndDelete(jobId, { session });
 
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
+            // 4. Commit the transaction
+            await session.commitTransaction();
+            session.endSession();
 
-        console.error("Error deleting job:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error while deleting job",
-            error: error.message,
-        });
+            return res.status(200).json({
+                success: true,
+                message: "Job and all associated applications deleted successfully",
+                data: {
+                    jobId,
+                    applicationsDeleted: deletedApplications.deletedCount,
+                },
+            });
+
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+
+            console.error("Error deleting job:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error while deleting job",
+                error: error.message,
+            });
+        }
     }
-});
+);
 
 export default router;

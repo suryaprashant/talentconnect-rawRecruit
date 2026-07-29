@@ -9,25 +9,65 @@ import {
 } from '../../controllers/hostingManagement/casestudyHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import upload from '../../utils/multer.js';
+import {
+    searchLimiter,
+    adminLimiter,
+    documentUploadLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// Route to get all case studies hosted by a company with registration counts
-router.get('/casestudies', secureRoute, getCompanyCasestudiesWithRegistrations);
+// ============================================================
+// Case Study Hosting Routes
+// ============================================================
 
-// Route to get all registrations for a specific case study
-router.get('/casestudies/:casestudyId/registrations', secureRoute, getCasestudyRegistrations);
+// GET all case studies hosted by a company with registration counts - uses searchLimiter (60 per minute)
+router.get(
+    '/casestudies',
+    secureRoute,
+    searchLimiter,
+    getCompanyCasestudiesWithRegistrations
+);
 
-// Route to get detailed information about a specific registration
-router.get('/casestudies/registrations/:registrationId', secureRoute, getCasestudyRegistrationDetails);
+// GET all registrations for a specific case study - uses searchLimiter (60 per minute)
+router.get(
+    '/casestudies/:casestudyId/registrations',
+    secureRoute,
+    searchLimiter,
+    getCasestudyRegistrations
+);
 
-// Route to confirm a registration
-router.put('/casestudies/registrations/:registrationId/confirm', secureRoute, confirmCasestudyRegistration);
+// GET detailed information about a specific registration - uses searchLimiter (60 per minute)
+router.get(
+    '/casestudies/registrations/:registrationId',
+    secureRoute,
+    searchLimiter,
+    getCasestudyRegistrationDetails
+);
 
-// Route to reject a registration
-router.put('/casestudies/registrations/:registrationId/reject', secureRoute, rejectCasestudyRegistration);
+// PUT confirm a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/casestudies/registrations/:registrationId/confirm',
+    secureRoute,
+    adminLimiter,
+    confirmCasestudyRegistration
+);
 
-// Route to send file to confirmed users
-router.post('/casestudies/:casestudyId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
+// PUT reject a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/casestudies/registrations/:registrationId/reject',
+    secureRoute,
+    adminLimiter,
+    rejectCasestudyRegistration
+);
+
+// POST send file to confirmed users - uses documentUploadLimiter (20 per hour)
+router.post(
+    '/casestudies/:casestudyId/send-file',
+    secureRoute,
+    documentUploadLimiter,
+    upload.single('file'),
+    sendFileToConfirmedUsers
+);
 
 export default router;

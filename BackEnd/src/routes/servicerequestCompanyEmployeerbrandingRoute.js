@@ -1,9 +1,10 @@
 import express from "express";
 import { submitOnDemandTrainingRequest } from "../controllers/servicerequestCompanyEmployeerbrandingController.js";
+import { serviceRequestLimiter } from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// POST route to submit on-demand training request
-router.post("/submit-employer-branding", submitOnDemandTrainingRequest);
+
+router.post("/submit-employer-branding", serviceRequestLimiter, submitOnDemandTrainingRequest);
 
 export default router;

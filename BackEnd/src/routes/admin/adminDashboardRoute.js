@@ -9,75 +9,117 @@ import {
    getRelevancyWeightsProfessional,
   updateRelevancyWeightsProfessional,
 } from "../../controllers/Relevancyweightscontroller.js";
+import {
+    searchLimiter,
+    adminLimiter,
+    applicationLimiter,
+    deleteAccountLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // Apply admin authentication to all dashboard routes
 router.use(adminAuth);
 
-// Admin dashboard overview
-router.get('/overviewdata', getAdminDashboardOverView);
-router.get("/overview", getAdminDashboardOverView);
+// ============================================================
+// Admin Dashboard Routes
+// ============================================================
 
-router.get("/relevancy-weights", adminAuth, getRelevancyWeights);
-router.patch("/relevancy-weights", adminAuth,updateRelevancyWeights);
-
-router.get("/relevancy-weights-professional", adminAuth, getRelevancyWeightsProfessional);
-router.patch("/relevancy-weights-professioanl", adminAuth,updateRelevancyWeightsProfessional);
-
-
+// GET admin dashboard overview - uses searchLimiter (60 per minute)
 router.get(
-  "/referral-jobs/pending",
-  adminAuth,
-  getPendingReferralJobsForAdmin
-);
-router.patch(
-  "/updateThreshold",
-  adminAuth,
-  updateJobVisibilityThreshold
-
+    '/overviewdata',
+    searchLimiter,
+    getAdminDashboardOverView
 );
 
 router.get(
-  "/referral-jobs/accepted",
-  adminAuth,
-  getAcceptedReferralJobsForAdmin
+    "/overview",
+    searchLimiter,
+    getAdminDashboardOverView
 );
 
-
-//admin approve/reject step 2
-router.patch(
-  "/referral-jobs/:jobId/approval",
-  adminAuth,
-  updateReferralJobApprovalStatus
-);
-
-// GET referral job applications
+// GET relevancy weights - uses searchLimiter (60 per minute)
 router.get(
-  "/referral-applications",
-  adminAuth,
-  getReferralApplicationsForAdmin
+    "/relevancy-weights",
+    searchLimiter,
+    getRelevancyWeights
 );
 
-// PATCH approve / reject referral application
+// PATCH update relevancy weights - uses adminLimiter (300 per minute)
 router.patch(
-  "/referral-applications/:applicationId",
-  adminAuth,
-  updateReferralApplicationStatus
+    "/relevancy-weights",
+    adminLimiter,
+    updateRelevancyWeights
 );
 
-//admin schedule interview for referral application
+// GET relevancy weights professional - uses searchLimiter (60 per minute)
+router.get(
+    "/relevancy-weights-professional",
+    searchLimiter,
+    getRelevancyWeightsProfessional
+);
+
+// PATCH update relevancy weights professional - uses adminLimiter (300 per minute)
+router.patch(
+    "/relevancy-weights-professioanl",
+    adminLimiter,
+    updateRelevancyWeightsProfessional
+);
+
+// GET pending referral jobs - uses searchLimiter (60 per minute)
+router.get(
+    "/referral-jobs/pending",
+    searchLimiter,
+    getPendingReferralJobsForAdmin
+);
+
+// PATCH update job visibility threshold - uses adminLimiter (300 per minute)
+router.patch(
+    "/updateThreshold",
+    adminLimiter,
+    updateJobVisibilityThreshold
+);
+
+// GET accepted referral jobs - uses searchLimiter (60 per minute)
+router.get(
+    "/referral-jobs/accepted",
+    searchLimiter,
+    getAcceptedReferralJobsForAdmin
+);
+
+// PATCH approve/reject referral job - uses adminLimiter (300 per minute)
+router.patch(
+    "/referral-jobs/:jobId/approval",
+    adminLimiter,
+    updateReferralJobApprovalStatus
+);
+
+// GET referral applications - uses searchLimiter (60 per minute)
+router.get(
+    "/referral-applications",
+    searchLimiter,
+    getReferralApplicationsForAdmin
+);
+
+// PATCH approve/reject referral application - uses adminLimiter (300 per minute)
+router.patch(
+    "/referral-applications/:applicationId",
+    adminLimiter,
+    updateReferralApplicationStatus
+);
+
+// POST admin schedule interview - uses applicationLimiter (30 per hour)
 router.post(
-  "/admin/schedule-interview",
-  adminAuth,
-  scheduleInterviewByAdmin
+    "/admin/schedule-interview",
+    applicationLimiter,
+    scheduleInterviewByAdmin
 );
 
-
-//admin get interview call
+// GET admin scheduled interviews - uses searchLimiter (60 per minute)
 router.get(
-  "/interviews",
-  adminAuth,
-  getAdminScheduledInterviews
+    "/interviews",
+    searchLimiter,
+    getAdminScheduledInterviews
 );
+
 export default router;

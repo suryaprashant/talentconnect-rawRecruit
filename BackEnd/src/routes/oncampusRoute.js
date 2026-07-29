@@ -8,24 +8,64 @@ import {
   getJobDetails,
 } from "../controllers/manageOnCampusController.js";
 
+import {
+  searchLimiter,
+  applicationLimiter,
+  deleteAccountLimiter,
+} from "../middlewares/ratelimiter/index.js";
+
 const router = express.Router();
 
-// POST: Create a job
-router.post("/", createJob);
+// ============================================================
+// Manage On-Campus Job Routes
+// ============================================================
 
-// GET: Fetch all jobs with optional search, filter, pagination
-router.get("/", getJobs);
+// POST: Create a job - uses applicationLimiter (30 per hour)
+router.post(
+  "/",
 
-// GET: Get a single job's details
-router.get("/:jobId", getJobDetails);
+  applicationLimiter,
+  createJob,
+);
 
-// PUT: Update a job
-router.put("/:jobId", updateJob);
+// GET: Fetch all jobs with optional search, filter, pagination - uses searchLimiter (60 per minute)
+router.get(
+  "/",
 
-// DELETE: Delete a job
-router.delete("/:jobId", deleteJob);
+  searchLimiter,
+  getJobs,
+);
 
-// POST: Duplicate a job
-router.post("/duplicate/:jobId", duplicateJob);
+// GET: Get a single job's details - uses searchLimiter (60 per minute)
+router.get(
+  "/:jobId",
+
+  searchLimiter,
+  getJobDetails,
+);
+
+// PUT: Update a job - uses applicationLimiter (30 per hour)
+router.put(
+  "/:jobId",
+
+  applicationLimiter,
+  updateJob,
+);
+
+// DELETE: Delete a job - uses deleteAccountLimiter (2 per day)
+router.delete(
+  "/:jobId",
+
+  deleteAccountLimiter,
+  deleteJob,
+);
+
+// POST: Duplicate a job - uses applicationLimiter (30 per hour)
+router.post(
+  "/duplicate/:jobId",
+
+  applicationLimiter,
+  duplicateJob,
+);
 
 export default router;

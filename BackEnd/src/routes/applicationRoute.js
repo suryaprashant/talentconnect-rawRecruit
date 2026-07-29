@@ -1,124 +1,337 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser ,unsaveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
-getCompanyDashboardMetrics,
-submitAlternateDates,getReferralApplicationsForProfessional,
-getProfessionalDashboardMetrics,
- updateApplicationStatus,
- getGlobalReferralApplications,
- getReferralsForCompany,
- getProfessionalReferralMetrics,
- getCandidateDashboardStats,
- getReferredCandidatesPipeline, updateReferralCandidateStatus,
- getApplicationDetailsById
- } from "../controllers/applicationController.js";
+import { 
+  createOffcampusApplication, 
+  createIntershipApplication, 
+  createJobListingApplication, 
+  saveJobByUser,
+  unsaveJobByUser, 
+  getApplicationsByJob, 
+  getCollegeApplicationsByJob, 
+  createOncampusApplication, 
+  createPoolcampusApplication, 
+  shortlistApplicant, 
+  acceptApplicant, 
+  rejectApplicant, 
+  getShortlistedCandidatesByCompany, 
+  getAcceptedCandidatesByCompany, 
+  fetchSavedJobs, 
+  createCampusInternshipApplication, 
+  getUserApplicationStatus, 
+  createReferralApplication, 
+  getShortlistedCompaniesForCollege, 
+  shortlistApplicantForCompany, 
+  rejectCompanyApplicationByCollege, 
+  scheduleInterview,
+  getCompanyDashboardMetrics,
+  submitAlternateDates,
+  getReferralApplicationsForProfessional,
+  getProfessionalDashboardMetrics,
+  updateApplicationStatus,
+  getGlobalReferralApplications,
+  getReferralsForCompany,
+  getProfessionalReferralMetrics,
+  getCandidateDashboardStats,
+  getReferredCandidatesPipeline, 
+  updateReferralCandidateStatus,
+  getApplicationDetailsById
+} from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
-//import { updateApplicationStatus } from '../controllers/applicationController.js';
+import {
+  applicationLimiter,
+  searchLimiter,
+  profileUpdateLimiter,
+  adminLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // api '.../application'
-// save opportunity
-router.patch('/update-status/:applicationId',secureRoute, updateApplicationStatus)
-router.post("/saveopportunity", secureRoute, saveJobByUser);
-router.delete("/saveopportunity/:jobId", secureRoute, unsaveJobByUser);
-router.get("/saveopportunity", secureRoute, fetchSavedJobs);
 
-// offcampus
-router.post('/candidate/offcampus', secureRoute, createOffcampusApplication);
-router.get('/status/candidate/:jobType', secureRoute, getUserApplicationStatus);
-// router.get('/offcampus/shortlisted', secureRoute, getShortlistedCandidatesByCompany);
-// router.get('/offcampus/accepted', secureRoute, getAcceptedCandidatesByCompany);
+// ============================================================
+// Application Status Updates
+// ============================================================
+router.patch(
+  '/update-status/:applicationId',
+  secureRoute,
+  applicationLimiter,
+  updateApplicationStatus
+);
 
-// joblisting
-router.post('/candidate/joblisting', secureRoute, createJobListingApplication);
-// router.get('/candidate/joblisting', secureRoute, getJobListingUserApplication);
+// ============================================================
+// Saved Jobs (User Profile updates)
+// ============================================================
+router.post(
+  "/saveopportunity",
+  secureRoute,
+  profileUpdateLimiter,
+  saveJobByUser
+);
 
-// internship
-router.post('/candidate/internship', secureRoute, createIntershipApplication);
-// router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
+router.delete(
+  "/saveopportunity/:jobId",
+  secureRoute,
+  profileUpdateLimiter,
+  unsaveJobByUser
+);
 
-// referral
-router.post('/candidate/referral', secureRoute, createReferralApplication);
+router.get(
+  "/saveopportunity",
+  secureRoute,
+  searchLimiter,
+  fetchSavedJobs
+);
+
+// ============================================================
+// Offcampus Applications
+// ============================================================
+router.post(
+  '/candidate/offcampus',
+  secureRoute,
+  applicationLimiter,
+  createOffcampusApplication
+);
+
+router.get(
+  '/status/candidate/:jobType',
+  secureRoute,
+  searchLimiter,
+  getUserApplicationStatus
+);
+
+// ============================================================
+// Job Listing Applications
+// ============================================================
+router.post(
+  '/candidate/joblisting',
+  secureRoute,
+  applicationLimiter,
+  createJobListingApplication
+);
+
+// ============================================================
+// Internship Applications
+// ============================================================
+router.post(
+  '/candidate/internship',
+  secureRoute,
+  applicationLimiter,
+  createIntershipApplication
+);
+
+// ============================================================
+// Referral Applications
+// ============================================================
+router.post(
+  '/candidate/referral',
+  secureRoute,
+  applicationLimiter,
+  createReferralApplication
+);
+
 router.get(
   "/referrals/referred-by-me",
   secureRoute,
+  searchLimiter,
   getReferredCandidatesPipeline
 );
 
 router.patch(
   "/referrals/:applicationId/status",
   secureRoute,
+  profileUpdateLimiter,
   updateReferralCandidateStatus
 );
 
-// company and college-- oncampus poolcampus campus-internship 
-router.post('/oncampus', secureRoute, createOncampusApplication);
-router.post('/poolcampus', secureRoute, createPoolcampusApplication);
-router.post('/internship', secureRoute, createCampusInternshipApplication);
+// ============================================================
+// Campus Applications (Oncampus, Poolcampus, Campus Internship)
+// ============================================================
+router.post(
+  '/oncampus',
+  secureRoute,
+  applicationLimiter,
+  createOncampusApplication
+);
 
-// access only to company 
+router.post(
+  '/poolcampus',
+  secureRoute,
+  applicationLimiter,
+  createPoolcampusApplication
+);
 
-// shortlist
-router.patch('/manage/shortlist/:applicationId', secureRoute, shortlistApplicant);
-router.patch('/manage/college/shortlist/:applicationId', secureRoute, shortlistApplicantForCompany);
+router.post(
+  '/internship',
+  secureRoute,
+  applicationLimiter,
+  createCampusInternshipApplication
+);
 
-router.get('/manage/shortlist/', secureRoute, getShortlistedCandidatesByCompany);
-router.get('/manage/college/shortlist/', secureRoute, getShortlistedCompaniesForCollege);
+// ============================================================
+// Company & College Management (Admin level operations)
+// ============================================================
 
-// reject
-// router.get('/manage/rejected/', secureRoute, getRejectedCandidatesByCompany);
+// Shortlist
+router.patch(
+  '/manage/shortlist/:applicationId',
+  secureRoute,
+  adminLimiter,
+  shortlistApplicant
+);
 
-router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
-router.patch("/manage/college/reject/:applicationId", secureRoute, rejectCompanyApplicationByCollege)
-// accept
-router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
-router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
+router.patch(
+  '/manage/college/shortlist/:applicationId',
+  secureRoute,
+  adminLimiter,
+  shortlistApplicantForCompany
+);
 
+router.get(
+  '/manage/shortlist/',
+  secureRoute,
+  searchLimiter,
+  getShortlistedCandidatesByCompany
+);
 
-router.get('/company/metrics', secureRoute, getCompanyDashboardMetrics);
-router.get('/professional/metrics', secureRoute, getProfessionalDashboardMetrics);
+router.get(
+  '/manage/college/shortlist/',
+  secureRoute,
+  searchLimiter,
+  getShortlistedCompaniesForCollege
+);
 
+// Reject
+router.patch(
+  '/manage/reject/:applicationId',
+  secureRoute,
+  adminLimiter,
+  rejectApplicant
+);
 
+router.patch(
+  "/manage/college/reject/:applicationId",
+  secureRoute,
+  adminLimiter,
+  rejectCompanyApplicationByCollege
+);
 
-// get candidates by job
-router.get('/manage', secureRoute, getApplicationsByJob);
+// Accept
+router.patch(
+  '/manage/accept/:applicationId',
+  secureRoute,
+  adminLimiter,
+  acceptApplicant
+);
 
-// get college by job
-router.get('/manage/college', secureRoute, getCollegeApplicationsByJob);
+router.get(
+  '/manage/accept/',
+  secureRoute,
+  searchLimiter,
+  getAcceptedCandidatesByCompany
+);
 
-// accept offcampus
-// router.get('/accept/:id', getAcceptedCandidatesByJob);
+// ============================================================
+// Dashboard Metrics
+// ============================================================
+router.get(
+  '/company/metrics',
+  secureRoute,
+  searchLimiter,
+  getCompanyDashboardMetrics
+);
 
-// schedule interview
-router.post('/manage/schedule', secureRoute, scheduleInterview);
+router.get(
+  '/professional/metrics',
+  secureRoute,
+  searchLimiter,
+  getProfessionalDashboardMetrics
+);
 
-router.post('/:jobId/submit' , secureRoute , submitAlternateDates) ;
+// ============================================================
+// Get Applications by Job / College
+// ============================================================
+router.get(
+  '/manage',
+  secureRoute,
+  searchLimiter,
+  getApplicationsByJob
+);
 
-// router.js
+router.get(
+  '/manage/college',
+  secureRoute,
+  searchLimiter,
+  getCollegeApplicationsByJob
+);
+
+// ============================================================
+// Schedule Interview
+// ============================================================
+router.post(
+  '/manage/schedule',
+  secureRoute,
+  adminLimiter,
+  scheduleInterview
+);
+
+// ============================================================
+// Submit Alternate Dates
+// ============================================================
+router.post(
+  '/:jobId/submit',
+  secureRoute,
+  applicationLimiter,
+  submitAlternateDates
+);
+
+// ============================================================
+// Referral Routes (Professional)
+// ============================================================
 router.get(
   "/my-referral-applications",
-  secureRoute, // Ensures req.user.profileId is populated
+  secureRoute,
+  searchLimiter,
   getReferralApplicationsForProfessional
 );
 
 router.get(
   "/all-referrals",
   secureRoute,
+  searchLimiter,
   getGlobalReferralApplications
 );
 
 router.get(
   "/company/referred-candidates",
   secureRoute,
+  searchLimiter,
   getReferralsForCompany
 );
 
 router.get(
   "/professional/referral-metrics",
   secureRoute,
+  searchLimiter,
   getProfessionalReferralMetrics
 );
 
-router.get('/dashboard/candidate/stats', secureRoute, getCandidateDashboardStats);
-router.get('/details/:applicationId', secureRoute, getApplicationDetailsById);
+// ============================================================
+// Candidate Dashboard
+// ============================================================
+router.get(
+  '/dashboard/candidate/stats',
+  secureRoute,
+  searchLimiter,
+  getCandidateDashboardStats
+);
+
+// ============================================================
+// Application Details
+// ============================================================
+router.get(
+  '/details/:applicationId',
+  secureRoute,
+  searchLimiter,
+  getApplicationDetailsById
+);
+
 export default router;

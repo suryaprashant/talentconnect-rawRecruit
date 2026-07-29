@@ -6,22 +6,46 @@ import {
   getServiceRequestBoardOverView,
   updateServiceRequestStatus
 } from "../../controllers/admin/serviceRequestManagementController.js";
+import {
+    searchLimiter,
+    adminLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // Apply admin authentication
 router.use(adminAuth);
 
-// Route: Get overview of service requests (statistics)
-router.get('/overviewdata', getServiceRequestOverView);
+// ============================================================
+// Admin Service Request Management Routes
+// ============================================================
 
-// Route: Get all service requests with pagination and filtering
-router.post('/requests-board', getServiceRequestBoardOverView);
+// GET overview of service requests (statistics) - uses searchLimiter (60 per minute)
+router.get(
+    '/overviewdata',
+    searchLimiter,
+    getServiceRequestOverView
+);
 
-// Route: Update service request status
-router.patch('/:requestId/status', updateServiceRequestStatus);
+// POST service requests board with pagination and filtering - uses searchLimiter (60 per minute)
+router.post(
+    '/requests-board',
+    searchLimiter,
+    getServiceRequestBoardOverView
+);
 
-// Route: Get all service request applications
-router.get('/getrelationdata', getAllServiceRequest);
+// PATCH update service request status - uses adminLimiter (300 per minute)
+router.patch(
+    '/:requestId/status',
+    adminLimiter,
+    updateServiceRequestStatus
+);
+
+// GET all service request applications - uses searchLimiter (60 per minute)
+router.get(
+    '/getrelationdata',
+    searchLimiter,
+    getAllServiceRequest
+);
 
 export default router;

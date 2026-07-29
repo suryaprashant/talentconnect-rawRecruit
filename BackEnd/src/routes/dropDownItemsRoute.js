@@ -1,13 +1,23 @@
 import express from 'express';
-
 import { getAllColleges, getAllCompanies } from '../controllers/dropDownItemsController.js';
+import {
+    searchLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// Route to get all company names for dropdown
-router.get('/companiesName', getAllCompanies);
 
-// get all colleges name for dropdown
-router.get('/collegeName' , getAllColleges) ;
+router.get(
+    '/companiesName',
+    searchLimiter,
+    getAllCompanies
+);
+
+
+router.get(
+    '/collegeName',
+    searchLimiter,
+    getAllColleges
+);
 
 export default router;

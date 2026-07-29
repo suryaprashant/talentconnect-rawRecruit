@@ -9,10 +9,43 @@ import {
 } from "../controllers/jobController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js";
 import verifyUser from "../middlewares/verifyUser.js";
+import {
+    searchLimiter,
+} from "../middlewares/ratelimiter/index.js";
+
 const router = express.Router();
 
 // api '.../jobs'
 
+// ============================================================
+// Job Details Routes (Read Operations)
+// ============================================================
+
+// GET offcampus job details - uses searchLimiter (60 per minute)
+router.get(
+    '/jobDetails/:jobId',
+    searchLimiter,
+    findOffcampusOpportunityById
+);
+
+// GET joblisting job details - uses searchLimiter (60 per minute)
+router.get(
+    '/jobDetails/joblisting/:jobId',
+    searchLimiter,
+    findJobListingOpportunityById
+);
+
+// GET referral job details - uses searchLimiter (60 per minute)
+router.get(
+    '/jobDetails/referral/:jobId',
+    verifyUser,
+    searchLimiter,
+    findReferalOpportunityById
+);
+
+// ============================================================
+// Commented out routes for reference
+// ============================================================
 // // company
 // // router.post('/:companyId', createJob);
 
@@ -27,13 +60,9 @@ const router = express.Router();
 
 // router.get('/relevantjobs/offcampus', secureRoute, findRelevantOpportunityById);
 // router.get('/relevantjobs/joblisting', secureRoute, findRelevantJoblistingOpportunity);
-router.get('/jobDetails/:jobId', findOffcampusOpportunityById);
-router.get('/jobDetails/joblisting/:jobId', findJobListingOpportunityById);
 // // router.get('/campusopportunity', fetchCampusOpportunities);
 
-//referral
-//router.get('/jobDetails/referral/:jobId', findReferalOpportunityById);
-router.get('/jobDetails/referral/:jobId', verifyUser, findReferalOpportunityById);
-
+// //referral
+// //router.get('/jobDetails/referral/:jobId', findReferalOpportunityById);
 
 export default router;

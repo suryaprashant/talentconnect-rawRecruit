@@ -7,14 +7,25 @@ import {
   updateCollegeProfile
 } from '../../controllers/collegeDashboard/collegeProfileController.js';
 import { createCollegeMasterDataController, getCollegeMasterDataByTypeController } from '../../controllers/collegeNameController.js';
+import {
+    profileUpdateLimiter,
+    searchLimiter,
+    signupLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// ============================================================
+// College Onboarding Routes
+// ============================================================
+
+// POST submit college onboarding with file uploads - uses profileUpdateLimiter (30 per hour)
 router.post(
   '/submit-onboarding',
-  secureRoute, // Apply your authentication middleware
+  secureRoute,
+  profileUpdateLimiter,
   upload.fields([
     { name: 'collegeBrochure', maxCount: 1 },
     { name: 'profileImage', maxCount: 1 },
@@ -23,9 +34,11 @@ router.post(
   submitCollegeOnboarding
 );
 
+// PUT update college information with file uploads - uses profileUpdateLimiter (30 per hour)
 router.put(
   '/updateInformation',
   secureRoute,
+  profileUpdateLimiter,
   upload.fields([
     { name: 'collegeImage', maxCount: 1 },
     { name: 'backgroundImage', maxCount: 1 },
@@ -34,10 +47,26 @@ router.put(
   updateCollegeProfile
 );
 
+// GET college profile data - uses searchLimiter (60 per minute)
+router.get(
+  '/profile-data',
+  secureRoute,
+  searchLimiter,
+  getCollegeOnboardingByUserId
+);
 
-router.get('/profile-data', secureRoute , getCollegeOnboardingByUserId);
+// POST create college master data - uses signupLimiter (5 per hour)
+router.post(
+  "/college-master-data",
+  signupLimiter,
+  createCollegeMasterDataController
+);
 
-router.post("/college-master-data", createCollegeMasterDataController);
-router.get("/college-master-data/:type", getCollegeMasterDataByTypeController);
+// GET college master data by type - uses searchLimiter (60 per minute)
+router.get(
+  "/college-master-data/:type",
+  searchLimiter,
+  getCollegeMasterDataByTypeController
+);
 
 export default router;

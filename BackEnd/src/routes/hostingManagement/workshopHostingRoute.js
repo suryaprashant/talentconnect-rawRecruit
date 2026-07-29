@@ -9,25 +9,65 @@ import {
 } from '../../controllers/hostingManagement/workshopHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import upload from '../../utils/multer.js';
+import {
+    searchLimiter,
+    adminLimiter,
+    documentUploadLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
-// Route to get all workshops hosted by a company with registration counts
-router.get('/workshops', secureRoute, getCompanyWorkshopsWithRegistrations);
+// ============================================================
+// Workshop Hosting Routes
+// ============================================================
 
-// Route to get all registrations for a specific workshop
-router.get('/workshops/:workshopId/registrations', secureRoute, getWorkshopRegistrations);
+// GET all workshops hosted by a company with registration counts - uses searchLimiter (60 per minute)
+router.get(
+    '/workshops',
+    secureRoute,
+    searchLimiter,
+    getCompanyWorkshopsWithRegistrations
+);
 
-// Route to get detailed information about a specific registration
-router.get('/workshops/registrations/:registrationId', secureRoute, getRegistrationDetails);
+// GET all registrations for a specific workshop - uses searchLimiter (60 per minute)
+router.get(
+    '/workshops/:workshopId/registrations',
+    secureRoute,
+    searchLimiter,
+    getWorkshopRegistrations
+);
 
-// Route to confirm a registration
-router.put('/workshops/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
+// GET detailed information about a specific registration - uses searchLimiter (60 per minute)
+router.get(
+    '/workshops/registrations/:registrationId',
+    secureRoute,
+    searchLimiter,
+    getRegistrationDetails
+);
 
-// Route to reject a registration
-router.put('/workshops/registrations/:registrationId/reject', secureRoute, rejectRegistration);
+// PUT confirm a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/workshops/registrations/:registrationId/confirm',
+    secureRoute,
+    adminLimiter,
+    confirmRegistration
+);
 
-// Route to send file to confirmed users
-router.post('/workshops/:workshopId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
+// PUT reject a registration - uses adminLimiter (300 per minute)
+router.put(
+    '/workshops/registrations/:registrationId/reject',
+    secureRoute,
+    adminLimiter,
+    rejectRegistration
+);
+
+// POST send file to confirmed users - uses documentUploadLimiter (20 per hour)
+router.post(
+    '/workshops/:workshopId/send-file',
+    secureRoute,
+    documentUploadLimiter,
+    upload.single('file'),
+    sendFileToConfirmedUsers
+);
 
 export default router;

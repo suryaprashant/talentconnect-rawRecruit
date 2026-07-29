@@ -2,6 +2,10 @@
 import express from 'express';
 import multer from 'multer';
 import { createStudentProfile } from '../controllers/studentProfileController.js';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
+import {
+    profileUpdateLimiter,
+} from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -15,6 +19,17 @@ const cpUpload = upload.fields([
   { name: 'degreeCertificate', maxCount: 1 },
 ]);
 
-router.post('/', cpUpload, createStudentProfile);
+// ============================================================
+// Student Profile Route (With File Uploads)
+// ============================================================
+
+// POST create student profile with multiple file uploads - uses profileUpdateLimiter (30 per hour)
+router.post(
+    '/',
+    secureRoute,
+    profileUpdateLimiter,
+    cpUpload,
+    createStudentProfile
+);
 
 export default router;

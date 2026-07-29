@@ -2,20 +2,49 @@ import express from "express";
 
 import secureRoute from "../middlewares/secureRouteMiddleware.js"
 import { allUsers, createConversation, getMessage, getUnreadCount, sendMessage ,userDetails} from "../controllers/messageController.js";
+
+
+import { messageReadLimiter,chatSendLimiter, unreadCountLimiter, conversationLimiter,userSearchLimiter} from "../middlewares/ratelimiter/index.js" 
 // import { getMessages, sendMessage } from "../controllers/message.controller.js";
 
 const router = express.Router();
 
-router.get("/get/:id", secureRoute , getMessage);
-router.post("/send/:id", secureRoute, sendMessage);
+router.get(
+    "/get/:id",
+    secureRoute,
+    messageReadLimiter,
+    getMessage
+);
 
-router.get("/unread-count", secureRoute, getUnreadCount) ;
+router.post(
+    "/send/:id",
+    secureRoute,
+    chatSendLimiter,
+    sendMessage
+);
 
-router.post("/conversation", secureRoute, createConversation) ;
+router.get(
+    "/unread-count",
+    secureRoute,
+    unreadCountLimiter,
+    getUnreadCount
+);
 
-router.get("/allusers" , secureRoute , allUsers) ;
+router.post(
+    "/conversation",
+    secureRoute,
+    conversationLimiter,
+    createConversation
+);
 
-router.get("/user/:id" , secureRoute , userDetails) ;
+router.get(
+    "/allusers",
+    secureRoute,
+    userSearchLimiter,
+    allUsers
+);
+
+router.get("/user/:id" , unreadCountLimiter, secureRoute , userDetails) ;
 
 
 

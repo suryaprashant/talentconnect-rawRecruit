@@ -6,8 +6,23 @@ import {
   createmockinterviewrequest,
 } from "../services/applicationToAdminService.js";
 
-// we have to define the middleware so that only admin can access this route
-router.get("/counselling", createServiceRequest);
-router.get("/mock-interview", createmockinterviewrequest);
+import {
+  serviceRequestLimiter,
+  adminLimiter,
+} from "../middlewares/ratelimiter/index.js";
+
+
+router.get(
+  "/counselling",
+  serviceRequestLimiter,
+  createServiceRequest
+);
+
+
+router.get(
+  "/mock-interview",
+  serviceRequestLimiter,
+  createmockinterviewrequest
+);
 
 export default router;

@@ -6,22 +6,47 @@ import {
   deleteUser,
   getUserStatusCounts
 } from "../../controllers/admin/userManagementController.js";
+import {
+    searchLimiter,
+    adminLimiter,
+    deleteAccountLimiter,
+} from "../../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // Apply admin authentication 
 router.use(adminAuth);
 
-// Admin dashboard overview
-router.post('/users-board', getUserBoardOverView);
+// ============================================================
+// Admin User Management Routes
+// ============================================================
 
-// Get user status counts
-router.get('/user-status', getUserStatusCounts);
+// POST users board with pagination and filtering - uses searchLimiter (60 per minute)
+router.post(
+    '/users-board',
+    searchLimiter,
+    getUserBoardOverView
+);
 
-// Update user status (active/pending/blocked)
-router.patch('/users/:userId/status', updateUserStatus);
+// GET user status counts - uses searchLimiter (60 per minute)
+router.get(
+    '/user-status',
+    searchLimiter,
+    getUserStatusCounts
+);
 
-// Delete a user
-router.delete('/users/:userId', deleteUser);
+// PATCH update user status (active/pending/blocked) - uses adminLimiter (300 per minute)
+router.patch(
+    '/users/:userId/status',
+    adminLimiter,
+    updateUserStatus
+);
+
+// DELETE a user - uses deleteAccountLimiter (2 per day)
+router.delete(
+    '/users/:userId',
+    deleteAccountLimiter,
+    deleteUser
+);
 
 export default router;

@@ -6,7 +6,7 @@ const url =process.env.DB_URL;
 
 
 
-const DB_NAME = process.env.DB_NAME;
+const DB_NAME =process.env.DB_NAME;
 
 const Connection = async () => {
     try {
