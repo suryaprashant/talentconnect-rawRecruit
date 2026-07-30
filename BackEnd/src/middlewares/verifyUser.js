@@ -4,8 +4,8 @@ import Auth from "../models/authModel.js";
 
 const verifyUser = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
-    
+    const token = req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
+    // console.log(token);
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       if (decoded) {

@@ -388,7 +388,7 @@ const getOrganizationName = (job) => {
     jobData?.employerDetails?.companyName || // Check employer specific details
     jobData?.collegePosted?.collegeUniversityDetails?.collegeName ||
     jobData?.companyName || // Fallback for direct field
-    jobData?.jobTitle || // Last resort fallback
+    jobData?.jobTitle?.[0] || // Last resort fallback
     "Company Not Specified"
   );
 };

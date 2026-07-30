@@ -682,7 +682,7 @@
 //                 <button type="button" className={`px-4 py-2 border rounded-lg transition-colors ${formData.workMode === 'Remote' ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} onClick={() => handleOptionSelect('workMode', 'Remote')}>Remote</button>
 //               </div>
 //             </div>
-            
+
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Preferred Hiring Mode</label>
 //               <div className="flex flex-wrap gap-2">
@@ -983,7 +983,7 @@
 //                 </div>
 //               </div>
 //             </div>
-            
+
 //             <div>
 //               <label className="block mb-2 font-medium text-gray-700">Hiring Timeline</label>
 //               <div className="space-y-4">
@@ -1032,7 +1032,7 @@
 //                     </div>
 //                   </div>
 //                 </div>
-                
+
 //                 <div>
 //                   <label className="block mb-1 text-sm text-gray-600">Offer Rollout Date</label>
 //                   <div className="relative">
@@ -1221,7 +1221,7 @@ export default function RequestInfo() {
   };
 */}
   //const degreeOptions = Object.keys(degreeStreamMapping).sort();
-  
+
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
   const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
   //const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
@@ -1237,7 +1237,7 @@ export default function RequestInfo() {
   const initialData = {
     degree: [],
     stream: [],
-    collegeCategories: [], 
+    collegeCategories: [],
     preferredLocations: [],
     lookingFor: '',
     employmentType: [],
@@ -1247,8 +1247,8 @@ export default function RequestInfo() {
     jobRoles: [],
     skills: [],
     packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
-    startDate: '', 
-    endDate: '',  
+    startDate: '',
+    endDate: '',
     onlineTestDate: '',
     interviewWindow: { start: '', end: '' },
     offerRolloutDate: '',
@@ -1302,28 +1302,28 @@ export default function RequestInfo() {
       value: city.name,
       label: city.name,
     })),
-  []);
+    []);
 
   //const [customDegree, setCustomDegree] = useState('');
   //const [customStream, setCustomStream] = useState('');
   //const [customJobRole, setCustomJobRole] = useState('');
-  const [degreeOptions,     setDegreeOptions]     = useState([]);
-  const [streamOptions,     setStreamOptions]     = useState([]);
+  const [degreeOptions, setDegreeOptions] = useState([]);
+  const [streamOptions, setStreamOptions] = useState([]);
   const [selectedDegreeIds, setSelectedDegreeIds] = useState([]);
-  const [isLoadingDegrees,  setIsLoadingDegrees]  = useState(false);
-  const [isLoadingStreams,   setIsLoadingStreams]  = useState(false);
+  const [isLoadingDegrees, setIsLoadingDegrees] = useState(false);
+  const [isLoadingStreams, setIsLoadingStreams] = useState(false);
 
   // Job Roles (Company API — uses string value, no _id)
   const [jobRoleOptions, setJobRoleOptions] = useState([]);
   const [isLoadingJobRoles, setIsLoadingJobRoles] = useState(false);
-  const [designationOptions,    setDesignationOptions]    = useState([]);
+  const [designationOptions, setDesignationOptions] = useState([]);
   const [isLoadingDesignations, setIsLoadingDesignations] = useState(false);
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
     degree: false,
     stream: false,
-    collegeCategories: false, 
+    collegeCategories: false,
     preferredLocations: false,
     jobRoles: false,
     skills: false,
@@ -1336,7 +1336,7 @@ export default function RequestInfo() {
 
   //const degreeRef = useRef(null);
   //const streamRef = useRef(null);
-  const collegeCategoriesRef = useRef(null); 
+  const collegeCategoriesRef = useRef(null);
   const preferredLocationsRef = useRef(null);
   //const jobRolesRef = useRef(null);
   const skillsRef = useRef(null);
@@ -1350,7 +1350,7 @@ export default function RequestInfo() {
     localStorage.setItem('pendingOnCampusJobCreate', JSON.stringify(formData));
   }, [formData]);
 
-    // ─── Fetch degrees on mount ────────────────────────────────────────────────
+  // ─── Fetch degrees on mount ────────────────────────────────────────────────
   useEffect(() => {
     const fetchDegrees = async () => {
       setIsLoadingDegrees(true);
@@ -1402,47 +1402,47 @@ export default function RequestInfo() {
   }, []);
 
   useEffect(() => {
-      const fetch = async () => {
-          setIsLoadingDesignations(true);
-          try {
-              const res = await getCompanyMasterDataByType('COMPANY_DESIGNATION');
-              setDesignationOptions((res?.data?.data || []).map(item => ({ value: item.value, label: item.value })));
-          } catch (err) { console.error(err); }
-          finally { setIsLoadingDesignations(false); }
-      };
-      fetch();
+    const fetch = async () => {
+      setIsLoadingDesignations(true);
+      try {
+        const res = await getCompanyMasterDataByType('COMPANY_DESIGNATION');
+        setDesignationOptions((res?.data?.data || []).map(item => ({ value: item.value, label: item.value })));
+      } catch (err) { console.error(err); }
+      finally { setIsLoadingDesignations(false); }
+    };
+    fetch();
   }, []);
 
- useEffect(() => {
-  const handleClickOutside = (event) => {
-    const dropdownRefs = {
-      
-      collegeCategories: collegeCategoriesRef, 
-      preferredLocations: preferredLocationsRef,
-      
-      selectionProcess: selectionProcessRef,
-      amenities: amenitiesRef,
-      benefits: benefitsRef,
-      tags: tagsRef,
-      workLocation: workLocationRef,
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdownRefs = {
+
+        collegeCategories: collegeCategoriesRef,
+        preferredLocations: preferredLocationsRef,
+
+        selectionProcess: selectionProcessRef,
+        amenities: amenitiesRef,
+        benefits: benefitsRef,
+        tags: tagsRef,
+        workLocation: workLocationRef,
+      };
+
+      // 1. Handle standard dropdowns (Degree, Stream, etc.)
+      for (const key in dropdownRefs) {
+        if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+          setDropdownOpen(prev => ({ ...prev, [key]: false }));
+        }
+      }
+
+      // 2. Handle Skills dropdown specifically (separate state)
+      if (skillsRef.current && !skillsRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
     };
 
-    // 1. Handle standard dropdowns (Degree, Stream, etc.)
-    for (const key in dropdownRefs) {
-      if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
-        setDropdownOpen(prev => ({ ...prev, [key]: false }));
-      }
-    }
-
-    // 2. Handle Skills dropdown specifically (separate state)
-    if (skillsRef.current && !skillsRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, stream: [] }));
@@ -1491,7 +1491,7 @@ export default function RequestInfo() {
       packageDetails: { ...prev.packageDetails, [name]: value }
     }));
   };
-  
+
   const handleHiringPreferenceChange = (value) => {
     setFormData(prev => ({
       ...prev,
@@ -1572,65 +1572,65 @@ export default function RequestInfo() {
   };
 
   // --- DYNAMIC SKILLS STATE ---
-const [metaData, setMetaData] = useState([]); // All skills from DB
-const [customSkillSearch, setCustomSkillSearch] = useState(""); 
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [metaData, setMetaData] = useState([]); // All skills from DB
+  const [customSkillSearch, setCustomSkillSearch] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-// --- FETCH FROM DATABASE ---
-useEffect(() => {
-  const fetchSkills = async () => {
+  // --- FETCH FROM DATABASE ---
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+        const skillNames = data.map(item => item.skills);
+        setMetaData(skillNames);
+      } catch (err) {
+        console.error("Error loading skills", err);
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  const filteredSkillOptions = useMemo(() => {
+    return Array.isArray(metaData) ? metaData.sort() : [];
+  }, [metaData]);
+
+  // --- SKILL HANDLERS ---
+  const handleAddNewSkill = async (newSkillName) => {
+    const trimmedSkill = newSkillName.trim();
+    if (!trimmedSkill) return;
+
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
-      const skillNames = data.map(item => item.skills);
-      setMetaData(skillNames);
+      const payload = { skills: trimmedSkill };
+      const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, payload);
+
+      setMetaData(prev => [...new Set([...prev, data.skills])]);
+      setFormData(prev => ({
+        ...prev,
+        skills: [...new Set([...prev.skills, data.skills])]
+      }));
+      toast.success(`Skill "${data.skills}" added to global database!`);
     } catch (err) {
-      console.error("Error loading skills", err);
+      if (err.response?.status === 409) toast.error("Skill already exists");
+      else toast.error("Failed to add skill");
     }
   };
-  fetchSkills();
-}, []);
 
-const filteredSkillOptions = useMemo(() => {
-  return Array.isArray(metaData) ? metaData.sort() : [];
-}, [metaData]);
+  const handleSelectOrAdd = async (skillName) => {
+    const trimmed = skillName.trim();
+    if (!trimmed) return;
 
-// --- SKILL HANDLERS ---
-const handleAddNewSkill = async (newSkillName) => {
-  const trimmedSkill = newSkillName.trim();
-  if (!trimmedSkill) return;
+    const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
 
-  try {
-    const payload = { skills: trimmedSkill };
-    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, payload);
-
-    setMetaData(prev => [...new Set([...prev, data.skills])]);
-    setFormData(prev => ({
-      ...prev,
-      skills: [...new Set([...prev.skills, data.skills])]
-    }));
-    toast.success(`Skill "${data.skills}" added to global database!`);
-  } catch (err) {
-    if (err.response?.status === 409) toast.error("Skill already exists");
-    else toast.error("Failed to add skill");
-  }
-};
-
-const handleSelectOrAdd = async (skillName) => {
-  const trimmed = skillName.trim();
-  if (!trimmed) return;
-
-  const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
-
-  if (existingInDb) {
-    if (!formData.skills.includes(existingInDb)) {
-      setFormData(prev => ({ ...prev, skills: [...prev.skills, existingInDb] }));
+    if (existingInDb) {
+      if (!formData.skills.includes(existingInDb)) {
+        setFormData(prev => ({ ...prev, skills: [...prev.skills, existingInDb] }));
+      }
+    } else {
+      await handleAddNewSkill(trimmed);
     }
-  } else {
-    await handleAddNewSkill(trimmed);
-  }
-  setCustomSkillSearch("");
-  setIsDropdownOpen(false);
-};
+    setCustomSkillSearch("");
+    setIsDropdownOpen(false);
+  };
 
   const toggleDropdown = (dropdown) => {
     setDropdownOpen(prev => ({
@@ -1652,13 +1652,26 @@ const handleSelectOrAdd = async (skillName) => {
       toast.error("Job description cannot exceed 500 characters.");
       return;
     }
+    const totalCTC = Number(formData.packageDetails.totalCTC);
+    const fixedPay = Number(formData.packageDetails.fixedPay);
+    const variablePay = Number(formData.packageDetails.joiningBonus);
+
+    if (fixedPay + variablePay > totalCTC) {
+      toast.error("(Fixed Pay + Variable Pay) cannot exceed Total CTC.");
+      return;
+    }
+
+    if (formData.jobRoles.length === 0) {
+      toast.error("Please select at least one job role.");
+      return;
+    }
     try {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
       const payload = {
         degree: formData.degree.map(d => d.label),
         studentStreams: formData.stream.map(s => s.label),
-        collegeCategories: formData.collegeCategories, 
+        collegeCategories: formData.collegeCategories,
         location: formData.preferredLocations,
         lookingFor: formData.lookingFor,
         employmentType: formData.employmentType,
@@ -1765,7 +1778,7 @@ const handleSelectOrAdd = async (skillName) => {
                 <Building2 className="h-5 w-5 text-[#143694]" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
-                OnCampus Connect: Hire Smarter 
+                OnCampus Connect: Hire Smarter
               </h1>
             </div>
             <p className="text-sm text-gray-600 max-w-2xl mx-auto">
@@ -1790,10 +1803,10 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Student & College Information</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Degree */}
-                
+
                 <div>
                   <label className="block font-medium mb-2 text-sm text-gray-700">Degree</label>
                   <CreatableSelect
@@ -1933,33 +1946,33 @@ const handleSelectOrAdd = async (skillName) => {
               </div>
 
               {/* Amenities Required */}
-                  <div ref={amenitiesRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Amenities Required</label>
-                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                      {formData.amenitiesRequired.map(amenity => (
-                        <div key={amenity} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{amenity}</span>
-                          <button type="button" onClick={() => removeSelectedItem('amenitiesRequired', amenity)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+              <div ref={amenitiesRef} className="relative">
+                <label className="block font-medium mb-2 text-sm text-gray-700">Amenities Required</label>
+                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                  {formData.amenitiesRequired.map(amenity => (
+                    <div key={amenity} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                      <span>{amenity}</span>
+                      <button type="button" onClick={() => removeSelectedItem('amenitiesRequired', amenity)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('amenities')}>
+                  <span className="text-sm text-gray-500">Select amenities</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
+                </div>
+                {dropdownOpen.amenities && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                    {amenitiesOptions.map(amenity => (
+                      <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{amenity}</span>
+                          {formData.amenitiesRequired.includes(amenity) && <span className="text-[#143694]">✓</span>}
                         </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('amenities')}>
-                      <span className="text-sm text-gray-500">Select amenities</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    {dropdownOpen.amenities && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {amenitiesOptions.map(amenity => (
-                          <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{amenity}</span>
-                              {formData.amenitiesRequired.includes(amenity) && <span className="text-[#143694]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
                       </div>
-                    )}
+                    ))}
                   </div>
+                )}
+              </div>
             </div>
 
             {/* SECTION 2: Job Position Details */}
@@ -1970,7 +1983,7 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Position Details</h3>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Broadcast Type and Looking For */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2011,10 +2024,10 @@ const handleSelectOrAdd = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Looking for</label>
                     <div className="flex gap-2">
                       {['Job', 'Internship', 'Both'].map(type => (
-                        <button 
-                          key={type} 
-                          type="button" 
-                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.lookingFor === type ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                        <button
+                          key={type}
+                          type="button"
+                          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.lookingFor === type ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                           onClick={() => handleOptionSelect('lookingFor', type)}
                         >
                           {type}
@@ -2031,10 +2044,10 @@ const handleSelectOrAdd = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Employment type</label>
                     <div className="flex flex-wrap gap-2">
                       {['Part-time', 'Full-time', 'Contract'].map(type => (
-                        <button 
-                          key={type} 
-                          type="button" 
-                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                        <button
+                          key={type}
+                          type="button"
+                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                           onClick={() => handleMultiSelect('employmentType', type)}
                         >
                           {type}
@@ -2048,10 +2061,10 @@ const handleSelectOrAdd = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode</label>
                     <div className="flex flex-wrap gap-2">
                       {['Hybrid', 'On-site', 'Remote'].map(mode => (
-                        <button 
-                          key={mode} 
-                          type="button" 
-                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                        <button
+                          key={mode}
+                          type="button"
+                          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                           onClick={() => handleOptionSelect('workMode', mode)}
                         >
                           {mode}
@@ -2066,10 +2079,10 @@ const handleSelectOrAdd = async (skillName) => {
                   <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {preferredModeOptions.map(mode => (
-                      <button 
-                        key={mode} 
-                        type="button" 
-                        className={`px-3 py-2 text-sm border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                      <button
+                        key={mode}
+                        type="button"
+                        className={`px-3 py-2 text-sm border rounded-lg transition-colors ${formData.companyHiringPreference.preferredMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
                         onClick={() => handleHiringPreferenceChange(mode)}
                       >
                         {mode}
@@ -2082,7 +2095,7 @@ const handleSelectOrAdd = async (skillName) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                   {/* Job Roles */}
                   <div>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles <span className="text-red-500">*</span></label>
                     <CreatableSelect
                       isMulti
                       isClearable
@@ -2188,97 +2201,97 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
 
                 {/* Skills */}
-               {/* --- INTEGRATED DYNAMIC SKILLS SECTION --- */}
-<div ref={skillsRef} className="relative pt-2">
-  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
-    <Award className="w-4 h-4 text-[#143694]" />
-    Required Skills <span className="text-red-500">*</span>
-  </label>
+                {/* --- INTEGRATED DYNAMIC SKILLS SECTION --- */}
+                <div ref={skillsRef} className="relative pt-2">
+                  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-[#143694]" />
+                    Required Skills <span className="text-red-500">*</span>
+                  </label>
 
-  {/* Search & Tag Container */}
-  <div className={`
+                  {/* Search & Tag Container */}
+                  <div className={`
     group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
     bg-gradient-to-r from-gray-50 to-white 
     border rounded-xl transition-all duration-300
     ${isDropdownOpen ? 'border-[#143694] ring-2 ring-[#143694]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
   `}>
-    {/* Selected Skill Tags */}
-    {formData.skills.map((skill) => (
-      <div 
-        key={skill} 
-        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm"
-      >
-        {skill}
-        <button 
-          type="button" 
-          onClick={() => removeSelectedItem('skills', skill)} 
-          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
-        >
-          <X size={12} className="text-gray-400 hover:text-red-500" />
-        </button>
-      </div>
-    ))}
+                    {/* Selected Skill Tags */}
+                    {formData.skills.map((skill) => (
+                      <div
+                        key={skill}
+                        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#143694]/20 text-[#143694] text-xs font-bold rounded-full shadow-sm"
+                      >
+                        {skill}
+                        <button
+                          type="button"
+                          onClick={() => removeSelectedItem('skills', skill)}
+                          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
+                        >
+                          <X size={12} className="text-gray-400 hover:text-red-500" />
+                        </button>
+                      </div>
+                    ))}
 
-    {/* Search Input */}
-    <input
-      type="text"
-      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
-      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Java)..." : "Add more..."}
-      value={customSkillSearch}
-      onFocus={() => setIsDropdownOpen(true)}
-      onChange={(e) => setCustomSkillSearch(e.target.value)}
-    />
-  </div>
+                    {/* Search Input */}
+                    <input
+                      type="text"
+                      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
+                      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Java)..." : "Add more..."}
+                      value={customSkillSearch}
+                      onFocus={() => setIsDropdownOpen(true)}
+                      onChange={(e) => setCustomSkillSearch(e.target.value)}
+                    />
+                  </div>
 
-  {/* Searchable Dropdown Menu */}
-  {isDropdownOpen && (
-    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden">
-      <div className="max-h-64 overflow-y-auto">
-        
-        {/* 1. Results from Database */}
-        {filteredSkillOptions
-          .filter(s => 
-            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
-            !formData.skills.includes(s)
-          )
-          .map((skill, index) => (
-            <button
-              key={index}
-              type="button"
-              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
-              onClick={() => handleSelectOrAdd(skill)}
-            >
-              <span>{skill}</span>
-              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
-            </button>
-          ))}
+                  {/* Searchable Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden">
+                      <div className="max-h-64 overflow-y-auto">
 
-        {/* 2. "Add New" button - Shows only if search has no exact match */}
-        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
-          <button
-            type="button"
-            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
-            onClick={() => handleSelectOrAdd(customSkillSearch)}
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                <Target size={16} className="text-[#1e4ed8]" />
-              </div>
-              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
-            </div>
-          </button>
-        )}
+                        {/* 1. Results from Database */}
+                        {filteredSkillOptions
+                          .filter(s =>
+                            s.toLowerCase().includes(customSkillSearch.toLowerCase()) &&
+                            !formData.skills.includes(s)
+                          )
+                          .map((skill, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              className="w-full text-left px-5 py-3 hover:bg-[#143694]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+                              onClick={() => handleSelectOrAdd(skill)}
+                            >
+                              <span>{skill}</span>
+                              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#143694] -rotate-90" />
+                            </button>
+                          ))}
 
-        {/* Empty/Syncing State */}
-        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
-          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
-            Start typing to search or add skills...
-          </div>
-        )}
-      </div>
-    </div>
-  )}
-</div>
+                        {/* 2. "Add New" button - Shows only if search has no exact match */}
+                        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+                          <button
+                            type="button"
+                            className="w-full text-left px-5 py-4 bg-[#143694]/5 text-[#143694] text-sm font-bold hover:bg-[#143694]/10 transition-all border-t border-[#143694]/10"
+                            onClick={() => handleSelectOrAdd(customSkillSearch)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                                <Target size={16} className="text-[#1e4ed8]" />
+                              </div>
+                              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
+                            </div>
+                          </button>
+                        )}
+
+                        {/* Empty/Syncing State */}
+                        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+                          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
+                            Start typing to search or add skills...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -2290,19 +2303,19 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Job Description & Requirements</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {/* Eligibility Criteria */}
                 <div>
                   <label htmlFor="eligibilityCriteria" className="block mb-2 font-medium text-sm text-gray-700">Eligibility Criteria</label>
-                  <textarea 
-                    id="eligibilityCriteria" 
-                    name="eligibilityCriteria" 
-                    rows="3" 
-                    placeholder="e.g., Minimum 60%, no backlogs..." 
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
-                    value={formData.eligibilityCriteria} 
-                    onChange={handleInputChange} 
+                  <textarea
+                    id="eligibilityCriteria"
+                    name="eligibilityCriteria"
+                    rows="3"
+                    placeholder="e.g., Minimum 60%, no backlogs..."
+                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
+                    value={formData.eligibilityCriteria}
+                    onChange={handleInputChange}
                   />
                   <div className="h-5 mt-1"></div>
                 </div>
@@ -2336,7 +2349,7 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Compensation & Benefits</h3>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Package Details */}
                 <div className='mt-1'>
@@ -2390,7 +2403,7 @@ const handleSelectOrAdd = async (skillName) => {
 
                 {/* Amenities and Benefits */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  
+
 
                   {/* Benefits */}
                   <div ref={benefitsRef} className="relative">
@@ -2422,38 +2435,38 @@ const handleSelectOrAdd = async (skillName) => {
                   </div>
 
                   {/* Tags */}
-                <div>
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
-                  <div ref={tagsRef} className="relative">
-                    <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.tags.length > 0 ? 'min-h-[24px]' : ''}`}>
-                      {formData.tags.map(tag => (
-                        <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{tag}</span>
-                          <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('tags')}>
-                      <span className="text-sm text-gray-500">Select tags</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    {dropdownOpen.tags && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {tagsOptions.map(tag => (
-                          <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{tag}</span>
-                              {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
-                            </div>
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
+                    <div ref={tagsRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.tags.length > 0 ? 'min-h-[24px]' : ''}`}>
+                        {formData.tags.map(tag => (
+                          <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{tag}</span>
+                            <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
                           </div>
                         ))}
                       </div>
-                    )}
+                      <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('tags')}>
+                        <span className="text-sm text-gray-500">Select tags</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
+                      </div>
+                      {dropdownOpen.tags && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                          {tagsOptions.map(tag => (
+                            <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#143694] font-medium" : "text-gray-700"}`}>{tag}</span>
+                                {formData.tags.includes(tag) && <span className="text-[#143694]">✓</span>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                </div>
 
-                
+
               </div>
             </div>
 
@@ -2465,11 +2478,11 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Hiring Timeline</h3>
               </div>
-              
+
               <div className="space-y-6">
                 {/* Application Dates */}
                 <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">Tentative Date of Placement/Hiring *</label>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Registration Timeline <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block mb-1 text-xs text-gray-600">Start Date</label>
@@ -2495,6 +2508,7 @@ const handleSelectOrAdd = async (skillName) => {
                           placeholderText="End date"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.startDate ? new Date(formData.startDate) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -2516,6 +2530,7 @@ const handleSelectOrAdd = async (skillName) => {
                           placeholderText="Online test date"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.endDate ? new Date(formData.endDate) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -2532,6 +2547,7 @@ const handleSelectOrAdd = async (skillName) => {
                             placeholderText="Interview start"
                             className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
+                            minDate={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                         </div>
@@ -2546,12 +2562,13 @@ const handleSelectOrAdd = async (skillName) => {
                             placeholderText="Interview end"
                             className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
+                            minDate={formData.interviewWindow.start ? new Date(formData.interviewWindow.start) : null}
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="relative">
                       <label className="block mb-1 text-xs text-gray-600">Offer Rollout Date</label>
                       <div className="relative">
@@ -2562,6 +2579,7 @@ const handleSelectOrAdd = async (skillName) => {
                           placeholderText="Offer rollout"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.interviewWindow.end ? new Date(formData.interviewWindow.end) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -2575,11 +2593,11 @@ const handleSelectOrAdd = async (skillName) => {
                   <div>
                     <label htmlFor="rounds" className="block mb-2 font-medium text-sm text-gray-700">Number of Rounds</label>
                     <div className="relative">
-                      <select 
-                        id="rounds" 
-                        name="rounds" 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                        value={formData.rounds} 
+                      <select
+                        id="rounds"
+                        name="rounds"
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                        value={formData.rounds}
                         onChange={handleInputChange}
                       >
                         <option value="" disabled>Select rounds</option>
@@ -2604,26 +2622,24 @@ const handleSelectOrAdd = async (skillName) => {
                           const isSelected = formData.selectionProcess.some(p =>
                             p.startsWith(process)
                           );
-                        
+
                           return (
                             <div
                               key={process}
-                              className={`px-3 py-2 border-b border-gray-100 ${
-                                isSelected ? "bg-blue-50" : "hover:bg-gray-50"
-                              }`}
+                              className={`px-3 py-2 border-b border-gray-100 ${isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+                                }`}
                             >
                               <div className="flex items-center justify-between">
                                 <span
                                   onClick={() => handleMultiSelect('selectionProcess', process)}
-                                  className={`text-sm cursor-pointer ${
-                                    isSelected
+                                  className={`text-sm cursor-pointer ${isSelected
                                       ? "text-[#143694] font-medium"
                                       : "text-gray-700"
-                                  }`}
+                                    }`}
                                 >
                                   {process}
                                 </span>
-                                
+
                                 {isSelected && (
                                   <button
                                     onClick={(e) => {
@@ -2655,21 +2671,21 @@ const handleSelectOrAdd = async (skillName) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Contact Information</h3>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Contact Person and Designation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Contact Person */}
                   <div>
                     <label htmlFor="contactPersonName" className="block mb-2 font-medium text-sm text-gray-700">Contact Person</label>
-                    <input 
-                      type="text" 
-                      id="contactPersonName" 
-                      name="contactPersonName" 
-                      placeholder="Name" 
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                      value={formData.contactPersonName} 
-                      onChange={handleInputChange} 
+                    <input
+                      type="text"
+                      id="contactPersonName"
+                      name="contactPersonName"
+                      placeholder="Name"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      value={formData.contactPersonName}
+                      onChange={handleInputChange}
                     />
                   </div>
 
@@ -2718,14 +2734,14 @@ const handleSelectOrAdd = async (skillName) => {
                     <label htmlFor="email" className="block mb-2 font-medium text-sm text-gray-700">Email <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="hello@xyz.com" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                        value={formData.email} 
-                        onChange={handleInputChange} 
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="hello@xyz.com"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        value={formData.email}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
@@ -2735,14 +2751,16 @@ const handleSelectOrAdd = async (skillName) => {
                     <label htmlFor="mobile" className="block mb-2 font-medium text-sm text-gray-700">Mobile <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input 
-                        type="tel" 
-                        id="mobile" 
-                        name="mobile" 
-                        placeholder="1234567890" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                        value={formData.mobile} 
-                        onChange={handleInputChange} 
+                      <input
+                        type="tel"
+                        id="mobile"
+                        name="mobile"
+                        placeholder="1234567890"
+                        maxLength={10}
+                        pattern="[0-9]{10}"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        value={formData.mobile}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
@@ -2755,14 +2773,14 @@ const handleSelectOrAdd = async (skillName) => {
                     <label htmlFor="linkedin" className="block mb-2 font-medium text-sm text-gray-700">LinkedIn Profile</label>
                     <div className="relative">
                       <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input 
-                        type="url" 
-                        id="linkedin" 
-                        name="linkedin" 
-                        placeholder="linkedin.com/in/profile" 
-                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                        value={formData.linkedin} 
-                        onChange={handleInputChange} 
+                      <input
+                        type="url"
+                        id="linkedin"
+                        name="linkedin"
+                        placeholder="linkedin.com/in/profile"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        value={formData.linkedin}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
@@ -2771,11 +2789,11 @@ const handleSelectOrAdd = async (skillName) => {
                   <div>
                     <label htmlFor="minimumStudents" className="block mb-2 font-medium text-sm text-gray-700">Minimum Students to Hire</label>
                     <div className="relative">
-                      <select 
-                        id="minimumStudents" 
-                        name="minimumStudents" 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                        value={formData.minimumStudents} 
+                      <select
+                        id="minimumStudents"
+                        name="minimumStudents"
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                        value={formData.minimumStudents}
                         onChange={handleInputChange}
                       >
                         <option value="" disabled>Select range</option>
@@ -2791,9 +2809,9 @@ const handleSelectOrAdd = async (skillName) => {
             {/* Submit Button */}
             <div className="flex justify-between pt-4">
               <BackButton></BackButton>
-              <button 
-                type="button" 
-                onClick={handleSubmit} 
+              <button
+                type="button"
+                onClick={handleSubmit}
                 className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200"
               >
                 Register

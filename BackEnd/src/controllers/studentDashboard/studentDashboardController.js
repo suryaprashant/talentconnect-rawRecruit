@@ -44,7 +44,7 @@ export const fetchMetricsForJob = async (jobId) => {
       jobType: "Referral",
       adminApprovalStatus: "Approved",
       "statusHistory.status": "Referred To Company",
-      
+
     }),
 
     // Total interview scheduled
@@ -60,7 +60,7 @@ export const fetchMetricsForJob = async (jobId) => {
       jobType: "Referral",
       adminApprovalStatus: "Approved",
       currentStatus: {
-        $in: [          
+        $in: [
           "Offer Extended",
           "Accepted",
           "Offer Accepted",
@@ -73,15 +73,15 @@ export const fetchMetricsForJob = async (jobId) => {
   const responseRate =
     totalApplicationsReceived > 0
       ? Math.round(
-          (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
-        ) / 100
+        (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
+      ) / 100
       : 0;
 
   const referralSuccessRate =
     totalReferredToCompany > 0
       ? Math.round(
-          (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
-        ) / 100
+        (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
+      ) / 100
       : 0;
 
   return {
@@ -589,7 +589,8 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
 // }
 
 export const getOnCampusPostingsForCollege = async (req, res) => {
-  const userId = req.user && req.user._id;
+  console.log("req.user:", req.user);
+  const userId = req.user || req.user._id;
 
   try {
     let collegeCity = null;
@@ -598,6 +599,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
     // 1. Fetch College Profile and Extract City
     if (userId) {
       const college = await getCollegeService(userId);
+      // console.log("college :",college);
 
       if (college && college.success && college.data?.length > 0) {
         const collegeDoc = college.data[0]; // Define the variable here
@@ -610,11 +612,24 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
         console.log("Found College City:", collegeCity);
       }
     }
-
+    // console.log("found user");
     // 2. Fetch Job Postings
     let postings = await getJobPostingsByJobTypeService("On-campus", userId);
+    // console.log("postings : ",postings);
+
     // Filter out inactive jobs
     postings = postings.filter((posting) => posting.inactive !== true);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Compare only the date
+
+    postings = postings.filter((posting) => {
+      if (!posting.endDate) return true; // Keep jobs with no end date
+
+      const endDate = new Date(posting.endDate);
+      endDate.setHours(0, 0, 0, 0);
+
+      return endDate >= today;
+    });
     // 3. Filter by Visibility AND Location logic
     const filteredPostings = postings.filter((posting) => {
       // Must be visible to College
@@ -635,7 +650,8 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
       // If broadcastType is 'Everyone', it passes through automatically
       return true;
     });
-
+    // console.log("filtered postings : ",filteredPostings);
+// console.log("collegeProfileId :",collegeProfileId);
     // 4. Application Filter (Existing Logic)
     if (!collegeProfileId) {
       return sendResponse(res, 200, { data: filteredPostings });
@@ -1400,9 +1416,9 @@ export const getJobPostings = async (req, res) => {
 const norm = (v) =>
   v
     ? String(v)
-        .toLowerCase()
-        .replace(/[\s.\-_]/g, "")
-        .trim()
+      .toLowerCase()
+      .replace(/[\s.\-_]/g, "")
+      .trim()
     : "";
 
 // ─── Fetch weights from DB with fallback to hardcoded defaults ───────────────
@@ -1524,7 +1540,7 @@ const logConfig = (W, threshold) => {
   );
   console.log(
     `\x1b[33m║    TOTAL         : ${String(total + "%").padEnd(26)}\x1b[0m` +
-      `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`,
+    `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`,
   );
   console.log(
     "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m",
@@ -1595,8 +1611,8 @@ export const getInternshipPostings = async (req, res) => {
     const afterAppliedFilter =
       userId && appliedJobIds.length > 0
         ? filteredByBroadcast.filter(
-            (p) => !appliedJobIds.some((id) => id.equals(p._id)),
-          )
+          (p) => !appliedJobIds.some((id) => id.equals(p._id)),
+        )
         : filteredByBroadcast;
 
     // ── STEP 6: GUEST (not logged in) — return all, score 0 ──────────────
@@ -1647,11 +1663,11 @@ export const getInternshipPostings = async (req, res) => {
         job.companyName ||
         "Company";
 
-       
+
 
       // ── 1. JOB ROLES (W.jobRoles %) ─────────────────────────────────
       const sRoles = (student.jobRoles || []).map(norm);
-      const jRoles = (job.jobRoles || job.jobTitle ).map(norm);
+      const jRoles = (job.jobRoles || job.jobTitle).map(norm);
 
       if (jRoles.length === 0) {
         breakdown.roles = W.jobRoles;
@@ -1701,9 +1717,9 @@ export const getInternshipPostings = async (req, res) => {
         requiredCGPA > 0
           ? requiredCGPA
           : (() => {
-              const m = fullJobText.match(cgpaRegex);
-              return m ? parseFloat(m[1]) : 0;
-            })();
+            const m = fullJobText.match(cgpaRegex);
+            return m ? parseFloat(m[1]) : 0;
+          })();
 
       if (effectiveCGPA === 0) {
         breakdown.cgpa = W.cgpa;
@@ -1797,12 +1813,12 @@ export const getInternshipPostings = async (req, res) => {
       // ── TOTAL SCORE ──────────────────────────────────────────────────
       const totalScore = Math.min(
         breakdown.roles +
-          breakdown.skills +
-          breakdown.cgpa +
-          breakdown.batchYear +
-          breakdown.location +
-          breakdown.salary +
-          breakdown.tools,
+        breakdown.skills +
+        breakdown.cgpa +
+        breakdown.batchYear +
+        breakdown.location +
+        breakdown.salary +
+        breakdown.tools,
         100,
       );
 
