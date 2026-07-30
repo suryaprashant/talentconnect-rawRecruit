@@ -228,9 +228,9 @@ import InvitationsPage from "./pages/InvitationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import PoolCampusPlacement from "./pages/college/serviceRequest/poolCampusPlacement/PoolCampus";
 import RefferalJobPosting from './pages/fresher/fresherDashboard/refferalJobs/RefferalJobListing'
-import RefferalJobDetail from './pages/fresher/fresherDashboard/refferalJobs/RefferalJobDetails'
+import RefferalJobDetails from './pages/fresher/fresherDashboard/refferalJobs/RefferalJobDetails'
 import RefferalPosting from './pages/professional/dashboard/refferalJobs/RefferalJobListing'
-import RefferalDetail from './pages/professional/dashboard/refferalJobs/RefferalJobDetails'
+import ProfessionalRefferalJobDetails from './pages/professional/dashboard/refferalJobs/RefferalJobDetails'
 import ReferralManagement from './pages/professional/ReferralManagement/ReferralManagement'
 import StudentReferralJobs from './pages/students/studentDashboard/refferalJobs/RefferalJobListing'
 import StudentRefferalJobDetails from './pages/students/studentDashboard/refferalJobs/RefferalJobDetails'
@@ -452,7 +452,7 @@ function AppRoutes() {
               <Route path="/fresher-dashboard/Off-campus/:jobId" element={<FOffCampusJobDetail />} />
 
               <Route path="/fresher-dashboard/Referral" element={<ReferralLayout />} />
-              <Route path="/fresher-dashboard/Referral/:jobId" element={<RefferalJobDetail />} />
+              <Route path="/fresher-dashboard/Referral/:jobId" element={<RefferalJobDetails />} />
 
               <Route path="/fresher-dashboard/hackathon" element={<FresherHackathon />} />
               <Route path="/fresher-dashboard/hackathon/:id" element={<FresherDetail />} />
@@ -480,7 +480,7 @@ function AppRoutes() {
               <Route path="/professional-dashboard/hackathon" element={<ProfessionalHackathon />} />
               <Route path="/professional-dashboard/hackathon/:id" element={<ProfessionalDetail />} />
               <Route path="/professional-dashboard/Referral" element={<ReferralLayout />} />
-              <Route path="/professional-dashboard/Referral/:jobId" element={<RefferalDetail />} />
+              <Route path="/professional-dashboard/Referral/:jobId" element={<ProfessionalRefferalJobDetails />} />
               <Route path="/professional-dashboard/Referral-management" element={<ReferralManagement />} />
 
               <Route path='professional/service-request' element={<RefPostingPage />} />
@@ -687,7 +687,7 @@ function AppRoutes() {
                 <Route index element={<JobsListingPage />} />
                 {/* No separate detail route needed */}
 </Route>
-
+                <Route path="/college-dashboard/on-campus/:id" element={<JobDetailPage />}></Route>
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
               <Route path="/college/student-pool" element={<StudentPool />} />
               <Route path="/college-dashboard/Internship/:id" element={<InternJobDetailPage />} />

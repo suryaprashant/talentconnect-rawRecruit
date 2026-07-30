@@ -9,18 +9,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 import {
-  createCollegeMasterData,
-  getCollegeMasterDataByType
+    createCollegeMasterData,
+    getCollegeMasterDataByType
 } from "@/lib/College_AxiosIntance";
 
 export default function RegisterPage({ onBackClick }) {
 
     // ─── Static config (unchanged) ────────────────────────────────────────────
-   // const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
-   const [designationOptions, setDesignationOptions] = useState([]);
-const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
-    const amenitiesOptions    = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector', 'Parking', 'Refreshments'];
-    const minStudentsOptions  = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
+    // const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
+    const [designationOptions, setDesignationOptions] = useState([]);
+    const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
+    const amenitiesOptions = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector', 'Parking', 'Refreshments'];
+    const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
 
     // ─── Initial form state ────────────────────────────────────────────────────
@@ -34,14 +34,14 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
-    rounds: Array.from({ length: 3 }, (_, i) => ({
-    id: i + 1,
-    degree: '',
-    stream: '',
-    students: '',
-    skills: '',
-    _auto: false,
-})),
+        rounds: Array.from({ length: 3 }, (_, i) => ({
+            id: i + 1,
+            degree: '',
+            stream: '',
+            students: '',
+            skills: '',
+            _auto: false,
+        })),
         collegeLocation: null,
         coordinatorName: '',
         coordinatorDesignation: '',
@@ -65,8 +65,8 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
     });
 
     // ─── UI State ──────────────────────────────────────────────────────────────
-    const [errors, setErrors]               = useState({});
-    const [alert, setAlert]                 = useState({ show: false, message: '', type: '' });
+    const [errors, setErrors] = useState({});
+    const [alert, setAlert] = useState({ show: false, message: '', type: '' });
     const [descriptionError, setDescriptionError] = useState("");
 
     const [dropdownOpen, setDropdownOpen] = useState({
@@ -76,14 +76,14 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
     const [customAmenity, setCustomAmenity] = useState('');
 
     // ─── Dynamic degree / stream API state ────────────────────────────────────
-    const [degreeOptions,      setDegreeOptions]      = useState([]);
-    const [streamOptions,      setStreamOptions]      = useState([]);
-    const [selectedDegreeIds,  setSelectedDegreeIds]  = useState([]);
-    const [isLoadingDegrees,   setIsLoadingDegrees]   = useState(false);
-    const [isLoadingStreams,    setIsLoadingStreams]    = useState(false);
+    const [degreeOptions, setDegreeOptions] = useState([]);
+    const [streamOptions, setStreamOptions] = useState([]);
+    const [selectedDegreeIds, setSelectedDegreeIds] = useState([]);
+    const [isLoadingDegrees, setIsLoadingDegrees] = useState(false);
+    const [isLoadingStreams, setIsLoadingStreams] = useState(false);
 
     // ─── Dynamic company type API state ───────────────────────────────────────
-    const [companyTypeOptions,    setCompanyTypeOptions]    = useState([]);
+    const [companyTypeOptions, setCompanyTypeOptions] = useState([]);
     const [isLoadingCompanyTypes, setIsLoadingCompanyTypes] = useState(false);
 
     // ─── Refs ──────────────────────────────────────────────────────────────────
@@ -95,30 +95,30 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
             value: city.name,
             label: city.name,
         })),
-    []);
+        []);
 
     // ─── Persist form + click-outside for custom dropdowns ────────────────────
     useEffect(() => {
-  const fetchDesignations = async () => {
-    setIsLoadingDesignation(true);
-    try {
-     const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
+        const fetchDesignations = async () => {
+            setIsLoadingDesignation(true);
+            try {
+                const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
 
-      const formatted = (res?.data?.data || []).map(item => ({
-        value: item.value,
-        label: item.value,
-      }));
+                const formatted = (res?.data?.data || []).map(item => ({
+                    value: item.value,
+                    label: item.value,
+                }));
 
-      setDesignationOptions(formatted);
-    } catch (err) {
-      console.error("Error fetching designations", err);
-    } finally {
-      setIsLoadingDesignation(false);
-    }
-  };
+                setDesignationOptions(formatted);
+            } catch (err) {
+                console.error("Error fetching designations", err);
+            } finally {
+                setIsLoadingDesignation(false);
+            }
+        };
 
-  fetchDesignations();
-}, []);
+        fetchDesignations();
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('pendingRegistration', JSON.stringify(formData));
@@ -201,118 +201,118 @@ const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
         };
         fetchStreams();
     }, [selectedDegreeIds]);
-    
-    
-//    useEffect(() => {
-//     const combinations = [];
 
-//     formData.degree.forEach((deg) => {
-//         formData.stream.forEach((str) => {
-//             combinations.push({
-//                 degree: deg.label,
-//                 stream: str.label,
-//             });
-//         });
-//     });
 
-//     setFormData(prev => {
-//         const manualRows = prev.rounds.filter(r => !r._auto);
+    //    useEffect(() => {
+    //     const combinations = [];
 
-//         let nextId = Math.max(0, ...prev.rounds.map(r => r.id)) + 1;
-//         const autoRows = combinations.map((c, i) => ({
-//             id: nextId + i,
-//             degree: c.degree,
-//             stream: c.stream,
-//             students: '',
-//             skills: '',
-//             _auto: true,
-//         }));
+    //     formData.degree.forEach((deg) => {
+    //         formData.stream.forEach((str) => {
+    //             combinations.push({
+    //                 degree: deg.label,
+    //                 stream: str.label,
+    //             });
+    //         });
+    //     });
 
-//         return {
-//             ...prev,
-//             rounds: [...autoRows, ...manualRows],
-//         };
-//     });
+    //     setFormData(prev => {
+    //         const manualRows = prev.rounds.filter(r => !r._auto);
 
-// }, [formData.degree, formData.stream]);
+    //         let nextId = Math.max(0, ...prev.rounds.map(r => r.id)) + 1;
+    //         const autoRows = combinations.map((c, i) => ({
+    //             id: nextId + i,
+    //             degree: c.degree,
+    //             stream: c.stream,
+    //             students: '',
+    //             skills: '',
+    //             _auto: true,
+    //         }));
+
+    //         return {
+    //             ...prev,
+    //             rounds: [...autoRows, ...manualRows],
+    //         };
+    //     });
+
+    // }, [formData.degree, formData.stream]);
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
-    
-useEffect(() => {
-    setFormData(prev => {
-        const combinations = [];
 
-        prev.degree.forEach((deg) => {
-            prev.stream.forEach((str) => {
-                combinations.push({
-                    degree: deg.label,
-                    stream: str.label,
+    useEffect(() => {
+        setFormData(prev => {
+            const combinations = [];
+
+            prev.degree.forEach((deg) => {
+                prev.stream.forEach((str) => {
+                    combinations.push({
+                        degree: deg.label,
+                        stream: str.label,
+                    });
                 });
             });
-        });
 
-        if (prev.stream.length === 0) return prev; // ← ADD THIS
-        let rows = [...prev.rounds];
+            if (prev.stream.length === 0) return prev; // ← ADD THIS
+            let rows = [...prev.rounds];
 
-        // 1. Remove auto rows whose combination no longer exists
-        rows = rows.map(r => {
-            if (!r._auto) return r; // keep manual rows as-is
-            const stillExists = combinations.some(
-                c => c.degree === r.degree && c.stream === r.stream
-            );
-            if (stillExists) return r;
-            // Reset this slot back to blank instead of removing
-            return {
-                ...r,
-                degree: '',
-                stream: '',
-                _auto: false,
-            };
-        });
-
-        // 2. Fill combinations into empty slots
-        combinations.forEach((c) => {
-            const alreadyExists = rows.some(
-                r => r.degree === c.degree && r.stream === c.stream
-            );
-            if (alreadyExists) return;
-
-            const emptyIndex = rows.findIndex(r => !r.degree);
-
-            if (emptyIndex !== -1) {
-                rows[emptyIndex] = {
-                    ...rows[emptyIndex],
-                    degree: c.degree,
-                    stream: c.stream,
-                    _auto: true,
+            // 1. Remove auto rows whose combination no longer exists
+            rows = rows.map(r => {
+                if (!r._auto) return r; // keep manual rows as-is
+                const stillExists = combinations.some(
+                    c => c.degree === r.degree && c.stream === r.stream
+                );
+                if (stillExists) return r;
+                // Reset this slot back to blank instead of removing
+                return {
+                    ...r,
+                    degree: '',
+                    stream: '',
+                    _auto: false,
                 };
-            } else {
-                const newId = Math.max(...rows.map(r => r.id)) + 1;
-                rows.push({
-                    id: newId,
-                    degree: c.degree,
-                    stream: c.stream,
-                    students: '',
-                    skills: '',
-                    _auto: true,
-                });
-            }
+            });
+
+            // 2. Fill combinations into empty slots
+            combinations.forEach((c) => {
+                const alreadyExists = rows.some(
+                    r => r.degree === c.degree && r.stream === c.stream
+                );
+                if (alreadyExists) return;
+
+                const emptyIndex = rows.findIndex(r => !r.degree);
+
+                if (emptyIndex !== -1) {
+                    rows[emptyIndex] = {
+                        ...rows[emptyIndex],
+                        degree: c.degree,
+                        stream: c.stream,
+                        _auto: true,
+                    };
+                } else {
+                    const newId = Math.max(...rows.map(r => r.id)) + 1;
+                    rows.push({
+                        id: newId,
+                        degree: c.degree,
+                        stream: c.stream,
+                        students: '',
+                        skills: '',
+                        _auto: true,
+                    });
+                }
+            });
+
+            return { ...prev, rounds: rows };
         });
 
-        return { ...prev, rounds: rows };
-    });
+    }, [formData.degree, formData.stream]);
 
-}, [formData.degree, formData.stream]);
-    
     const validateProposedSchedule = () => {
         const newErrors = {};
         const { startDate, endDate, preferredMode } = formData.proposedSchedule;
         if (!startDate.trim()) newErrors.proposedStartDate = 'Please select proposed start date';
-        if (!endDate.trim())   newErrors.proposedEndDate   = 'Please select proposed end date';
-        if (!preferredMode.trim()) newErrors.proposedMode  = 'Please select preferred mode';
+        if (!endDate.trim()) newErrors.proposedEndDate = 'Please select proposed end date';
+        if (!preferredMode.trim()) newErrors.proposedMode = 'Please select preferred mode';
         if (startDate && endDate) {
             const start = new Date(startDate);
-            const end   = new Date(endDate);
+            const end = new Date(endDate);
             if (end <= start) newErrors.proposedEndDate = 'End date must be after start date';
         }
         return newErrors;
@@ -325,9 +325,9 @@ useEffect(() => {
 
     const formatDateLocal = (date) => {
         if (!date) return '';
-        const year  = date.getFullYear();
+        const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day   = String(date.getDate()).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
@@ -380,8 +380,8 @@ useEffect(() => {
             : 1;
         setFormData(prev => ({
             ...prev,
-           // rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '' }]
-           rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '', _auto: false }]
+            // rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '' }]
+            rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '', _auto: false }]
         }));
     };
 
@@ -480,7 +480,7 @@ useEffect(() => {
         let aggregatedSkills = [];
         // degree / stream are now objects — extract labels for the payload
         let studentStreams = formData.stream.map(s => s.label);
-        let roundNames    = [];
+        let roundNames = [];
         let studentCounts = [];
 
         const nonEmptyRounds = formData.rounds.filter(round => round.students || round.skills || round.degree);
@@ -488,7 +488,7 @@ useEffect(() => {
             if (round.skills)
                 aggregatedSkills = [...new Set([...aggregatedSkills, ...round.skills.split(',').map(s => s.trim()).filter(Boolean)])];
             if (round.students) studentCounts.push(round.students);
-            if (round.stream)   studentStreams = [...new Set([...studentStreams, round.stream])];
+            if (round.stream) studentStreams = [...new Set([...studentStreams, round.stream])];
             roundNames.push(`Round ${round.id}`);
         });
 
@@ -502,33 +502,33 @@ useEffect(() => {
         }
 
         const payload = {
-            jobType:        'On-campus',
-            degree:         formData.degree.map(d => d.label),   // send labels to backend
+            jobType: 'On-campus',
+            degree: formData.degree.map(d => d.label),   // send labels to backend
             studentStreams,
             numberOfStudent: studentCounts,
-            lookingFor:      backendLookingFor,
-            employmentType:  formData.employmentType,
+            lookingFor: backendLookingFor,
+            employmentType: formData.employmentType,
             packageDetails: {
                 currency: formData.salaryRange,
                 totalCTC: parseFloat(formData.salaryValue) || 0,
             },
             startDate: formData.tentativeStartDate,
-            endDate:   formData.tentativeEndDate,
-            location:  formData.collegeLocation ? [formData.collegeLocation.value] : [],
+            endDate: formData.tentativeEndDate,
+            location: formData.collegeLocation ? [formData.collegeLocation.value] : [],
             contactPerson: {
-                name:        formData.coordinatorName,
+                name: formData.coordinatorName,
                 designation: formData.coordinatorDesignation,
-                email:       formData.email,
-                mobile:      formData.mobile,
-                linkedin:    formData.linkedinProfile,
+                email: formData.email,
+                mobile: formData.mobile,
+                linkedin: formData.linkedinProfile,
             },
             noOfplacedStudents: formData.minStudentsToBePlaced,
-            skills:             aggregatedSkills,
-            rounds:             roundNames,
-            amenitiesRequired:  formData.amenities,
-            description:        formData.description,
-            companyType:        formData.companyType,
-            proposedSchedule:   formData.proposedSchedule,
+            skills: aggregatedSkills,
+            rounds: roundNames,
+            amenitiesRequired: formData.amenities,
+            description: formData.description,
+            companyType: formData.companyType,
+            proposedSchedule: formData.proposedSchedule,
         };
 
         try {
@@ -595,15 +595,15 @@ useEffect(() => {
         }
 
         return rowStreamCache[degreeId];
-        };
+    };
     const totalStudents = formData.rounds.reduce((sum, round) => {
         return sum + (parseInt(round.students) || 0);
     }, 0);
-useEffect(() => {
-  if (formData.degree?.length) {
-    setSelectedDegreeIds(formData.degree.map(d => d.value));
-  }
-}, []);
+    useEffect(() => {
+        if (formData.degree?.length) {
+            setSelectedDegreeIds(formData.degree.map(d => d.value));
+        }
+    }, []);
     // ─── CreatableSelect shared styles (matching existing glassmorphism theme) ──
     const selectStyles = {
         control: (base, state) => ({
@@ -883,63 +883,68 @@ useEffect(() => {
                                         onChange={(e) => handleChange('coordinatorName', e.target.value)}
                                     />
                                 </div>
-  
-<CreatableSelect
-  isClearable
-  isSearchable
-  isLoading={isLoadingDesignation}
-  options={designationOptions}
-  styles={errors.coordinatorDesignation ? selectStylesError : selectStyles}
-  placeholder="Select or create designation"
-  value={
-    formData.coordinatorDesignation
-      ? {
-          value: formData.coordinatorDesignation,
-          label: formData.coordinatorDesignation,
-        }
-      : null
-  }
-  onChange={(selected) => {
-    handleChange("coordinatorDesignation", selected?.value || "");
-  }}
-  onCreateOption={async (inputValue) => {
-    try {
-      const normalized = inputValue.trim();
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <User className="w-4 h-4 text-[#1e4ed8]" />
+                                        Coordinator Designation <span className="text-red-500">*</span>
+                                    </label>
+                                    <CreatableSelect
+                                        isClearable
+                                        isSearchable
+                                        isLoading={isLoadingDesignation}
+                                        options={designationOptions}
+                                        styles={errors.coordinatorDesignation ? selectStylesError : selectStyles}
+                                        placeholder="Select or create designation"
+                                        value={
+                                            formData.coordinatorDesignation
+                                                ? {
+                                                    value: formData.coordinatorDesignation,
+                                                    label: formData.coordinatorDesignation,
+                                                }
+                                                : null
+                                        }
+                                        onChange={(selected) => {
+                                            handleChange("coordinatorDesignation", selected?.value || "");
+                                        }}
+                                        onCreateOption={async (inputValue) => {
+                                            try {
+                                                const normalized = inputValue.trim();
 
-      if (!normalized) return;
+                                                if (!normalized) return;
 
-      // 🔒 prevent duplicate
-      const exists = designationOptions.some(
-        (opt) => opt.value.toLowerCase() === normalized.toLowerCase()
-      );
+                                                // 🔒 prevent duplicate
+                                                const exists = designationOptions.some(
+                                                    (opt) => opt.value.toLowerCase() === normalized.toLowerCase()
+                                                );
 
-      if (exists) {
-        handleChange("coordinatorDesignation", normalized);
-        return;
-      }
+                                                if (exists) {
+                                                    handleChange("coordinatorDesignation", normalized);
+                                                    return;
+                                                }
 
-      // ✅ save to DB
-    await createCollegeMasterData({
-  type: "COLLEGE_DESIGNATION",
-  value: normalized,
-});
+                                                // ✅ save to DB
+                                                await createCollegeMasterData({
+                                                    type: "COLLEGE_DESIGNATION",
+                                                    value: normalized,
+                                                });
 
-      const newOption = {
-        value: normalized,
-        label: normalized,
-      };
+                                                const newOption = {
+                                                    value: normalized,
+                                                    label: normalized,
+                                                };
 
-      setDesignationOptions((prev) => [...prev, newOption]);
-      handleChange("coordinatorDesignation", normalized);
+                                                setDesignationOptions((prev) => [...prev, newOption]);
+                                                handleChange("coordinatorDesignation", normalized);
 
-      toast.success("Designation added");
-    } catch (err) {
-      console.error("Error creating designation", err);
-      toast.error("Could not add designation");
-    }
-  }}
-  formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
-/>
+                                                toast.success("Designation added");
+                                            } catch (err) {
+                                                console.error("Error creating designation", err);
+                                                toast.error("Could not add designation");
+                                            }
+                                        }}
+                                        formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+                                    />
+                                </div>
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1005,11 +1010,10 @@ useEffect(() => {
                                             <button
                                                 key={type}
                                                 type="button"
-                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 capitalize ${
-                                                    formData.lookingFor.includes(type)
-                                                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
-                                                        : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                                }`}
+                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 capitalize ${formData.lookingFor.includes(type)
+                                                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
+                                                    : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
+                                                    }`}
                                                 onClick={() => handleMultiToggle('lookingFor', type)}
                                             >
                                                 {type}
@@ -1028,11 +1032,10 @@ useEffect(() => {
                                             <button
                                                 key={type}
                                                 type="button"
-                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                                    formData.employmentType.includes(type)
-                                                        ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
-                                                        : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                                }`}
+                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${formData.employmentType.includes(type)
+                                                    ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent'
+                                                    : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
+                                                    }`}
                                                 onClick={() => handleMultiToggle('employmentType', type)}
                                             >
                                                 {type}

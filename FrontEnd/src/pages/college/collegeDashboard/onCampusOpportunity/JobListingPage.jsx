@@ -135,7 +135,7 @@ const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
     // Apply work mode filters
     if (filters.workMode.length > 0) {
       result = result.filter(workmode =>
-        workmode.workModes && filters.workMode.some(mode => workmode.workModes.includes(mode))
+        workmode.workMode && filters.workMode.some(mode => workmode.workMode.includes(mode))
       );
     }
 

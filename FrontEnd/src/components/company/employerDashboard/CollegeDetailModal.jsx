@@ -736,6 +736,10 @@ useEffect(() => {
   const postingIsApplied = posting.isApplied || false;
   const isSaved = posting.isSaved || false;
 
+  const isCompleted =
+  posting?.proposedSchedule?.endDate &&
+  new Date() > new Date(posting.proposedSchedule.endDate);
+
   // Get the logo using the same logic as CollegeCard
   const logo = getCollegeLogo();
 
@@ -1121,7 +1125,7 @@ useEffect(() => {
               </button>
             </div>
 
-            {!postingIsApplied && !posting?.isApplied && (
+            {!postingIsApplied && !posting?.isApplied && !isCompleted && (
               <button 
                 onClick={() => handleApply(posting._id)}
                 className="inline-flex items-center justify-center gap-2 bg-primaryBrand text-white px-6 py-2.5 rounded-xl hover:bg-[#1e4ed8] transition-all duration-200 font-medium text-sm md:text-base w-full sm:w-auto mt-3 sm:mt-0"

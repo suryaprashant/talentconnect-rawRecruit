@@ -272,7 +272,7 @@ export const generateToken = ({ userId, email, userType }) => {
 };
 export const generateAccessToken = ({ userId, email, userType }) => {
   return jwt.sign({ userId, email, userType }, JWT_ACCESS_SECRET, {
-    expiresIn: "3m",
+    expiresIn: "24h",
   });
 };
 

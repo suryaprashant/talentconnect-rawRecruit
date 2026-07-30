@@ -395,7 +395,7 @@ export default function CoordinatorDetails({
               {/* Coordinator Name */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  Enter your name *
+                  Enter your name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -419,7 +419,7 @@ export default function CoordinatorDetails({
               {/* Designation */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  Designation *
+                  Designation <span className="text-red-500">*</span>
                 </label>
 
                 <CreatableSelect
@@ -464,7 +464,7 @@ export default function CoordinatorDetails({
               {/* Official Email */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  Official email *
+                  Official email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -489,7 +489,7 @@ export default function CoordinatorDetails({
               {/* Official Phone */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  Official Phone no. *
+                  Official Phone no. <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"

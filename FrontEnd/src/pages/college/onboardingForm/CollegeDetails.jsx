@@ -180,7 +180,7 @@ const handleCreateCollege = async (inputValue) => {
               {/* College Name Section */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  College/University Name *
+                  College/University Name <span className="text-red-500">*</span>
                 </label>
                
                  <CreatableSelect

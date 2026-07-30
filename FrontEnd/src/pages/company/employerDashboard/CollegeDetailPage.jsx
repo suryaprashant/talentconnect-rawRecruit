@@ -796,7 +796,7 @@ const CollegeDetailPage = () => {
                   <p className="text-sm md:text-base lg:text-lg font-bold text-[#143694] leading-snug">
                     {posting.packageDetails?.totalCTC 
                       ? `${posting.packageDetails.currency || ''} ${posting.packageDetails.totalCTC.toLocaleString()}`
-                      : posting.packageDetails || 'N/A'
+                      :'N/A'
                     }
                   </p>
                 </div>
