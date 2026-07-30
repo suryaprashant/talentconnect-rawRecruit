@@ -469,6 +469,19 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
       toast.error("Job description cannot exceed 500 characters.");
       return;
     }
+    const totalCTC = Number(formData.packageDetails.totalCTC);
+    const fixedPay = Number(formData.packageDetails.fixedPay);
+    const variablePay = Number(formData.packageDetails.joiningBonus);
+
+    if (fixedPay + variablePay > totalCTC) {
+      toast.error("(Fixed Pay + Variable Pay) cannot exceed Total CTC.");
+      return;
+    }
+
+    if (formData.jobRoles.length === 0) {
+      toast.error("Please select at least one job role.");
+      return;
+    }
     try {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
@@ -880,7 +893,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
 
                 {/* Preferred Hiring Mode */}
                 <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode</label>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {preferredModeOptions.map(mode => (
                       <button 
@@ -899,7 +912,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                   {/* Job Roles */}
                   <div>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles <span className="text-red-500">*</span></label>
                     <CreatableSelect
                       isMulti
                       isClearable
@@ -1271,7 +1284,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
               <div className="space-y-6">
                 {/* Application Dates */}
                 <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">Tentative Date of Placement/Hiring *</label>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Registration Timeline <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block mb-1 text-xs text-gray-600">Start Date</label>
@@ -1297,6 +1310,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                           placeholderText="End date"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.startDate ? new Date(formData.startDate) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -1318,6 +1332,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                           placeholderText="Test date"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.endDate ? new Date(formData.endDate) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -1334,6 +1349,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                             placeholderText="Interview start"
                             className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
+                            minDate={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                         </div>
@@ -1348,6 +1364,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                             placeholderText="Interview end"
                             className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                             wrapperClassName="w-full"
+                            minDate={formData.interviewWindow.start ? new Date(formData.interviewWindow.start) : null}
                           />
                           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                         </div>
@@ -1364,6 +1381,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                           placeholderText="Offer rollout"
                           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                           wrapperClassName="w-full"
+                          minDate={formData.interviewWindow.end ? new Date(formData.interviewWindow.end) : null}
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                       </div>
@@ -1541,6 +1559,8 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                         type="tel" 
                         id="mobile" 
                         name="mobile" 
+                        maxLength={10}
+                        pattern="[0-9]{10}"
                         placeholder="1234567890" 
                         className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         value={formData.mobile} 

@@ -168,7 +168,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         const targetRoute = SYSTEM_UPDATE_ROUTE_MAP?.[role]?.[jobType];
 
         if (targetRoute) {
-            navigate(targetRoute);
+            navigate(`${targetRoute}/${notification.referenceId}`);
             return;
         }
     
@@ -217,6 +217,25 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         //     setShowFloatingChat(true);
         // }
         setShowFloatingChat(true);
+        return;
+    }
+    if (
+        notification.type === "NEW_MATCHING_REFERRAL_JOB" 
+    ) {
+        if (role === "student") {
+            navigate(`/student-dashboard/Referral/${notification.jobId}`);
+            return;
+        }
+
+        if (role === "fresher") {
+            navigate(`/fresher-dashboard/Referral/${notification.jobId}`);
+            return;
+        }
+
+        if (role === "professional") {
+            navigate(`/professional-dashboard/Referral/${notification.jobId}`);
+            return;
+        }
         return;
     }
 

@@ -745,7 +745,7 @@ export default function ProfileAchievements({
               {/* College Website */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  College Website *
+                  College Website <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="url"
@@ -761,7 +761,7 @@ export default function ProfileAchievements({
               {/* LinkedIn Profile */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
-                  LinkedIn Profile *
+                  LinkedIn Profile <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="url"

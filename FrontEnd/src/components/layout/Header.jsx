@@ -13,7 +13,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const [profileImage, setProfileImage] = useState(null);
     const [loadingImage, setLoadingImage] = useState(true);
 
-    const [notificationsOpen, setNotificationsOpen] = useState([]);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
@@ -168,6 +168,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const getUserInitial = () => {
         return getUserName().charAt(0).toUpperCase();
     };
+    console.log(notificationsOpen);
 
     return (
         <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200 shadow-sm">

@@ -4,9 +4,10 @@ import toast from 'react-hot-toast';
 
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
-import { ApplyForJobListingOppurtunity, ApplyForReferral, getReferalJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, ApplyForReferral, getReferalJobDetails, getReferralJobById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 
-const JobDetails = () => {
+const ProfessionalRefferalJobDetails = () => {
+  console.log("Professional page rendered");
   const [searchParams] = useSearchParams();
   const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
@@ -23,7 +24,7 @@ const JobDetails = () => {
         setIsLoading(true);
 
         // Fetch job details
-        const details = await getReferalJobDetails(jobId);
+        const details = await getReferralJobById(jobId);
         // console.log("..../", details.data[0]);
         setJobDetails(details.data[0]);
         await viewed(details.data[0]._id);
@@ -231,4 +232,4 @@ const JobDetails = () => {
   );
 };
 
-export default JobDetails;
+export default ProfessionalRefferalJobDetails;

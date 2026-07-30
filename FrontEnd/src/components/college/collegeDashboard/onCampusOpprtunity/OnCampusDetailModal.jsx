@@ -703,12 +703,12 @@ useEffect(() => {
         className="relative w-full h-full bg-white rounded-l-2xl overflow-hidden flex flex-col"
       >
         {/* Close button */}
-        <button
+        {/* <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 p-2 bg-white/90 backdrop-blur-sm hover:bg-gray-100 rounded-full shadow-lg transition-colors"
         >
           <X className="h-6 w-6 text-gray-700" />
-        </button>
+        </button> */}
 
         {/* Main Content Area - Single scroll container */}
         <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">

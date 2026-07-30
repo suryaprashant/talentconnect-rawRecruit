@@ -162,7 +162,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                     <form className="space-y-5">
                         <div ref={jobRolesRef}>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Job Roles You Hire For
+                                Job Roles You Hire For <span className="text-red-500">*</span>
                             </label>
                             
                             <div className="flex flex-wrap gap-2 mb-2">
@@ -228,7 +228,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Preferred Hiring Locations
+                                Preferred Hiring Locations <span className="text-red-500">*</span>
                             </label>
                             <CreatableSelect
                                 isMulti
@@ -291,7 +291,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-3">
-                            Looking for
+                            Looking for <span className="text-red-500">*</span>
                           </label>
 
                           <div className="flex space-x-2">
@@ -323,7 +323,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Employment type
+                                Employment type <span className="text-red-500">*</span>
                             </label>
                             <div className="flex space-x-2">
                                 {[
