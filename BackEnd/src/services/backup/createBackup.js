@@ -29,9 +29,7 @@ class BackupService {
                 throw new Error("MongoDump path is not configured.");
             }
 
-            if (!databaseConfig.mongoUri) {
-                throw new Error("MongoDB URI is not configured.");
-            }
+            
 
             await createDirectory(
                 backupConfig.backupDirectory
