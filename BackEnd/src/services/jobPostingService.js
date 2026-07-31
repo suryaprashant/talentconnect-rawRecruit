@@ -461,6 +461,7 @@ export const getReferralJobsCursorService = async (
   const query = {
     jobType: "Referral",
     approvalStatus: "Approved",
+    inactive : false,
     isAskForReferral: { $ne: true },
 
     candidatePosted: {

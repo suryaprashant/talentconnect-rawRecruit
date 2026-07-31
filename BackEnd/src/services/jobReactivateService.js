@@ -42,6 +42,11 @@ export const reactivateJobService = async (
         err.status = 400;
         throw err;
     }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
 
     if (end <= start) {
         const err = new Error("End date must be after start date");
@@ -49,7 +54,7 @@ export const reactivateJobService = async (
         throw err;
     }
 
-    if (start < new Date()) {
+    if (start < today) {
         const err = new Error("Start date cannot be in the past");
         err.status = 400;
         throw err;
