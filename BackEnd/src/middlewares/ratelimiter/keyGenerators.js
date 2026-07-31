@@ -56,9 +56,7 @@ import { PREFIX, REDIS_NAMESPACE } from "./constants.js";
  */
 
 const getIp = (req) => {
-
-    return req.ip || req.socket?.remoteAddress || "unknown-ip";
-
+  return req.ip || req.socket?.remoteAddress || "unknown-ip";
 };
 
 /**
@@ -78,13 +76,9 @@ const getIp = (req) => {
  */
 
 export const ipKey = (prefix = PREFIX.PUBLIC) => {
-
-    return (req) => {
-
-        return `${REDIS_NAMESPACE}:${prefix}:${getIp(req)}`;
-
-    };
-
+  return (req) => {
+    return `${REDIS_NAMESPACE}:${prefix}:${getIp(req)}`;
+  };
 };
 
 /**
@@ -100,15 +94,11 @@ export const ipKey = (prefix = PREFIX.PUBLIC) => {
  */
 
 export const userKey = (prefix) => {
+  return (req) => {
+    const userId = req.user?.id || req.user?._id;
 
-    return (req) => {
-
-        const userId = req.user?.id || req.user?._id;
-
-        return `${REDIS_NAMESPACE}:${prefix}:${userId || getIp(req)}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${userId || getIp(req)}`;
+  };
 };
 
 /**
@@ -127,15 +117,11 @@ export const userKey = (prefix) => {
  */
 
 export const emailKey = (prefix) => {
+  return (req) => {
+    const email = req.body?.email?.trim()?.toLowerCase();
 
-    return (req) => {
-
-        const email = req.body?.email?.trim()?.toLowerCase();
-
-        return `${REDIS_NAMESPACE}:${prefix}:${email || getIp(req)}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${email || getIp(req)}`;
+  };
 };
 
 // /**
@@ -177,15 +163,14 @@ export const emailKey = (prefix) => {
  */
 
 export const emailIpKey = (prefix) => {
+  return (req) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "unknown-email";
 
-    return (req) => {
-
-        const email = req.body?.email?.trim()?.toLowerCase() || "unknown-email";
-
-        return `${REDIS_NAMESPACE}:${prefix}:${email}:${getIp(req)}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${email}:${getIp(req)}`;
+  };
 };
 
 /**
@@ -205,15 +190,11 @@ export const emailIpKey = (prefix) => {
  */
 
 export const userIpKey = (prefix) => {
+  return (req) => {
+    const userId = req.user?.id || req.user?._id || "guest";
 
-    return (req) => {
-
-        const userId = req.user?.id || req.user?._id || "guest";
-
-        return `${REDIS_NAMESPACE}:${prefix}:${userId}:${getIp(req)}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${userId}:${getIp(req)}`;
+  };
 };
 
 /**
@@ -227,15 +208,11 @@ export const userIpKey = (prefix) => {
  */
 
 export const adminKey = (prefix = PREFIX.ADMIN) => {
+  return (req) => {
+    const adminId = req.user?.id || req.user?._id || "admin";
 
-    return (req) => {
-
-        const adminId = req.user?.id || req.user?._id || "admin";
-
-        return `${REDIS_NAMESPACE}:${prefix}:${adminId}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${adminId}`;
+  };
 };
 
 /**
@@ -249,18 +226,12 @@ export const adminKey = (prefix = PREFIX.ADMIN) => {
  */
 
 export const companyKey = (prefix) => {
+  return (req) => {
+    const companyId =
+      req.user?.companyId || req.body?.companyId || "unknown-company";
 
-    return (req) => {
-
-        const companyId =
-            req.user?.companyId ||
-            req.body?.companyId ||
-            "unknown-company";
-
-        return `${REDIS_NAMESPACE}:${prefix}:${companyId}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${companyId}`;
+  };
 };
 
 /**
@@ -281,13 +252,9 @@ export const companyKey = (prefix) => {
  */
 
 export const customKey = (prefix, callback) => {
+  return (req) => {
+    const key = callback(req);
 
-    return (req) => {
-
-        const key = callback(req);
-
-        return `${REDIS_NAMESPACE}:${prefix}:${key}`;
-
-    };
-
+    return `${REDIS_NAMESPACE}:${prefix}:${key}`;
+  };
 };

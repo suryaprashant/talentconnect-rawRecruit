@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); 
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -8,7 +8,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { startRankingCron } from "./cron/rankingCron.js";
 import paginate from "./middlewares/paginate.js";
-import {refreshFuseIndex} from "./services/fuseIndexService.js";
+import { refreshFuseIndex } from "./services/fuseIndexService.js";
+import backupCron from "./cron/backup.cron.js";
 startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
@@ -22,14 +23,14 @@ const __dirname = path.dirname(__filename);
 
 // dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 5000;
-console.log("PORT",PORT);
+console.log("PORT", PORT);
 app.use(cookieParser());
 
 // Middleware
-const allowedOrigins = process.env.FRONTEND_URLS
-  ?.split(",")
-  .map(origin => origin.trim());
-  console.log(allowedOrigins);
+const allowedOrigins = process.env.FRONTEND_URLS?.split(",").map((origin) =>
+  origin.trim(),
+);
+console.log(allowedOrigins);
 
 app.use(
   cors({
@@ -48,11 +49,11 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: "50mb" }));
 
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use(paginate);
 
@@ -61,8 +62,8 @@ import adminAuth from "./routes/admin/adminAuth.js";
 import adminDashboard from "./routes/admin/adminDashboardRoute.js";
 import userManagement from "./routes/admin/userManagementRoutes.js";
 import jobDriveManagement from "./routes/admin/jobDriveManagementRoute.js";
-import applicationManagement from "./routes/admin/applicationManagementRoute.js"
-import serviceRequestManagement from "./routes/admin/serviceRequestManagementRoutes.js"
+import applicationManagement from "./routes/admin/applicationManagementRoute.js";
+import serviceRequestManagement from "./routes/admin/serviceRequestManagementRoutes.js";
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
@@ -72,7 +73,7 @@ import companyProfileRoutes from "./routes/companyDashboard/companyProfileRoutes
 import collegeProfileRoutes from "./routes/collegeDashboard/collegeProfileRoutes.js";
 import collegeOnboardingRoutes from "./routes/collegeDashboard/collegeOnboardingRoutes.js";
 //import employerProfileRoutes from "./routes/employerProfileRoutes.js";
-import employerProfileRoutes from './routes/employerDashboard/employerProfileRoute.js'
+import employerProfileRoutes from "./routes/employerDashboard/employerProfileRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 
 // Main Features
@@ -84,7 +85,7 @@ import Workshop from "./routes/workshopRoute.js";
 import eventParticipation from "./routes/eventParticipationRoute.js";
 import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
-import Jobs from "./routes/jobsRoute.js"
+import Jobs from "./routes/jobsRoute.js";
 import Internship from "./routes/internshipRoute.js";
 import LiveTicker from "./routes/liveTickerRoute.js";
 // RawRecruit APIs
@@ -117,50 +118,48 @@ import collegerequestinfo from "./routes/servicerequestCollegeOncampusrequestRou
 // import education from "./routes/onboardingEducationRoute.js";
 import basicdetails from "./routes/onboardingBasicdetailsRoute.js";
 // import resume from "./routes/onboardingResumeRoute.js";
-import CollegeApplication from './routes/collegeApplicationRoute.js';
+import CollegeApplication from "./routes/collegeApplicationRoute.js";
 // import jobinterest from "./routes/onboardingJobinterestsRoute.js";
 import student_onboardingroutes from "./routes/studentOnboardingRoutes.js";
-import JobManagement from "./routes/jobManagementRoute.js"
+import JobManagement from "./routes/jobManagementRoute.js";
 import poolCampusRoute from "./routes/jobManagement/poolCampusRoute.js";
-import OncampusJobmanagement from "./routes/jobManagement/onCampusRoute.js"
+import OncampusJobmanagement from "./routes/jobManagement/onCampusRoute.js";
 import TeamMemberRoute from "./routes/teamMemberRoute.js";
-import notificationRoute from "./routes/notificationRoute.js"
-import dropDownItems from "./routes/dropDownItemsRoute.js" ;
-import jobPosting from './routes/jobPostingsRoute.js' ;
-import studentDashboardRoute from './routes/studentDashboard/studentDashboardRoute.js';
-import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringChannelRoute.js'
-import CollegeJobManagement from "./routes/collegeJobManageRoute.js" ;
-import resumeRoutes from './routes/resumeroute.js';
-import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRoute.js';
-import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
-import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
-import serviceRequests from "./routes/serviceRequestsRoute.js"
+import notificationRoute from "./routes/notificationRoute.js";
+import dropDownItems from "./routes/dropDownItemsRoute.js";
+import jobPosting from "./routes/jobPostingsRoute.js";
+import studentDashboardRoute from "./routes/studentDashboard/studentDashboardRoute.js";
+import EmployerHiringChannelRoute from "./routes/employerHiringChannel/hiringChannelRoute.js";
+import CollegeJobManagement from "./routes/collegeJobManageRoute.js";
+import resumeRoutes from "./routes/resumeroute.js";
+import hackathonHostingRoute from "./routes/hostingManagement/hackathonHostingRoute.js";
+import casestudyHostingRoute from "./routes/hostingManagement/casestudyHostingRoute.js";
+import workshopHostingRoute from "./routes/hostingManagement/workshopHostingRoute.js";
+import serviceRequests from "./routes/serviceRequestsRoute.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
-import metaRoutes from "./routes/metaRoutes.js"
+import metaRoutes from "./routes/metaRoutes.js";
 import { seedDB } from "./scripts/metaScript.js";
-import collegeRoutes from './routes/collegeNameRoute.js';
-import companyRoute from "./routes/companyRoute.js"
-import CustomDropDown from "./routes/CustomDropDown.js"
+import collegeRoutes from "./routes/collegeNameRoute.js";
+import companyRoute from "./routes/companyRoute.js";
+import CustomDropDown from "./routes/CustomDropDown.js";
 
-import CandidateRoute from "./routes/CandidateRoute.js"
+import CandidateRoute from "./routes/CandidateRoute.js";
 import CareerInsightsRoute from "./routes/careerInsightsRoute.js";
 import adminBlogRoute from "./routes/admin/adminBlogRoute.js";
 import adminNormalizationRoute from "./routes/admin/adminNormalizationRoute.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import deleteJobRoute from "./routes/deleteJobRoute.js";
-import companyJobRoutes from "./routes/companyJobRoutes.js"
-
+import companyJobRoutes from "./routes/companyJobRoutes.js";
+import backupRoutes from "./routes/backup.routes.js";
 
 
 app.use("/api/auth", authRoutes);
-app.use('/api/colleges', collegeRoutes);
+app.use("/api/colleges", collegeRoutes);
 app.use("/api/blogs", blogRoutes);
 
-app.use('/api/candidate',CandidateRoute)
+app.use("/api/candidate", CandidateRoute);
 
 //care
-
-
 
 // admin related auths
 app.use("/api/admin", adminAuth);
@@ -170,10 +169,12 @@ app.use("/api/admin/blogs", adminBlogRoute);
 app.use("/api/admin/normalization", adminNormalizationRoute);
 app.use("/api/admin/users", userManagement);
 app.use("/api/admin/job-n-drive", jobDriveManagement);
-app.use("/api/admin/application", applicationManagement)
+app.use("/api/admin/application", applicationManagement);
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 //app.use("/api/candidate", CandidateRoute);
 app.use("/api/ticker", LiveTicker);
+app.use("/api/backup", backupRoutes);
+
 
 app.use("/api/meta", CustomDropDown);
 // admin relatd auth ends
@@ -190,16 +191,15 @@ app.use("/api/college-onboarding", collegeOnboardingRoutes);
 app.use("/api/dashboard", employerProfileRoutes);
 app.use("/api/messages", messageRoute);
 // app.use("/api/company" , hiringOffCampus);
-app.use("/api/company" , poolCampusRoute);
+app.use("/api/company", poolCampusRoute);
 app.use("/api/company/jobmanagement", OncampusJobmanagement);
-app.use("/api/team-member" , TeamMemberRoute) ;
-app.use("/api/notifications" , notificationRoute )
+app.use("/api/team-member", TeamMemberRoute);
+app.use("/api/notifications", notificationRoute);
 app.use("/interviews", interviewRoutes);
 
-app.use("/dropdown" , dropDownItems) ;
+app.use("/dropdown", dropDownItems);
 
-app.use("/api/company-jobs",companyJobRoutes)
-
+app.use("/api/company-jobs", companyJobRoutes);
 
 //student dashboard
 app.use("/api/student-dashboard", studentDashboardRoute);
@@ -211,7 +211,7 @@ app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
 app.use("/application", Application);
-app.use("/college/application",CollegeApplication);
+app.use("/college/application", CollegeApplication);
 app.use("/hackathon", Hackathon);
 app.use("/workshop", Workshop);
 app.use("/casestudy", Casestudy);
@@ -220,12 +220,12 @@ app.use("/eventParticipation", eventParticipation);
 app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
-app.use('/company/jobmanagement',JobManagement);
-app.use('/college/jobmanagement',CollegeJobManagement) ;
-app.use('/api/hosting-management', hackathonHostingRoute);
-app.use('/api/hosting-management', casestudyHostingRoute);
-app.use('/api/hosting-management', workshopHostingRoute);
-app.use('/api/servicerequests', serviceRequests);
+app.use("/company/jobmanagement", JobManagement);
+app.use("/college/jobmanagement", CollegeJobManagement);
+app.use("/api/hosting-management", hackathonHostingRoute);
+app.use("/api/hosting-management", casestudyHostingRoute);
+app.use("/api/hosting-management", workshopHostingRoute);
+app.use("/api/servicerequests", serviceRequests);
 app.use("/api/company-master-data", companyRoute);
 app.use("/api/delete-job", deleteJobRoute);
 
@@ -265,7 +265,7 @@ app.use("/api/rawrecruit", [
 app.use("/api/rawrecruit/resume", uploadResumeRoute);
 app.use("/rawrecruit/link", basicdetails);
 app.use("/api/resumes", resumeRoutes);
-app.use("api/meta",CustomDropDown)
+app.use("api/meta", CustomDropDown);
 
 // app.use("/rawrecruit", jobinterest);
 
@@ -274,23 +274,22 @@ const startServer = async () => {
   try {
     // Connect to database FIRST
     await Connection();
-    console.log('Database connected successfully');
+    console.log("Database connected successfully");
     await refreshFuseIndex();
 
-    console.log(
-      "Fuse indexes loaded"
-    );
+    console.log("Fuse indexes loaded");
     await seedDB();
+
+    backupCron.start();
     // THEN start the server
     server.listen(PORT, () => {
       console.log(`Server is running on PORT: ${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };
-
 
 import testRoute from "./routes/test.js";
 app.use("/api/test", testRoute);
