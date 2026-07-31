@@ -2039,9 +2039,10 @@ export const getIntershipById = async (req, res) => {
 export const getReferralJobs = async (req, res) => {
   try {
     // 1. Guest handling — shows limited public jobs
-
+ console.log("Enter ...");
     if (!req.user) {
-      const publicData = await JobPostingTable.find({ jobType: "Referral" })
+      console.log("Req.user :",req.user);
+      const publicData = await JobPostingTable.find({ jobType: "Referral" , inactive: false})
         .populate("candidatePosted", "currentCompany")
         .lean();
 
@@ -2056,7 +2057,7 @@ export const getReferralJobs = async (req, res) => {
         message: "Login to see all referrals from your college",
       });
     }
-
+ console.log("Enter 2...");
     const userId = req.user._id;
     const limit = parseInt(req.query.limit, 10) || 10;
     const cursor = req.query.cursor || null;
