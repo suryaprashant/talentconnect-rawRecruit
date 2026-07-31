@@ -52,11 +52,81 @@ export const signup = async (req, res) => {
       });
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      typeof userType !== "string" ||
+      typeof otp !== "string"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request data.",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+    const normalizedUserType = userType.trim().toLowerCase();
+    const normalizedOtp = otp.trim();
+
+    if (
+      normalizedEmail.length > 254 ||
+      normalizedPassword.length < 8 ||
+      normalizedPassword.length > 128 ||
+      normalizedUserType.length > 30 ||
+      normalizedOtp.length !== 6
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request data.",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_\-+=])[A-Za-z\d@$!%*?&^#()_\-+=]{8,128}$/;
+
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request data.",
+      });
+    }
+
+    if (!passwordRegex.test(normalizedPassword)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must be 8-128 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      });
+    }
+
+    const allowedUserTypes = Object.freeze([
+      "college",
+      "company",
+      "student",
+      "fresher",
+      "professional",
+      "employer",
+      "admin",
+    ]);
+
+    if (!allowedUserTypes.includes(normalizedUserType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request data.",
+      });
+    }
+
+    // const validOtp = await Otp.findOne({
+    //   email: normalizedEmail,
+    //   otp,
+    // });
 
     const validOtp = await Otp.findOne({
       email: normalizedEmail,
-      otp,
+      otp: normalizedOtp,
     });
 
     if (!validOtp) {
@@ -66,11 +136,27 @@ export const signup = async (req, res) => {
       });
     }
 
+    // const newUser = await registerUser({
+    //   email: normalizedEmail,
+    //   password,
+    //   userType,
+    // });
+
     const newUser = await registerUser({
       email: normalizedEmail,
-      password,
-      userType,
+      password: normalizedPassword,
+      userType: normalizedUserType,
     });
+
+    if (
+      deviceToken &&
+      (typeof deviceToken !== "string" || deviceToken.length > 500)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request data.",
+      });
+    }
 
     if (deviceToken) {
       await Auth.findByIdAndUpdate(newUser._id, {
@@ -140,6 +226,30 @@ export const login = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Email and password are required",
+      });
+    }
+
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+
+    if (normalizedEmail.length > 254) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    if (normalizedPassword.length < 8 || normalizedPassword.length > 128) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password.",
       });
     }
 

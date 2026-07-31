@@ -45,7 +45,7 @@ export const LOGIN_POLICY = {
     policyName: "LOGIN",
     windowMs: MINUTE,
     max: 5,
-    keyGenerator: ipKey(PREFIX.LOGIN),
+    keyGenerator: emailIpKey(PREFIX.LOGIN),
     message: DEFAULT_MESSAGES.LOGIN,
 };
 
@@ -180,7 +180,7 @@ export const RESUME_UPLOAD_POLICY = {
 export const SEARCH_POLICY = {
     policyName: "SEARCH",
     windowMs: MINUTE,
-    max: 100,
+    max: 500,
     keyGenerator: userKey(PREFIX.SEARCH),
     message: DEFAULT_MESSAGES.SEARCH,
 };
