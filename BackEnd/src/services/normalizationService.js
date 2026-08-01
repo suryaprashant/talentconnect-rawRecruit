@@ -474,6 +474,7 @@ export const resolveCompany = async (rawInput) => {
       displayName: exactMatch.display_name,
       confidence: 100,
       matchType: "alias",
+      aliases: exactMatch.aliases || [],
     };
   }
 
@@ -511,6 +512,7 @@ export const resolveCompany = async (rawInput) => {
           displayName: best.item.display_name,
           confidence,
           matchType: "fuzzy",
+          aliases: best.item.aliases || [],
         });
 
         normalizationLogId = log?._id;

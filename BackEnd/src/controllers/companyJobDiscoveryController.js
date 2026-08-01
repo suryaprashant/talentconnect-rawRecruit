@@ -2,10 +2,7 @@ import mongoose from "mongoose";
 import { getAlumniByCompanyForCandidate } from "../services/alumniService.js";
 import Onboarding from "../models/studentonboardingModel.js";
 import DiscoveredCompany from "../models/DiscoveredCompany.js";
-import {
-  
-  validateCareerPageUrl,
-} from "../utils/jobTextUtils.js";
+import { validateCareerPageUrl } from "../utils/jobTextUtils.js";
 import { paginatedResponse } from "../utils/paginate.js";
 import Application from "../models/applicationModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
@@ -18,6 +15,7 @@ import {
   notifySenderOnReferralRequestStatusChange,
 } from "../services/notificationService.js";
 import { getAlumniWhoCanHelpService } from "./AlumniJobsController.js";
+
 
 // export const getAlumniForCareerPageUrl  = async (req, res) => {
 //   try {
@@ -139,8 +137,6 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       });
     }
 
-    
-
     const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
 
     if (!urlValidation.valid) {
@@ -197,21 +193,22 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       });
     }
 
-    // const alumniResult = await getAlumniByCompanyForCandidate({
-    //   userId: senderUserId,
-    //   companyName,
-    //   canonicalCompanyId,
-    //   page: 1,
-    //   limit: 100,
-    //   skip: 0,
-    // });
-    const alumniResult = await getAlumniWhoCanHelpService({
+    const alumniResult = await getAlumniByCompanyForCandidate({
       userId: senderUserId,
       postedByUser: null,
       company: companyName,
       page: 1,
       limit: 100,
     });
+
+
+    // const alumniResult = await getAlumniWhoCanHelpService({
+    //   userId: senderUserId,
+    //   postedByUser: null,
+    //   company: companyName,
+    //   page: 1,
+    //   limit: 100,
+    // });
 
     let alumniList = alumniResult?.data || [];
 
@@ -228,11 +225,9 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
 
       alumniList = alumniList.filter(
         (alumni) =>
-          alumni?.userId &&
-          String(alumni.userId) !== String(senderUserId),
+          alumni?.userId && String(alumni.userId) !== String(senderUserId),
       );
     }
-    
 
     if (alumniList.length === 0) {
       return res.status(404).json({
@@ -321,15 +316,15 @@ export const sendCareerPageReferralRequest = async (req, res) => {
 
     const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
 
-if (!urlValidation.valid) {
-  return res.status(400).json({
-    success: false,
-    message: urlValidation.message,
-  });
-}
+    if (!urlValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: urlValidation.message,
+      });
+    }
 
-const careerPageUrl = urlValidation.normalizedUrl;
-const companyName = urlValidation.companyName;
+    const careerPageUrl = urlValidation.normalizedUrl;
+    const companyName = urlValidation.companyName;
 
     if (!companyName) {
       return res.status(400).json({
