@@ -1,4 +1,16 @@
 import Onboarding from "../models/studentonboardingModel.js";
+import { resolveCompany } from "../services/normalizationService.js";
+import {
+  buildCollegeAlumniQuery,
+  buildCompanyAlumniQuery,
+} from "../services/entityQueryService.js";
+import {
+  fetchProfessionalReferralMetrics,
+} from "../services/adminService.js";
+import { paginatedResponse } from "../utils/paginate.js";
+import { JobPostingTable} from "../models/jobPostingsModel.js"
+
+import {getCompanyFuse} from "./fuseIndexService.js"
 
 const escapeRegex = (value = "") => {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -12,7 +24,8 @@ const getCompanyValuesFromProfile = (profile = {}) => {
   const companies = [];
 
   if (profile.currentCompany) companies.push(profile.currentCompany);
-  if (profile.currentCompany_display) companies.push(profile.currentCompany_display);
+  if (profile.currentCompany_display)
+    companies.push(profile.currentCompany_display);
   if (profile.currentCompany_canonical_id) {
     companies.push(profile.currentCompany_canonical_id);
   }
@@ -86,27 +99,26 @@ const isPastEmployeeOfCompany = (person, companyRegex) => {
     : false;
 };
 
-const formatAlumniUser = ({ person, canonicalCompanyId, companyName, sourceType }) => {
+const formatAlumniUser = ({
+  person,
+  canonicalCompanyId,
+  companyName,
+  sourceType,
+}) => {
   const isCurrentEmployee =
-    person.currentCompany_canonical_id ===
-      canonicalCompanyId ||
-
+    person.currentCompany_canonical_id === canonicalCompanyId ||
     person.experiences?.some(
       (exp) =>
-        exp.company_canonical_id ===
-        canonicalCompanyId &&
-        (exp.isCurrent === true ||
-          !exp.endDate)
+        exp.company_canonical_id === canonicalCompanyId &&
+        (exp.isCurrent === true || !exp.endDate),
     );
 
   const isAlumni =
     sourceType === "network" &&
     person.experiences?.some(
       (exp) =>
-        exp.company_canonical_id ===
-        canonicalCompanyId &&
-        (exp.isCurrent === false ||
-          Boolean(exp.endDate))
+        exp.company_canonical_id === canonicalCompanyId &&
+        (exp.isCurrent === false || Boolean(exp.endDate)),
     );
 
   return {
@@ -147,182 +159,479 @@ const formatAlumniUser = ({ person, canonicalCompanyId, companyName, sourceType 
 
 export const getAlumniByCompanyForCandidate = async ({
   userId,
-  companyName,
-  canonicalCompanyId,
+  postedByUser,
+  company,
   page = 1,
-  limit = 100,
-  skip = 0,
+  limit = Number.MAX_SAFE_INTEGER,
 }) => {
-  const searchedCompany = String(companyName || "").trim();
+  console.log("===== START: getAlumniByCompanyForCandidate =====");
+  console.log("Input params:", {
+    userId,
+    postedByUser,
+    company,
+    page,
+    limit: limit === Number.MAX_SAFE_INTEGER ? "MAX" : limit,
+  });
 
-  if (!searchedCompany) {
-    return {
-      alumFound: false,
-      data: [],
-      alumniByCompany: {},
-      broadcastCandidates: [],
-      sourceType: null,
-      alumniUserIds: [],
-      meta: {
-        total: 0,
-        page,
-        limit,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
+  if (!userId) {
+    console.error("❌ USER_ID_MISSING");
+    throw {
+      status: 401,
+      errorCode: "USER_ID_MISSING",
+      message: "userId not found in token. Please re-login.",
     };
   }
 
-  // const companyRegex = new RegExp(escapeRegex(searchedCompany), "i");
-
-  const myProfile = await Onboarding.findOne({ userId }).lean();
-
-  if (!myProfile) {
-    throw new Error("Profile not found. Complete onboarding.");
+  if (!company) {
+    console.error("❌ COMPANY_PARAM_MISSING");
+    throw {
+      status: 400,
+      errorCode: "COMPANY_PARAM_MISSING",
+      message: "Company name is required in params.",
+    };
   }
 
-  // const myCompanies = getCompanyValuesFromProfile(myProfile);
-  const myCompanies = [
-  ...new Set([
-    myProfile.currentCompany_canonical_id,
+  // =====================================================
+  // STEP 0: RESOLVE COMPANY  ("Resolve Company" in flow)
+  // =====================================================
 
-    ...(myProfile.experiences || [])
-      .map(
-        (exp) =>
-          exp.company_canonical_id
-      ),
-  ].filter(Boolean)),
-];
-
-  let networkUsers = [];
-
-  // if (myCompanies.length > 0) {
-  //   const networkConditions = myCompanies.flatMap((company) => {
-  //     const regex = new RegExp(escapeRegex(company), "i");
-
-  //     return [
-  //       { currentCompany: regex },
-  //       { currentCompany_display: regex },
-  //       { currentCompany_canonical_id: regex },
-  //       { "experiences.company": regex },
-  //       { "experiences.company_display": regex },
-  //       { "experiences.company_canonical_id": regex },
-  //     ];
-  //   });
-
-  //   networkUsers = await Onboarding.find({
-  //     userId: { $ne: userId },
-  //     $or: networkConditions,
-  //   }).lean();
-  // }
-  if (myCompanies.length > 0) {
-
-  networkUsers =
-    await Onboarding.find({
-      userId: {
-        $ne: userId,
-      },
-
-      $or: [
-        {
-          currentCompany_canonical_id: {
-            $in: myCompanies,
-          },
-        },
-
-        // {
-        //   "experiences.company_canonical_id": {
-        //     $in: myCompanies,
-        //   },
-        // },
-      ],
-    }).lean();
-}
-
-  // const networkMatchedUsers = networkUsers.filter((person) =>
-  //   personMatchesCompany(person, companyRegex),
-  // );
-const networkMatchedUsers =
-  networkUsers.filter(
-    (person) =>
-      person.currentCompany_canonical_id ===
-        canonicalCompanyId 
-
-      // person.experiences?.some(
-      //   (exp) =>
-      //     exp.company_canonical_id ===
-      //     canonicalCompanyId
-      // )
+  const targetCompany = await resolveCompany(company);
+  console.log(
+    "Resolved targetCompany:",
+    JSON.stringify(targetCompany, null, 2),
   );
 
-  let sourceType = "network";
-  let finalUsers = networkMatchedUsers;
+  const targetCanonicalId = targetCompany?.canonicalId || null;
+  console.log("Target canonicalId:", targetCanonicalId);
 
-  if (finalUsers.length === 0) {
-    sourceType = "global_current_employee";
-
-    finalUsers =
-      await Onboarding.find({
-        userId: {
-          $ne: userId,
-        },
-
-        $or: [
-          {
-            currentCompany_canonical_id:
-              canonicalCompanyId,
-          },
-
-          // {
-          //   "experiences.company_canonical_id":
-          //     canonicalCompanyId,
-          // },
-        ],
-      }).lean();
+  if (!targetCanonicalId) {
+    console.error(
+      "❌ COMPANY_NOT_NORMALIZED - Company not found in normalization database",
+    );
+    throw {
+      status: 404,
+      errorCode: "COMPANY_NOT_NORMALIZED",
+      message: "Company not found in normalization database.",
+    };
   }
 
-  const uniqueUsers = [
-    ...new Map(finalUsers.map((person) => [String(person._id), person])).values(),
+  const skip = (page - 1) * limit;
+  console.log("Pagination - skip:", skip, "limit:", limit);
+
+  // =====================================================
+  // STEP 1: FETCH MY PROFILE
+  // =====================================================
+
+  console.log("📌 STEP 1: Fetching my profile...");
+  const myProfile = await Onboarding.findOne({ userId });
+  console.log(
+    "My profile found:",
+    myProfile ? `✅ (${myProfile.userId})` : "❌ Not found",
+  );
+
+  if (!myProfile) {
+    console.error("❌ PROFILE_NOT_FOUND");
+    throw {
+      status: 404,
+      errorCode: "PROFILE_NOT_FOUND",
+      message: "Your profile does not exist. Please complete onboarding.",
+    };
+  }
+
+  console.log("User profile details:", {
+    userId: myProfile.userId,
+    college: myProfile.college_canonical_id,
+    currentCompany: myProfile.currentCompany,
+    currentCompanyCanonicalId: myProfile.currentCompany_canonical_id,
+    experiencesCount: myProfile.experiences?.length || 0,
+    educationsCount: myProfile.educations?.length || 0,
+  });
+
+  let collegeAlumni = [];
+  let companyAlumni = [];
+
+  // =====================================================
+  // STEP 2: BUILD EXCLUDED IDS
+  // =====================================================
+
+  console.log("📌 STEP 2: Building excluded IDs...");
+  const excludedUserIds = [userId];
+
+  if (postedByUser) {
+    excludedUserIds.push(postedByUser);
+  }
+  console.log("Excluded user IDs:", excludedUserIds);
+
+  // =====================================================
+  // STEP 3: FETCH COLLEGE ALUMNI  ("Search Network" part 1)
+  // =====================================================
+
+  console.log("📌 STEP 3: Fetching college alumni...");
+  const collegeQuery = buildCollegeAlumniQuery(myProfile, userId);
+  console.log("College query:", JSON.stringify(collegeQuery, null, 2));
+
+  const colleges = [
+    ...new Set(
+      (myProfile.educations || [])
+        .map((edu) => edu.college_canonical_id || edu.college)
+        .filter(Boolean),
+    ),
   ];
+  console.log("User's colleges:", colleges);
 
-  const total = uniqueUsers.length;
-  const totalPages = Math.ceil(total / limit);
-  const paginatedUsers = uniqueUsers.slice(skip, skip + limit);
+  if (collegeQuery) {
+    console.log("🔍 Executing college alumni query...");
+    collegeAlumni = await Onboarding.find({
+      ...collegeQuery,
+      userId: {
+        $nin: excludedUserIds,
+      },
+    }).lean();
+    console.log(`✅ Found ${collegeAlumni.length} college alumni`);
+    if (collegeAlumni.length > 0) {
+      console.log(
+        "College alumni sample (first 3):",
+        collegeAlumni.slice(0, 3).map((p) => ({
+          userId: p.userId,
+          college: p.college_canonical_id,
+          currentCompany: p.currentCompany,
+        })),
+      );
+    }
+  } else {
+    console.log(
+      "⚠️ No college query generated, skipping college alumni search",
+    );
+  }
 
-  const users = paginatedUsers.map((person) =>
-    formatAlumniUser({
-      person,
-      canonicalCompanyId,
-      companyName: searchedCompany,
-      sourceType,
+  // =====================================================
+  // STEP 4: FETCH COMPANY ALUMNI  ("Search Network" part 2)
+  // =====================================================
+
+  console.log("📌 STEP 4: Fetching company alumni...");
+  const companyQuery = buildCompanyAlumniQuery(myProfile, userId);
+  console.log("Company query:", JSON.stringify(companyQuery, null, 2));
+
+  const uniqueCompanies = [
+    ...new Set(
+      [
+        myProfile.currentCompany_canonical_id || myProfile.currentCompany,
+        ...(myProfile.experiences || []).map(
+          (exp) => exp.company_canonical_id || exp.company,
+        ),
+      ].filter(Boolean),
+    ),
+  ];
+  console.log("User's companies (unique):", uniqueCompanies);
+
+  if (companyQuery) {
+    console.log("🔍 Executing company alumni query...");
+    companyAlumni = await Onboarding.find({
+      ...companyQuery,
+      userId: {
+        $nin: excludedUserIds,
+      },
+    }).lean();
+    console.log(`✅ Found ${companyAlumni.length} company alumni`);
+    if (companyAlumni.length > 0) {
+      console.log(
+        "Company alumni sample (first 3):",
+        companyAlumni.slice(0, 3).map((p) => ({
+          userId: p.userId,
+          currentCompany: p.currentCompany,
+          experiences: p.experiences?.length || 0,
+        })),
+      );
+    }
+  } else {
+    console.log(
+      "⚠️ No company query generated, skipping company alumni search",
+    );
+  }
+
+  // =====================================================
+  // STEP 5: MERGE + REMOVE DUPLICATES
+  // =====================================================
+
+  console.log("📌 STEP 5: Merging alumni and removing duplicates...");
+  console.log(
+    `College alumni: ${collegeAlumni.length}, Company alumni: ${companyAlumni.length}`,
+  );
+
+  const mergedAlumni = [...collegeAlumni, ...companyAlumni];
+  console.log(`Total merged alumni before dedup: ${mergedAlumni.length}`);
+
+  const uniqueAlumniMap = new Map();
+  mergedAlumni.forEach((person) => {
+    const key = person.userId?.toString();
+    if (!uniqueAlumniMap.has(key)) {
+      uniqueAlumniMap.set(key, person);
+    }
+  });
+
+  const uniqueAlumni = Array.from(uniqueAlumniMap.values());
+  console.log(`✅ After dedup: ${uniqueAlumni.length} unique alumni`);
+
+  // =====================================================
+  // STEP 6: BUILD SEARCH TERMS
+  // =====================================================
+
+  console.log("📌 STEP 6: Building search terms...");
+  const searchTerms = new Set();
+  searchTerms.add(company.toLowerCase());
+
+  if (targetCompany.displayName) {
+    searchTerms.add(targetCompany.displayName.toLowerCase());
+  }
+
+  (targetCompany.aliases || []).forEach((alias) =>
+    searchTerms.add(alias.toLowerCase()),
+  );
+
+  console.log("Search terms:", Array.from(searchTerms));
+
+  // =====================================================
+  // STEP 7: FILTER NETWORK ALUMNI BY TARGET COMPANY
+  // ("Found?" check #1 in flow — if yes, Return)
+  // =====================================================
+
+  console.log("📌 STEP 7: Filtering network alumni by target company...");
+  console.log(`Target canonicalId: "${targetCanonicalId}"`);
+  console.log(`Target company name: "${company}"`);
+
+  let alumni = uniqueAlumni.filter((person) => {
+    const currentCompany = (person.currentCompany || "").toLowerCase().trim();
+    const displayCompany = (person.currentCompany_display || "").toLowerCase().trim();
+
+    // Check if current company matches search terms
+    const matchesText = searchTerms.has(currentCompany) || searchTerms.has(displayCompany);
+
+    // Check if canonical ID matches
+    const matchesCanonical = person.currentCompany_canonical_id === targetCanonicalId;
+
+    return matchesText || matchesCanonical;
+  });
+
+  let source = "network";
+  console.log(`✅ Network filter: ${alumni.length} alumni match target company`);
+
+  // =====================================================
+  // STEP 8: PLATFORM SEARCH — only if network gave 0 results
+  // ("No" branch -> Search Entire Platform)
+  // =====================================================
+
+  if (alumni.length === 0) {
+    console.log("📌 STEP 8: No network alumni found. Searching entire platform...");
+    source = "platform";
+
+    const orConditions = [];
+
+    // Add text search conditions
+    Array.from(searchTerms).forEach((term) => {
+      orConditions.push({
+        currentCompany: {
+          $regex: `^${escapeRegex(term)}$`,
+          $options: "i",
+        },
+      });
+
+      orConditions.push({
+        currentCompany_display: {
+          $regex: `^${escapeRegex(term)}$`,
+          $options: "i",
+        },
+      });
+    });
+
+    // Add canonical ID search
+    orConditions.push({
+      currentCompany_canonical_id: targetCanonicalId,
+    });
+
+    console.log("Platform search conditions:", JSON.stringify(orConditions, null, 2));
+
+    alumni = await Onboarding.find({
+      userId: {
+        $nin: excludedUserIds,
+      },
+      $or: orConditions,
+    }).lean();
+
+    console.log(`✅ Platform search: ${alumni.length} alumni found`);
+  }
+
+  // =====================================================
+  // STEP 9: FUZZY COMPANY SEARCH — only if platform gave 0 results
+  // ("No" branch -> Perform Fuzzy Company Search -> Return Matches)
+  //
+  // FIX: previously this query had BOTH
+  //   currentCompany_canonical_id: { $in: similarCanonicalIds }
+  //   currentCompany:              { $in: similarCanonicalIds }
+  // in the same object, which Mongo treats as AND. The second
+  // condition compared a company NAME field against a list of
+  // CANONICAL IDS — that can never match, so this branch always
+  // returned 0 results. Removed the incorrect clause; canonical ID
+  // is the only reliable field to filter fuzzy matches on, since
+  // similarCanonicalIds contains canonical ids, not display names.
+  // =====================================================
+
+  if (alumni.length === 0) {
+    console.log("📌 STEP 9: No alumni found. Trying Fuse fuzzy search...");
+
+    const similarCanonicalIds = new Set();
+    similarCanonicalIds.add(targetCompany.canonicalId);
+
+    const fuse = getCompanyFuse();
+
+    if (fuse) {
+      console.log("🔍 Executing Fuse search...");
+      const fuseResults = fuse.search(company);
+      console.log(`Fuse found ${fuseResults.length} results`);
+
+      for (const result of fuseResults) {
+        const confidence = Math.round((1 - result.score) * 100);
+        console.log(`  - ${result.item.display_name}: ${confidence}% confidence`);
+
+        // Change threshold to 85 or 80 if needed
+        if (confidence >= 80) {
+          similarCanonicalIds.add(result.item.canonical_id);
+          console.log(`    ✅ Added ${result.item.canonical_id} to similar IDs`);
+        }
+      }
+    }
+
+    console.log("Similar canonical IDs:", Array.from(similarCanonicalIds));
+
+    alumni = await Onboarding.find({
+      userId: {
+        $nin: excludedUserIds,
+      },
+      currentCompany_canonical_id: {
+        $in: Array.from(similarCanonicalIds),
+      },
+    }).lean();
+
+    console.log(`✅ Fuse fallback: ${alumni.length} alumni found`);
+    source = "platform_fallback";
+  }
+
+  // =====================================================
+  // STEP 10: APPLY PAGINATION
+  // =====================================================
+
+  console.log("📌 STEP 10: Applying pagination...");
+  const total = alumni.length;
+  console.log(`Total alumni before pagination: ${total}`);
+
+  const paginatedAlumni = alumni.slice(skip, skip + limit);
+  console.log(`Paginated alumni: ${paginatedAlumni.length} (from ${skip} to ${skip + limit})`);
+
+  // =====================================================
+  // STEP 11: EMPTY RESPONSE CHECK
+  // =====================================================
+
+  if (paginatedAlumni.length === 0) {
+    console.log("📤 No professionals found, returning empty response");
+    console.log("===== END: getAlumniByCompanyForCandidate =====");
+    return {
+      success: true,
+      errorCode: null,
+      message: "No professionals found for this company.",
+      company,
+      source,
+      collegesChecked: colleges,
+      companiesChecked: uniqueCompanies,
+      ...paginatedResponse([], total, { page, limit }),
+    };
+  }
+
+  // =====================================================
+  // STEP 12: FETCH METRICS + JOBS
+  // =====================================================
+
+  console.log("📌 STEP 12: Fetching metrics and jobs for alumni...");
+  console.log(`Processing ${paginatedAlumni.length} alumni...`);
+
+  const alumniWithMetrics = await Promise.all(
+    paginatedAlumni.map(async (person, index) => {
+      console.log(
+        `  Processing alumni ${index + 1}/${paginatedAlumni.length}: ${person.userId}`,
+      );
+
+      let metrics = null;
+      let referralJobs = [];
+
+      const currentlyWorking =
+        targetCanonicalId &&
+        person.currentCompany_canonical_id === targetCanonicalId;
+
+      const previouslyWorked = person.experiences?.some(
+        (exp) => exp.company_canonical_id === targetCanonicalId,
+      );
+
+      console.log(`    - currentlyWorking: ${currentlyWorking}`);
+      console.log(`    - previouslyWorked: ${previouslyWorked}`);
+
+      try {
+        console.log(`    - Fetching referral metrics for ${person.userId}...`);
+        [metrics, referralJobs] = await Promise.all([
+          fetchProfessionalReferralMetrics(person._id),
+          JobPostingTable.find({
+            candidatePosted: person._id,
+            jobType: "Referral",
+            approvalStatus: "Approved",
+            inactive: false,
+          })
+            .sort({ createdAt: -1 })
+            .lean(),
+        ]);
+        console.log(
+          `    - ✅ Metrics: ${metrics ? "found" : "none"}, Jobs: ${referralJobs.length}`,
+        );
+      } catch (innerError) {
+        console.error(
+          `    - ❌ Error processing professional ${person._id}:`,
+          innerError,
+        );
+      }
+
+      return {
+        ...person,
+        currentlyWorking,
+        previouslyWorked,
+        referralMetrics: metrics,
+        referralJobs,
+        isHiring: referralJobs.length > 0,
+      };
     }),
   );
 
-  const alumniUserIds = users
-    .map((person) => person.userId)
-    .filter(Boolean)
-    .map(String);
+  console.log(`✅ All ${alumniWithMetrics.length} alumni processed`);
 
-  const alumFound = alumniUserIds.length > 0;
+  // =====================================================
+  // STEP 13: BUILD RESPONSE
+  // =====================================================
+
+  console.log("📌 STEP 13: Building response...");
+  const pagination = paginatedResponse(alumniWithMetrics, total, {
+    page,
+    limit,
+  });
+
+  console.log("✅ Success response prepared");
+  console.log(`Total: ${total}, Returned: ${alumniWithMetrics.length}`);
+  console.log(`Source: ${source}`);
+  console.log("===== END: getAlumniByCompanyForCandidate =====");
 
   return {
-    alumFound,
-    data: users,
-    sourceType,
-    alumniUserIds,
-    alumniByCompany: alumFound ? { [searchedCompany]: users } : {},
-    broadcastCandidates:
-      sourceType === "global_current_employee" && alumFound ? users : [],
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    },
+    success: true,
+    errorCode: null,
+    message: "Professionals fetched successfully.",
+    company,
+    source,
+    collegesChecked: colleges,
+    companiesChecked: uniqueCompanies,
+    ...pagination,
   };
 };
-
 
