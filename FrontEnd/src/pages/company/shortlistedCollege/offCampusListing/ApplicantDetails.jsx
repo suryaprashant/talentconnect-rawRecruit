@@ -691,6 +691,7 @@ const rejectApplicant = async (applicationId) => {
         ) : (
           <div className="space-y-6">
             {applications.map((applicant) => {
+              const interviewScheduled = applicant?.interviewScheduled || false;
               const applicantData = applicant?.applicant || {};
               const currentStatus = applicant?.currentStatus || 'Shortlisted';
               const applicantLogo = getApplicantLogo(applicantData);
@@ -916,7 +917,7 @@ const rejectApplicant = async (applicationId) => {
                         className="flex items-center justify-center flex-1 py-2.5 font-medium bg-white border border-gray-300 text-blue-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
                       >
                         <Calendar size={16} className="mr-2" />
-                        Schedule Interview
+                        {isSubmitting ? "Processing...": interviewScheduled ? "Reschedule Interview": "Schedule Interview"}
                       </button>
 
 <button

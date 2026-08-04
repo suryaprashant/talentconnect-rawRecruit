@@ -138,7 +138,17 @@ export default function RequesInfo({ onBackClick }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
+      <div className="mb-6">
+                                      <button
+                                        type="button"
+                                        onClick={onBackClick}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                                      >
+                                        ← Back
+                                      </button>
+                                    </div>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-8">
           <div className="text-center">
@@ -366,14 +376,14 @@ export default function RequesInfo({ onBackClick }) {
             </div>
 
             {/* Row 4: Buttons */}
-            <div className="flex justify-between pt-6 border-t border-gray-100">
-              <button 
+            <div className="flex justify-center pt-6 border-t border-gray-100">
+              {/* <button 
                 type="button"
                 onClick={onBackClick}
                 className="px-6 py-3 text-[#143694] hover:text-[#1e4ed8] font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
                 ← Back
-              </button>
+              </button> */}
               <button
                 type="button"
                 disabled={isSubmitting}

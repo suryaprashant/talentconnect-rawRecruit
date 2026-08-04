@@ -10,7 +10,9 @@ export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
     const userType = req.user.userType;
     //const { jobType, status } = req.query;
-    const { jobType, status, active } = req.query; 
+    const { jobType, status, active } = req.query;
+    console.log("id :",Id); 
+    console.log("userType :",userType); 
 
     if (!jobType || !status) return res.status(404).json({ msg: "parameters missing!" });
 
@@ -33,7 +35,7 @@ export const getPostedJobs = async (req, res) => {
             // console.log("Employer profile: ", companyProfile);
         }
 
-     
+        console.log("company profile :",companyProfile);
         if (!companyProfile || companyProfile.success === false || !companyProfile.data || companyProfile.data.length === 0) {
             return res.status(404).json({ error: "Company profile not found" });
         }

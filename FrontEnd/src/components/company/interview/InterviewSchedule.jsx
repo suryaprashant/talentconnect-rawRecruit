@@ -106,7 +106,7 @@ export default function InterviewScheduler() {
                 // For OTHERS → show recruiter
                 const displayName = isCompanyView
                   ? interview.applicantSnapshot?.name
-                  : interview.companySnapshot?.scheduledBy?.name;
+                  : interview.companySnapshot?.companyName;
 
                 const displayDesignation = isCompanyView
                   ? interview.applicantSnapshot?.designation ||

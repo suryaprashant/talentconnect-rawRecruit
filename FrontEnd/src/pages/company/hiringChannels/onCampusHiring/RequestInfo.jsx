@@ -838,7 +838,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
 
                   {/* Looking for */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Offering</label>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Offering <span className="text-red-500">*</span></label>
                     <div className="flex gap-2">
                       {['Job', 'Internship', 'Both'].map(type => (
                         <button 
@@ -858,7 +858,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Employment type */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Employment type</label>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Employment type <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-2">
                       {['Part-time', 'Full-time', 'Contract'].map(type => (
                         <button 
@@ -875,7 +875,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
 
                   {/* Work Mode */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode</label>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-2">
                       {['Hybrid', 'On-site', 'Remote'].map(mode => (
                         <button 
@@ -883,6 +883,7 @@ const [metaData, setMetaData] = useState([]); // Stores global skills from DB
                           type="button" 
                           className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
                           onClick={() => handleOptionSelect('workMode', mode)}
+                          required
                         >
                           {mode}
                         </button>

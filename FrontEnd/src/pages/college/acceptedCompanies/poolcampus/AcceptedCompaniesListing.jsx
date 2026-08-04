@@ -36,8 +36,8 @@ export default function PoolCampusJobManagement() {
   // Function to determine job status based on dates
   const getJobStatus = (job) => {
     const currentDate = new Date();
-    const startDate = new Date(job.startDate);
-    const endDate = new Date(job.endDate);
+    const startDate = new Date(job?.proposedSchedule?.startDate);
+    const endDate = new Date(job?.proposedSchedule?.endDate);
 
     if (currentDate < startDate) {
       return 'Pending';
@@ -52,7 +52,7 @@ export default function PoolCampusJobManagement() {
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
       // Only update status if the job has both start and end dates
-      if (job.startDate && job.endDate) {
+      if (job?.proposedSchedule?.startDate && job?.proposedSchedule?.endDate) {
         return {
           ...job,
           jobStatus: getJobStatus(job)
@@ -790,7 +790,7 @@ export default function PoolCampusJobManagement() {
         const jobId = job._id;
         const degree = displayDegree(job);
         const jobLocation = job.venue || 'N/A';
-        const deadline = job.endDate;
+        const deadline = job?.proposedSchedule?.endDate;
         const views = job.views || 0;
         const applications = job.applicationCount || 0;
         
@@ -859,7 +859,8 @@ export default function PoolCampusJobManagement() {
                     className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
                     title="View Company Applications"
                   >
-                    <Eye size={16} />
+                    {/* <Eye size={16} /> */}
+                    viewed
                   </button>
                   <button 
                     onClick={(e) => {

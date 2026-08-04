@@ -79,6 +79,16 @@ export default function RequestInfo({ onBackClick, handleSubmit: handleSubmitPro
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      <div className="mb-6">
+        <button
+          type="button"
+          onClick={onBackClick}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+      </div>
       {/* Pastel blur background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
@@ -288,15 +298,15 @@ export default function RequestInfo({ onBackClick, handleSubmit: handleSubmitPro
             </div>
 
             {/* Form Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 border-t border-gray-200/50">
-              <button 
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-6 border-t border-gray-200/50">
+              {/* <button 
                 type="button"
                 onClick={onBackClick}
                 className="flex items-center gap-1.5 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200 text-sm"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back
-              </button>
+              </button> */}
               <button 
                 type="button"
                 onClick={handleSubmit}

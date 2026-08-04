@@ -607,7 +607,7 @@ export default function OffCampusJobManagement() {
               <div className="col-span-3">Job Title</div>
               <div className="col-span-2">Deadline</div>
               <div className="col-span-2 text-center">Views</div>
-              <div className="col-span-3 text-center">New Applications</div>
+              <div className="col-span-2 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -672,7 +672,7 @@ export default function OffCampusJobManagement() {
 
                     {/* New Applications - Clickable count */}
                     <div 
-                      className="col-span-3 text-center cursor-pointer group"
+                      className="col-span-2 text-center cursor-pointer group"
                       onClick={() => handleViewApplicants(job)}
                       title="View applications"
                     >
@@ -689,7 +689,8 @@ export default function OffCampusJobManagement() {
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                           title="View job details"
                         >
-                          <Eye size={16} />
+                          {/* <Eye size={16} /> */}
+                          viewed
                         </button>
                         <button 
                           onClick={() => handleDelete(job._id)}

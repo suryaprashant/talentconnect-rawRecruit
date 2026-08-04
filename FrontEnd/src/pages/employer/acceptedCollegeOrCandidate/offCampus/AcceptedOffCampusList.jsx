@@ -204,7 +204,7 @@ export default function OffCampusJobManagement() {
                             <div className="col-span-3">Job Title</div>
                             <div className="col-span-2">Work Locations</div>
                             <div className="col-span-2">Deadline</div>
-                            <div className="col-span-3 text-center">New Applications</div>
+                            <div className="col-span-2 text-center">New Applications</div>
                             <div className="col-span-2 text-center">Actions</div>
                         </div>
                     </div>
@@ -272,7 +272,7 @@ export default function OffCampusJobManagement() {
 
                                         {/* Applications - Clickable to View Applicants */}
                                         <div 
-                                            className="col-span-3 text-center cursor-pointer group"
+                                            className="col-span-2 text-center cursor-pointer group"
                                             onClick={() => handleViewApplicants(job)}
                                             title="View Applicant Applications"
                                         >
@@ -289,7 +289,8 @@ export default function OffCampusJobManagement() {
                                                     className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#143694] hover:border-[#143694]/50 transition-all duration-200"
                                                     title="View Job Details"
                                                 >
-                                                    <Eye size={16} />
+                                                    {/* <Eye size={16} /> */}
+                                                    viewed
                                                 </button>
                                                 <button 
                                                     onClick={() => handleDelete(job._id)}

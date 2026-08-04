@@ -46,8 +46,8 @@ export default function OnCampusJobManagement() {
   // Function to determine job status based on dates
   const getJobStatus = (job) => {
     const currentDate = new Date();
-    const startDate = new Date(job.startDate);
-    const endDate = new Date(job.endDate);
+    const startDate = new Date(job?.proposedSchedule?.startDate);
+    const endDate = new Date(job?.proposedSchedule?.endDate);
 
     if (currentDate < startDate) {
       return 'Pending';
@@ -62,7 +62,7 @@ export default function OnCampusJobManagement() {
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
       // Only update status if the job has both start and end dates
-      if (job.startDate && job.endDate) {
+      if (job?.proposedSchedule?.startDate && job?.proposedSchedule?.endDate) {
         return {
           ...job,
           jobStatus: getJobStatus(job)
@@ -806,7 +806,7 @@ export default function OnCampusJobManagement() {
         const jobId = job._id;
         const degree = displayDegree(job);
         const location = getLocation(job);
-        const deadline = job.endDate;
+        const deadline = job?.proposedSchedule?.endDate;
         const views = job.views || 0;
         const applications = job.applicationCount || 0;
         
@@ -818,38 +818,49 @@ export default function OnCampusJobManagement() {
                 <div 
                   onClick={() => {
                     // Prepare data for CollegeDetailPage
-                    const collegeData = {
-                      _id: job._id,
-                      isApplied: false,
-                      isSaved: false,
-                      collegePosted: job.collegePosted || job.collegeDetails,
-                      company: job.companyName || job.company,
-                      description: job.description,
-                      location: job.location,
-                      jobTitle: job.jobTitle,
-                      employmentType: job.employmentType,
-                      packageDetails: job.packageDetails,
-                      noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
-                      lookingFor: job.lookingFor || job.jobTitle,
-                      proposedSchedule: job.proposedSchedule,
-                      companyType: job.companyType,
-                      roundDetails: job.roundDetails,
-                      studentStreams: job.studentStreams,
-                      numberOfStudent: job.numberOfStudent,
-                      amenitiesRequired: job.amenitiesRequired,
-                      contactPerson: job.contactPerson,
-                      startDate: job.startDate,
-                      endDate: job.endDate,
-                      jobType: job.jobType || 'On-campus'
-                    };
+                    // const collegeData = {
+                    //   _id: job._id,
+                    //   isApplied: false,
+                    //   isSaved: false,
+                    //   collegePosted: job.collegePosted || job.collegeDetails,
+                    //   company: job.companyName || job.company,
+                    //   description: job.description,
+                    //   location: job.location,
+                    //   jobTitle: job.jobTitle,
+                    //   employmentType: job.employmentType,
+                    //   packageDetails: job.packageDetails,
+                    //   noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
+                    //   lookingFor: job.lookingFor || job.jobTitle,
+                    //   proposedSchedule: job.proposedSchedule,
+                    //   companyType: job.companyType,
+                    //   roundDetails: job.roundDetails,
+                    //   studentStreams: job.studentStreams,
+                    //   numberOfStudent: job.numberOfStudent,
+                    //   amenitiesRequired: job.amenitiesRequired,
+                    //   contactPerson: job.contactPerson,
+                    //   startDate: job?.proposedSchedule?.startDate,
+                    //   endDate: job?.proposedSchedule?.endDate,
+                    //   jobType: job.jobType || 'On-campus'
+                    // };
                     
-                    // Navigate to CollegeDetailPage with state data
-                    navigate(`/company/employerDashboard/college-detail/${job._id}`, {
+                    // // Navigate to CollegeDetailPage with state data
+                    // navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
+                    //   state: {
+                    //     applicationData: collegeData,
+                    //     isApplied: false,
+                    //     isSaved: false
+                    //   }
+                    // });
+                    navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
                       state: {
-                        applicationData: collegeData,
+                        applicationData: {
+                          ...job,
+                          isApplied: false,
+                          isSaved: false,
+                        },
                         isApplied: false,
-                        isSaved: false
-                      }
+                        isSaved: false,
+                      },
                     });
                   }}
                   className="group cursor-pointer"
@@ -910,7 +921,8 @@ export default function OnCampusJobManagement() {
                     className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
                     title="View Company Applications"
                   >
-                    <Eye size={16} />
+                    {/* <Eye size={16} /> */}
+                    viewed
                   </button>
                   <button 
                     onClick={(e) => {
