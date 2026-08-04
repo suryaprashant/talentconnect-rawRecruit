@@ -1287,7 +1287,17 @@ export async function fetchCollegeApplicationsByJobService(
     ]);
 
 
+    const scheduledApplications = await InterviewSchedule.find({
+      applicationId: { $in: response.map(app => app._id) }
+    }).select("applicationId");
 
+    const scheduledSet = new Set(
+      scheduledApplications.map(item => item.applicationId.toString())
+    );
+
+    response.forEach(app => {
+      app.interviewScheduled = scheduledSet.has(app._id.toString());
+    });
     // 👁️ mark visited only for new fetch
     if (isVisited === "false" || isVisited === false) {
       const idsToMarkVisited = response

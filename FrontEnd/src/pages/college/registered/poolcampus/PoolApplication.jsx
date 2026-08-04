@@ -25,8 +25,8 @@ function PoolApplicationsPage() {
 
   const getJobStatus = (job) => {
     const currentDate = new Date();
-    const startDate = new Date(job.startDate);
-    const endDate = new Date(job.endDate);
+    const startDate = new Date(job?.proposedSchedule?.startDate);
+    const endDate = new Date(job?.proposedSchedule?.endDate);
 
     if (currentDate < startDate) {
       return 'Pending';
@@ -39,7 +39,7 @@ function PoolApplicationsPage() {
 
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
-      if (job.startDate && job.endDate) {
+      if (job?.proposedSchedule?.startDate && job?.proposedSchedule?.endDate) {
         return {
           ...job,
           jobStatus: getJobStatus(job)
@@ -330,7 +330,7 @@ const handleViewAll = (jobId, e) => {
       <div className="col-span-3">Degree</div>
       <div className="col-span-2">Deadline</div>
       <div className="col-span-2 text-center">Views</div>
-      <div className="col-span-3 text-center">New Applications</div>
+      <div className="col-span-2 text-center">New Applications</div>
       <div className="col-span-2 text-center">Actions</div>
     </div>
   </div>
@@ -364,7 +364,7 @@ const handleViewAll = (jobId, e) => {
         const jobTitle = job.jobTitle || 'N/A';
         const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
         const jobLocation = job.venue || 'N/A';
-        const deadline = job.endDate || job.deadline;
+        const deadline = job?.proposedSchedule?.endDate || job.deadline;
         const views = job.views || 0;
         const applications = job.applicationCount || job.applications || 0;
 
@@ -409,7 +409,7 @@ const handleViewAll = (jobId, e) => {
               </div>
               
               {/* New Applications Column - col-span-3 */}
-              <div className="col-span-3 text-center">
+              <div className="col-span-2 text-center">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -436,7 +436,8 @@ const handleViewAll = (jobId, e) => {
                     title={isViewDisabled ? "No applications to view" : "View Shortlisted"}
                     disabled={isViewDisabled}
                   >
-                    <Eye size={16} />
+                    {/* <Eye size={16} /> */}
+                    viewed
                   </button>
                   <button 
                     onClick={(e) => handleDelete(jobId, e)} 

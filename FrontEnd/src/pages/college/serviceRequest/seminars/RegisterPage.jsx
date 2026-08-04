@@ -3,6 +3,16 @@ import { Calendar, Clock, MessageSquare, ArrowLeft, Send } from 'lucide-react';
 export default function RegisterPage({ onBackClick, formData = {}, handleInputChange, handleSubmit }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      <div className="mb-6">
+        <button
+          type="button"
+          onClick={onBackClick}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+      </div>
       {/* Background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />
@@ -100,15 +110,15 @@ export default function RegisterPage({ onBackClick, formData = {}, handleInputCh
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200/50">
-              <button
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 border-t border-gray-200/50">
+              {/* <button
                 type="button"
                 onClick={onBackClick}
                 className="flex items-center gap-2 text-[#1e4ed8] hover:text-[#1d4ed8] font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back 
-              </button>
+              </button> */}
 
               <button
                 type="button"

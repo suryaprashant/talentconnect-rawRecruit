@@ -27,6 +27,8 @@ import { HelpCenterModal } from "@/components/onboarding/HelpModal";
 import { ContactModal } from "@/components/onboarding/ContactModal";
 import { TermsModal } from "@/components/onboarding/Terms&conditionModal";
 const HomePage = () => {
+
+  const navigate=useNavigate();
   const handleLogoClick = () => {
     navigate('/');
     window.scrollTo(0, 0);

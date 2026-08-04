@@ -452,6 +452,10 @@ export default function RegisterPage({ onBackClick }) {
             newErrors.coordinatorDesignation = 'Please select coordinator designation';
             formValid = false;
         }
+        if (!formData.coordinatorName.trim()) {
+            newErrors.coordinatorName = 'Please select coordinator Name';
+            formValid = false;
+        }
         if (!formData.minStudentsToBePlaced.trim()) {
             newErrors.minStudentsToBePlaced = 'Please select minimum students to be placed';
             formValid = false;
@@ -654,6 +658,16 @@ export default function RegisterPage({ onBackClick }) {
     // ─── JSX ───────────────────────────────────────────────────────────────────
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+            <div className="mb-6">
+                    <button
+                      type="button"
+                      onClick={onBackClick}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Back
+                    </button>
+                  </div>
             {/* Pastel blur background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
@@ -873,7 +887,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <User className="w-4 h-4 text-[#1e4ed8]" />
-                                        Coordinator Name
+                                        Coordinator Name <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -881,6 +895,7 @@ export default function RegisterPage({ onBackClick }) {
                                         className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#143694] focus:border-transparent"
                                         value={formData.coordinatorName}
                                         onChange={(e) => handleChange('coordinatorName', e.target.value)}
+                                        required
                                     />
                                 </div>
                                 <div>
@@ -1413,15 +1428,15 @@ export default function RegisterPage({ onBackClick }) {
                         </div>
 
                         {/* Form Actions */}
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 border-t border-gray-200/50">
-                            <button
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-6 border-t border-gray-200/50">
+                            {/* <button
                                 type="button"
                                 onClick={onBackClick}
                                 className="flex items-center gap-1.5 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200 text-sm"
                             >
                                 <ArrowLeft className="w-3.5 h-3.5" />
                                 Back
-                            </button>
+                            </button> */}
                             <button
                                 type="submit"
                                 className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-lg hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 text-sm font-medium"

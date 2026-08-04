@@ -21,6 +21,12 @@ function Sidebar({ open, setOpen }) {
     return location.pathname === path
   }
 
+  const handleLogoClick = () => {
+  console.log("Logo clicked");
+  sessionStorage.setItem("fromLogo", "true");
+  navigate("/");
+};
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -39,7 +45,7 @@ function Sidebar({ open, setOpen }) {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="px-4 py-5 border-b border-gray-200">
+          <div onClick={handleLogoClick} className="px-4 py-5 border-b border-gray-200">
             <Logo />
           </div>
 

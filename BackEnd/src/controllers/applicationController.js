@@ -508,6 +508,7 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     // =========================
     // SEND NOTIFICATION
     // =========================
+    console.log("entering send notification...")
 
     try {
       let recipientAuthId = null;
@@ -533,7 +534,8 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
 
         recipientAuthId = collegeOnboarding?.userId || null;
       }
-
+      console.log("entering send notification2...",recipientAuthId);
+      console.log("entering send notification3...",response.data.currentStatus);
       if (recipientAuthId) {
         notifyOnApplicationStatusChange({
           recipientId: recipientAuthId,
@@ -1394,6 +1396,7 @@ export async function getCollegeApplicationsByJob(req, res) {
       targetStatus,
       isVisited,
     );
+    
     // to be implement -- sorting feature like ATS
     console.log(response);
 

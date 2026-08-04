@@ -851,6 +851,25 @@ useEffect(() => {
                   ></div>
                 </div>
               </div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Accepted</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {dashboardData.totalApplied > 0 ?
+                      Math.round((dashboardData.totalAccepted/ dashboardData.totalApplied) * 100) : 0}%
+                    ({dashboardData.totalAccepted})
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200/50 backdrop-blur-sm rounded-full h-3">
+                  <div
+                    className="bg-gradient-to-r from-[#fde68a] to-[#f59e0b] h-3 rounded-full"
+                    style={{
+                      width: dashboardData.totalApplied > 0 ?
+                        `${Math.min(100, (dashboardData.totalAccepted/ dashboardData.totalApplied) * 100)}%` : '0%'
+                    }}
+                  ></div>
+                </div>
+              </div>
 
               <div className="relative">
                 <div className="flex items-center justify-between mb-2">
@@ -876,7 +895,7 @@ useEffect(() => {
               <Button
                 variant="outline"
                 size="md"
-                onClick={() => navigate('/job-management/On-campus')}
+                onClick={() => navigate('/manage-application/campus-placement')}
                 className="w-full border-[#143694] text-[#1e4ed8] hover:bg-gradient-to-r hover:from-[#143694] hover:to-[#1e4ed8] hover:text-white transition-all duration-200 backdrop-blur-sm"
               >
                 View Job Management
@@ -895,6 +914,7 @@ useEffect(() => {
           <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
           <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
           <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Accepted</th>
           <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
         </tr>
       </thead>
@@ -911,6 +931,13 @@ useEffect(() => {
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/20 text-[#f59e0b] backdrop-blur-sm">
               {dashboardData.totalApplied > 0 ? 
                 Math.round((dashboardData.appliedByCategory['On-campus'] / dashboardData.totalApplied) * dashboardData.totalShortlisted) : 0
+              }
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['On-campus'] / dashboardData.totalApplied) * dashboardData.totalAccepted) : 0
               }
             </span>
           </td>
@@ -940,6 +967,13 @@ useEffect(() => {
           <td className="px-4 py-3">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
               {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['Pool-campus'] / dashboardData.totalApplied) * dashboardData.totalAccepted) : 0
+              }
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
                 Math.round((dashboardData.appliedByCategory['Pool-campus'] / dashboardData.totalApplied) * dashboardData.totalRejected) : 0
               }
             </span>
@@ -956,6 +990,11 @@ useEffect(() => {
           <td className="px-4 py-3">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/30 text-[#f59e0b] backdrop-blur-sm">
               {dashboardData.totalShortlisted}
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/30 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalAccepted}
             </span>
           </td>
           <td className="px-4 py-3">

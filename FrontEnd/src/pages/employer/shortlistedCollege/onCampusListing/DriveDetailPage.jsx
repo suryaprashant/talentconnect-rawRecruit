@@ -125,6 +125,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
     const pincode = collegeDetails.pincode || 'Not Specified';
     const establishedYear = collegeDetails.establishedYear;
     const profileImage = collegeApplication?.applicant?.profileImage;
+    const interviewScheduled =collegeApplication?.interviewScheduled || false;
 
     // Placement Coordinator Details
     const coordinatorDetails = collegeApplication?.applicant?.placementCoordinatorDetails || {};
@@ -470,7 +471,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
                         disabled={isSubmitting}
                         className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors duration-200"
                     >
-                        {isSubmitting ? 'Processing...' : 'Schedule Meet'}
+                        {isSubmitting ? 'Processing...' : interviewScheduled?'Reschedule Meet' : 'Schedule Meet'}
                     </button>
                     <button 
                         onClick={() => handleAction(() => onReject(applicationId))} 

@@ -21,19 +21,19 @@ export default function Welcome({ nextStep }) {
           </h1>
           
           <p className="text-gray-600 text-lg mb-10 max-w-md mx-auto">
-            Build your profile to explore job opportunities, internships, and campus placements.
+            Register your institution to connect with companies, manage campus placements, and create opportunities for your students.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
             <button
               onClick={() => navigate("/signup")}
-              className="px-8 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
+              className="w-full sm:w-40 px-8 py-3 bg-white/50 backdrop-blur-sm border border-black/50 rounded-xl hover:bg-black/40 transition-all duration-200 text-gray-700 font-medium"
             >
               Cancel
             </button>
             <button
               onClick={nextStep}
-              className="px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium"
+              className="w-full sm:w-40 px-8 py-3 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-200 font-medium"
             >
               Next
             </button>

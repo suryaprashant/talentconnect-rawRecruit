@@ -77,6 +77,15 @@ export default function RequestInfo({ onBackClick }) {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white px-4">
+              <div className="mb-6">
+                                      <button
+                                        type="button"
+                                        onClick={onBackClick}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                                      >
+                                        ← Back
+                                      </button>
+                                    </div>
       <div className="max-w-3xl w-full">
         {/* Header Section */}
         <div className="text-center mb-8">
@@ -232,14 +241,14 @@ export default function RequestInfo({ onBackClick }) {
             </div>
 
             {/* Register Button */}
-            <div className="flex justify-between pt-4">
-              <button 
+            <div className="flex justify-center pt-4">
+              {/* <button 
                 type="button"
                 onClick={onBackClick}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 ← Back to Home
-              </button>  
+              </button>   */}
               <button
                 type="button"
                 disabled={isSubmitting}

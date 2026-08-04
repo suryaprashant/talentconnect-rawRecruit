@@ -26,8 +26,8 @@ function ApplicationPage() {
   // Function to determine job status based on dates
   const getJobStatus = (job) => {
     const currentDate = new Date();
-    const startDate = new Date(job.startDate);
-    const endDate = new Date(job.endDate);
+    const startDate = new Date(job?.proposedSchedule?.startDate);
+    const endDate = new Date(job?.proposedSchedule?.endDate);
 
     if (currentDate < startDate) {
       return 'Pending';
@@ -42,7 +42,7 @@ function ApplicationPage() {
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
       // Only update status if the job has both start and end dates
-      if (job.startDate && job.endDate) {
+      if (job?.proposedSchedule?.startDate && job?.proposedSchedule?.endDate) {
         return {
           ...job,
           jobStatus: getJobStatus(job)
@@ -165,40 +165,52 @@ console.log(jobs.map(j => ({
   // Handle Degree column click - Navigate to CollegeDetailPage
   const handleDegreeClick = (job) => {
     // Prepare data structure for CollegeDetailPage
-    const collegeData = {
-      // The structure expected by CollegeDetailPage
-      _id: job._id,
+    // const collegeData = {
+    //   // The structure expected by CollegeDetailPage
+    //   _id: job._id,
+    //   isApplied: false,
+    //   isSaved: false,
+    //   collegePosted: job.collegePosted || job.collegeDetails,
+    //   company: job.companyName || job.company,
+    //   description: job.description,
+    //   location: job.location,
+    //   jobTitle: job.jobTitle,
+    //   employmentType: job.employmentType,
+    //   packageDetails: job.packageDetails,
+    //   noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
+    //   lookingFor: job.lookingFor || job.jobTitle,
+    //   proposedSchedule: job.proposedSchedule,
+    //   companyType: job.companyType,
+    //   roundDetails: job.roundDetails,
+    //   studentStreams: job.studentStreams,
+    //   numberOfStudent: job.numberOfStudent,
+    //   amenitiesRequired: job.amenitiesRequired,
+    //   contactPerson: job.contactPerson,
+    //   startDate: job?.proposedSchedule?.startDate,
+    //   endDate: job?.proposedSchedule?.endDate,
+    //   jobType: job.jobType || 'On-campus'
+    // };
+    
+    // // Navigate to CollegeDetailPage with state data
+    // navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
+    //   state: {
+    //     applicationData: collegeData,
+    //     isApplied: false,
+    //     isSaved: false
+    //   }
+    // });
+  // Get the job data
+     navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
+    state: {
+      applicationData: {
+        ...job,
+        isApplied: false,
+        isSaved: false,
+      },
       isApplied: false,
       isSaved: false,
-      collegePosted: job.collegePosted || job.collegeDetails,
-      company: job.companyName || job.company,
-      description: job.description,
-      location: job.location,
-      jobTitle: job.jobTitle,
-      employmentType: job.employmentType,
-      packageDetails: job.packageDetails,
-      noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
-      lookingFor: job.lookingFor || job.jobTitle,
-      proposedSchedule: job.proposedSchedule,
-      companyType: job.companyType,
-      roundDetails: job.roundDetails,
-      studentStreams: job.studentStreams,
-      numberOfStudent: job.numberOfStudent,
-      amenitiesRequired: job.amenitiesRequired,
-      contactPerson: job.contactPerson,
-      startDate: job.startDate,
-      endDate: job.endDate,
-      jobType: job.jobType || 'On-campus'
-    };
-    
-    // Navigate to CollegeDetailPage with state data
-    navigate(`/company/employerDashboard/college-detail/${job._id}`, {
-      state: {
-        applicationData: collegeData,
-        isApplied: false,
-        isSaved: false
-      }
-    });
+    },
+  });
   };
 
   const handleDelete = async (jobId, e) => {
@@ -386,7 +398,7 @@ console.log(jobs.map(j => ({
       <div className="col-span-3">Degree</div>
       <div className="col-span-2">Deadline</div>
       <div className="col-span-2 text-center">Views</div>
-      <div className="col-span-3 text-center">New Applications</div>
+      <div className="col-span-2 text-center">New Applications</div>
       <div className="col-span-2 text-center">Actions</div>
     </div>
   </div>
@@ -419,7 +431,7 @@ console.log(jobs.map(j => ({
         const jobId = job._id || job.id;
         const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
         const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
-        const deadline = job.endDate || job.deadline;
+        const deadline = job?.proposedSchedule?.endDate || job.deadline;
         const views = job.views || 0;
         const applications = job.applicationCount || job.applications || 0;
 
@@ -463,7 +475,7 @@ console.log(jobs.map(j => ({
               
               {/* New Applications Column - col-span-3 */}
               <div 
-                className="col-span-3 text-center cursor-pointer group"
+                className="col-span-2 text-center cursor-pointer group"
                 onClick={(e) => handleViewNewApplications(jobId, e)}
               >
                 <div className="flex items-center justify-center">
@@ -481,7 +493,8 @@ console.log(jobs.map(j => ({
                     className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
                     title="View All Applications"
                   >
-                    <Eye size={16} />
+                    {/* <Eye size={16} /> */}
+                    viewed
                   </button>
                   <button 
                     onClick={(e) => handleDelete(jobId, e)} 

@@ -1093,6 +1093,8 @@ const ApplicantDetails = ({ job, applications, loading, error, isVisited, onRefr
               const applicantData = applicant?.applicant || {};
               const currentStatus = applicant?.currentStatus || 'Shortlisted';
               const applicantLogo = getApplicantLogo(applicantData);
+              const interviewScheduled = applicant?.interviewScheduled || false;
+
               
               return (
                 <div key={applicant._id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
@@ -1305,7 +1307,7 @@ const ApplicantDetails = ({ job, applications, loading, error, isVisited, onRefr
                         className="flex items-center justify-center flex-1 py-2.5 font-medium bg-white border border-gray-300 text-blue-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
                       >
                         <Calendar size={16} className="mr-2" />
-                        Schedule Interview
+                        {interviewScheduled ? "Reschedule " : "Schedule "} interview
                       </button>
 
                       <button
