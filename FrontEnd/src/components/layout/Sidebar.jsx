@@ -42,6 +42,18 @@ const loading = false;
   navigate('/userselection');
 };
 
+const handleLogoClick = () => {
+  console.log("Logo clicked");
+
+  sessionStorage.setItem("fromLogo", "true");
+
+  navigate("/");
+
+  setTimeout(() => {
+    console.log("Current URL:", window.location.pathname);
+  }, 100);
+};
+
   console.log("Sidebar auth:", {
     loading,
     isAuthenticated,
@@ -66,7 +78,7 @@ const loading = false;
           {/* <div className="px-4 py-5 border-b border-gray-200">
             <Logo />
           </div> */}
-          <div onClick={()=>navigate('/')} className="h-16 flex items-center px-5 border-b shadow-grey cursor-pointer">
+          <div onClick={handleLogoClick} className="h-16 flex items-center px-5 border-b shadow-grey cursor-pointer">
             <Logo />
             
           </div>
