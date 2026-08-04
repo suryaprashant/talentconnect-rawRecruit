@@ -564,7 +564,7 @@ const PoolCampusEmployeeDash = () => {
                   >
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-blue-50 hover:to-blue-100">
                       <Calendar className="h-3 w-3 mr-1.5" />
-                      {formatDateSafe(posting.startDate)} - {formatDateSafe(posting.endDate)}
+                      {formatDateSafe(posting?.proposedSchedule?.startDate)} - {formatDateSafe(posting.proposedSchedule?.endDate)}
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-blue-50 hover:to-blue-100">
                       <MapPin className="h-3 w-3 mr-1.5" />
@@ -586,7 +586,7 @@ const PoolCampusEmployeeDash = () => {
 
               <div className="flex flex-col items-center gap-4">
                 <div 
-                  className="w-24 h-24 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  className="w-15 h-15 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setShowCollegeModal(true)}
                 >
                   {collegeDetails?.profileImage ? (
@@ -602,9 +602,9 @@ const PoolCampusEmployeeDash = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={handleShare}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
                   >
-                    <Share2 size={16} />
+                    <Share2 size={14} />
                     Share
                   </button>
                   {!isSaved && !isApplied && (
@@ -717,7 +717,7 @@ const PoolCampusEmployeeDash = () => {
                   <Users className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">College Placement Officer Contact:</h4>
+                  {/* <h4 className="font-medium text-gray-900">College Placement Officer Contact:</h4> */}
                   <div className="flex items-center mt-1">
                     <span className="font-medium">{posting?.contactPerson?.name || 'Not specified'}</span>
                     <span className="text-gray-600 ml-2">({posting?.contactPerson?.designation || 'TPO'})</span>

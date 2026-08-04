@@ -526,7 +526,12 @@ const handleSelectOrAddSkill = async (skillName) => {
       toast.error(errorMsg);
       return;
     }
-
+    if (!formData.contactDesignation) {
+      const errorMsg = 'Please select a Designation. This field is required.';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
     // Updated validation for new fields
     const fieldsToValidate = [
       { key: 'collegeTypes', name: 'College Type' },
@@ -1843,6 +1848,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                         value={formData.contactPerson?.mobile || ''} 
                         onChange={handleContactChange} 
                         placeholder="10-digit number" 
+                        maxLength={10}
+                        pattern="[0-9]{10}"
                         className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
                         required 
                       />

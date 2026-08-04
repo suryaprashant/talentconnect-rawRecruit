@@ -207,8 +207,8 @@ const CollegeDetailPage = () => {
             numberOfStudent: jobDetail.numberOfStudent,
             amenitiesRequired: jobDetail.amenitiesRequired,
             contactPerson: jobDetail.contactPerson,
-            startDate: jobDetail.startDate,
-            endDate: jobDetail.endDate,
+            startDate: jobDetail.proposedSchedule.startDate,
+            endDate: jobDetail.proposedSchedule.endDate,
             jobType: jobDetail.jobType
           };
           
@@ -340,7 +340,7 @@ const CollegeDetailPage = () => {
     }
 
     const collegeDetails = posting.collegePosted;
-    const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 
+    const collegeName = posting?.collegeName || collegeDetails?.collegeUniversityDetails?.collegeName || 
                        posting?.company || 
                        'College';
 
@@ -667,12 +667,12 @@ const CollegeDetailPage = () => {
   console.log("✅ Rendering with posting data:", posting);
 
   const collegeDetails = posting.collegePosted;
-  const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 
+  const collegeName = posting.collegeName || collegeDetails?.collegeUniversityDetails?.collegeName || 
                      posting?.company || 
                      'the College';
   
-  const formattedStartDate = formatDateSafe(posting.startDate);
-  const formattedEndDate = formatDateSafe(posting.endDate);
+  const formattedStartDate = formatDateSafe(posting.proposedSchedule.startDate);
+  const formattedEndDate = formatDateSafe(posting.proposedSchedule.endDate);
   
   const jobId = getJobId(posting);
   console.log("🔑 Extracted jobId:", jobId);
@@ -912,7 +912,7 @@ const CollegeDetailPage = () => {
                       <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900 text-sm md:text-base">College Placement Officer Contact:</h4>
+                      {/* <h4 className="font-medium text-gray-900 text-sm md:text-base">College Placement Officer Contact:</h4> */}
                       <div className="flex items-center mt-1">
                         <span className="font-medium text-sm md:text-base">{posting?.contactPerson?.name || 'Not specified'}</span>
                         <span className="text-gray-600 ml-2 text-sm">({posting?.contactPerson?.designation || 'TPO'})</span>

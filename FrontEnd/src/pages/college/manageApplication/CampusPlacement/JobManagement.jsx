@@ -29,8 +29,8 @@ function JobManagementApplication() {
 
     const getJobStatus = (job) => {
         const currentDate = new Date();
-        const startDate = new Date(job.startDate);
-        const endDate = new Date(job.endDate);
+        const startDate = new Date(job?.proposedSchedule?.startDate);
+        const endDate = new Date(job?.proposedSchedule?.endDate);
 
         if (currentDate < startDate) {
             return 'Pending';
@@ -43,7 +43,7 @@ function JobManagementApplication() {
 
     const processJobsWithStatus = (jobsData) => {
         return jobsData.map(job => {
-            if (job.startDate && job.endDate) {
+            if (job?.proposedSchedule?.startDate && job?.proposedSchedule?.endDate) {
                 return {
                     ...job,
                     jobStatus: getJobStatus(job)
@@ -223,7 +223,7 @@ const handlePermanentDelete = async (jobId, e) => {
   };
   
   // Navigate with state
-  navigate(`/company/employerDashboard/college-detail/${jobId}`, {
+  navigate(`/college-dashboard/preview/On-campus/${jobId}`, {
     state: jobData
   });
 };
@@ -363,7 +363,7 @@ const handlePermanentDelete = async (jobId, e) => {
             <div className="col-span-3">Degree</div>
             <div className="col-span-2">Deadline</div>
             <div className="col-span-2 text-center">Views</div>
-            <div className="col-span-3 text-center">New Applications</div>
+            <div className="col-span-2 text-center">New Applications</div>
             <div className="col-span-2 text-center">Actions</div>
         </div>
     </div>
@@ -399,7 +399,7 @@ const handlePermanentDelete = async (jobId, e) => {
                 const jobLocation = Array.isArray(job.location) ?
                     job.location.join(', ') :
                     job.location || 'N/A';
-                const deadline = job.endDate || job.deadline;
+                const deadline = job?.proposedSchedule?.endDate || job.deadline;
                 const views = job?.views ?? 0;
                 const applications = job.applicationCount || job.applications || 0;
                 const jobStatus = job.jobStatus || 'Unknown';
@@ -450,7 +450,7 @@ const addressString = jobAddress?.city
                             
                             {/* New Applications Column - col-span-3 */}
                             <div 
-                                className="col-span-3 text-center cursor-pointer group"
+                                className="col-span-2 text-center cursor-pointer group"
                                 onClick={(e) => handleApplicationsClick(jobId, jobStatus, e)}
                             >
                                 <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
@@ -473,7 +473,8 @@ const addressString = jobAddress?.city
                                         title={isViewDisabled ? "No applications to view" : "View Job"}
                                         disabled={isViewDisabled}
                                     >
-                                        <Eye size={16} />
+                                        {/* <Eye size={16} /> */}
+                                        viewed
                                     </button>
                                     <button 
                                         onClick={(e) => handleDelete(jobId, e)} 

@@ -132,6 +132,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             },
             {
                 $addFields: {
+                collegeName: "$collegeInfo.collegeUniversityDetails.collegeName",
                     // Extracting the specific address fields you requested
                  // FIXED
 collegeAddress: {

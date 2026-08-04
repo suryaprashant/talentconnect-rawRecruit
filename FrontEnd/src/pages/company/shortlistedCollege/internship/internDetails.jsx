@@ -541,6 +541,7 @@ const InternshipDetails = ({ job,
               {applications.map((application) => {
                 const applicant = application.applicant;
                 const currentStatus = application.currentStatus || 'Shortlisted';
+                const interviewScheduled=application?.interviewScheduled || false;
                 const applicantProfileImage = getApplicantProfileImage(applicant);
                 
                 return (
@@ -663,7 +664,7 @@ const InternshipDetails = ({ job,
                           disabled={isSubmitting}
                           className="px-4 py-2 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-100 hover:text-yellow-800 transition-all duration-200 disabled:opacity-50"
                         >
-                          Schedule
+                          {interviewScheduled ? "Reschedule " : "Schedule "} interview
                         </button>
                         {currentStatus !== 'Rejected' && (
                           <button

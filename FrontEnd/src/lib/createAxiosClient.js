@@ -28,6 +28,7 @@ export default function createAxiosClient() {
       const token = localStorage.getItem("adminToken");
 
       console.log("================================");
+      console.log("ADMIN AXIOS");
       console.log("Request URL:", config.url);
       console.log("Token from localStorage:", token);
 

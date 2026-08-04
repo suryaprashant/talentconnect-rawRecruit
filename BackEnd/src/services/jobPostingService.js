@@ -864,8 +864,15 @@ export const getJobPostedByCompanyService = async (
       response = await JobPostingTable.find({
         collegePosted: Id,
         jobType: jobType,
+      }).populate({
+        path: "collegePosted",
+        select: "collegeUniversityDetails.collegeName"
       }).lean();
     //  console.log(response);
+    response = response.map(job => ({
+      ...job,
+      collegeName: job.collegePosted?.collegeUniversityDetails?.collegeName || "",
+    }));
     return { success: true, response: response };
   } catch (error) {
     console.log("Error: ", error.message);

@@ -165,6 +165,8 @@ export const getStudentsByCollegeId = async (req, res) => {
   try {
     const collegeId    = req.user._id;
     const { profileType } = req.query; // 'student' | 'fresher' | 'professional'
+    console.log("college :",collegeId)
+    console.log("profileType :",profileType);
  
     const result = await getStudentsByCollegeIdService(collegeId, profileType);
  
