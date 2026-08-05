@@ -74,13 +74,13 @@ const JobCard = ({ job, onClick }) => {
     : null;
 
   const endDate = job.endDate
-    ? new Date(job.endDate).toLocaleDateString()
+    ? new Date(job.endDate).toLocaleDateString("en-IN")
     : null;
   const offerDate = job.offerDate
-    ? new Date(job.offerDate).toLocaleDateString()
+    ? new Date(job.offerDate).toLocaleDateString("en-IN")
     : null;
   const onlineTestDate = job.onlineTestDate
-    ? new Date(job.onlineTestDate).toLocaleDateString()
+    ? new Date(job.onlineTestDate).toLocaleDateString("en-IN")
     : null;
   const streams = job.studentStreams || [];
   const visibleStreams = streams.slice(0, 4);

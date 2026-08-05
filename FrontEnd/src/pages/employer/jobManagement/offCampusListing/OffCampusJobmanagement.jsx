@@ -690,7 +690,7 @@ export default function OffCampusJobManagement() {
                           title="View job details"
                         >
                           {/* <Eye size={16} /> */}
-                          viewed
+                          viewed Applications
                         </button>
                         <button 
                           onClick={() => handleDelete(job._id)}

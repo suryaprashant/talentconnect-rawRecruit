@@ -12,6 +12,7 @@ import TrustSection from "@/components/home/Trust";
 import WhatsAppCTA from "@/components/home/WhatsappCTA";
 import UrgencyBanner from "@/components/home/UrgencyBanner";
 import FinalCTA from "@/components/home/FinalCTA";
+import RequestInformation from "@/components/home/RequestInformation";
 import Footer from "@/components/home/Footer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -112,6 +113,7 @@ const HomePage = () => {
 
         {/* 12. Urgency Banner */}
         <UrgencyBanner />
+        <RequestInformation/>
 
         {/* 13. Final CTA */}
         <FinalCTA />

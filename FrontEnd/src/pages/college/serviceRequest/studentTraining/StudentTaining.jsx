@@ -44,9 +44,9 @@ export default function StudentTraining() {
   };
 
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    // if (checkAuthentication('requestInfo')) {
       setShowRequestInfo(true);
-    }
+    // }
   };
 
   const handleBackClick = () => {

@@ -406,7 +406,7 @@ const handlePermanentDelete = async (jobId) => {
                                                         title="View All Applications"
                                                     >
                                                         {/* <Eye size={16} /> */}
-                                                        viewed
+                                                        viewed Applications
                                                     </button>
                                                     <button 
                                                         onClick={() => handleDelete(job._id)}
