@@ -1,0 +1,17 @@
+User-agent: *
+
+Allow: /
+
+Allow: /blogs
+
+Disallow: /admin
+Disallow: /home
+Disallow: /professional-dashboard
+Disallow: /student-dashboard
+Disallow: /fresher-dashboard
+Disallow: /company-dashboard
+Disallow: /college-dashboard
+Disallow: /employer-dashboard
+Disallow: /saved-jobs
+
+Sitemap: https://rawrecruit.in/sitemap.xml
