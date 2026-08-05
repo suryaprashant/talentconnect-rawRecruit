@@ -781,7 +781,7 @@ export default function OnCampusJobManagement() {
       <div className="col-span-3">Degree</div>
       <div className="col-span-2">Deadline</div>
       <div className="col-span-2 text-center">Views</div>
-      <div className="col-span-3 text-center">Applications</div>
+      <div className="col-span-3 text-center">New Applications</div>
       <div className="col-span-2 text-center">Actions</div>
     </div>
   </div>

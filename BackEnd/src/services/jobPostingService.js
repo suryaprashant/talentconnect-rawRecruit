@@ -145,12 +145,15 @@ export const getJobPostingsByJobTypeService = async (
       .lean();
 
     const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
     let processedPostings = postings.map((posting) => {
       let status = posting.jobStatus;
-      if (posting.startDate && posting.endDate) {
-        const startDate = new Date(posting.startDate);
-        const endDate = new Date(posting.endDate);
+      if (posting?.startDate && posting?.endDate) {
+        const startDate = new Date(posting?.startDate);
+        const endDate = new Date(posting?.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
 
         if (currentDate < startDate) status = "Pending";
         else if (currentDate >= startDate && currentDate <= endDate)

@@ -36,7 +36,7 @@ const workMode = job.workMode?.[0] || "N/A";
 const noticePeriod =
 job.candidatePosted?.noticePeriod || "Not specified";
 const endDate = job.endDate
-? new Date(job.endDate).toLocaleDateString()
+? new Date(job.endDate).toLocaleDateString("en-IN")
 : null;
 // 🔹 STREAMS (optional fallback from candidate)
 const streams =

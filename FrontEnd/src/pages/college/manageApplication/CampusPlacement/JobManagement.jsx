@@ -474,7 +474,7 @@ const addressString = jobAddress?.city
                                         disabled={isViewDisabled}
                                     >
                                         {/* <Eye size={16} /> */}
-                                        viewed
+                                        viewed Applications
                                     </button>
                                     <button 
                                         onClick={(e) => handleDelete(jobId, e)} 

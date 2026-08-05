@@ -25,17 +25,17 @@ const workMode = job.workMode?.join(", ") || "N/A";
 
 // ✅ DATE (like previous card)
 const startDate = job.startDate
-? new Date(job.startDate).toLocaleDateString()
+? new Date(job.startDate).toLocaleDateString("en-IN")
 : null;
 
 const endDate = job.endDate
-? new Date(job.endDate).toLocaleDateString()
+? new Date(job.endDate).toLocaleDateString("en-IN")
 : null;
 const offerDate = job.offerRolloutDate
-? new Date(job.offerRolloutDate).toLocaleDateString()
+? new Date(job.offerRolloutDate).toLocaleDateString("en-IN")
 : null;
 const onlineTestDate = job.onlineTestDate
-? new Date(job.onlineTestDate).toLocaleDateString()
+? new Date(job.onlineTestDate).toLocaleDateString("en-IN")
 : null;
 
 // ✅ STREAMS

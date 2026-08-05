@@ -437,7 +437,7 @@ const handleViewAll = (jobId, e) => {
                     disabled={isViewDisabled}
                   >
                     {/* <Eye size={16} /> */}
-                    viewed
+                    viewed Applications
                   </button>
                   <button 
                     onClick={(e) => handleDelete(jobId, e)} 

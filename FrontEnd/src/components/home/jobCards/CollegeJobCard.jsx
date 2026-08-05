@@ -22,14 +22,14 @@ const salary = job.packageDetails?.totalCTC
 
 const students = job.noOfplacedStudents || "N/A";
 const lastDateToApply = job.endDate
-? new Date(job.endDate).toLocaleDateString()
+? new Date(job.endDate).toLocaleDateString("en-IN")
 : "N/A";
 const startDate = job.proposedSchedule?.startDate
-? new Date(job.proposedSchedule.startDate).toLocaleDateString()
+? new Date(job.proposedSchedule.startDate).toLocaleDateString("en-IN")
 : null;
 
 const endDate = job.proposedSchedule?.endDate
-? new Date(job.proposedSchedule.endDate).toLocaleDateString()
+? new Date(job.proposedSchedule.endDate).toLocaleDateString("en-IN")
 : null;
 
 const degree = job.degree?.join(", ") || "N/A";

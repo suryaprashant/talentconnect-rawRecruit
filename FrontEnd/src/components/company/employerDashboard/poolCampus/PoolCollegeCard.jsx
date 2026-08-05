@@ -47,14 +47,14 @@ const CollegeCard = ({ college, onClick }) => {
 
   const students = college.noOfplacedStudents || "N/A";
   const lastDateToApply = college.endDate
-    ? new Date(college.endDate).toLocaleDateString()
+    ? new Date(college.endDate).toLocaleDateString("en-IN")
     : "N/A";
   const startDate = college.proposedSchedule?.startDate
-    ? new Date(college.proposedSchedule.startDate).toLocaleDateString()
+    ? new Date(college.proposedSchedule.startDate).toLocaleDateString("en-IN")
     : null;
 
   const endDate = college.proposedSchedule?.endDate
-    ? new Date(college.proposedSchedule.endDate).toLocaleDateString()
+    ? new Date(college.proposedSchedule.endDate).toLocaleDateString("en-IN")
     : null;
   const employmentType = college.employmentType?.[0] || "N/A";
   const streams = college.studentStreams || [];

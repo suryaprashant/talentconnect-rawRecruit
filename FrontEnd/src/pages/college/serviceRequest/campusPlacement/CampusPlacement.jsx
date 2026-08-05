@@ -46,9 +46,9 @@ export default function CampusPlacement() {
   };
 
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    // if (checkAuthentication('requestInfo')) {
       setShowRequestInfo(true);
-    }
+    // }
   };
   const handleBackClick = () => {
     setShowRegistration(false);

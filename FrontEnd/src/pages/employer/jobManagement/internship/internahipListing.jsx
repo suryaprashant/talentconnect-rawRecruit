@@ -361,7 +361,7 @@ export default function InternshipListing() {
                             title="View Applications"
                           >
                             {/* <Eye size={16} /> */}
-                            viewed
+                            viewed Applications
                           </button>
                           <button 
                             onClick={() => handleDelete(job._id)}
