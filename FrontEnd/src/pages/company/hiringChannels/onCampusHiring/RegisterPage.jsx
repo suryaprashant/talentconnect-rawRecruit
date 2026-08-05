@@ -8,6 +8,15 @@ export default function RegisterPage({
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
+      <div className="mb-6">
+                                      <button
+                                        type="button"
+                                        onClick={() => window.history.back()}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                                      >
+                                        ← Back
+                                      </button>
+                                    </div>
       
       <div className="container mx-auto px-4 py-10 max-w-2xl">
 
@@ -113,15 +122,15 @@ export default function RegisterPage({
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row justify-between items-center pt-12 gap-6">
-              <button
+            <div className="flex flex-col sm:flex-row justify-center items-center pt-12 gap-6">
+              {/* <button
                 type="button"
                 onClick={onBackClick}
                 className="flex items-center text-gray-600 hover:text-gray-800 font-medium"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Home
-              </button>
+              </button> */}
 
               <button
                 type="button"

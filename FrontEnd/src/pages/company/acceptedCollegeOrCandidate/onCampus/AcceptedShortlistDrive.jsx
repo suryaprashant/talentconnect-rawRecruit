@@ -505,7 +505,7 @@ export default function OnCampusJobManagement() {
                         >
                           
                           {/* <Eye size={16} /> */}
-                          viewed
+                          viewed Applications
                         </button>
                         <button 
                           onClick={() => handleDelete(job._id)}

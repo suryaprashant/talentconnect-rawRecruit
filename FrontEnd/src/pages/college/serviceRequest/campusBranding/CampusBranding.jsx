@@ -39,7 +39,11 @@ export default function CampusBranding() {
 };
 
 
-  const handleRequestInfoClick = () => {if (checkAuthentication('requestInfo')) {setShowRequestInfo(true);}}
+  const handleRequestInfoClick = () => {
+    // if (checkAuthentication('requestInfo')) {
+      setShowRequestInfo(true);
+    // }
+  }
   const handleBackClick = () => {
     setShowRequestInfo(false);
     setSubmitError('');

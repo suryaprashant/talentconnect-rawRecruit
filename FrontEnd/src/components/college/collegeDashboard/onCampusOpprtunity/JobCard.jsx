@@ -70,17 +70,17 @@ const JobCard = ({ job, onClick }) => {
   // ---------------- NEW DATA (FROM COMPANY CARD) ----------------
 
   const startDate = job.startDate
-    ? new Date(job.startDate).toLocaleDateString()
+    ? new Date(job.startDate).toLocaleDateString("en-IN")
     : null;
 
   const endDate = job.endDate
-    ? new Date(job.endDate).toLocaleDateString()
+    ? new Date(job.endDate).toLocaleDateString("en-IN")
     : null;
   const offerDate = job.offerRolloutDate
-    ? new Date(job.offerRolloutDate).toLocaleDateString()
+    ? new Date(job.offerRolloutDate).toLocaleDateString("en-IN")
     : null;
   const onlineTestDate = job.onlineTestDate
-    ? new Date(job.onlineTestDate).toLocaleDateString()
+    ? new Date(job.onlineTestDate).toLocaleDateString("en-IN")
     : null;
   const streams = job.studentStreams || [];
   const visibleStreams = streams.slice(0, 4);

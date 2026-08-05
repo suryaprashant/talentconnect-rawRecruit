@@ -430,7 +430,7 @@ export default function OnCampusJobManagement() {
                           title="View College Applications"
                         >
                           {/* <Eye size={16} /> */}
-                          viewed
+                          viewed Applications
                         </button>
                         <button 
                           onClick={() => handleDelete(job._id)}

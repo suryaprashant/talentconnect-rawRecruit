@@ -494,7 +494,7 @@ console.log(jobs.map(j => ({
                     title="View All Applications"
                   >
                     {/* <Eye size={16} /> */}
-                    viewed
+                    viewed Applications
                   </button>
                   <button 
                     onClick={(e) => handleDelete(jobId, e)} 

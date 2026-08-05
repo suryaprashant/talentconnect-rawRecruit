@@ -631,6 +631,23 @@ const handleSelectOrAdd = async (skillName) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
+      <div className="mb-6">
+
+                                      <button
+
+                                        type="button"
+
+                                        onClick={onBackClick}
+
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+
+                                      >
+
+                                        ← Back
+
+                                      </button>
+
+                                    </div>
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
@@ -1687,14 +1704,14 @@ const handleSelectOrAdd = async (skillName) => {
             </div>
 
             {/* Register Button */}
-            <div className="flex justify-between pt-6 border-t border-gray-200">
-              <button
+            <div className="flex justify-center pt-6 border-t border-gray-200">
+              {/* <button
                 type="button"
                 onClick={onBackClick}
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors flex items-center"
               >
                 ← Back
-              </button>
+              </button> */}
               <button 
                 type="submit" 
                 disabled={isSubmitting} 

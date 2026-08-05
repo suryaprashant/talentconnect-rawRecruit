@@ -447,7 +447,7 @@ export default function OnCampusJobManagement() {
                           title="View College Applications"
                         >
                           {/* <Eye size={16} /> */}
-                          viewed
+                          viewed Applications
                         </button>
                         {/* <Link
                           to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}

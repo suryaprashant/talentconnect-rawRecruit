@@ -400,10 +400,29 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
     // Get all on-campus postings
     const postings = await getJobPostingsByCollegeService("On-campus", userId);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     // Visible to company
-    const filteredPostings = postings.filter(
-      (posting) => posting.visibleTo === "Company",
-    );
+    // const filteredPostings = postings.filter(
+    //   (posting) => posting.visibleTo === "Company",
+    // );
+    const filteredPostings = postings.filter((posting) => {
+      const endDate = posting?.endDate || posting?.proposedSchedule?.endDate;
+
+      // No end date => considered active
+      if (!endDate) {
+        return posting.visibleTo === "Company";
+      }
+
+      const date = new Date(endDate);
+      date.setHours(0, 0, 0, 0);
+
+      return (
+        posting.visibleTo === "Company" &&
+        date >= today
+      );
+    });
 
     // Guest / no company context
     // Guest = neither company nor employer individual
@@ -651,7 +670,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
       return true;
     });
     // console.log("filtered postings : ",filteredPostings);
-// console.log("collegeProfileId :",collegeProfileId);
+    // console.log("collegeProfileId :",collegeProfileId);
     // 4. Application Filter (Existing Logic)
     if (!collegeProfileId) {
       return sendResponse(res, 200, { data: filteredPostings });
@@ -899,6 +918,7 @@ export const getPoolCampusForCollege = async (req, res) => {
     const filteredByLocation = postings.filter((posting) => {
       // Must be visible to Colleges
       if (posting.visibleTo !== "College") return false;
+      if (posting.jobStatus === "Closed") return false;
 
       // Apply Broadcast Logic:
       // If broadcast is 'Location', cities MUST match.
@@ -1147,9 +1167,28 @@ export const getPoolCampusForCompany = async (req, res) => {
     );
 
     // Visible to company
-    const filteredPostings = postings.filter(
-      (posting) => posting.visibleTo === "Company",
-    );
+    // const filteredPostings = postings.filter(
+    //   (posting) => posting.visibleTo === "Company",
+    // );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const filteredPostings = postings.filter((posting) => {
+      const endDate = posting.endDate || posting.proposedSchedule?.endDate ;
+
+      // No end date => considered active
+      if (!endDate) {
+        return posting.visibleTo === "Company";
+      }
+
+      const date = new Date(endDate);
+      date.setHours(0, 0, 0, 0);
+
+      return (
+        posting.visibleTo === "Company" &&
+        date >= today
+      );
+    });
 
     // Guest view
     if (!companyProfileId && !employerProfileId) {
@@ -2039,10 +2078,10 @@ export const getIntershipById = async (req, res) => {
 export const getReferralJobs = async (req, res) => {
   try {
     // 1. Guest handling — shows limited public jobs
- console.log("Enter ...");
+    console.log("Enter ...");
     if (!req.user) {
-      console.log("Req.user :",req.user);
-      const publicData = await JobPostingTable.find({ jobType: "Referral" , inactive: false})
+      console.log("Req.user :", req.user);
+      const publicData = await JobPostingTable.find({ jobType: "Referral", inactive: false })
         .populate("candidatePosted", "currentCompany")
         .lean();
 
@@ -2057,7 +2096,7 @@ export const getReferralJobs = async (req, res) => {
         message: "Login to see all referrals from your college",
       });
     }
- console.log("Enter 2...");
+    console.log("Enter 2...");
     const userId = req.user._id;
     const limit = parseInt(req.query.limit, 10) || 10;
     const cursor = req.query.cursor || null;

@@ -44,9 +44,9 @@ export default function Seminar() {
   };
 
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    // if (checkAuthentication('requestInfo')) {
       setShowRequestInfo(true);
-    }
+    // }
   };
 
   const handleBackClick = () => {

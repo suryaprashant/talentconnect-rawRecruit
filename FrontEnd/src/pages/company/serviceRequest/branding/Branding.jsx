@@ -38,9 +38,9 @@ export default function Branding() {
 
 
     const handleRegisterClick = () => {
-      if (checkAuthentication('register')) {
+      // if (checkAuthentication('register')) {
         setShowRegistration(true);
-      }
+      // }
     };
 
     const handleRequestInfoClick = () => {

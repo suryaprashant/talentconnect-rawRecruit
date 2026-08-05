@@ -43,15 +43,15 @@ export default function Workforce() {
 
 
     const handleRegisterClick = () => {
-      if (checkAuthentication('register')) {
+      // if (checkAuthentication('register')) {
         setShowRegistration(true);
-      }
+      // }
     };
 
     const handleRequestInfoClick = () => {
-      if (checkAuthentication('requestInfo')) {
+      // if (checkAuthentication('requestInfo')) {
         setShowRequestInfo(true);
-      }
+      // }
     };
 
   const handleBackClick = () => {

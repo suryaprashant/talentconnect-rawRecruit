@@ -37,10 +37,10 @@ const workMode = job.workMode?.[0] || "N/A";
 
 // 🔹 DATE
 const startDate = job.startDate
-? new Date(job.startDate).toLocaleDateString()
+? new Date(job.startDate).toLocaleDateString("en-IN")
 : null;
 const endDate = job.endDate
-? new Date(job.endDate).toLocaleDateString()
+? new Date(job.endDate).toLocaleDateString("en-IN")
 : null;
 // 🔹 DURATION
 const duration = job.internshipDuration || null;

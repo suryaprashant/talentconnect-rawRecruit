@@ -435,7 +435,7 @@ export default function PoolCampusJobManagement() {
                           title="View College Applications"
                         >
                           {/* <Eye size={16} /> */}
-                          viewed
+                          viewed Applications
                         </button>
                         {/* <Link
                           to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
