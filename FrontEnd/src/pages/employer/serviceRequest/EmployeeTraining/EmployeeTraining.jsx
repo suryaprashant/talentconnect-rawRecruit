@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; 
-import MainPage from './Main';
-import RegisterPage from './RegisterPage';
-import RequestInfo from './RequestInfo';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // NEW: Added useNavigate
+import { useLegacyAuth } from "../../../../context/AuthProvider";
+import MainPage from "./Main";
+import RegisterPage from "./RegisterPage";
+import RequestInfo from "./RequestInfo";
 
 export default function EmployerTraining() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
@@ -14,36 +14,43 @@ export default function EmployerTraining() {
     date: "",
     time: "",
     message: "",
-    acceptTerms: false
+    acceptTerms: false,
   });
 
   const checkAuthentication = (actionType) => {
-    
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
+    const token = localStorage.getItem("token");
+    const authUser = localStorage.getItem("ChatAppUser");
 
-  const isAuthenticated = token && authUser;
-  
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/service-request/employee-training');
-    localStorage.setItem('intendedAction', actionType);
-    
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
+    const isAuthenticated = token && authUser;
 
-  
-  const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
-      setShowRegistration(true);
+    if (!isAuthenticated) {
+      sessionStorage.removeItem("tempSelectedRole");
+      localStorage.setItem(
+        "redirectAfterAuth",
+        "/service-request/employee-training",
+      );
+      localStorage.setItem("intendedAction", actionType);
+
+      navigate("/userselection");
+      return false;
     }
+    return true;
   };
 
+  const handleRegisterClick = () => {
+    
+      setShowRegistration(true);
+    
+  };
+
+  // const handleRequestInfoClick = () => {
+
+  //     setShowRequestInfo(true);
+
+  // };
+
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    if (checkAuthentication("register")) {
       setShowRequestInfo(true);
     }
   };
@@ -57,7 +64,7 @@ export default function EmployerTraining() {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -72,17 +79,18 @@ export default function EmployerTraining() {
       {showRequestInfo ? (
         <RequestInfo onBackClick={handleBackClick} />
       ) : showRegistration ? (
-        <RegisterPage 
+        <RegisterPage
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
         />
       ) : (
-        <MainPage 
+        <MainPage
           onRegisterClick={handleRegisterClick}
           onRequestInfoClick={handleRequestInfoClick}
         />
-      )}    </div>
+      )}{" "}
+    </div>
   );
 }

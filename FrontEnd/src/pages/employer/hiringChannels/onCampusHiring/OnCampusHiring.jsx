@@ -36,15 +36,15 @@ const EmployerOnCampusHiring = () => {
 
   // NEW: Updated click handlers to check authentication
   const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
+    
       setShowRegistration(true);
-    }
+    
   };
 
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    
       setShowRequestInfo(true);
-    }
+    
   };
 
   const handleBackClick = () => {

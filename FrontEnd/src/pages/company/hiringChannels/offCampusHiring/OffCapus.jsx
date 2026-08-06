@@ -96,14 +96,20 @@ export default function OffCampus() {
 };
 
   
-  const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
+   const handleRegisterClick = () => {
+    
       setShowRegistration(true);
-    }
+    
   };
 
+  // const handleRequestInfoClick = () => {
+
+  //     setShowRequestInfo(true);
+
+  // };
+
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    if (checkAuthentication("register")) {
       setShowRequestInfo(true);
     }
   };
