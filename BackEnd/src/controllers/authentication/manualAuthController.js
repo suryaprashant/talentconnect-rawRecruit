@@ -6,6 +6,7 @@ import FresherProfile from "../../models/fresherProfileModel.js";
 import CollegeProfile from "../../models/collegeDashboard/collegeProfileModel.js";
 import Auth from "../../models/authModel.js";
 import RefreshToken from "../../models/refreshTokenModel.js";
+import { welcomeEmailQueue } from "../../queue/welcomeEmailQueue.js";
 
 import {
   loginUser,
@@ -173,6 +174,26 @@ export const signup = async (req, res) => {
       req,
       res,
     });
+
+    welcomeEmailQueue.add(
+      "send-welcome-email",
+      {
+       
+        email: newUser.email,
+        usertype: newUser.userType,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 5000,
+        },
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
+    );
+
+    console.log("✅ Welcome email job added");
 
     return res.status(201).json({
       success: true,
