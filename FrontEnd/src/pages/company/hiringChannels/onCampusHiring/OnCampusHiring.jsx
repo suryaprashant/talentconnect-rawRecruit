@@ -131,9 +131,9 @@ export default function OnCampusHiring() {
   };
 
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    
       setSearchParams({ view: 'requestInfo' });
-    }
+    
   };
 
   const  handleBackClick = () => setSearchParams({});

@@ -37,14 +37,20 @@ export default function PoolCampusPlacement() {
 };
 
   // NEW: Updated click handlers to check authentication
-  const handleRegisterClick = () => {
-    // if (checkAuthentication('register')) {
+   const handleRegisterClick = () => {
+    
       setShowRegistration(true);
-    // }
+    
   };
 
+  // const handleRequestInfoClick = () => {
+
+  //     setShowRequestInfo(true);
+
+  // };
+
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    if (checkAuthentication("register")) {
       setShowRequestInfo(true);
     }
   };

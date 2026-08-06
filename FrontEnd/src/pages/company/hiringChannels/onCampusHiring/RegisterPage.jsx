@@ -1,25 +1,30 @@
-import { Building2, Calendar, Clock, MessageSquare, ArrowLeft } from 'lucide-react';
+import {
+  Building2,
+  Calendar,
+  Clock,
+  MessageSquare,
+  ArrowLeft,
+} from "lucide-react";
 
 export default function RegisterPage({
   onBackClick,
   formData = {},
   handleInputChange,
-  handleSubmit
+  handleSubmit,
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5">
       <div className="mb-6">
-                                      <button
-                                        type="button"
-                                        onClick={() => window.history.back()}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
-                                      >
-                                        ← Back
-                                      </button>
-                                    </div>
-      
-      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+        >
+          ← Back
+        </button>
+      </div>
 
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
         {/* Header Section */}
         <header className="mb-6 pt-2 text-center">
           <div className="flex items-center justify-center mb-4">
@@ -28,28 +33,29 @@ export default function RegisterPage({
             </div>
 
             <h1 className="text-4xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
-              OnCampus Connect: Hire Smarter 
+              OnCampus Connect: Hire Smarter
             </h1>
           </div>
 
           <p className="text-sm text-gray-600 mt-3 max-w-xl mx-auto">
-            Our OnCampus Service brings career opportunities directly to students through structured
-            campus recruitment drives and hiring events.
+            Our OnCampus Service brings career opportunities directly to
+            students through structured campus recruitment drives and hiring
+            events.
           </p>
         </header>
 
         {/* Registration Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent text-center">
-            Request Info for On-Campus Hiring 
+            Request Info for On-Campus Hiring
           </h2>
 
           <p className="text-gray-600 mb-10 text-center">
-            Fill in your details to get more information about our On-Campus hiring services
+            Fill in your details to get more information about our On-Campus
+            hiring services
           </p>
 
           <div className="space-y-8">
-
             {/* Date & Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Date */}
@@ -140,7 +146,6 @@ export default function RegisterPage({
                 Submit Request
               </button>
             </div>
-
           </div>
         </div>
       </div>

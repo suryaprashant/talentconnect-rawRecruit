@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; 
+import { useNavigate } from "react-router-dom"; // NEW: Added useNavigate
+import { useLegacyAuth } from "../../../../context/AuthProvider";
 import MainPage from "./Main";
 import RegisterPage from "./RegisterPage";
 import RequestInfo from "./RequestInfo";
@@ -8,8 +8,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { createWorkforceRequest } from "@/lib/Company_AxiosInstance";
 
 export default function EmployerWorkforce() {
-  const navigate = useNavigate(); 
-  const [authUser] = useLegacyAuth(); 
+  const navigate = useNavigate();
+  const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
 
@@ -25,32 +25,39 @@ export default function EmployerWorkforce() {
 
   // --- Handlers ---
   const checkAuthentication = (actionType) => {
-    
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
+    const token = localStorage.getItem("token");
+    const authUser = localStorage.getItem("ChatAppUser");
 
-  const isAuthenticated = token && authUser;
-  
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/service-request/workforce-solution');
-    localStorage.setItem('intendedAction', actionType);
-    
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
+    const isAuthenticated = token && authUser;
 
-  
-  const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
-      setShowRegistration(true);
+    if (!isAuthenticated) {
+      sessionStorage.removeItem("tempSelectedRole");
+      localStorage.setItem(
+        "redirectAfterAuth",
+        "/service-request/workforce-solution",
+      );
+      localStorage.setItem("intendedAction", actionType);
+
+      navigate("/userselection");
+      return false;
     }
+    return true;
   };
 
+  const handleRegisterClick = () => {
+    
+      setShowRegistration(true);
+    
+  };
+
+  // const handleRequestInfoClick = () => {
+
+  //     setShowRequestInfo(true);
+
+  // };
+
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    if (checkAuthentication("register")) {
       setShowRequestInfo(true);
     }
   };

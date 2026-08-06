@@ -101,17 +101,22 @@ export default function Branding() {
 
   
   const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
+    
       setShowRegistration(true);
-    }
+    
   };
 
+  // const handleRequestInfoClick = () => {
+
+  //     setShowRequestInfo(true);
+
+  // };
+
   const handleRequestInfoClick = () => {
-    if (checkAuthentication('requestInfo')) {
+    if (checkAuthentication("register")) {
       setShowRequestInfo(true);
     }
   };
-
   const handleBackClick = () => {
     setShowRegistration(false);
     setShowRequestInfo(false);
