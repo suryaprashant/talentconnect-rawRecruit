@@ -53,7 +53,7 @@ export const SIGNUP_POLICY = {
     policyName: "SIGNUP",
     windowMs: HOUR,
     max: 5,
-    keyGenerator: ipKey(PREFIX.SIGNUP),
+    keyGenerator: emailIpKey(PREFIX.SIGNUP),
     message: DEFAULT_MESSAGES.SIGNUP,
 };
 
