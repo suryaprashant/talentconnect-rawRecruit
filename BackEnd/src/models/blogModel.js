@@ -24,8 +24,17 @@ const blogSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+
+    saves: {
+      type: Number,
+      default: 0,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Blog", blogSchema);

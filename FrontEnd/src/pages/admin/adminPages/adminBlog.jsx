@@ -18,7 +18,7 @@ const AdminBlogs = () => {
   const fetchBlogs = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_Backend_URL}/api/blogs`
+        `${import.meta.env.VITE_Backend_URL}/api/blogs`,
       );
       setBlogs(res.data.data);
     } catch (err) {
@@ -53,13 +53,32 @@ const AdminBlogs = () => {
       }
 
       if (editingBlog) {
+        for (const pair of formData.entries()) {
+          console.log(pair[0], pair[1]);
+        }
         await axios.put(
           `${import.meta.env.VITE_Backend_URL}/api/admin/blogs/${editingBlog._id}`,
-          formData
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
         );
         alert("Blog updated successfully ✅");
       } else {
-        await axios.post(`${import.meta.env.VITE_Backend_URL}/api/admin/blogs`, formData);
+        for (const pair of formData.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+        await axios.post(
+          `${import.meta.env.VITE_Backend_URL}/api/admin/blogs`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
         alert("Blog created successfully 🎉");
       }
 
@@ -73,11 +92,15 @@ const AdminBlogs = () => {
 
   //  Delete blog
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this blog?",
+    );
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_Backend_URL}/api/admin/blogs/${id}`);
+      await axios.delete(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/blogs/${id}`,
+      );
       alert("Blog deleted successfully 🗑️");
       fetchBlogs();
     } catch (err) {
@@ -203,9 +226,7 @@ const AdminBlogs = () => {
 
             <h3 className="font-bold text-lg">{blog.title}</h3>
 
-            <p className="text-gray-600 text-sm mb-1">
-              {blog.author}
-            </p>
+            <p className="text-gray-600 text-sm mb-1">{blog.author}</p>
 
             {/*  Tags */}
             <div className="flex flex-wrap gap-2 mt-2">
