@@ -1,16 +1,23 @@
-import { createBlogService, updateBlogService, deleteBlogService } from "../../services/blogService.js";
+import {
+  createBlogService,
+  updateBlogService,
+  deleteBlogService,
+} from "../../services/blogService.js";
 import { streamUpload } from "../../utils/streamUpload.js";
 
 export const createBlog = async (req, res) => {
   try {
     let payload = { ...req.body };
 
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
     //  Handle image upload
     if (req.file) {
       const result = await streamUpload(
         req.file.buffer,
         "blogs",
-        req.file.mimetype
+        req.file.mimetype,
       );
 
       payload.coverImage = result.secure_url;
@@ -33,6 +40,9 @@ export const updateBlog = async (req, res) => {
   try {
     const { blogId } = req.params;
 
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
     let payload = { ...req.body };
 
     //  Handle new image (optional)
@@ -40,7 +50,7 @@ export const updateBlog = async (req, res) => {
       const result = await streamUpload(
         req.file.buffer,
         "blogs",
-        req.file.mimetype
+        req.file.mimetype,
       );
 
       payload.coverImage = result.secure_url;

@@ -1,4 +1,5 @@
 import Blog from "../models/blogModel.js";
+import BlogReaction from "../models/BlogReaction.js"
 
 export const createBlogService = async (payload) => {
   const blog = await Blog.create(payload);
@@ -61,3 +62,58 @@ export const deleteBlogService = async (blogId) => {
     message: "Blog deleted successfully",
   };
 };
+
+export const getBlogByIdService = async (blogId) => {
+  try {
+    const blog = await Blog.findById(blogId).lean();
+
+    if (!blog) {
+      return {
+        success: false,
+        status: 404,
+        message: "Blog not found",
+      };
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: blog,
+    };
+
+  } catch (error) {
+    console.error("Get Blog By ID Service Error:", error);
+
+    throw error;
+  }
+};
+
+
+
+
+export const getSavedBlogsService = async(userId)=>{
+
+
+const savedBlogs = await BlogReaction.find({
+ userId,
+ saved:true
+})
+.populate("blogId")
+.lean();
+
+
+
+const blogs = savedBlogs.map(item=>item.blogId);
+
+
+
+return {
+
+success:true,
+status:200,
+data:blogs
+
+};
+
+
+}
