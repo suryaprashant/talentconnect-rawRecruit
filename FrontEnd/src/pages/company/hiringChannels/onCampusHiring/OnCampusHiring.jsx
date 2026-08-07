@@ -80,7 +80,7 @@ export default function OnCampusHiring() {
       return;
     }
 
-    if (!formData.termsAccepted) {
+   if (!formData.acceptTerms) {
       setSubmitError("Please accept the Terms & Conditions.");
       return;
     }
@@ -104,7 +104,7 @@ export default function OnCampusHiring() {
         time: formData.time,
         type:"on-campus",
         message: formData.message.trim(),
-        termsAccepted: formData.termsAccepted
+        acceptTerms: formData.acceptTerms
       };
 
       console.log('Submitting payload:', payload);
