@@ -10,6 +10,7 @@ import { startRankingCron } from "./cron/rankingCron.js";
 import paginate from "./middlewares/paginate.js";
 import { refreshFuseIndex } from "./services/fuseIndexService.js";
 import backupCron from "./cron/backup.cron.js";
+import reqInfoRoutes from './routes/reqInfoRoutes.js';
 startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
@@ -174,6 +175,8 @@ app.use("/api/admin/servicerequest", serviceRequestManagement);
 //app.use("/api/candidate", CandidateRoute);
 app.use("/api/ticker", LiveTicker);
 app.use("/api/backup", backupRoutes);
+
+app.use('/api/rawrecruit', reqInfoRoutes);
 
 
 app.use("/api/meta", CustomDropDown);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
+import { useNavigate } from 'react-router-dom';
+import { useLegacyAuth } from '../../../../context/AuthProvider';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
@@ -10,46 +10,53 @@ export default function EmployerPoolCampus() {
   const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     date: "",
     time: "",
     message: "",
     acceptTerms: false
   });
 
- const checkAuthentication = (actionType) => {
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
+  const checkAuthentication = (actionType) => {
+    const token = localStorage.getItem('token');
+    const authUser = localStorage.getItem('ChatAppUser');
 
-  const isAuthenticated = token && authUser;
-  
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/hiring-channels/pool-campus-hiring/employer');
-    localStorage.setItem('intendedAction', actionType);
+    const isAuthenticated = token && authUser;
     
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
+    if (!isAuthenticated) {
+      sessionStorage.removeItem('tempSelectedRole');
+      localStorage.setItem('redirectAfterAuth', '/hiring-channels/pool-campus-hiring/employer');
+      localStorage.setItem('intendedAction', actionType);
+      
+      navigate('/userselection');
+      return false;
+    }
+    return true;
+  };
 
-  // NEW: Updated click handlers to check authentication
+  // Updated click handlers to check authentication
   const handleRegisterClick = () => {
-    
+  
       setShowRegistration(true);
+      setSubmitError('');
     
   };
 
   const handleRequestInfoClick = () => {
-  
+    if (checkAuthentication('register')) {
       setShowRequestInfo(true);
-    
+      setSubmitError('');
+    }
   };
 
   const handleBackClick = () => {
     setShowRegistration(false);
     setShowRequestInfo(false);
+    setSubmitError('');
   };
 
   const handleInputChange = (e) => {
@@ -60,16 +67,103 @@ export default function EmployerPoolCampus() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
+  const handleSubmit = async () => {
+    // Validation
+    if (!formData.name || !formData.email || !formData.date || !formData.time || !formData.message) {
+      setSubmitError('Please fill all required fields.');
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setSubmitError('Please accept the Terms & Conditions.');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitError('Please enter a valid email address.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      const authUser = JSON.parse(localStorage.getItem('ChatAppUser') || '{}');
+
+      // Prepare payload with all form data
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        date: formData.date,
+        time: formData.time,
+        message: formData.message.trim(),
+        acceptTerms: formData.acceptTerms,
+        type: 'pool-campus',
+        
+      };
+
+      console.log('Submitting payload:', payload);
+
+      // API Call - Replace with your actual API endpoint
+      const response = await fetch('/api/pool-campus-hiring/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle validation errors from backend
+        if (data.errors) {
+          const errorMessages = data.errors.map(err => err.message).join(', ');
+          throw new Error(errorMessages);
+        }
+        throw new Error(data.message || 'Submission failed');
+      }
+
+      // Success
+      console.log('Success:', data);
+      alert('Your request has been submitted successfully! Our team will contact you soon.');
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        date: "",
+        time: "",
+        message: "",
+        acceptTerms: false
+      });
+      
+      // Navigate back to main page after success
+      setShowRegistration(false);
+      
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitError(error.message || 'Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {showRequestInfo ? (
-        <RequestInfo onBackClick={handleBackClick}
+        <RequestInfo 
+          onBackClick={handleBackClick}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
         />
       ) : showRegistration ? (
         <RegisterPage 
@@ -77,6 +171,8 @@ export default function EmployerPoolCampus() {
           formData={formData}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
         />
       ) : (
         <MainPage 
