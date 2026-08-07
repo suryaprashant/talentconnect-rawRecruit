@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const sender = process.env.SENDGRID_SENDER || "no-reply@yourdomain.com";
+const sender = process.env.SENDGRID_SENDER ;
 
 export const sendOtpEmail = async (to, otp) => {
   const msg = {
@@ -573,5 +573,295 @@ Contact Support
     if (error.response) {
       console.error(error.response.body);
     }
+  }
+};
+
+const OWNER_EMAIL = "talentconnect42@gmail.com";
+
+export const sendreqinfoEmail = async (email, name, message) => {
+  const userTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Received</title>
+  <style>
+    body { margin: 0; padding: 0; background: #f5f7fb; font-family: Arial, Helvetica, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .header { background: #143694; padding: 40px 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; color: #ffffff; font-weight: 600; }
+    .header p { margin: 10px 0 0; font-size: 16px; color: #dbe4ff; }
+    .body { padding: 40px 30px; }
+    .greeting { font-size: 16px; color: #333; line-height: 1.8; margin-bottom: 20px; }
+    .greeting strong { color: #143694; }
+    .message-text { font-size: 15px; color: #555; line-height: 1.8; margin-bottom: 30px; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 30px 0; }
+    .footer { text-align: center; padding: 25px 30px; background: #f8f9fc; border-top: 1px solid #e5e7eb; }
+    .footer p { margin: 0; font-size: 13px; color: #999; }
+    .footer strong { color: #143694; }
+    .badge { display: inline-block; padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>Request Received</h1>
+        <p>We've received your information successfully</p>
+      </div>
+      <div class="body">
+        <p class="greeting">Dear <strong>${name}</strong>,</p>
+        <p class="message-text">
+          Thank you for submitting your request. We have received your information and our team will review it shortly.
+        </p>
+        <p class="message-text">
+          <strong>Your Request Details:</strong><br />
+          <span style="color:#555;">${email}</span><br />
+          <span style="color:#555;">${message}</span>
+        </p>
+        <p class="message-text">
+          We will get back to you as soon as possible. If you have any questions, feel free to reply to this email.
+        </p>
+        <hr class="divider" />
+        <p style="font-size:15px; color:#444; line-height:1.8;">
+          Best Regards,<br />
+          <strong style="color:#143694;">Rawrecruit Team</strong>
+        </p>
+      </div>
+      <div class="footer">
+        <p>© ${new Date().getFullYear()} TalentConnect. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // Professional template for admin notification
+  const adminTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Request Notification</title>
+  <style>
+    body { margin: 0; padding: 0; background: #f5f7fb; font-family: Arial, Helvetica, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .header { background: #143694; padding: 40px 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; color: #ffffff; font-weight: 600; }
+    .header p { margin: 10px 0 0; font-size: 16px; color: #dbe4ff; }
+    .body { padding: 40px 30px; }
+    .greeting { font-size: 16px; color: #333; line-height: 1.8; margin-bottom: 20px; }
+    .info-box { background: #f8f9fc; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #143694; }
+    .info-box p { margin: 8px 0; font-size: 15px; color: #444; line-height: 1.6; }
+    .info-box strong { color: #143694; display: inline-block; width: 80px; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 30px 0; }
+    .btn { display: inline-block; padding: 12px 30px; background: #143694; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; }
+    .btn:hover { background: #0f2a6e; }
+    .footer { text-align: center; padding: 25px 30px; background: #f8f9fc; border-top: 1px solid #e5e7eb; }
+    .footer p { margin: 0; font-size: 13px; color: #999; }
+    .footer strong { color: #143694; }
+    .highlight { color: #143694; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>New Request Received</h1>
+        <p>A new request has been submitted</p>
+      </div>
+      <div class="body">
+        <p class="greeting">Hello Admin,</p>
+        <p style="font-size:15px; color:#555; line-height:1.8;">
+          A new request has been submitted through the ReqInfo form. Below are the details:
+        </p>
+        
+        <div class="info-box">
+          <p><strong>Name</strong> ${name}</p>
+          <p><strong>Email</strong> ${email}</p>
+          <p><strong>Message</strong> ${message}</p>
+          <p><strong>Received</strong> ${new Date().toLocaleString()}</p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.ADMIN_URL || "http://localhost:5173/admin"}" class="btn">View All Requests</a>
+        </div>
+
+        <hr class="divider" />
+        <p style="font-size:15px; color:#444; line-height:1.8;">
+          Best Regards,<br />
+          <strong style="color:#143694;">Rawrecruit Team</strong>
+        </p>
+      </div>
+      <div class="footer">
+        <p>© ${new Date().getFullYear()} TalentConnect. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // User confirmation email
+  const userMsg = {
+    to: email,
+    from: sender,
+    subject: "Your Request Has Been Received - TalentConnect",
+    html: userTemplate,
+  };
+
+  // Admin notification email
+  const adminMsg = {
+    to: OWNER_EMAIL,
+    from: sender,
+    subject: `New Request Received from ${name}`,
+    html: adminTemplate,
+  };
+
+  try {
+    // Send both emails
+    await sgMail.send(userMsg);
+    console.log(`✅ Confirmation email sent to ${email}`);
+
+    await sgMail.send(adminMsg);
+    console.log(`✅ Admin notification sent to ${OWNER_EMAIL}`);
+
+    return {
+      success: true,
+      message: "Both emails sent successfully",
+      userEmail: email,
+      adminEmail: OWNER_EMAIL,
+    };
+  } catch (error) {
+    console.error("❌ Error sending emails:", error);
+    if (error.response) {
+      console.error(error.response.body);
+    }
+    throw error;
+  }
+};
+
+export const resolveInfoEmail = async (
+  email,
+  name,
+  adminMessage,
+  meetingLink,
+) => {
+  // User approval template with RawRecruit branding
+  const userApprovalTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Approved - RawRecruit</title>
+  <style>
+    body { margin: 0; padding: 0; background: #f5f7fb; font-family: Arial, Helvetica, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .header { background: #143694; padding: 40px 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; color: #ffffff; font-weight: 600; }
+    .header p { margin: 10px 0 0; font-size: 16px; color: #dbe4ff; }
+    .body { padding: 40px 30px; }
+    .greeting { font-size: 16px; color: #333; line-height: 1.8; margin-bottom: 20px; }
+    .greeting strong { color: #143694; }
+    .message-text { font-size: 15px; color: #555; line-height: 1.8; margin-bottom: 20px; }
+    .admin-message { background: #f0f7ff; border-left: 4px solid #143694; padding: 16px 20px; border-radius: 8px; margin: 20px 0; }
+    .admin-message p { margin: 0; font-size: 15px; color: #444; line-height: 1.6; }
+    .admin-message strong { color: #143694; }
+    .meeting-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px 20px; margin: 20px 0; display: ${meetingLink ? "block" : "none"}; }
+    .meeting-box p { margin: 0 0 6px 0; font-size: 14px; color: #1e40af; font-weight: 600; }
+    .meeting-box a { color: #1e40af; text-decoration: none; font-weight: 500; word-break: break-all; }
+    .meeting-box a:hover { text-decoration: underline; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 30px 0; }
+    .footer { text-align: center; padding: 25px 30px; background: #f8f9fc; border-top: 1px solid #e5e7eb; }
+    .footer p { margin: 0; font-size: 13px; color: #999; }
+    .footer strong { color: #143694; }
+    .badge { display: inline-block; padding: 4px 12px; background: #dbeafe; color: #143694; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>✅ Request Approved</h1>
+        <p>Your request has been reviewed and approved</p>
+      </div>
+      <div class="body">
+        <p class="greeting">Dear <strong>${name}</strong>,</p>
+        <p class="message-text">
+          We are pleased to inform you that your service request has been 
+          <strong style="color: #143694;">approved</strong>.
+        </p>
+        
+        <div class="admin-message">
+          <p><strong>📝 Message from Team:</strong></p>
+          <p>${adminMessage || "Your service request has been approved. Our team will reach out to you shortly with further details."}</p>
+        </div>
+
+        ${
+          meetingLink
+            ? `
+          <div class="meeting-box">
+            <p>🔗 Meeting / Resource Link:</p>
+            <a href="${meetingLink}" target="_blank" rel="noopener noreferrer">
+              ${meetingLink}
+            </a>
+            <p style="font-size: 12px; color: #6b7280; margin-top: 6px; font-weight: normal;">
+              Click the link above to join the meeting or access the resource.
+            </p>
+          </div>
+        `
+            : ""
+        }
+
+        <p class="message-text">
+          If you have any questions, feel free to reply to this email or contact our support team.
+        </p>
+
+        <hr class="divider" />
+        <p style="font-size:15px; color:#444; line-height:1.8;">
+          Best Regards,<br />
+          <strong style="color:#143694;">RawRecruit Team</strong>
+        </p>
+      </div>
+      <div class="footer">
+        <p>© ${new Date().getFullYear()} RawRecruit. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // User approval email - only send to the user
+  const userMsg = {
+    to: email,
+    from: sender,
+    subject: "✅ Your Service Request Has Been Approved - RawRecruit",
+    html: userApprovalTemplate,
+  };
+
+  try {
+    // Send only user email
+    await sgMail.send(userMsg);
+    console.log(`✅ Approval confirmation email sent to ${email}`);
+
+    return {
+      success: true,
+      message: "Email sent successfully",
+      userEmail: email,
+    };
+  } catch (error) {
+    console.error("❌ Error sending approval email:", error);
+    if (error.response) {
+      console.error(error.response.body);
+    }
+    throw error;
   }
 };

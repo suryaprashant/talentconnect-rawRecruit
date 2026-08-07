@@ -1,142 +1,69 @@
-// import { useState } from 'react';
-// import MainPage from './MainPage';
-// import RegisterPage from './RegisterPage';
-// import RequestInfo from './RequestInfo';
-
-// export default function OnCampusHiring() {
-//   const [showRegistration, setShowRegistration] = useState(false);
-//   const [showRequestInfo, setShowRequestInfo] = useState(false);
-//   const [formData, setFormData] = useState({
-//   date: "",
-//   time: "",
-//   message: "",
-//   termsAccepted: false // 🔁 was `acceptTerms`
-// });
-
-
-//   const handleRegisterClick = () => setShowRegistration(true);
-//   const handleRequestInfoClick = () => setShowRequestInfo(true);
-//   const handleBackClick = () => {
-//     setShowRegistration(false);
-//     setShowRequestInfo(false);
-//   };
-
-//   const handleInputChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     setFormData({
-//       ...formData,
-//       [name]: type === 'checkbox' ? checked : value
-//     });
-//   };
-
-//   const handleSubmit = async () => {
-//   try {
-//     const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus`, {
-//   method: "POST",
-//   withCredentials: true, // Ensure cookies are sent with the request
-//   credentials: "include", // Include credentials for cross-origin requests
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-//   body: JSON.stringify(formData),
-// });
-
-
-//     if (response.ok) {
-//       alert("Form submitted successfully!");
-//       setShowRegistration(false);
-//     } else {
-//       // Safely try to parse error JSON, or fall back to plain text
-//       const errorText = await response.text();
-//       let errorData;
-//       try {
-//         errorData = JSON.parse(errorText);
-//       } catch {
-//         errorData = { error: errorText };
-//       }
-//       alert(`Submission failed: ${errorData.error}`);
-//     }
-//   } catch (err) {
-//     alert(`An error occurred: ${err.message}`);
-//   }
-// };
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 font-sans">
-//       {showRequestInfo ? (
-//         <RequestInfo onBackClick={handleBackClick}
-//         />
-//       ) : showRegistration ? (
-//         <RegisterPage 
-//           onBackClick={handleBackClick}
-//           formData={formData}
-//           handleInputChange={handleInputChange}
-//           handleSubmit={handleSubmit}
-//         />
-//       ) : (
-//         <MainPage 
-//           onRegisterClick={handleRegisterClick}
-//           onRequestInfoClick={handleRequestInfoClick}
-//         />
-//       )}
-//     </div>
-//   );
-// }
-
-
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLegacyAuth } from '../../../../context/AuthProvider';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
 export default function OnCampusHiring() {
-  const navigate = useNavigate(); // NEW: Added navigate
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [authUser] = useLegacyAuth(); // NEW: Added auth context
+  const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  
+  const initialFormData = {
+    name: "",
+    email: "",
     date: "",
     time: "",
     message: "",
     termsAccepted: false
-  });
-
-  // NEW: Authentication check for button clicks
-  const checkAuthentication = (actionType) => {
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
-
-  const isAuthenticated = token && authUser;
+  };
   
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/hiring-channels/on-campus-hiring');
-    localStorage.setItem('intendedAction', actionType);
-    
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
-  const view = searchParams.get('view'); // null | 'register' | 'requestInfo'
+  const [formData, setFormData] = useState(initialFormData);
 
-  // NEW: Updated click handlers to check authentication
+  // Authentication check for button clicks
+  const checkAuthentication = (actionType) => {
+    const token = localStorage.getItem('token');
+    const authUser = localStorage.getItem('ChatAppUser');
+
+    const isAuthenticated = token && authUser;
+    
+    if (!isAuthenticated) {
+      sessionStorage.removeItem('tempSelectedRole');
+      localStorage.setItem('redirectAfterAuth', '/hiring-channels/on-campus-hiring');
+      localStorage.setItem('intendedAction', actionType);
+      
+      navigate('/userselection');
+      return false;
+    }
+    return true;
+  };
+
+  const view = searchParams.get('view');
+
+  // Updated click handlers to check authentication
   const handleRegisterClick = () => {
     if (checkAuthentication('register')) {
-      setSearchParams({ view: 'register' })
+      setSearchParams({ view: 'register' });
+      setSubmitError('');
     }
   };
 
   const handleRequestInfoClick = () => {
     
       setSearchParams({ view: 'requestInfo' });
+      setSubmitError('');
     
   };
 
-  const  handleBackClick = () => setSearchParams({});
+  const handleBackClick = () => {
+    setSearchParams({});
+    setSubmitError('');
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -147,21 +74,54 @@ export default function OnCampusHiring() {
   };
 
   const handleSubmit = async () => {
+    // Validation
+    if (!formData.name || !formData.email || !formData.date || !formData.time || !formData.message) {
+      setSubmitError("Please fill all required fields.");
+      return;
+    }
+
+    if (!formData.termsAccepted) {
+      setSubmitError("Please accept the Terms & Conditions.");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitError("Please enter a valid email address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
     try {
-        console.log(';lllll')
-      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus`, {
-      
+      // Prepare payload
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        date: formData.date,
+        time: formData.time,
+        type:"on-campus",
+        message: formData.message.trim(),
+        termsAccepted: formData.termsAccepted
+      };
+
+      console.log('Submitting payload:', payload);
+
+      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/reqinfo`, {
         method: "POST",
         withCredentials: true,
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
-     
+
       if (response.ok) {
         alert("Form submitted successfully!");
+        setFormData(initialFormData);
         setSearchParams({});
       } else {
         const errorText = await response.text();
@@ -171,23 +131,35 @@ export default function OnCampusHiring() {
         } catch {
           errorData = { error: errorText };
         }
-        alert(`Submission failed: ${errorData.error}`);
+        setSubmitError(errorData.error || "Submission failed");
       }
     } catch (err) {
-      alert(`An error occurred: ${err.message}`);
+      console.error("Error submitting request:", err);
+      setSubmitError(`An error occurred: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {view === 'register' ? (
-        <RequestInfo onBackClick={handleBackClick} />
+        <RequestInfo 
+          onBackClick={handleBackClick}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+        />
       ) : view === 'requestInfo' ? (
         <RegisterPage 
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
         />
       ) : (
         <MainPage 

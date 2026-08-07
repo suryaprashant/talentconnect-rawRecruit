@@ -4,9 +4,9 @@ import {
   TrendingUp,
   Sparkles,
   ArrowRight,
-  Info
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+  Info,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const serviceData = [
   {
     id: 1,
@@ -15,9 +15,9 @@ const serviceData = [
       "Improve student preparedness for campus placements",
       "Strengthen resumes with role-relevant skills",
       "Align student profiles with recruiter expectations",
-      "Increase placement participation and confidence"
+      "Increase placement participation and confidence",
     ],
-    icon: <FileText className="h-6 w-6 text-[#1e4ed8]" />
+    icon: <FileText className="h-6 w-6 text-[#1e4ed8]" />,
   },
   {
     id: 2,
@@ -26,9 +26,9 @@ const serviceData = [
       "Prepare students for interviews and assessments",
       "Conduct mock interviews and guided practice",
       "Improve communication and presentation skills",
-      "Reduce interview anxiety and drop-outs"
+      "Reduce interview anxiety and drop-outs",
     ],
-    icon: <Users className="h-6 w-6 text-[#1e4ed8]" />
+    icon: <Users className="h-6 w-6 text-[#1e4ed8]" />,
   },
   {
     id: 3,
@@ -37,10 +37,10 @@ const serviceData = [
       "Help students build a strong professional identity",
       "Guide students on personal and career branding",
       "Highlight strengths, projects, and achievements",
-      "Improve student visibility to recruiters"
+      "Improve student visibility to recruiters",
     ],
-    icon: <TrendingUp className="h-6 w-6 text-[#1e4ed8]" />
-  }
+    icon: <TrendingUp className="h-6 w-6 text-[#1e4ed8]" />,
+  },
 ];
 
 export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
@@ -50,14 +50,14 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
       {/* Meta Title and Description */}
       <head>
         <title>Student Training Programs for Colleges | RawRecruit</title>
-        <meta 
-          name="description" 
-          content="Enhance student employability with structured training programs. RawRecruit helps colleges prepare students for placements and careers." 
+        <meta
+          name="description"
+          content="Enhance student employability with structured training programs. RawRecruit helps colleges prepare students for placements and careers."
         />
       </head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 overflow-hidden">
-<div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl" />
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl" />
@@ -84,71 +84,67 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 max-w-6xl flex flex-col py-4">
-
           {/* Header */}
           <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8 mt-5">
+            <div className="flex flex-col gap-4">
+              {/* Top Section */}
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                <div>
+                  <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                    Student Training Programs
+                  </h1>
 
-  <div className="flex flex-col gap-4">
+                  <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+                    Preparing students with job-ready skills to improve
+                    placement outcomes and career readiness
+                  </p>
+                </div>
+              </div>
 
-    {/* Top Section */}
-    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+              {/* Tabs */}
+              <div className="flex flex-wrap items-center gap-2 border-gray-200 pt-0">
+                <button
+                  onClick={() => navigate("/service-request/campus-placement")}
+                  className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+                >
+                  Campus Placement
+                </button>
 
-      <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
-          Student Training Programs
-        </h1>
+                <button
+                  onClick={() =>
+                    navigate("/service-request/poolcampus-placement")
+                  }
+                  className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+                >
+                  Pool Campus
+                </button>
 
-        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
-          Preparing students with job-ready skills to improve placement outcomes and career readiness
-        </p>
-      </div>
+                {/* Active */}
+                <button
+                  onClick={() =>
+                    navigate("/service-request/student-training-programs")
+                  }
+                  className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  Training Programs
+                </button>
 
-    </div>
+                <button
+                  onClick={() => navigate("/service-request/seminars")}
+                  className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+                >
+                  Seminars
+                </button>
 
-    {/* Tabs */}
-    <div className="flex flex-wrap items-center gap-2 border-gray-200 pt-0">
-
-      <button 
-        onClick={() => navigate('/service-request/campus-placement')}
-        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
-      >
-        Campus Placement
-      </button>
-
-      <button 
-        onClick={() => navigate('/service-request/poolcampus-placement')}
-        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
-      >
-        Pool Campus
-      </button>
-
-      {/* Active */}
-      <button 
-        onClick={() => navigate('/service-request/student-training-programs')}
-        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-      >
-        Training Programs
-      </button>
-
-      <button 
-        onClick={() => navigate('/service-request/seminars')}
-        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
-      >
-        Seminars
-      </button>
-
-      <button 
-        onClick={() => navigate('/service-request/campus-branding')}
-        className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
-      >
-        Branding
-      </button>
-
-    </div>
-
-  </div>
-
-</header>
+                <button
+                  onClick={() => navigate("/service-request/campus-branding")}
+                  className="px-5 py-2 text-gray-600 hover:text-[#143694] hover:bg-gray-100 rounded-full text-sm transition-all"
+                >
+                  Branding
+                </button>
+              </div>
+            </div>
+          </header>
 
           {/* Services Section - Square Cards with Bullet Points */}
           <section className="mb-12">
@@ -160,10 +156,10 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                 >
                   {/* Blue hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
-                  
+
                   {/* Blue border on hover */}
                   <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#1e4ed8]/20 rounded-lg transition-all duration-300"></div>
-                  
+
                   <div className="relative z-10 h-full flex flex-col">
                     <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/30 to-[#1e4ed8]/20 rounded-lg mb-4">
                       {service.icon}
@@ -177,7 +173,9 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                       {service.bullets.map((bullet, index) => (
                         <li key={index} className="flex items-start">
                           <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#1e4ed8] rounded-full mt-2 mr-3"></div>
-                          <span className="text-gray-600 text-sm">{bullet}</span>
+                          <span className="text-gray-600 text-sm">
+                            {bullet}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -199,7 +197,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
               {/* <span className="text-sm opacity-80">– Enable Student Training Programs</span> */}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            
+
             {/* White Request Info button on RIGHT */}
             <button
               onClick={onRequestInfoClick}
@@ -211,7 +209,6 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </section>
-
         </div>
       </div>
     </>

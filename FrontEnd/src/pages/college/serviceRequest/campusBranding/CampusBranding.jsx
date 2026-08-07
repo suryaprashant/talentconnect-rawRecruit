@@ -1,49 +1,52 @@
-
-
-
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
+import { useNavigate } from 'react-router-dom';
+import { useLegacyAuth } from '../../../../context/AuthProvider';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
-import { createCollegeBrandingRequest } from '@/lib/College_AxiosIntance';
+
 // Main CampusBranding component
 export default function CampusBranding() {
   const navigate = useNavigate(); 
   const [authUser] = useLegacyAuth(); 
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  
+  const initialFormData = {
+    name: "",
+    email: "",
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  };
+  
+  const [formData, setFormData] = useState(initialFormData);
 
   const checkAuthentication = (actionType) => {
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
+    const token = localStorage.getItem('token');
+    const authUser = localStorage.getItem('ChatAppUser');
 
-  const isAuthenticated = token && authUser;
-  
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/service-request/campus-branding');
-    localStorage.setItem('intendedAction', actionType);
+    const isAuthenticated = token && authUser;
     
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
-
+    if (!isAuthenticated) {
+      sessionStorage.removeItem('tempSelectedRole');
+      localStorage.setItem('redirectAfterAuth', '/service-request/campus-branding');
+      localStorage.setItem('intendedAction', actionType);
+      
+      navigate('/userselection');
+      return false;
+    }
+    return true;
+  };
 
   const handleRequestInfoClick = () => {
-    // if (checkAuthentication('requestInfo')) {
+    
       setShowRequestInfo(true);
-    // }
-  }
+      setSubmitError('');
+    
+  };
+
   const handleBackClick = () => {
     setShowRequestInfo(false);
     setSubmitError('');
@@ -61,8 +64,20 @@ export default function CampusBranding() {
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.date || !formData.time || !formData.message || !formData.acceptTerms) {
-      setSubmitError('Please fill in all fields and accept the terms.');
+    if (!formData.name || !formData.email || !formData.date || !formData.time || !formData.message) {
+      setSubmitError('Please fill all required fields.');
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setSubmitError('Please accept the Terms & Conditions.');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitError('Please enter a valid email address.');
       return;
     }
 
@@ -70,25 +85,47 @@ export default function CampusBranding() {
     setSubmitError('');
 
     try {
-      const response = await createCollegeBrandingRequest(formData);
-      
-      if (response.status === 200 || response.status === 201) {
-        console.log("Form submitted successfully:", response.data);
-        alert("Form submitted successfully!");
-        setShowRequestInfo(false);
-        // Reset form
-        setFormData({
-          date: "",
-          time: "",
-          message: "",
-          acceptTerms: false
-        });
-      } else {
-        throw new Error('Submission failed');
+      // Prepare payload
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        date: formData.date,
+        time: formData.time,
+        message: formData.message.trim(),
+        type:"branding",
+        acceptTerms: formData.acceptTerms
+      };
+
+      console.log('Submitting payload:', payload);
+
+      // ✅ Using /api/rawrecruit/reqinfo
+      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/reqinfo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.errors) {
+          const errorMessages = data.errors.map(err => err.message).join(', ');
+          throw new Error(errorMessages);
+        }
+        throw new Error(data.message || 'Submission failed');
       }
+
+      // Success
+      alert('Your request has been submitted successfully! Our team will contact you soon.');
+      setFormData(initialFormData);
+      setShowRequestInfo(false);
+      
     } catch (error) {
-      console.error("Form submission error:", error);
-      setSubmitError('Failed to submit form. Please try again.');
+      console.error('Error submitting request:', error);
+      setSubmitError(error.message || 'Failed to submit request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

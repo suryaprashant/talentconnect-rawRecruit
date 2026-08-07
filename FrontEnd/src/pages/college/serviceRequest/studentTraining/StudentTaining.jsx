@@ -1,52 +1,54 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
-import MainPage from './MainPage';
-import RegisterPage from './RegisterPage';
-import RequestInfo from './RequestInfo';
-import axios from '../../../../lib/axiosInstance';
-import { createStudentTrainingRequest } from '@/lib/College_AxiosIntance';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // NEW: Added useNavigate
+import { useLegacyAuth } from "../../../../context/AuthProvider"; // NEW: Added useAuth
+import MainPage from "./MainPage";
+import RegisterPage from "./RegisterPage";
+import RequestInfo from "./RequestInfo";
+import axios from "../../../../lib/axiosInstance";
+import { createStudentTrainingRequest } from "@/lib/College_AxiosIntance";
 export default function StudentTraining() {
-  const navigate = useNavigate(); 
-  const [authUser] = useLegacyAuth(); 
+  const navigate = useNavigate();
+  const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
- const initialFormData = {
+  const initialFormData = {
     date: "",
     time: "",
     message: "",
-    acceptTerms: false
+    acceptTerms: false,
   };
   const [formData, setFormData] = useState(initialFormData);
-  
-  const checkAuthentication = (actionType) => {
-  const token = localStorage.getItem('token');
-  const authUser = localStorage.getItem('ChatAppUser');
 
-  const isAuthenticated = token && authUser;
-  
-  if (!isAuthenticated) {
-    sessionStorage.removeItem('tempSelectedRole');
-    localStorage.setItem('redirectAfterAuth', '/service-request/student-training-programs');
-    localStorage.setItem('intendedAction', actionType);
-    
-    navigate('/userselection');
-    return false;
-  }
-  return true;
-};
+  const checkAuthentication = (actionType) => {
+    const token = localStorage.getItem("token");
+    const authUser = localStorage.getItem("ChatAppUser");
+
+    const isAuthenticated = token && authUser;
+
+    if (!isAuthenticated) {
+      sessionStorage.removeItem("tempSelectedRole");
+      localStorage.setItem(
+        "redirectAfterAuth",
+        "/service-request/student-training-programs",
+      );
+      localStorage.setItem("intendedAction", actionType);
+
+      navigate("/userselection");
+      return false;
+    }
+    return true;
+  };
 
   // NEW: Updated click handlers to check authentication
   const handleRegisterClick = () => {
-    if (checkAuthentication('register')) {
+    if (checkAuthentication("register")) {
       setShowRegistration(true);
     }
   };
 
   const handleRequestInfoClick = () => {
     // if (checkAuthentication('requestInfo')) {
-      setShowRequestInfo(true);
-    // }
+    setShowRequestInfo(true);
   };
 
   const handleBackClick = () => {
@@ -58,48 +60,48 @@ export default function StudentTraining() {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   const handleSubmit = async () => {
-   if (!formData.acceptTerms) {
-          alert("You must accept the terms before submitting.");
-          return;
-        }
-        if (!formData.date || !formData.time) {
-          alert("Please select a date and time.");
-          return;
-        }
-        try{
-         const response = await createStudentTrainingRequest(formData);
-          alert("Request submitted successfully!");
-          setFormData(initialFormData);
-          setShowRequestInfo(false);
-        }
-        catch(error){
-          console.error("Error submitting request:", error);
-          alert("Failed to submit request. Please try again.");
-        }
-};
+    if (!formData.acceptTerms) {
+      alert("You must accept the terms before submitting.");
+      return;
+    }
+    if (!formData.date || !formData.time) {
+      alert("Please select a date and time.");
+      return;
+    }
+    try {
+      const response = await createStudentTrainingRequest(formData);
+      alert("Request submitted successfully!");
+      setFormData(initialFormData);
+      setShowRequestInfo(false);
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      alert("Failed to submit request. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {showRequestInfo ? (
-        <RequestInfo onBackClick={handleBackClick}
-        // formData={formData} 
-        // handleInputChange={handleInputChange}
-        // handleSubmit={handleSubmit}
+        <RequestInfo
+          onBackClick={handleBackClick}
+          // formData={formData}
+          // handleInputChange={handleInputChange}
+          // handleSubmit={handleSubmit}
         />
       ) : showRegistration ? (
-        <RegisterPage 
+        <RegisterPage
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
         />
       ) : (
-        <MainPage 
+        <MainPage
           onRegisterClick={handleRegisterClick}
           onRequestInfoClick={handleRequestInfoClick}
         />
