@@ -1,5 +1,5 @@
 import Blog from "../models/blogModel.js";
-import BlogReaction from "../models/BlogReaction.js"
+import BlogReaction from "../models/BlogReaction.js";
 
 export const createBlogService = async (payload) => {
   const blog = await Blog.create(payload);
@@ -11,12 +11,30 @@ export const createBlogService = async (payload) => {
   };
 };
 
+export const getBlogsByUserIdService = async (userId) => {
+  try {
+    const blogs = await Blog.find({ userId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email profilePicture");
+
+    return {
+      status: 200,
+      success: true,
+      data: blogs,
+      count: blogs.length,
+    };
+  } catch (error) {
+    console.error("Get Blogs By User ID Service Error:", error);
+    return {
+      status: 500,
+      success: false,
+      message: error.message || "Failed to fetch blogs",
+    };
+  }
+};
+
 export const updateBlogService = async (blogId, payload) => {
-  const blog = await Blog.findByIdAndUpdate(
-    blogId,
-    payload,
-    { new: true }
-  );
+  const blog = await Blog.findByIdAndUpdate(blogId, payload, { new: true });
 
   if (!blog) {
     return {
@@ -34,8 +52,7 @@ export const updateBlogService = async (blogId, payload) => {
 };
 
 export const getAllBlogsService = async () => {
-  const blogs = await Blog.find({ isPublished: true })
-    .sort({ createdAt: -1 });
+  const blogs = await Blog.find({ isPublished: true }).sort({ createdAt: -1 });
 
   return {
     success: true,
@@ -80,7 +97,6 @@ export const getBlogByIdService = async (blogId) => {
       status: 200,
       data: blog,
     };
-
   } catch (error) {
     console.error("Get Blog By ID Service Error:", error);
 
@@ -88,32 +104,19 @@ export const getBlogByIdService = async (blogId) => {
   }
 };
 
+export const getSavedBlogsService = async (userId) => {
+  const savedBlogs = await BlogReaction.find({
+    userId,
+    saved: true,
+  })
+    .populate("blogId")
+    .lean();
 
+  const blogs = savedBlogs.map((item) => item.blogId);
 
-
-export const getSavedBlogsService = async(userId)=>{
-
-
-const savedBlogs = await BlogReaction.find({
- userId,
- saved:true
-})
-.populate("blogId")
-.lean();
-
-
-
-const blogs = savedBlogs.map(item=>item.blogId);
-
-
-
-return {
-
-success:true,
-status:200,
-data:blogs
-
+  return {
+    success: true,
+    status: 200,
+    data: blogs,
+  };
 };
-
-
-}

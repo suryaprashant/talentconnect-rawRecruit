@@ -15,6 +15,11 @@ const blogSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth",
+      required: true,
+    },
     author: {
       type: String,
       default: "Admin",
