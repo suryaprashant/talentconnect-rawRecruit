@@ -2,17 +2,18 @@ import {
   createBlogService,
   updateBlogService,
   deleteBlogService,
+  getBlogsByUserIdService
 } from "../../services/blogService.js";
 import { streamUpload } from "../../utils/streamUpload.js";
 
 export const createBlog = async (req, res) => {
   try {
     let payload = { ...req.body };
-
+    payload.userId = req.user._id;
     console.log("BODY:", req.body);
     console.log("FILE:", req.file);
 
-    //  Handle image upload
+    
     if (req.file) {
       const result = await streamUpload(
         req.file.buffer,
@@ -35,6 +36,22 @@ export const createBlog = async (req, res) => {
     });
   }
 };
+
+
+export const getUserBlogs = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const result = await getBlogsByUserIdService(userId);
+    return res.status(result.status).json(result);
+  } catch (error) {
+    console.error("Get User Blogs Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 
 export const updateBlog = async (req, res) => {
   try {
