@@ -230,7 +230,7 @@ export const sendSignupOtp = async (req, res) => {
 
     if (usertype === "admin") {
       response = await sendSignupOtpService({
-        email: "vraj73833@gmail.com",
+        email: process.env.EMAIL,
       });
     } else {
       response = await sendSignupOtpService({
