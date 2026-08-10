@@ -7,11 +7,13 @@ const adminAuth = async (req, res, next) => {
   try {
     let token;
 
+    
+
     // Check for token in headers
     if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
-
+    
     
     // Check for token in cookies
     else if (req.cookies.jwt) {

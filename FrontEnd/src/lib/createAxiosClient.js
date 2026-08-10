@@ -27,23 +27,13 @@ export default function createAxiosClient() {
     (config) => {
       const token = localStorage.getItem("adminToken");
 
-      console.log("================================");
-      console.log("ADMIN AXIOS");
-      console.log("Request URL:", config.url);
-      console.log("Token from localStorage:", token);
-
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log("Authorization Header:", config.headers.Authorization);
-      } else {
-        console.warn("No accessToken found in localStorage");
       }
-
-      console.log("================================");
 
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   // ============================
@@ -79,10 +69,8 @@ export default function createAxiosClient() {
 
       if (
         error.response?.status === 401 &&
-        (
-          error.response?.data?.code === "TOKEN_EXPIRED" ||
-          error.response?.data?.code === "NO_ACCESS_TOKEN"
-        )
+        (error.response?.data?.code === "TOKEN_EXPIRED" ||
+          error.response?.data?.code === "NO_ACCESS_TOKEN")
       ) {
         originalRequest._retry = true;
 
@@ -112,7 +100,7 @@ export default function createAxiosClient() {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   return axiosClient;

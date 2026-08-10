@@ -122,7 +122,6 @@ const ServiceRequestManagement = () => {
         }
       );
 
-      console.log("data",response.data);
 
       if (response.data) {
         setStatistics({

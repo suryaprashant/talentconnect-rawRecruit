@@ -19,7 +19,7 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic validation
+   
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
       setError("Please fill in all fields.");
       return;
@@ -28,7 +28,7 @@ const Signup = () => {
       setError("Passwords do not match.");
       return;
     }
-    // Handle signup logic here (e.g., call API)
+   
     setSuccess(`Account created for ${form.email}!`);
   };
 

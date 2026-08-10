@@ -8,6 +8,8 @@ import {
   FaCog,
   
 } from "react-icons/fa";
+import { DatabaseBackup } from "lucide-react";
+
 import { IoAlbums } from "react-icons/io5";
 import { RiAccountPinCircleFill } from "react-icons/ri";
 
@@ -24,6 +26,7 @@ const sidebarItems = [
   { name: "Jobs & Drives", to: "/admin/jobs", icon: <FaBriefcase /> },
   { name: "Applications", to: "/admin/applications", icon: <FaClipboardList /> },
   { name: "Settings", to: "/admin/settings", icon: <FaCog /> },
+  {name:"Backup",to:"/admin/backup",icon:<DatabaseBackup/>}
 
 ];
 

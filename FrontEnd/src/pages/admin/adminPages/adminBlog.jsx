@@ -18,7 +18,7 @@ const AdminBlogs = () => {
   const fetchBlogs = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_Backend_URL}/api/blogs`,
+        `${import.meta.env.VITE_Backend_URL}/api/admin/blogs`,
       );
       setBlogs(res.data.data);
     } catch (err) {
