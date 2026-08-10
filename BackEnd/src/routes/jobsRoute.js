@@ -17,11 +17,7 @@ const router = express.Router();
 
 // api '.../jobs'
 
-// ============================================================
-// Job Details Routes (Read Operations)
-// ============================================================
 
-// GET offcampus job details - uses searchLimiter (60 per minute)
 router.get(
     '/jobDetails/:jobId',
     searchLimiter,

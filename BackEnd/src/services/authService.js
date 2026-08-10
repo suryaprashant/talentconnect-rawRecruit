@@ -62,28 +62,65 @@ export const getStatusCountByUserType = async (userType = null) => {
       "company",
       "college",
     ];
-    if (userType && !validUserTypes.includes(userType)) {
-      throw new Error("Invalid userType");
+
+    let normalizedUserType = null;
+
+    if (userType !== null && userType !== undefined) {
+      if (typeof userType === "object") {
+        normalizedUserType = String(userType.userType || "")
+          .trim()
+          .toLowerCase();
+      } else {
+        normalizedUserType = String(userType).trim().toLowerCase();
+      }
     }
-    const baseFilter = userType ? { userType } : {};
+
+    if (normalizedUserType && !validUserTypes.includes(normalizedUserType)) {
+      throw new Error(`Invalid userType: ${normalizedUserType}`);
+    }
+
+    const baseFilter = normalizedUserType
+      ? { userType: normalizedUserType }
+      : {};
 
     const [total, active, pending, blocked] = await Promise.all([
       Auth.countDocuments(baseFilter),
-      Auth.countDocuments({ ...baseFilter, status: "active" }),
-      Auth.countDocuments({ ...baseFilter, status: "pending" }),
-      Auth.countDocuments({ ...baseFilter, status: "blocked" }),
+
+      Auth.countDocuments({
+        ...baseFilter,
+        status: "active",
+      }),
+
+      Auth.countDocuments({
+        ...baseFilter,
+        status: "pending",
+      }),
+
+      Auth.countDocuments({
+        ...baseFilter,
+        status: "blocked",
+      }),
     ]);
 
-    return { total, active, pending, blocked };
+    return {
+      total,
+      active,
+      pending,
+      blocked,
+    };
   } catch (error) {
     console.error(
-      `Error getting status counts for ${userType || "all"}:`,
+      `Error getting status counts for ${
+        typeof userType === "object"
+          ? JSON.stringify(userType)
+          : userType || "all"
+      }:`,
       error.message,
     );
+
     throw new Error("Failed to get status counts");
   }
 };
-
 // Get all users data
 export const getAll = async () => {
   try {
@@ -446,9 +483,9 @@ export const requestPasswordResetService = async ({ email, isRawRecruit }) => {
     await user.save();
 
     const frontendUrls = (process.env.FRONTEND_URLS || "")
-                        .split(",")
-                        .map(url => url.trim());
-                        
+      .split(",")
+      .map((url) => url.trim());
+
     let frontendUrl;
     // if (isRawRecruit) {
     //   frontendUrl =

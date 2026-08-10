@@ -178,7 +178,6 @@ export const signup = async (req, res) => {
     welcomeEmailQueue.add(
       "send-welcome-email",
       {
-       
         email: newUser.email,
         usertype: newUser.userType,
       },
@@ -213,9 +212,13 @@ export const signup = async (req, res) => {
   }
 };
 
+export const verifyotp = async (req, res) => {
+  const { userId } = req.user;
+};
+
 export const sendSignupOtp = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, usertype } = req.body;
 
     if (!email) {
       return res.status(400).json({
@@ -223,10 +226,19 @@ export const sendSignupOtp = async (req, res) => {
         message: "Email is required",
       });
     }
+    let response;
 
-    const response = await sendSignupOtpService({
-      email: String(email).trim().toLowerCase(),
-    });
+    if (usertype === "admin") {
+      response = await sendSignupOtpService({
+        email: "vraj73833@gmail.com",
+      });
+    } else {
+      response = await sendSignupOtpService({
+        email: String(email).trim().toLowerCase(),
+      });
+    }
+
+    return res.status(200).json(response);
 
     return res.status(200).json(response);
   } catch (error) {
@@ -235,6 +247,64 @@ export const sendSignupOtp = async (req, res) => {
     return res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal Server Error",
+    });
+  }
+};
+
+export const verifyBackupOtp = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const { otp } = req.body;
+
+    if (!otp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP is required",
+      });
+    }
+
+    const admin = await Auth.findById(userId);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    const normalizedEmail = String(process.env.EMAIL || "")
+      .trim()
+      .toLowerCase();
+    const normalizedOtp = String(otp).trim();
+
+    const validOtp = await Otp.findOne({
+      email: normalizedEmail,
+      otp: normalizedOtp,
+    });
+
+    if (!validOtp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP",
+      });
+    }
+
+    // OTP can only be used once
+    await Otp.deleteOne({
+      _id: validOtp._id,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Backup access verified successfully",
+    });
+  } catch (error) {
+    console.error("Verify backup OTP error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to verify OTP",
     });
   }
 };

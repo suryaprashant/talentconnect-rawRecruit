@@ -26,9 +26,7 @@ const seed = async () => {
       aliases,
     }));
 
-    await mongoose.connect(
-      process.env.DB_URL
-    );
+     await mongoose.connect(process.env.DB_URL);
 
     await CompanyMaster.deleteMany({});
 

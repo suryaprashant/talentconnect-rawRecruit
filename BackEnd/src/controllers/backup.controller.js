@@ -35,7 +35,7 @@ class BackupController {
         }
     }
 
-    // POST /backup/restore
+    
     async restoreBackup(req, res) {
         try {
             const { key } = req.body;
@@ -74,7 +74,7 @@ class BackupController {
         }
     }
 
-    // POST /backup/cleanup
+    
     async cleanupBackups(req, res) {
         try {
             const result =

@@ -22,7 +22,7 @@ function getStableColor(id = "") {
 }
 
 const ReferralCard = ({ job, onClick }) => {
-  console.log(job)
+ 
   const [isSaved, setIsSaved] = useState(false);
 
   if (!job) return null;
@@ -40,7 +40,7 @@ const ReferralCard = ({ job, onClick }) => {
 
 const handleDetailsClick = (e) => {
     e.stopPropagation(); // Stops the parent div's onClick from firing twice
-    console.log(job)
+    
     if (onClick) onClick(job); // This triggers handleOpenDetails in the parent!
   };
 

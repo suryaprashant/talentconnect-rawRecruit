@@ -30,8 +30,8 @@ const AdminLogin = () => {
 
     try {
       const result = await login(form.email, form.password);
-      console.log(result, " is the result I am getting");
       
+
       if (result.success) {
         toast.success("Admin login successful!");
         navigate("/admin/dashboard");
@@ -40,7 +40,7 @@ const AdminLogin = () => {
         toast.error(result.message);
       }
     } catch (err) {
-      console.error('Admin Login Error:', err);
+      console.error("Admin Login Error:", err);
       const errorMessage = "Login failed. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -71,8 +71,12 @@ const AdminLogin = () => {
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">User Management</h3>
-                  <p className="text-slate-600">Manage candidates, colleges, and companies</p>
+                  <h3 className="font-semibold text-slate-900">
+                    User Management
+                  </h3>
+                  <p className="text-slate-600">
+                    Manage candidates, colleges, and companies
+                  </p>
                 </div>
               </div>
 
@@ -81,8 +85,12 @@ const AdminLogin = () => {
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Analytics Dashboard</h3>
-                  <p className="text-slate-600">Real-time insights and performance metrics</p>
+                  <h3 className="font-semibold text-slate-900">
+                    Analytics Dashboard
+                  </h3>
+                  <p className="text-slate-600">
+                    Real-time insights and performance metrics
+                  </p>
                 </div>
               </div>
 
@@ -91,7 +99,9 @@ const AdminLogin = () => {
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Secure Access</h3>
+                  <h3 className="font-semibold text-slate-900">
+                    Secure Access
+                  </h3>
                   <p className="text-slate-600">
                     Protected admin interface with role-based access
                   </p>
@@ -119,7 +129,10 @@ const AdminLogin = () => {
             <div className="p-6 pt-0">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-slate-700">
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-slate-700"
+                  >
                     Email
                   </label>
                   <input
@@ -134,7 +147,10 @@ const AdminLogin = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-slate-700">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-slate-700"
+                  >
                     Password
                   </label>
                   <div className="relative">
@@ -152,12 +168,20 @@ const AdminLogin = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-2 top-2.5 text-slate-400 hover:text-slate-600"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
 
-                {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+                {error && (
+                  <div className="text-red-500 text-sm text-center">
+                    {error}
+                  </div>
+                )}
 
                 <button
                   type="submit"
@@ -168,16 +192,7 @@ const AdminLogin = () => {
                 </button>
               </form>
 
-              <div className="mt-6 p-4 bg-slate-50 rounded-lg border text-xs text-slate-600 text-center">
-                <p className="mb-2 font-semibold">Demo Credentials:</p>
-                <p>
-                  Email:{" "}
-                  <span className="font-mono bg-white px-2 py-1 rounded">admin@rawrecruit.com</span>
-                  <br />
-                  Password:{" "}
-                  <span className="font-mono bg-white px-2 py-1 rounded">admin123</span>
-                </p>
-              </div>
+              
             </div>
           </div>
         </div>
