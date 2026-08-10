@@ -16,7 +16,7 @@ import ManageReferral from "@/pages/admin/adminPages/ManageReferral";
 import ScheduledInterviewPage from "@/pages/admin/adminPages/ScheduledInterviewPage";
 import AdminManageBlogs from "@/pages/admin/adminPages/adminBlog";
 import AdminNormalization from "@/pages/admin/adminPages/adminNormalization";
-import BackupPage from "@/pages/admin/adminPages/backuppage";
+import BackupPage from "@/pages/admin/adminPages/BackupPage";
 const AdminRoutes = () => {
   return (
     <Routes>
