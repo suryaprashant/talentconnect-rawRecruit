@@ -134,7 +134,7 @@ const JobDriveManagement = () => {
                 placeholder="Search by title..."
               />
             </div>
-            
+
             {/* Job Type Filter */}
             <select
               value={filterType}
@@ -184,7 +184,7 @@ const JobDriveManagement = () => {
                       </td>
                       <td className="p-2">{job.location || "N/A"}</td>
                       <td className="p-2">
-                        {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "N/A"}
+                        {job.createdAt ? new Date(job.createdAt).toLocaleDateString('en-IN') : "N/A"}
                       </td>
                     </tr>
                   ))

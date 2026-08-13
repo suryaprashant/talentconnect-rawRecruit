@@ -17,47 +17,47 @@ const EventStatus = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await getEventApplicationStatus();
       console.log("🔍 Event applications response:", response);
-      
+
       if (!response || !response.data) {
         throw new Error("No response from API");
       }
-      
+
       const eventsData = response.data.data || [];
       console.log(`🔍 Found ${eventsData.length} event applications`);
-      
+
       if (eventsData.length === 0) {
         setEvents([]);
         setIsLoading(false);
         return;
       }
-      
+
       // Transform event data to match our structure
       const transformedEvents = eventsData.map(event => {
         const participant = event.participant || {};
-        const firstHistory = Array.isArray(event?.statusHistory) && event.statusHistory.length > 0 
-          ? event.statusHistory[0] 
+        const firstHistory = Array.isArray(event?.statusHistory) && event.statusHistory.length > 0
+          ? event.statusHistory[0]
           : null;
-        
+
         // Format date
-        const date = firstHistory?.date 
+        const date = firstHistory?.date
           ? new Date(firstHistory.date).toUTCString().slice(0, 16)
-          : event.createdAt 
-            ? new Date(event.createdAt).toLocaleDateString()
+          : event.createdAt
+            ? new Date(event.createdAt).toLocaleDateString('en-IN')
             : "N/A";
-        
+
         // Extract location
         const location = event.venue || event.location || "Location not specified";
-        
+
         // Extract event type
         const eventType = event.type || "Event";
-        
+
         // Team members
         const teamMembers = participant.teamMembers || [];
         const totalTeamMembers = teamMembers.length + 1; // +1 for team leader
-        
+
         // Rounds
         const rounds = (event.rounds || []).map(round => ({
           roundNumber: round.roundNumber || '',
@@ -68,14 +68,14 @@ const EventStatus = () => {
           inputType: round.inputType || 'link',
           status: 'Pending'
         }));
-        
+
         // Participant rounds
         const participantRounds = (participant.rounds || []).map(round => ({
           roundNumber: round.roundNumber || '',
           rountStatus: round.rountStatus || '',
           inputType: round.inputType || '',
         }));
-        
+
         return {
           ...event,
           id: event._id,
@@ -101,14 +101,14 @@ const EventStatus = () => {
           }
         };
       });
-      
+
       console.log("✅ Final transformed events:", transformedEvents);
       setEvents(transformedEvents);
-      
+
       if (transformedEvents.length > 0) {
         const firstEvent = transformedEvents[0];
         setSelectedEvent(firstEvent);
-        
+
         if (firstEvent.participantData) {
           setFormData({
             teamLeaderId: firstEvent.participantData.teamLeaderId || '',
@@ -122,7 +122,7 @@ const EventStatus = () => {
           });
         }
       }
-      
+
     } catch (error) {
       console.error("❌ Error in fetchEventApplications:", error);
       setError(error.message || "Failed to fetch event applications");
@@ -248,7 +248,7 @@ const EventStatus = () => {
   };
 
   const getEventTypeColor = (type) => {
-    switch(type?.toLowerCase()) {
+    switch (type?.toLowerCase()) {
       case 'hackathon': return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
       case 'workshop': return 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30';
       case 'casestudy': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
@@ -271,7 +271,7 @@ const EventStatus = () => {
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="relative z-10 flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
         </div>
@@ -343,7 +343,7 @@ const EventStatus = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
@@ -379,7 +379,7 @@ const EventStatus = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-2">
                 {sortedEvents.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2">
@@ -387,19 +387,17 @@ const EventStatus = () => {
                       <button
                         key={event.id}
                         onClick={() => onEventChange(event)}
-                        className={`text-left p-3 rounded-xl transition-all duration-200 ${
-                          selectedEvent?.id === event.id 
-                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
+                        className={`text-left p-3 rounded-xl transition-all duration-200 ${selectedEvent?.id === event.id
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20'
                             : 'hover:bg-white/30 border border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              selectedEvent?.id === event.id 
-                                ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedEvent?.id === event.id
+                                ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white'
                                 : 'bg-white/50 border border-white/60 text-[#143694]'
-                            }`}>
+                              }`}>
                               <span className="text-xs font-bold">{getCompanyInitials(event.title)}</span>
                             </div>
                           </div>
@@ -448,7 +446,7 @@ const EventStatus = () => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="relative">
                     <div className="flex justify-between mb-1">
                       {statusSteps?.slice(0, 4).map((step, idx) => {
@@ -456,11 +454,10 @@ const EventStatus = () => {
                         const isActive = idx <= currentIdx;
                         return (
                           <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                              isActive 
-                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white' 
+                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${isActive
+                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white'
                                 : 'bg-white/50 border-white/60 text-gray-400'
-                            }`}>
+                              }`}>
                               {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
                             </div>
                             <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
@@ -492,7 +489,7 @@ const EventStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedEvent.eventType}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <MapPin className="h-4 w-4 text-[#143694]" />
@@ -510,10 +507,10 @@ const EventStatus = () => {
                         <span className="text-xs font-medium text-gray-700">Event Dates</span>
                       </div>
                       <p className="text-sm text-gray-900">
-                        {new Date(selectedEvent.startDate).toLocaleDateString()} - {new Date(selectedEvent.endDate).toLocaleDateString()}
+                        {new Date(selectedEvent.startDate).toLocaleDateString('en-IN')} - {new Date(selectedEvent.endDate).toLocaleDateString('en-IN')}
                       </p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="h-4 w-4 text-[#143694]" />
@@ -535,7 +532,7 @@ const EventStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedEvent.projectTitle}</p>
                     </div>
-                    
+
                     {/* Team Leader */}
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
@@ -566,9 +563,9 @@ const EventStatus = () => {
                                 Pending
                               </span>
                             </div>
-                            
+
                             <p className="text-sm text-gray-600 mb-3">{round.description}</p>
-                            
+
                             {/* Submission Form */}
                             {round.inputType === 'link' ? (
                               <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "link", selectedEvent.participantData?._id)} className="space-y-2">
@@ -664,7 +661,7 @@ const EventStatus = () => {
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <button 
+                    <button
                       onClick={() => alert('View full details clicked!')}
                       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 group"
                     >

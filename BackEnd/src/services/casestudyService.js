@@ -57,17 +57,17 @@ class CasestudyService {
             domains
         } = casestudyData;
 
-       
+
         let logoUrl = '';
         if (file) {
             console.log('File upload detected but not processed yet:', file);
-           
+
         }
 
-        
+
         const rewardsAndBenefits = this._transformRewardsData(rewards);
 
-    
+
         const casestudyType = this._determineCasestudyType(mode);
 
         // Determine max team size based on participation type
@@ -176,7 +176,7 @@ class CasestudyService {
 
         // Normalize rounds data while preserving inputType
         if (updateData.rounds) {
-            const normalizedRounds = Array.isArray(updateData.rounds) 
+            const normalizedRounds = Array.isArray(updateData.rounds)
                 ? updateData.rounds.map(round => ({
                     ...round,
                     roundNumber: round.roundNumber || 1,
@@ -185,9 +185,9 @@ class CasestudyService {
                     startDate: round.startDate || '',
                     endDate: round.endDate || '',
                     inputType: round.inputType || 'link' // Default to 'link' if not specified
-                  }))
+                }))
                 : [];
-            
+
             updateData.rounds = normalizedRounds;
         }
 
@@ -334,10 +334,10 @@ class CasestudyService {
         if (rewards.specialAwards && rewards.specialAwards.length > 0) {
             rewards.specialAwards.forEach(award => {
                 if (!award?.name) return;
-                
+
                 // Use the individual award's reward type
                 const awardRewardType = award.rewardType || 'Perks';
-                
+
                 if (awardRewardType === 'Amount' && award.amount) {
                     rewardsAndBenefits.push({
                         title: award.name,
@@ -408,11 +408,11 @@ class CasestudyService {
                 if (Array.isArray(parsed)) {
                     return parsed.map(item => {
                         if (item.hasOwnProperty('roundNumber')) {
-                          // This is a round object
-                          return {
-                            ...item,
-                            inputType: item.inputType || 'link' // Ensure inputType is always set
-                          };
+                            // This is a round object
+                            return {
+                                ...item,
+                                inputType: item.inputType || 'link' // Ensure inputType is always set
+                            };
                         }
                         return item;
                     });
@@ -494,28 +494,28 @@ class CasestudyService {
         if (!authUser) return null;
 
         let userDetails = {
-        name: authUser.name,
-        email: authUser.email,
-        userType: authUser.userType
+            name: authUser.name,
+            email: authUser.email,
+            userType: authUser.userType
         };
 
         let profile;
         switch (authUser.userType) {
-        case "student":
-            profile = await StudentOverview.findOne({ email });
-            if (profile)
-            userDetails = { ...userDetails, ...profile.toObject() };
-            break;
-        case "professional":
-            profile = await ProfessionalProfile.findOne({ email });
-            if (profile)
-            userDetails = { ...userDetails, ...profile.toObject() };
-            break;
-        case "fresher":
-            profile = await FresherProfile.findOne({ email });
-            if (profile)
-            userDetails = { ...userDetails, ...profile.toObject() };
-            break;
+            case "student":
+                profile = await StudentOverview.findOne({ email });
+                if (profile)
+                    userDetails = { ...userDetails, ...profile.toObject() };
+                break;
+            case "professional":
+                profile = await ProfessionalProfile.findOne({ email });
+                if (profile)
+                    userDetails = { ...userDetails, ...profile.toObject() };
+                break;
+            case "fresher":
+                profile = await FresherProfile.findOne({ email });
+                if (profile)
+                    userDetails = { ...userDetails, ...profile.toObject() };
+                break;
         }
         return userDetails;
     }
@@ -524,17 +524,17 @@ class CasestudyService {
         const casestudies = await Casestudy.find({ createdBy: companyId }).sort({ createdAt: -1 });
 
         const casestudiesWithCounts = await Promise.all(
-        casestudies.map(async (cs) => {
-            const total = await CasestudyParticipation.countDocuments({ eventID: cs._id });
-            const pending = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Pending" });
-            const confirmed = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Confirmed" });
-            const rejected = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Rejected" });
+            casestudies.map(async (cs) => {
+                const total = await CasestudyParticipation.countDocuments({ eventID: cs._id });
+                const pending = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Pending" });
+                const confirmed = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Confirmed" });
+                const rejected = await CasestudyParticipation.countDocuments({ eventID: cs._id, registrationStatus: "Rejected" });
 
-            return {
-            ...cs.toObject(),
-            registrationCounts: { total, pending, confirmed, rejected }
-            };
-        })
+                return {
+                    ...cs.toObject(),
+                    registrationCounts: { total, pending, confirmed, rejected }
+                };
+            })
         );
         return casestudiesWithCounts;
     }
@@ -546,10 +546,10 @@ class CasestudyService {
         const registrations = await CasestudyParticipation.find({ eventID: casestudyId }).sort({ createdAt: -1 });
 
         const detailed = await Promise.all(
-        registrations.map(async (r) => ({
-            ...r.toObject(),
-            userDetails: await this.getUserDetailsByEmail(r.email)
-        }))
+            registrations.map(async (r) => ({
+                ...r.toObject(),
+                userDetails: await this.getUserDetailsByEmail(r.email)
+            }))
         );
         return detailed;
     }
@@ -564,10 +564,10 @@ class CasestudyService {
         const userDetails = await this.getUserDetailsByEmail(registration.email);
 
         const teamMembersWithDetails = await Promise.all(
-        registration.teamMembers.map(async (m) => ({
-            ...m.toObject(),
-            userDetails: await this.getUserDetailsByEmail(m.email)
-        }))
+            registration.teamMembers.map(async (m) => ({
+                ...m.toObject(),
+                userDetails: await this.getUserDetailsByEmail(m.email)
+            }))
         );
 
         return { ...registration.toObject(), casestudy, userDetails, teamMembers: teamMembersWithDetails };
@@ -588,8 +588,8 @@ class CasestudyService {
         Dear ${registration.name},
 
         Your registration for "${casestudy.title}" has been confirmed.
-        Start Date: ${new Date(casestudy.startDate).toLocaleDateString()}
-        End Date: ${new Date(casestudy.endDate).toLocaleDateString()}
+        Start Date: ${new Date(casestudy.startDate).toLocaleDateString('en-IN')}
+        End Date: ${new Date(casestudy.endDate).toLocaleDateString('en-IN')}
         Location: ${casestudy.location}
 
         Regards,
@@ -637,23 +637,23 @@ class CasestudyService {
 
         // Upload to Cloudinary if file provided
         if (req.file) {
-        const result = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-            { resource_type: "auto", folder: "casestudy_files" },
-            (error, result) => (error ? reject(error) : resolve(result))
-            );
-            stream.end(req.file.buffer);
-        });
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { resource_type: "auto", folder: "casestudy_files" },
+                    (error, result) => (error ? reject(error) : resolve(result))
+                );
+                stream.end(req.file.buffer);
+            });
 
-        uploadedFileUrl = result.secure_url;
-        uploadedFileName = req.file.originalname;
+            uploadedFileUrl = result.secure_url;
+            uploadedFileName = req.file.originalname;
         }
 
         if (!uploadedFileUrl || !uploadedFileName) throw new Error("File upload failed or missing data");
 
         const targetRegs = await CasestudyParticipation.find({
-        eventID: casestudyId,
-        registrationStatus: "Confirmed"
+            eventID: casestudyId,
+            registrationStatus: "Confirmed"
         });
 
         if (targetRegs.length === 0) throw new Error("No confirmed users to send file to");
@@ -661,20 +661,20 @@ class CasestudyService {
         const emails = targetRegs.map((r) => r.email);
 
         const results = await sendBulkNotifications(emails, {
-        senderId: companyId,
-        type: "FILE_SHARED",
-        message: `${message}\n\nFile: ${uploadedFileName}`,
-        fileUrl: uploadedFileUrl,
-        fileName: uploadedFileName,
-        eventTitle: casestudy.title
+            senderId: companyId,
+            type: "FILE_SHARED",
+            message: `${message}\n\nFile: ${uploadedFileName}`,
+            fileUrl: uploadedFileUrl,
+            fileName: uploadedFileName,
+            eventTitle: casestudy.title
         });
 
         const successCount = results.filter((r) => r.success).length;
         const failCount = results.length - successCount;
 
         return {
-        message: `File sent to ${successCount} users, failed for ${failCount}`,
-        data: { results, fileUrl: uploadedFileUrl }
+            message: `File sent to ${successCount} users, failed for ${failCount}`,
+            data: { results, fileUrl: uploadedFileUrl }
         };
     }
 }

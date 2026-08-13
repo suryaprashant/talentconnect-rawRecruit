@@ -35,8 +35,8 @@ const InternJobDetailPage = () => {
                         title: jobData.jobTitle || 'Not specified',
                         description: jobData.description || 'No description provided.',
                         eventDates: {
-                            start: jobData.startDate ? new Date(jobData.startDate).toLocaleDateString() : 'N/A',
-                            end: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString() : 'N/A',
+                            start: jobData.startDate ? new Date(jobData.startDate).toLocaleDateString('en-IN') : 'N/A',
+                            end: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString('en-IN') : 'N/A',
                         },
                         isHybridEvent: jobData.workMode === 'Hybrid',
                         companyInfo: {
@@ -85,7 +85,7 @@ const InternJobDetailPage = () => {
                         selectionProcess: {
                             steps: jobData.rounds?.length > 0 ? jobData.rounds : ['N/A'],
                             dates: {
-                                registrationDeadline: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString() : 'N/A',
+                                registrationDeadline: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString('en-IN') : 'N/A',
                                 onlineTest: 'N/A',
                                 interview: 'N/A',
                                 offerRollout: 'N/A',

@@ -129,7 +129,7 @@ export default function OncampusApplicationStatus() {
         jobId: item.job,
 
         status: item.currentStatus,
-        date: new Date(item.createdAt).toLocaleDateString(),
+        date: new Date(item.createdAt).toLocaleDateString('en-IN'),
 
         collegeName,
         collegeLogo: collegeDetails.profileImage || null,

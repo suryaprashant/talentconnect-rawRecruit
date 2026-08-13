@@ -91,7 +91,7 @@ const EventDetail = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
+            {new Date(event.startDate).toLocaleDateString('en-IN')} - {new Date(event.endDate).toLocaleDateString('en-IN')}
           </div>
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,7 +167,7 @@ const EventDetail = () => {
               >
                 {round.roundNumber}
               </div>
-              <div className="mb-1">{new Date(round.startDate).toLocaleDateString()} - {new Date(round.endDate).toLocaleDateString()}</div>
+              <div className="mb-1">{new Date(round.startDate).toLocaleDateString('en-IN')} - {new Date(round.endDate).toLocaleDateString('en-IN')}</div>
               <h3 className="text-lg font-semibold">{round.roundName}</h3>
               <p className="text-gray-700">{round.description}</p>
             </div>
@@ -274,7 +274,7 @@ const EventDetail = () => {
                   </div>
 
                   {/* Label and Link */}
-                  
+
                   <a
                     href={url}
                     target="_blank"

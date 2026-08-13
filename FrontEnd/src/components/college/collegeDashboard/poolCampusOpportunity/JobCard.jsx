@@ -70,7 +70,7 @@ const JobCard = ({ job, onClick }) => {
   // ---------------- NEW DATA (FROM COMPANY CARD) ----------------
 
   const startDate = job.startDate
-    ? new Date(job.startDate).toLocaleDateString()
+    ? new Date(job.startDate).toLocaleDateString('en-IN')
     : null;
 
   const endDate = job.endDate

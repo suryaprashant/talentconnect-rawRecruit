@@ -1192,6 +1192,7 @@
 
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { ArrowLeft } from "lucide-react";
 import axios from '../../../../lib/axiosInstance';
 import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, Briefcase, Target, IndianRupee, Clock, MessageSquare, Award, MapPin, Settings } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -1203,7 +1204,8 @@ import BackButton from '@/components/layout/BackButton';
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
-export default function RequestInfo() {
+export default function RequestInfo({
+  onBackClick}) {
   {/*const degreeStreamMapping = {
     'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
     'B.Tech': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
@@ -1769,6 +1771,18 @@ export default function RequestInfo() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
+        {/* Back Button */}
+        <div className="mb-6">
+          
+          <button
+            type="button"
+            onClick={onBackClick}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
@@ -2021,7 +2035,7 @@ export default function RequestInfo() {
 
                   {/* Looking for */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Looking for</label>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Looking for <span className="text-red-500">*</span></label>
                     <div className="flex gap-2">
                       {['Job', 'Internship', 'Both'].map(type => (
                         <button
@@ -2058,7 +2072,7 @@ export default function RequestInfo() {
 
                   {/* Work Mode */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode</label>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-2">
                       {['Hybrid', 'On-site', 'Remote'].map(mode => (
                         <button
@@ -2076,7 +2090,7 @@ export default function RequestInfo() {
 
                 {/* Preferred Hiring Mode */}
                 <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode</label>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Preferred Hiring Mode <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {preferredModeOptions.map(mode => (
                       <button
@@ -2807,8 +2821,8 @@ export default function RequestInfo() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-between pt-4">
-              <BackButton></BackButton>
+            <div className="flex justify-center pt-4">
+              {/* <BackButton></BackButton> */}
               <button
                 type="button"
                 onClick={handleSubmit}

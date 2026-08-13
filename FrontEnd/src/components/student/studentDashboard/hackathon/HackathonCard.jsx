@@ -41,7 +41,7 @@ const HackathonCard = ({ hackathon }) => {
         {/* Date + Save */}
         <div className="flex justify-between items-start">
           <span className="text-xs bg-white px-3 py-1 rounded-full font-medium">
-            {new Date(hackathon.startDate || hackathon.createdAt).toLocaleDateString()}
+            {new Date(hackathon.startDate || hackathon.createdAt).toLocaleDateString('en-IN')}
           </span>
 
           <button
