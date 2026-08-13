@@ -136,7 +136,7 @@ const handleDetailsClick = (e) => {
               </span>
               <span className="mx-1">•</span>
               <Calendar className="h-3 w-3" />
-              <span>{new Date(job.createdAt).toLocaleDateString()}</span>
+              <span>{new Date(job.createdAt).toLocaleDateString('en-IN')}</span>
             </div>
           </div>
 

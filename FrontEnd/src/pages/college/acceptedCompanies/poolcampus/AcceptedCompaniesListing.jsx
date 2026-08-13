@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
-  Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, 
-  Building2, Calendar, FileText, User, AlertCircle, Users 
+import {
+  Search, Eye, ChevronLeft, ChevronRight, Trash, Filter,
+  Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail,
+  Building2, Calendar, FileText, User, AlertCircle, Users
 } from 'lucide-react';
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import { deleteCollegeJob ,conversationWithCollege} from '@/lib/College_AxiosIntance';
+import { deleteCollegeJob, conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
 import { useChat } from '@/context/ChatContext';
@@ -82,7 +82,7 @@ export default function PoolCampusJobManagement() {
       // Pool-campus specific API call preserved
       const response = await getPostedJobs("Pool-campus", "Accepted");
       console.log("Fetched jobs:", response?.data);
-      
+
       if (response.data && Array.isArray(response.data)) {
         // Process jobs to update their status based on dates
         const processedJobs = processJobsWithStatus(response.data);
@@ -100,16 +100,16 @@ export default function PoolCampusJobManagement() {
     }
   };
 
-  const fetchCompaniesForJob = async (jobId, jobType,isVisited) => {
+  const fetchCompaniesForJob = async (jobId, jobType, isVisited) => {
     setCompaniesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted",isVisited);
+      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted", isVisited);
       console.log("Fetched companies for job:", response.data);
       setCompanies(response.data || []);
       if (isVisited === "false") {
-      fetchJobs(); 
-    }
+        fetchJobs();
+      }
     } catch (err) {
       console.error("Error fetching companies:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch companies.");
@@ -230,14 +230,14 @@ export default function PoolCampusJobManagement() {
   const handleViewCompanies = (job) => {
     // Disabled logic removed. Always fetches/displays now.
     setSelectedJob(job);
-    fetchCompaniesForJob(job._id, job.jobType,"false");
+    fetchCompaniesForJob(job._id, job.jobType, "false");
   };
 
   const handleViewAllCompanies = (job) => {
     // Disabled logic removed. Always fetches/displays now.
     setSelectedJob(job);
-    
-    fetchCompaniesForJob(job._id, job.jobType,undefined);
+
+    fetchCompaniesForJob(job._id, job.jobType, undefined);
   };
 
   const handleBackToList = () => {
@@ -255,53 +255,53 @@ export default function PoolCampusJobManagement() {
       return null;
     }
 
-       const navigate = useNavigate();
-      // const { setSelectedConversation, setShowFloatingChat } = useChat();  
-      const { setSelectedConversation, setShowFloatingChat } = useChat();  
-    
-     // const { applicant } = companyApplication;
-     const { _id: applicationId, applicant, createdAt } = companyApplication;
-      const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
-    
-    
-        const handleMessageClick = async (e) => {
-        e.stopPropagation();
-    
-        if (!userId) {
-          toast.error("Company user not found");
-          return;
+    const navigate = useNavigate();
+    // const { setSelectedConversation, setShowFloatingChat } = useChat();  
+    const { setSelectedConversation, setShowFloatingChat } = useChat();
+
+    // const { applicant } = companyApplication;
+    const { _id: applicationId, applicant, createdAt } = companyApplication;
+    const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
+
+
+    const handleMessageClick = async (e) => {
+      e.stopPropagation();
+
+      if (!userId) {
+        toast.error("Company user not found");
+        return;
+      }
+      console.log("Chatting with company:", {
+        userId,
+        companyDetails
+      });
+      try {
+        const response = await conversationWithCollege(userId);
+
+        if (response.data) {
+          const conversationUser = {
+            _id: userId, // 
+            name: companyDetails?.companyName || 'Unknown Company',
+            fullname: companyDetails?.companyName || 'Unknown Company',
+            email: employerDetails?.workEmail || '',
+            profileImage:
+              profileImageUrl ||
+              'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            userType: 'company' // 
+          };
+
+          setSelectedConversation(conversationUser);
+          setTimeout(() => {
+            setShowFloatingChat(true);
+          }, 0);
+        } else {
+          toast.error('Failed to create conversation');
         }
-     console.log("Chatting with company:", {
-      userId,
-      companyDetails
-    });
-        try {
-          const response = await conversationWithCollege(userId);
-    
-          if (response.data) {
-            const conversationUser = {
-              _id: userId, // 
-              name: companyDetails?.companyName || 'Unknown Company',
-              fullname: companyDetails?.companyName || 'Unknown Company',
-              email: employerDetails?.workEmail || '',
-              profileImage:
-                profileImageUrl ||
-                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-              userType: 'company' // 
-            };
-    
-            setSelectedConversation(conversationUser);
-            setTimeout(() => {
-              setShowFloatingChat(true);
-            }, 0);
-          } else {
-            toast.error('Failed to create conversation');
-          }
-        } catch (error) {
-          console.error('Chat error:', error);
-          toast.error('Error starting conversation');
-        }
-      };
+      } catch (error) {
+        console.error('Chat error:', error);
+        toast.error('Error starting conversation');
+      }
+    };
 
     const handleReject = async (e) => {
       e.stopPropagation();
@@ -340,79 +340,79 @@ export default function PoolCampusJobManagement() {
     };
 
     const CompanyDetailsModal = () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          {/* Header */}
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{companyDetails?.companyName}</h2>
-              <p className="text-gray-600 text-sm mt-1">{companyDetails?.description || 'No description available'}</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{companyDetails?.companyName}</h2>
+                <p className="text-gray-600 text-sm mt-1">{companyDetails?.description || 'No description available'}</p>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl p-1"
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={() => setShowModal(false)}
-              className="text-gray-500 hover:text-gray-700 text-xl p-1"
-            >
-              ✕
-            </button>
-          </div>
 
-          {/* Company Details Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-700">
-                <Briefcase className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Industry:</span>
-                <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
+            {/* Company Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <Briefcase className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Industry:</span>
+                  <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Company Type:</span>
+                  <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Users className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Employees:</span>
+                  <span className="ml-2">{companyDetails?.numberOfEmployees || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Established:</span>
+                  <span className="ml-2">{companyDetails?.establishedYear || 'N/A'}</span>
+                </div>
               </div>
-              <div className="flex items-center text-gray-700">
-                <Building2 className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Company Type:</span>
-                <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Users className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Employees:</span>
-                <span className="ml-2">{companyDetails?.numberOfEmployees || 'N/A'}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Calendar className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Established:</span>
-                <span className="ml-2">{companyDetails?.establishedYear || 'N/A'}</span>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-700">
-                <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Location:</span>
-                <span className="ml-2">
-                  {[companyDetails?.city, companyDetails?.state, companyDetails?.country]
-                    .filter(Boolean)
-                    .join(', ') || 'N/A'}
-                </span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Phone:</span>
-                <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Alt Phone:</span>
-                <span className="ml-2">{companyDetails?.alternatePhoneNumber || 'Not provided'}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
-                <span className="font-medium">Email:</span>
-                <span className="ml-2">{employerDetails?.workEmail || 'Not provided'}</span>
+
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Location:</span>
+                  <span className="ml-2">
+                    {[companyDetails?.city, companyDetails?.state, companyDetails?.country]
+                      .filter(Boolean)
+                      .join(', ') || 'N/A'}
+                  </span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Phone:</span>
+                  <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Phone className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Alt Phone:</span>
+                  <span className="ml-2">{companyDetails?.alternatePhoneNumber || 'Not provided'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
+                  <span className="font-medium">Email:</span>
+                  <span className="ml-2">{employerDetails?.workEmail || 'Not provided'}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 
     return (
       <>
@@ -425,7 +425,7 @@ export default function PoolCampusJobManagement() {
                 className="w-24 h-24 rounded-xl object-cover border-2 border-white/50 shadow-sm"
               />
             </div>
-        
+
             <div className="flex-grow">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                 <div>
@@ -444,12 +444,12 @@ export default function PoolCampusJobManagement() {
                     </span>
                     <span className="text-sm text-gray-500 flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      Applied: {new Date(createdAt).toLocaleDateString()}
+                      Applied: {new Date(createdAt).toLocaleDateString('en-IN')}
                     </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
@@ -468,13 +468,13 @@ export default function PoolCampusJobManagement() {
                     <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
                     <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Website:</span>
-                    <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
+                    <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer"
+                      className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.websiteUrl || 'Not provided'}
                     </a>
                   </div>
@@ -486,8 +486,8 @@ export default function PoolCampusJobManagement() {
                   <div className="flex items-center text-gray-700">
                     <Linkedin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">LinkedIn:</span>
-                    <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
+                    <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer"
+                      className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
                     </a>
                   </div>
@@ -519,8 +519,8 @@ export default function PoolCampusJobManagement() {
                     <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Email:</span>
-                      <a href={`mailto:${employerDetails?.workEmail}`} 
-                         className="ml-2 text-[#1e4ed8] hover:underline">
+                      <a href={`mailto:${employerDetails?.workEmail}`}
+                        className="ml-2 text-[#1e4ed8] hover:underline">
                         {employerDetails?.workEmail || 'N/A'}
                       </a>
                     </div>
@@ -540,11 +540,10 @@ export default function PoolCampusJobManagement() {
                 <button
                   onClick={handleReject}
                   disabled={isProcessing || currentStatus === 'Rejected'}
-                  className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${
-                    currentStatus === 'Rejected'
+                  className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${currentStatus === 'Rejected'
                       ? 'bg-gradient-to-r from-red-700 to-red-800 text-white cursor-not-allowed'
                       : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5'
-                  } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isProcessing ? (
                     <>
@@ -574,7 +573,7 @@ export default function PoolCampusJobManagement() {
             </div>
           </div>
         </div>
-        
+
         {/* Render the modal conditionally */}
         {showModal && <CompanyDetailsModal />}
       </>
@@ -678,46 +677,46 @@ export default function PoolCampusJobManagement() {
         <div className="mb-12">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-8">
 
-  <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
 
-    {/* Top Section */}
-    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+              {/* Top Section */}
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
 
-      <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
-          Accepted Pool-Campus Drives
-        </h1>
+                <div>
+                  <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                    Accepted Pool-Campus Drives
+                  </h1>
 
-        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
-          Track your accepted pool-campus drives efficiently
-        </p>
-      </div>
+                  <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+                    Track your accepted pool-campus drives efficiently
+                  </p>
+                </div>
 
-    </div>
+              </div>
 
-    {/* Tabs */}
-    <div className="flex items-center gap-3 border-gray-200 pt-0">
+              {/* Tabs */}
+              <div className="flex items-center gap-3 border-gray-200 pt-0">
 
-      {/* Inactive */}
-      <button 
-        onClick={() => navigate('/accepted/on-campus-request')}
-        className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
-      >
-        On-Campus
-      </button>
+                {/* Inactive */}
+                <button
+                  onClick={() => navigate('/accepted/on-campus-request')}
+                  className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+                >
+                  On-Campus
+                </button>
 
-      {/* Active */}
-      <button 
-        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-      >
-        Pool-Campus
-      </button>
+                {/* Active */}
+                <button
+                  className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  Pool-Campus
+                </button>
 
-    </div>
+              </div>
 
-  </div>
+            </div>
 
-</div>
+          </div>
 
           {/* Main Content Card */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">
@@ -758,129 +757,129 @@ export default function PoolCampusJobManagement() {
             </div> */}
 
             {/* Table - 5 Columns */}
-<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
-  {/* Table Header */}
-  <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-    <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-      <div className="col-span-3">Degree</div>
-      <div className="col-span-2">Deadline</div>
-      <div className="col-span-2 text-center">Views</div>
-      <div className="col-span-3 text-center">Applications</div>
-      <div className="col-span-2 text-center">Actions</div>
-    </div>
-  </div>
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
+              {/* Table Header */}
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  <div className="col-span-3">Degree</div>
+                  <div className="col-span-2">Deadline</div>
+                  <div className="col-span-2 text-center">Views</div>
+                  <div className="col-span-3 text-center">Applications</div>
+                  <div className="col-span-2 text-center">Actions</div>
+                </div>
+              </div>
 
-  {/* Table Body */}
-  <div className="divide-y divide-gray-100">
-    {loading ? (
-      <div className="p-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
-        <p className="mt-4 text-gray-600">Loading drives...</p>
-      </div>
-    ) : currentJobs.length === 0 ? (
-      <div className="p-12 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
-          <Search className="h-8 w-8 text-gray-400" />
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No drives found</h3>
-        <p className="text-gray-600">No drives match your search criteria.</p>
-      </div>
-    ) : (
-      currentJobs.map(job => {
-        const jobId = job._id;
-        const degree = displayDegree(job);
-        const jobLocation = job.venue || 'N/A';
-        const deadline = job?.proposedSchedule?.endDate;
-        const views = job.views || 0;
-        const applications = job.applicationCount || 0;
-        
-        return (
-          <div key={jobId} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
-            <div className="grid grid-cols-12 gap-4 items-center">
-              {/* Degree Column - col-span-3 */}
-              <div className="col-span-3">
-                <div 
-                  onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
-                  className="group cursor-pointer"
-                >
-                  <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
-                    {degree}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <MapPin className="h-3 w-3 text-gray-400" />
-                    <span className="text-sm text-gray-500 line-clamp-1">{jobLocation}</span>
+              {/* Table Body */}
+              <div className="divide-y divide-gray-100">
+                {loading ? (
+                  <div className="p-12 text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
+                    <p className="mt-4 text-gray-600">Loading drives...</p>
                   </div>
-                </div>
-              </div>
-              
-              {/* Deadline Column - col-span-2 */}
-              <div className="col-span-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-gray-400" />
-                  <span className="text-gray-700 text-sm">
-                    {formatDate(deadline)}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Views Column - col-span-2 */}
-              <div className="col-span-2 text-center">
-                <div className="flex items-center justify-center">
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
-                    {views}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Applications Column - col-span-3 */}
-              <div className="col-span-3 text-center">
-                <button
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleViewCompanies(job); 
-                  }}
-                  className="group flex items-center justify-center w-full cursor-pointer"
-                  title="View Applications"
-                >
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
-                    {applications}
-                  </span>
-                </button>
-              </div>
-              
-              {/* Actions Column - col-span-2 */}
-              <div className="col-span-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      handleViewAllCompanies(job); 
-                    }}
-                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
-                    title="View Company Applications"
-                  >
-                    {/* <Eye size={16} /> */}
-                    viewed
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(job._id);
-                    }}
-                    className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
-                    title="Delete Drive"
-                  >
-                    <Trash size={16} />
-                  </button>
-                </div>
+                ) : currentJobs.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
+                      <Search className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No drives found</h3>
+                    <p className="text-gray-600">No drives match your search criteria.</p>
+                  </div>
+                ) : (
+                  currentJobs.map(job => {
+                    const jobId = job._id;
+                    const degree = displayDegree(job);
+                    const jobLocation = job.venue || 'N/A';
+                    const deadline = job?.proposedSchedule?.endDate;
+                    const views = job.views || 0;
+                    const applications = job.applicationCount || 0;
+
+                    return (
+                      <div key={jobId} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          {/* Degree Column - col-span-3 */}
+                          <div className="col-span-3">
+                            <div
+                              onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
+                              className="group cursor-pointer"
+                            >
+                              <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
+                                {degree}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <MapPin className="h-3 w-3 text-gray-400" />
+                                <span className="text-sm text-gray-500 line-clamp-1">{jobLocation}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Deadline Column - col-span-2 */}
+                          <div className="col-span-2">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-3 w-3 text-gray-400" />
+                              <span className="text-gray-700 text-sm">
+                                {formatDate(deadline)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Views Column - col-span-2 */}
+                          <div className="col-span-2 text-center">
+                            <div className="flex items-center justify-center">
+                              <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
+                                {views}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Applications Column - col-span-3 */}
+                          <div className="col-span-3 text-center">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewCompanies(job);
+                              }}
+                              className="group flex items-center justify-center w-full cursor-pointer"
+                              title="View Applications"
+                            >
+                              <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
+                                {applications}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* Actions Column - col-span-2 */}
+                          <div className="col-span-2">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewAllCompanies(job);
+                                }}
+                                className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
+                                title="View Company Applications"
+                              >
+                                {/* <Eye size={16} /> */}
+                                viewed
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(job._id);
+                                }}
+                                className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
+                                title="Delete Drive"
+                              >
+                                <Trash size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
-          </div>
-        );
-      })
-    )}
-  </div>
-</div>
 
             {/* Pagination */}
             {!loading && totalPages > 1 && (

@@ -128,7 +128,7 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
 
     const diffTime = endDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day(s) remaining until ${endDate.toLocaleDateString()}`;
+    return `${diffDays} day(s) remaining until ${endDate.toLocaleDateString('en-IN')}`;
   };
 
   const remainingDays = calculateRemainingDays();
@@ -142,7 +142,7 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
         </p>
 
         {/* Show derived current company as read-only info */}
-       
+
 
         <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
 

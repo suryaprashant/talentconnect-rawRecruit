@@ -17,53 +17,53 @@ const ReferralStatus = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await getUserApplicationStatus("Referral");
       console.log("🔍 Step 1 - Referral Application list response:", response);
-      
+
       if (!response || !response.data) {
         throw new Error("No response from API");
       }
-      
+
       const rawData = response.data?.data || [];
       console.log(`🔍 Found ${rawData.length} referral applications`);
-      
+
       if (rawData.length === 0) {
         setReferralJobs([]);
         setIsLoading(false);
         return;
       }
-      
+
       // Fetch full job details for each application
       const detailedJobs = await Promise.all(
         rawData.map(async (item) => {
           try {
             const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
             console.log(`🔍 Fetching referral job details for jobId: ${jobId}`);
-            
+
             const jobResponse = await getJobDetails(jobId);
             const jobDetails = jobResponse.data[0]; // Note: getJobDetails returns array
-            
+
             console.log(`✅ Successfully fetched referral job ${jobId}:`, {
               companyName: jobDetails.companyPosted?.companyDetails?.companyName,
               jobRoles: jobDetails.jobRoles,
               location: jobDetails.location
             });
-            
-            // Extract company name
-            
- const companyName =
-  item.referralCompany ||                                          // ← saved on application at apply time
-  jobDetails.companyPosted?.companyDetails?.companyName ||
-  item.referralPosterProfile?.currentCompany ||
-  item.referralPosterProfile?.name ||
-  "Company";
 
-const companyLogo =
-  jobDetails.companyPosted?.profileImageUrl ||
-  item.referralPosterProfile?.profileImage ||
-  null;
-            
+            // Extract company name
+
+            const companyName =
+              item.referralCompany ||                                          // ← saved on application at apply time
+              jobDetails.companyPosted?.companyDetails?.companyName ||
+              item.referralPosterProfile?.currentCompany ||
+              item.referralPosterProfile?.name ||
+              "Company";
+
+            const companyLogo =
+              jobDetails.companyPosted?.profileImageUrl ||
+              item.referralPosterProfile?.profileImage ||
+              null;
+
             // Extract job roles
             let jobRolesText = "Position";
             if (Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0) {
@@ -71,50 +71,50 @@ const companyLogo =
             } else if (jobDetails?.jobTitle) {
               jobRolesText = jobDetails.jobTitle;
             }
-            
+
             // For the job title in the list, show just the first job role
-            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-              ? jobDetails.jobRoles[0] 
+            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+              ? jobDetails.jobRoles[0]
               : jobDetails?.jobTitle || "Position";
-            
+
             // Location extraction
-            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : jobDetails?.workLocations || "Location not specified";
-            
+
             // Extract employment type
             const employmentType = Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
               ? jobDetails.employmentType.join(', ')
               : "Full-time";
-            
+
             // Extract work mode
             const workMode = Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : "Not specified";
-            
+
             // Other fields
             const degree = Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : "Degree requirements";
-            
+
             const skills = Array.isArray(jobDetails?.skills) ? jobDetails.skills : [];
-            
+
             const description = jobDetails?.description || "No description available";
-            
+
             // Extract package details
             const packageDetails = jobDetails?.packageDetails || {};
-            const salary = packageDetails?.totalCTC 
-              ? `${packageDetails.currency || ''} ${packageDetails.totalCTC.toLocaleString()}` 
+            const salary = packageDetails?.totalCTC
+              ? `${packageDetails.currency || ''} ${packageDetails.totalCTC.toLocaleString()}`
               : "Not specified";
-            
+
             // Format date
             const firstHistory = Array.isArray(item?.statusHistory) && item.statusHistory.length > 0 ? item.statusHistory[0] : null;
-            const date = firstHistory?.date 
+            const date = firstHistory?.date
               ? new Date(firstHistory.date).toUTCString().slice(0, 16)
-              : item.createdAt 
-                ? new Date(item.createdAt).toLocaleDateString()
+              : item.createdAt
+                ? new Date(item.createdAt).toLocaleDateString('en-IN')
                 : "N/A";
-            
+
             return {
               ...item,
               id: item._id,
@@ -143,14 +143,14 @@ const companyLogo =
                 employmentType: employmentType
               }
             };
-            
+
           } catch (jobError) {
             console.error(`❌ Error fetching referral job ${item.job}:`, jobError);
             return {
               ...item,
               id: item._id,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
               company: "Company",
               companyLogo: null,
               jobTitle: "Position",
@@ -168,24 +168,24 @@ const companyLogo =
           }
         })
       );
-      
+
       console.log("✅ Final detailed referral jobs:", detailedJobs);
       setReferralJobs(detailedJobs);
       if (detailedJobs.length > 0) {
         setSelectedJob(detailedJobs[0]);
       }
-      
+
     } catch (error) {
       console.error("❌ Error in fetchApplication:", error);
       setError(error.message || "Failed to fetch applications");
-      
+
       if (error.response?.data?.data) {
         const rawData = error.response.data.data;
         const fallbackJobs = rawData.map(item => ({
           ...item,
           id: item._id,
           status: item.currentStatus || "Applied",
-          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
           company: "Company",
           companyLogo: null,
           jobTitle: "Position",
@@ -210,19 +210,19 @@ const companyLogo =
     fetchApplication();
   }, []);
 
-// AFTER
-const filteredJobs = referralJobs.filter(job => {
-  const title = Array.isArray(job?.jobTitle) ? job.jobTitle.join(', ') : (job?.jobTitle || "");
-  const company = Array.isArray(job?.company) ? job.company.join(', ') : (job?.company || "");
-  const location = Array.isArray(job?.location) ? job.location.join(', ') : (job?.location || "");
-  const term = searchTerm.toLowerCase();
+  // AFTER
+  const filteredJobs = referralJobs.filter(job => {
+    const title = Array.isArray(job?.jobTitle) ? job.jobTitle.join(', ') : (job?.jobTitle || "");
+    const company = Array.isArray(job?.company) ? job.company.join(', ') : (job?.company || "");
+    const location = Array.isArray(job?.location) ? job.location.join(', ') : (job?.location || "");
+    const term = searchTerm.toLowerCase();
 
-  return (
-    title.toLowerCase().includes(term) ||
-    company.toLowerCase().includes(term) ||
-    location.toLowerCase().includes(term)
-  );
-});
+    return (
+      title.toLowerCase().includes(term) ||
+      company.toLowerCase().includes(term) ||
+      location.toLowerCase().includes(term)
+    );
+  });
 
   // Apply sorting
   const sortedJobs = [...filteredJobs].sort((a, b) => {
@@ -245,7 +245,7 @@ const filteredJobs = referralJobs.filter(job => {
   };
 
   const getStatusColor = (status) => {
-    switch(status.toLowerCase()) {
+    switch (status.toLowerCase()) {
       case 'applied': return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
       case 'under review': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
       case 'interview': return 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30';
@@ -267,20 +267,20 @@ const filteredJobs = referralJobs.filter(job => {
       console.log(`🔄 Retrying fetch for referral job ${jobId}`);
       const jobResponse = await getJobDetails(jobId);
       const jobDetails = jobResponse.data[0];
-      
+
       setReferralJobs(prev => prev.map(job => {
         if (job.jobId === jobId) {
           const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-          
+
           // Extract job roles
-          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-            ? jobDetails.jobRoles[0] 
+          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+            ? jobDetails.jobRoles[0]
             : jobDetails?.jobTitle || "Position";
-          
+
           const jobRolesText = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
             ? jobDetails.jobRoles.join(', ')
             : jobDetails?.jobTitle || "Position";
-          
+
           return {
             ...job,
             company: companyName,
@@ -293,23 +293,23 @@ const filteredJobs = referralJobs.filter(job => {
             workMode: Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : job.workMode,
-            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : jobDetails?.workLocations || job.location,
             degree: Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : job.degree,
             skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : job.skills,
             description: jobDetails?.description || job.description,
-            salary: jobDetails?.packageDetails?.totalCTC 
-              ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}` 
+            salary: jobDetails?.packageDetails?.totalCTC
+              ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
               : job.salary,
             fullJobDetails: jobDetails
           };
         }
         return job;
       }));
-      
+
     } catch (error) {
       console.error(`❌ Failed to retry referral job ${jobId}:`, error);
     }
@@ -323,7 +323,7 @@ const filteredJobs = referralJobs.filter(job => {
           <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#1e4ed8]/10 rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="relative z-10 flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#143694]"></div>
         </div>
@@ -395,7 +395,7 @@ const filteredJobs = referralJobs.filter(job => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
@@ -432,26 +432,25 @@ const filteredJobs = referralJobs.filter(job => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-2">
-                
+
                 {sortedJobs.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2">
                     {sortedJobs.map(job => (
                       <button
                         key={job.id}
                         onClick={() => setSelectedJob(job)}
-                        className={`text-left p-3 rounded-xl transition-all duration-200 ${
-                          selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
+                        className={`text-left p-3 rounded-xl transition-all duration-200 ${selectedJob?.id === job.id
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20'
                             : 'hover:bg-white/30 border border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
                             {job.companyLogo ? (
-                              <img 
-                                src={job.companyLogo} 
+                              <img
+                                src={job.companyLogo}
                                 alt={job.company}
                                 className="w-8 h-8 rounded-lg object-cover border border-white/60"
                                 onError={(e) => {
@@ -462,11 +461,10 @@ const filteredJobs = referralJobs.filter(job => {
                                 }}
                               />
                             ) : null}
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              selectedJob?.id === job.id 
-                                ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedJob?.id === job.id
+                                ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white'
                                 : 'bg-white/50 border border-white/60 text-[#143694]'
-                            }`}>
+                              }`}>
                               <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
                             </div>
                           </div>
@@ -478,12 +476,11 @@ const filteredJobs = referralJobs.filter(job => {
                                 <MapPin className="h-3 w-3 mr-1 text-[#143694]" />
                                 <span className="truncate">{job.location}</span>
                               </div>
-                              <span className={`text-xs px-1.5 py-0.5 rounded w-fit ${
-                                job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-purple-100 text-purple-700 border border-purple-200'
-                              }`}>
+                              <span className={`text-xs px-1.5 py-0.5 rounded w-fit ${job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                  job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                    job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                      'bg-purple-100 text-purple-700 border border-purple-200'
+                                }`}>
                                 {job.status}
                               </span>
                             </div>
@@ -534,7 +531,7 @@ const filteredJobs = referralJobs.filter(job => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="relative">
                     <div className="flex justify-between mb-1">
                       {statusSteps?.slice(0, 4).map((step, idx) => {
@@ -542,11 +539,10 @@ const filteredJobs = referralJobs.filter(job => {
                         const isActive = idx <= currentIdx;
                         return (
                           <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                              isActive 
-                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white' 
+                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${isActive
+                                ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white'
                                 : 'bg-white/50 border-white/60 text-gray-400'
-                            }`}>
+                              }`}>
                               {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
                             </div>
                             <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
@@ -578,7 +574,7 @@ const filteredJobs = referralJobs.filter(job => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <MapPin className="h-4 w-4 text-[#143694]" />
@@ -597,7 +593,7 @@ const filteredJobs = referralJobs.filter(job => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
                     </div>
-                    
+
                     {selectedJob.salary && (
                       <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
@@ -623,7 +619,7 @@ const filteredJobs = referralJobs.filter(job => {
                         <p className="text-sm text-gray-900">{selectedJob.workMode}</p>
                       </div>
                     )}
-                    
+
                     {/* Required Skills */}
                     {selectedJob.skills && selectedJob.skills.length > 0 && (
                       <div className={`p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl ${selectedJob.workMode && selectedJob.workMode !== "Not specified" ? 'md:col-span-1' : 'col-span-2'}`}>
@@ -668,8 +664,8 @@ const filteredJobs = referralJobs.filter(job => {
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <Link 
-                      to={`/${localStorage.getItem("selectedRole")}-dashboard/Referral/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
+                    <Link
+                      to={`/${localStorage.getItem("selectedRole")}-dashboard/Referral/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`}
                       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 group"
                     >
                       View Full Details

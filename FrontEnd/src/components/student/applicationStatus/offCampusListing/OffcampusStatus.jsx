@@ -7,7 +7,7 @@ import OffCampusJobDetailModal from './../../studentDashboard/offCampusListing/O
 
 const OffcampusStatus = () => {
   const { user, loading } = useAuth();
-  
+
   // Early return BEFORE any hooks
   if (loading) {
     return (
@@ -39,50 +39,50 @@ const OffcampusStatus = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await getUserApplicationStatus("Off-campus");
       console.log("🔍 Step 1 - Off-campus Application list response:", response);
-      
+
       if (!response || !response.data) {
         throw new Error("No response from API");
       }
-      
+
       const rawData = response.data?.data || [];
       console.log(`🔍 Found ${rawData.length} off-campus applications`);
-      
+
       if (rawData.length === 0) {
         setOffcampusJobs([]);
         setIsLoading(false);
         return;
       }
-      
+
       // Fetch full job details for each application
       const detailedJobs = await Promise.all(
         rawData.map(async (item) => {
           try {
             const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
             console.log(`🔍 Fetching off-campus job details for jobId: ${jobId}`);
-            
+
             const jobResponse = await getJobDetails(jobId);
             const jobDetails = jobResponse.data[0]; // Note: getJobDetails returns array
-            
+
             console.log(`✅ Successfully fetched off-campus job ${jobId}:`, {
               companyName: jobDetails.companyPosted?.companyDetails?.companyName,
               jobRoles: jobDetails.jobRoles,
               location: jobDetails.location
             });
-            
+
             // Extract company name - FIXED: check multiple possible locations
-            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || 
-                              item.companyProfile?.companyDetails?.companyName || 
-                              "Company";
-            
+            const companyName = jobDetails.companyPosted?.companyDetails?.companyName ||
+              item.companyProfile?.companyDetails?.companyName ||
+              "Company";
+
             // Extract company logo - FIXED: check multiple possible locations like on-campus code
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || 
-                              item.companyProfile?.profileImage || 
-                              item.companyProfile?.profileImageUrl || 
-                              null;
-            
+            const companyLogo = jobDetails.companyPosted?.profileImageUrl ||
+              item.companyProfile?.profileImage ||
+              item.companyProfile?.profileImageUrl ||
+              null;
+
             console.log('📸 Logo URL for off-campus:', {
               fromJobDetails: jobDetails.companyPosted?.profileImageUrl,
               fromItem: item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl,
@@ -96,51 +96,51 @@ const OffcampusStatus = () => {
             } else if (jobDetails?.jobTitle) {
               jobRolesText = jobDetails.jobTitle;
             }
-            
+
             // For the job title in the list, show just the first job role
-            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-              ? jobDetails.jobRoles[0] 
+            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+              ? jobDetails.jobRoles[0]
               : jobDetails?.jobTitle || "Position";
-            
+
             // Location extraction
-            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : jobDetails?.workLocations || "Location not specified";
-            
+
             // Extract employment type
             const employmentType = Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
               ? jobDetails.employmentType.join(', ')
               : "Full-time";
-            
+
             // Extract work mode
             const workMode = Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : "Not specified";
-            
+
             // Other fields
             const degree = Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : "Degree requirements";
-            
+
             const skills = Array.isArray(jobDetails?.skills) ? jobDetails.skills : [];
-            
+
             const description = jobDetails?.description || "No description available";
-            
+
             // Extract package details
             const packageDetails = jobDetails?.packageDetails || {};
-            const salary = packageDetails?.totalCTC 
-              ? `${packageDetails.currency || ''} ${packageDetails.totalCTC.toLocaleString()}` 
+            const salary = packageDetails?.totalCTC
+              ? `${packageDetails.currency || ''} ${packageDetails.totalCTC.toLocaleString()}`
               : "Not specified";
-            
+
             // Years of experience
             const experience = jobDetails?.yearsOfExperience || "-";
-            
+
             return {
               ...item,
               id: item._id,
               jobId: jobId,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
               company: companyName,
               companyLogo: companyLogo,
               // Use first job role as the job title for the list
@@ -165,14 +165,14 @@ const OffcampusStatus = () => {
                 logoUrl: companyLogo
               }
             };
-            
+
           } catch (jobError) {
             console.error(`❌ Error fetching off-campus job ${item.job}:`, jobError);
             return {
               ...item,
               id: item._id,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
               company: "Company",
               companyLogo: null,
               jobTitle: "Position",
@@ -191,24 +191,24 @@ const OffcampusStatus = () => {
           }
         })
       );
-      
+
       console.log("✅ Final detailed off-campus jobs:", detailedJobs);
       setOffcampusJobs(detailedJobs);
       if (detailedJobs.length > 0) {
         setSelectedJob(detailedJobs[0]);
       }
-      
+
     } catch (error) {
       console.error("❌ Error in fetchApplication:", error);
       setError(error.message || "Failed to fetch applications");
-      
+
       if (error.response?.data?.data) {
         const rawData = error.response.data.data;
         const fallbackJobs = rawData.map(item => ({
           ...item,
           id: item._id,
           status: item.currentStatus || "Applied",
-          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
           company: "Company",
           companyLogo: null,
           jobTitle: "Position",
@@ -257,19 +257,19 @@ const OffcampusStatus = () => {
   const getStatusIndex = (status) => {
     if (!status) return 0;
     const lowerStatus = status.toLowerCase();
-    
+
     // If rejected, show 0% progress (stays at Applied step)
     if (lowerStatus === 'rejected') return 0;
-    
+
     // For normal progression
     if (lowerStatus === 'applied') return 0;
     if (lowerStatus === 'shortlisted') return 1;
     if (lowerStatus === 'accepted') return 2;
-    
+
     // Fallback for other statuses
     if (lowerStatus === 'under review') return 0;
     if (lowerStatus === 'interview') return 1;
-    
+
     return 0;
   };
 
@@ -285,9 +285,9 @@ const OffcampusStatus = () => {
   };
 
   const getStatusColor = (status) => {
-    switch(status.toLowerCase()) {
+    switch (status.toLowerCase()) {
       case 'applied': return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
-      case 'shortlisted': 
+      case 'shortlisted':
       case 'under review': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
       case 'accepted': return 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30';
       case 'rejected': return 'bg-gradient-to-r from-[#fda4af]/20 to-[#fb7185]/20 text-[#be123c] border border-[#fda4af]/30';
@@ -307,27 +307,27 @@ const OffcampusStatus = () => {
       console.log(`🔄 Retrying fetch for off-campus job ${jobId}`);
       const jobResponse = await getJobDetails(jobId);
       const jobDetails = jobResponse.data[0];
-      
+
       setOffcampusJobs(prev => prev.map(job => {
         if (job.jobId === jobId) {
-          const companyName = jobDetails.companyPosted?.companyDetails?.companyName || 
-                            job.company || 
-                            "Company";
-          
+          const companyName = jobDetails.companyPosted?.companyDetails?.companyName ||
+            job.company ||
+            "Company";
+
           // Extract company logo from multiple possible sources
-          const companyLogo = jobDetails.companyPosted?.profileImageUrl || 
-                            job.companyLogo || 
-                            null;
-          
+          const companyLogo = jobDetails.companyPosted?.profileImageUrl ||
+            job.companyLogo ||
+            null;
+
           // Extract job roles
-          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-            ? jobDetails.jobRoles[0] 
+          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+            ? jobDetails.jobRoles[0]
             : jobDetails?.jobTitle || "Position";
-          
+
           const jobRolesText = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
             ? jobDetails.jobRoles.join(', ')
             : jobDetails?.jobTitle || "Position";
-          
+
           return {
             ...job,
             company: companyName,
@@ -340,16 +340,16 @@ const OffcampusStatus = () => {
             workMode: Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : job.workMode,
-            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : jobDetails?.workLocations || job.location,
             degree: Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : job.degree,
             skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : job.skills,
             description: jobDetails?.description || job.description,
-            salary: jobDetails?.packageDetails?.totalCTC 
-              ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}` 
+            salary: jobDetails?.packageDetails?.totalCTC
+              ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
               : job.salary,
             experience: jobDetails?.yearsOfExperience || job.experience,
             fullJobDetails: jobDetails
@@ -357,7 +357,7 @@ const OffcampusStatus = () => {
         }
         return job;
       }));
-      
+
     } catch (error) {
       console.error(`❌ Failed to retry off-campus job ${jobId}:`, error);
     }
@@ -437,7 +437,7 @@ const OffcampusStatus = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
@@ -473,7 +473,7 @@ const OffcampusStatus = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-2">
                 {sortedJobs.length > 0 ? (
                   <div className="space-y-2">
@@ -481,17 +481,16 @@ const OffcampusStatus = () => {
                       <button
                         key={job.id}
                         onClick={() => setSelectedJob(job)}
-                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
-                          selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${selectedJob?.id === job.id
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20'
                             : 'hover:bg-white/30 border border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-start gap-3">
                           <div className="w-9 h-9 flex-shrink-0">
                             {job.companyLogo ? (
-                              <img 
-                                src={job.companyLogo} 
+                              <img
+                                src={job.companyLogo}
                                 alt={job.company}
                                 className="w-9 h-9 rounded-lg object-cover border border-white/60"
                                 onError={(e) => {
@@ -503,12 +502,11 @@ const OffcampusStatus = () => {
                                 }}
                               />
                             ) : null}
-                            <div 
-                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center ${
-                                selectedJob?.id === job.id 
-                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                            <div
+                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center ${selectedJob?.id === job.id
+                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white'
                                   : 'bg-white/50 border border-white/60 text-[#143694]'
-                              }`}
+                                }`}
                               style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
                             >
                               <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
@@ -522,12 +520,11 @@ const OffcampusStatus = () => {
                                 <MapPin className="h-3 w-3 mr-1 text-[#143694]" />
                                 {job.location}
                               </span>
-                              <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-purple-100 text-purple-700 border border-purple-200'
-                              }`}>
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                  job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                    job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                      'bg-purple-100 text-purple-700 border border-purple-200'
+                                }`}>
                                 {job.status}
                               </span>
                             </div>
@@ -574,8 +571,8 @@ const OffcampusStatus = () => {
                     </div>
                     <div className="w-12 h-12 flex-shrink-0">
                       {selectedJob.companyLogo ? (
-                        <img 
-                          src={selectedJob.companyLogo} 
+                        <img
+                          src={selectedJob.companyLogo}
                           alt={selectedJob.company}
                           className="w-12 h-12 rounded-xl object-cover border border-white/60"
                           onError={(e) => {
@@ -587,7 +584,7 @@ const OffcampusStatus = () => {
                           }}
                         />
                       ) : null}
-                      <div 
+                      <div
                         className={`${selectedJob.companyLogo ? 'hidden' : 'flex'} w-12 h-12 rounded-xl bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 items-center justify-center border border-white/60`}
                         style={selectedJob.companyLogo ? {} : { display: selectedJob.companyLogo ? 'none' : 'flex' }}
                       >
@@ -597,7 +594,7 @@ const OffcampusStatus = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Updated Progress Bar for Off-Campus */}
                   {selectedJob.status.toLowerCase() === 'rejected' ? (
                     // Rejected Status - Simple 2-step bar
@@ -633,11 +630,10 @@ const OffcampusStatus = () => {
                           const isActive = idx <= currentIdx;
                           return (
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
-                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                                isActive 
+                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${isActive
                                   ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white'
                                   : 'bg-white/50 border-white/60 text-gray-400'
-                              }`}>
+                                }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
                               <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
@@ -670,7 +666,7 @@ const OffcampusStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <MapPin className="h-4 w-4 text-[#143694]" />
@@ -689,7 +685,7 @@ const OffcampusStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
                     </div>
-                    
+
                     {selectedJob.salary && (
                       <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
@@ -715,7 +711,7 @@ const OffcampusStatus = () => {
                         <p className="text-sm text-gray-900">{selectedJob.workMode}</p>
                       </div>
                     )}
-                    
+
                     {/* Required Skills - Full width on mobile, half on desktop */}
                     {selectedJob.skills && selectedJob.skills.length > 0 && (
                       <div className={`p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl ${selectedJob.workMode && selectedJob.workMode !== "Not specified" ? 'md:col-span-1' : 'col-span-2'}`}>
@@ -760,7 +756,7 @@ const OffcampusStatus = () => {
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <button 
+                    <button
                       onClick={() => handleViewFullDetails(selectedJob)}
                       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 group"
                     >
@@ -796,8 +792,8 @@ const OffcampusStatus = () => {
       </div>
       {isModalOpen && modalJobId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
           <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">

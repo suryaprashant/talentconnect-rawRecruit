@@ -199,13 +199,13 @@ const filteredJobs = jobs.filter(job => {
                     <div className="col-span-2">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar size={14} className="text-gray-400" />
-                        <span>{new Date(job.createdAt).toLocaleDateString()}</span>
+                        <span>{new Date(job.createdAt).toLocaleDateString('en-IN')}</span>
                       </div>
                     </div>
                     <div className="col-span-2">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar size={14} className="text-gray-400" />
-                        <span>{new Date(job.endDate).toLocaleDateString()}</span>
+                        <span>{new Date(job.endDate).toLocaleDateString('en-IN')}</span>
                       </div>
                     </div>
                     {/* ✅ ADD: Actions column with 3 buttons — col-span-4 */}

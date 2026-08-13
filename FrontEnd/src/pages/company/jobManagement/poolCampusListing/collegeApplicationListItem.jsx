@@ -8,7 +8,7 @@ const CollegeApplicationDetailView = ({ collegeApplication, onClose, onAccept, o
   const formatDate = (dateString) => {
     if (!dateString) return 'Not Specified';
     try {
-      return new Date(dateString).toLocaleDateString();
+      return new Date(dateString).toLocaleDateString('en-IN');
     } catch (e) {
       return 'Invalid Date';
     }

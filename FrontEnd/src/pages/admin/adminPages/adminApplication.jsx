@@ -152,7 +152,7 @@ const ApplicationManagement = () => {
                 placeholder="Search by candidate, job title, company..."
               />
             </div>
-            
+
             {/* Status Filter */}
             <select
               value={filterStatus}
@@ -221,7 +221,7 @@ const ApplicationManagement = () => {
                         </div>
                       </td>
                       <td className="p-2">
-                        {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
+                        {app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-IN') : "N/A"}
                       </td>
                     </tr>
                   ))

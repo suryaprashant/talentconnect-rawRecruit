@@ -228,7 +228,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            Applied on: {new Date(createdAt).toLocaleDateString()}
+            Applied on: {new Date(createdAt).toLocaleDateString('en-IN')}
             <span className="mx-1"> | Established :{companyDetails?.establishedYear}</span>
           </p>
         </div>

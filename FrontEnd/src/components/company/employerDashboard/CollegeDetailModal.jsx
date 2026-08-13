@@ -726,8 +726,8 @@ useEffect(() => {
   const collegeDetails = posting.collegePosted;
   const collegeUniDetails = collegeDetails?.collegeUniversityDetails || {};
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
-  const formattedStartDate = formatDateSafe(posting.startDate);
-  const formattedEndDate = formatDateSafe(posting.endDate);
+  const formattedStartDate = formatDateSafe(posting.startDate || posting?.proposedSchedule.startDate);
+  const formattedEndDate = formatDateSafe(posting.endDate || posting?.proposedSchedule.endDate);
   
   const city = collegeUniDetails.city || '';
   const state = collegeUniDetails.state || '';

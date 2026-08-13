@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 
 const InternshipStatus = () => {
   const { user, loading } = useAuth();
-  
+
   // Early return BEFORE any hooks
   if (loading) {
     return (
@@ -40,23 +40,23 @@ const InternshipStatus = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await getUserApplicationStatus("Internship");
       console.log("🔍 Step 1 - Internship Application list response:", response);
-      
+
       if (!response || !response.data) {
         throw new Error("No response from API");
       }
-      
+
       const rawData = response.data?.data || [];
       console.log(`🔍 Found ${rawData.length} internship applications`);
-      
+
       if (rawData.length === 0) {
         setInternshipJobs([]);
         setIsLoading(false);
         return;
       }
-      
+
       // Fetch full job details for each application
       const detailedJobs = await Promise.all(
         rawData.map(async (item) => {
@@ -64,58 +64,58 @@ const InternshipStatus = () => {
             // Try multiple possible job ID sources
             const jobId = item.job || item.jobDetails?._id || item.jobDetails?.[0]?._id || item._id;
             console.log(`🔍 Fetching internship details for jobId: ${jobId}`);
-            
+
             const jobResponse = await getJobDetails(jobId);
             const jobDetails = jobResponse.data[0] || jobResponse.data;
-            
+
             console.log(`✅ Successfully fetched internship ${jobId}:`, {
               companyName: jobDetails.companyPosted?.companyDetails?.companyName || jobDetails.companyDetails?.companyName,
               jobTitle: jobDetails.jobTitle,
               location: jobDetails.location
             });
-            
+
             // Extract company name from multiple possible sources
-            const companyName = 
-              jobDetails.companyPosted?.companyDetails?.companyName || 
-              jobDetails.companyDetails?.companyName || 
+            const companyName =
+              jobDetails.companyPosted?.companyDetails?.companyName ||
+              jobDetails.companyDetails?.companyName ||
               item.companyDetails?.companyName ||
-              item.companyProfile?.companyDetails?.companyName || 
+              item.companyProfile?.companyDetails?.companyName ||
               "Company";
-            
+
             // Extract company logo from multiple possible sources
-            const companyLogo = 
-              jobDetails.companyPosted?.profileImageUrl || 
+            const companyLogo =
+              jobDetails.companyPosted?.profileImageUrl ||
               jobDetails.companyDetails?.profileImageUrl ||
               item.companyProfile?.profileImage ||
               item.companyProfile?.profileImageUrl ||
               jobDetails.profileImageUrl ||
               null;
-            
+
             // Extract job title from multiple possible sources
-            const jobTitle = 
-              jobDetails.jobTitle || 
-              jobDetails.position || 
-              item.jobDetails?.jobTitle || 
+            const jobTitle =
+              jobDetails.jobTitle ||
+              jobDetails.position ||
+              item.jobDetails?.jobTitle ||
               "Internship Position";
-            
+
             // Extract internship role/position
             const internshipRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
               ? jobDetails.jobRoles.join(', ')
               : jobTitle;
-            
+
             // Location extraction
-            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            const location = Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : (jobDetails?.workLocations || item.jobDetails?.location?.join(', ') || "Location not specified");
-            
+
             // Extract work mode
             const workMode = Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : (item.jobDetails?.workMode?.join(', ') || "Not specified");
-            
+
             // Extract internship duration
             const duration = jobDetails?.duration || jobDetails?.internshipDuration || "Not specified";
-            
+
             // Extract stipend/salary
             let stipend = "Not specified";
             if (jobDetails?.stipend) {
@@ -127,24 +127,24 @@ const InternshipStatus = () => {
             } else if (jobDetails?.salary) {
               stipend = jobDetails.salary;
             }
-            
+
             // Extract skills
-            const skills = Array.isArray(jobDetails?.skills) 
-              ? jobDetails.skills 
+            const skills = Array.isArray(jobDetails?.skills)
+              ? jobDetails.skills
               : (Array.isArray(jobDetails?.requiredSkills) ? jobDetails.requiredSkills : []);
-            
+
             // Description
             const description = jobDetails?.description || jobDetails?.jobDescription || item.jobDetails?.description || "No description available";
-            
+
             // Extract start date
             const startDate = jobDetails?.startDate || jobDetails?.internshipStartDate || "Flexible";
-            
+
             return {
               ...item,
               id: item._id,
               jobId: jobId,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : (item.date || "N/A"),
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : (item.date || "N/A"),
               company: companyName,
               companyLogo: companyLogo,
               jobTitle: jobTitle,
@@ -164,14 +164,14 @@ const InternshipStatus = () => {
                 logoUrl: companyLogo
               }
             };
-            
+
           } catch (jobError) {
             console.error(`❌ Error fetching internship job ${item.job}:`, jobError);
             return {
               ...item,
               id: item._id,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : (item.date || "N/A"),
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : (item.date || "N/A"),
               company: "Company",
               companyLogo: null,
               jobTitle: "Internship Position",
@@ -189,24 +189,24 @@ const InternshipStatus = () => {
           }
         })
       );
-      
+
       console.log("✅ Final detailed internship jobs:", detailedJobs);
       setInternshipJobs(detailedJobs);
       if (detailedJobs.length > 0) {
         setSelectedJob(detailedJobs[0]);
       }
-      
+
     } catch (error) {
       console.error("❌ Error in fetchApplication:", error);
       setError(error.message || "Failed to fetch internship applications");
-      
+
       if (error.response?.data?.data) {
         const rawData = error.response.data.data;
         const fallbackJobs = rawData.map(item => ({
           ...item,
           id: item._id,
           status: item.currentStatus || "Applied",
-          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : (item.date || "N/A"),
+          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : (item.date || "N/A"),
           company: "Company",
           companyLogo: null,
           jobTitle: "Internship Position",
@@ -254,20 +254,20 @@ const InternshipStatus = () => {
   const getStatusIndex = (status) => {
     if (!status) return 0;
     const lowerStatus = status.toLowerCase();
-    
+
     // If rejected, show 0% progress (stays at Applied step)
     if (lowerStatus === 'rejected') return 0;
-    
+
     // For normal 3-step progression
     if (lowerStatus === 'applied') return 0;
     if (lowerStatus === 'shortlisted') return 1;
     if (lowerStatus === 'accepted') return 2;
-    
+
     // Map old statuses to new ones for compatibility
     if (lowerStatus === 'under review' || lowerStatus === 'review') return 1; // Map to Shortlisted
     if (lowerStatus === 'interview' || lowerStatus === 'interviewed') return 1; // Map to Shortlisted
     if (lowerStatus === 'selected') return 2; // Map to Accepted
-    
+
     return 0;
   };
 
@@ -283,7 +283,7 @@ const InternshipStatus = () => {
   };
 
   const getStatusColor = (status) => {
-    switch(status.toLowerCase()) {
+    switch (status.toLowerCase()) {
       case 'applied': return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
       case 'shortlisted': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
       case 'accepted': return 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30';
@@ -304,29 +304,29 @@ const InternshipStatus = () => {
       console.log(`🔄 Retrying fetch for internship ${jobId}`);
       const jobResponse = await getJobDetails(jobId);
       const jobDetails = jobResponse.data[0] || jobResponse.data;
-      
+
       setInternshipJobs(prev => prev.map(job => {
         if (job.jobId === jobId) {
-          const companyName = 
-            jobDetails.companyPosted?.companyDetails?.companyName || 
-            jobDetails.companyDetails?.companyName || 
+          const companyName =
+            jobDetails.companyPosted?.companyDetails?.companyName ||
+            jobDetails.companyDetails?.companyName ||
             job.company;
-          
-          const companyLogo = 
-            jobDetails.companyPosted?.profileImageUrl || 
+
+          const companyLogo =
+            jobDetails.companyPosted?.profileImageUrl ||
             jobDetails.companyDetails?.profileImageUrl ||
             job.companyLogo ||
             null;
-          
-          const jobTitle = 
-            jobDetails.jobTitle || 
-            jobDetails.position || 
+
+          const jobTitle =
+            jobDetails.jobTitle ||
+            jobDetails.position ||
             job.jobTitle;
-          
+
           const internshipRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
             ? jobDetails.jobRoles.join(', ')
             : jobTitle;
-          
+
           return {
             ...job,
             company: companyName,
@@ -336,15 +336,15 @@ const InternshipStatus = () => {
             workMode: Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
               ? jobDetails.workMode.join(', ')
               : job.workMode,
-            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0 
-              ? jobDetails.location.join(', ') 
+            location: Array.isArray(jobDetails?.location) && jobDetails.location.length > 0
+              ? jobDetails.location.join(', ')
               : jobDetails?.workLocations || job.location,
             duration: jobDetails?.duration || jobDetails?.internshipDuration || job.duration,
-            stipend: jobDetails?.stipend 
+            stipend: jobDetails?.stipend
               ? `${jobDetails.stipend.currency || ''} ${jobDetails.stipend.amount || jobDetails.stipend}${jobDetails.stipend.frequency ? '/' + jobDetails.stipend.frequency : ''}`
               : job.stipend,
-            skills: Array.isArray(jobDetails?.skills) 
-              ? jobDetails.skills 
+            skills: Array.isArray(jobDetails?.skills)
+              ? jobDetails.skills
               : (Array.isArray(jobDetails?.requiredSkills) ? jobDetails.requiredSkills : job.skills),
             description: jobDetails?.description || jobDetails?.jobDescription || job.description,
             startDate: jobDetails?.startDate || jobDetails?.internshipStartDate || job.startDate,
@@ -353,7 +353,7 @@ const InternshipStatus = () => {
         }
         return job;
       }));
-      
+
     } catch (error) {
       console.error(`❌ Failed to retry internship ${jobId}:`, error);
     }
@@ -363,29 +363,27 @@ const InternshipStatus = () => {
   const renderCompanyLogo = (job, isLarge = false) => {
     const sizeClass = isLarge ? 'w-12 h-12' : 'w-9 h-9';
     const logoContainerClass = isLarge ? 'w-12 h-12 flex-shrink-0' : 'w-9 h-9 flex-shrink-0';
-    
+
     return (
       <div className={logoContainerClass}>
         {job.companyLogo ? (
-          <img 
-            src={job.companyLogo} 
+          <img
+            src={job.companyLogo}
             alt={job.company}
             className={`${sizeClass} rounded-lg object-cover border border-white/60`}
-            onError={(e) => { 
-              e.target.style.display = 'none'; 
+            onError={(e) => {
+              e.target.style.display = 'none';
               const fallback = e.target.nextSibling;
-              if (fallback) fallback.style.display = 'flex'; 
+              if (fallback) fallback.style.display = 'flex';
             }}
           />
         ) : null}
-        <div 
-          className={`${job.companyLogo ? 'hidden' : 'flex'} ${sizeClass} rounded-lg items-center justify-center font-bold ${
-            isLarge ? 'text-lg' : 'text-xs'
-          } ${
-            selectedJob?.id === job.id 
-              ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+        <div
+          className={`${job.companyLogo ? 'hidden' : 'flex'} ${sizeClass} rounded-lg items-center justify-center font-bold ${isLarge ? 'text-lg' : 'text-xs'
+            } ${selectedJob?.id === job.id
+              ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white'
               : 'bg-white/50 border border-white/60 text-[#143694]'
-          }`}
+            }`}
           style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
         >
           {getCompanyInitials(job.company)}
@@ -468,7 +466,7 @@ const InternshipStatus = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
@@ -504,7 +502,7 @@ const InternshipStatus = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-2">
                 {sortedJobs.length > 0 ? (
                   <div className="space-y-2">
@@ -512,11 +510,10 @@ const InternshipStatus = () => {
                       <button
                         key={job.id}
                         onClick={() => setSelectedJob(job)}
-                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
-                          selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20' 
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${selectedJob?.id === job.id
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#143694]/20'
                             : 'hover:bg-white/30 border border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-start gap-3">
                           {renderCompanyLogo(job, false)}
@@ -528,15 +525,14 @@ const InternshipStatus = () => {
                                 <MapPin className="h-3 w-3 mr-1 text-[#143694]" />
                                 {job.location}
                               </span>
-                              <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                job.status.toLowerCase() === 'accepted' || job.status.toLowerCase() === 'selected'
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${job.status.toLowerCase() === 'accepted' || job.status.toLowerCase() === 'selected'
                                   ? 'bg-green-100 text-green-700 border border-green-200' :
-                                job.status.toLowerCase() === 'shortlisted'
-                                  ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                job.status.toLowerCase() === 'rejected'
-                                  ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-purple-100 text-purple-700 border border-purple-200'
-                              }`}>
+                                  job.status.toLowerCase() === 'shortlisted'
+                                    ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                    job.status.toLowerCase() === 'rejected'
+                                      ? 'bg-red-100 text-red-700 border border-red-200' :
+                                      'bg-purple-100 text-purple-700 border border-purple-200'
+                                }`}>
                                 {job.status}
                               </span>
                             </div>
@@ -583,7 +579,7 @@ const InternshipStatus = () => {
                     </div>
                     {renderCompanyLogo(selectedJob, true)}
                   </div>
-                  
+
                   {/* Updated Progress Bar for Internship - 3-step flow */}
                   {selectedJob.status.toLowerCase() === 'rejected' ? (
                     // Rejected Status - Simple 2-step bar with X icons
@@ -619,11 +615,10 @@ const InternshipStatus = () => {
                           const isActive = idx <= currentIdx;
                           return (
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
-                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                                isActive 
+                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${isActive
                                   ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] border-transparent text-white'
                                   : 'bg-white/50 border-white/60 text-gray-400'
-                              }`}>
+                                }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
                               <span className={`text-xs text-center ${isActive ? 'text-[#143694] font-medium' : 'text-gray-500'}`}>
@@ -656,7 +651,7 @@ const InternshipStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.location}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Clock className="h-4 w-4 text-[#143694]" />
@@ -675,7 +670,7 @@ const InternshipStatus = () => {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
                     </div>
-                    
+
                     {selectedJob.duration && selectedJob.duration !== "Not specified" && (
                       <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
@@ -703,7 +698,7 @@ const InternshipStatus = () => {
                         <p className="text-sm text-gray-900">{selectedJob.stipend}</p>
                       </div>
                     )}
-                    
+
                     {/* Start Date */}
                     {selectedJob.startDate && selectedJob.startDate !== "Flexible" && (
                       <div className={`p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl ${selectedJob.stipend && selectedJob.stipend !== "Not specified" ? 'md:col-span-1' : 'col-span-2'}`}>
@@ -763,7 +758,7 @@ const InternshipStatus = () => {
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <button 
+                    <button
                       onClick={() => handleViewFullDetails(selectedJob)}
                       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300 group"
                     >
@@ -799,8 +794,8 @@ const InternshipStatus = () => {
       </div>
       {isModalOpen && modalJobId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
           <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">

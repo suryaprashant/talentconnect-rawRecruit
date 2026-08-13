@@ -485,7 +485,7 @@ export default function EmployerPostIntership() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Job Titles */}
                   <div>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles <span className="text-red-500">*</span></label>
                     <CreatableSelect
                       isMulti
                       isClearable
