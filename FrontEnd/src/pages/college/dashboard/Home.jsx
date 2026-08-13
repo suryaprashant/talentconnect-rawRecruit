@@ -67,7 +67,7 @@ useEffect(() => {
       
       jobTitle: jobInfo.jobRoles?.[0] || jobInfo.lookingFor || 'Position',
       status: item.currentStatus || 'Applied',
-      date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
+      date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : 'N/A',
     };
   });
 

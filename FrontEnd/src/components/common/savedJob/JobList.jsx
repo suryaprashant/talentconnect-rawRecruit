@@ -155,7 +155,7 @@ const JobList = ({ jobs }) => {
       <div className="container mx-auto px-4 py-8 pt-22">
 
         {/* Header */}
-        {/*<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
+{/*<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-[#143694] to-[#1e4ed8] bg-clip-text text-transparent">
             Saved Opportunities
           </h1>
@@ -163,7 +163,7 @@ const JobList = ({ jobs }) => {
         </div>
 
         {/* Cards */}
-        {/*<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+{/*<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {sortedJobs.length > 0 ? (
             sortedJobs.map((job) => {
               const titleName = isCompany
@@ -174,7 +174,7 @@ const JobList = ({ jobs }) => {
                 ? job?.job?.venue
                 : job?.job?.location?.[0];*/}
 
-                {/*const locationText = resolveLocation(job);
+{/*const locationText = resolveLocation(job);
 
 
               const roles = isCompany ? [] : job?.job?.jobRoles || [];
@@ -195,11 +195,11 @@ const JobList = ({ jobs }) => {
                   <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
 
                     {/* Header */}
-                    {/*<div className="p-6 border-b border-gray-100">
+{/*<div className="p-6 border-b border-gray-100">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-4">
                           {/* Logo or Initials Container */}
-                          {/*<div className="relative">
+{/*<div className="relative">
                             {getLogoOrInitials(job)}
                           </div>
 
@@ -266,7 +266,7 @@ const JobList = ({ jobs }) => {
                     </div>
 
                     {/* Body */}
-                    {/*<div className="p-6">
+{/*<div className="p-6">
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                           <div className="text-gray-600 mb-1 flex items-center">
@@ -289,7 +289,7 @@ const JobList = ({ jobs }) => {
                           </div>
                           <div className="font-medium">
                             {job?.job?.startDate
-                              ? new Date(job.job.startDate).toLocaleDateString()
+                              ? new Date(job.job.startDate).toLocaleDateString('en-IN')
                               : "N/A"}
                           </div>
                         </div>
@@ -303,7 +303,7 @@ const JobList = ({ jobs }) => {
                           </div>
                           <div className="font-medium">
                             {job?.job?.endDate
-                              ? new Date(job.job.endDate).toLocaleDateString()
+                              ? new Date(job.job.endDate).toLocaleDateString('en-IN')
                               : "N/A"}
                           </div>
                         </div>
@@ -354,22 +354,22 @@ const resolveJobTypeRoute = (jobType) => {
 // Function to get organization name (same logic as UnifiedJobDetail)
 // const getOrganizationName = (job) => {
 //   const jobData = job?.job;
-  
+
 //   // 1. Company-posted jobs
 //   if (jobData?.companyPosted?.companyDetails?.companyName) {
 //     return jobData.companyPosted.companyDetails.companyName;
 //   }
-  
+
 //   // 2. College-posted jobs
 //   else if (jobData?.collegePosted?.collegeUniversityDetails?.collegeName) {
 //     return jobData.collegePosted.collegeUniversityDetails.collegeName;
 //   }
-  
+
 //   // 3. Employer-posted jobs
 //   else if (jobData?.postedBy === 'employer' && jobData?.employerDetails?.companyName) {
 //     return jobData.employerDetails.companyName;
 //   }
-  
+
 //   // 4. Direct fields
 //   else if (jobData?.companyName) {
 //     return jobData.companyName;
@@ -377,7 +377,7 @@ const resolveJobTypeRoute = (jobType) => {
 //   else if (jobData?.collegeName) {
 //     return jobData.collegeName;
 //   }
-  
+
 //   return "Not Specified";
 // };
 const getOrganizationName = (job) => {
@@ -399,8 +399,8 @@ const getOrganizationLogo = (job) => {
 
   return (
     jd?.companyPosted?.profileImageUrl || // Match your backend controller select
-    jd?.collegePosted?.profileImageUrl || 
-    jd?.companyPosted?.companyDetails?.logo || 
+    jd?.collegePosted?.profileImageUrl ||
+    jd?.companyPosted?.companyDetails?.logo ||
     jd?.collegePosted?.profileImage ||
     jd?.employerDetails?.logo ||
     null
@@ -434,10 +434,10 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   // Function to get initials from name
   const getInitials = (name) => {
     if (!name) return "?";
-    
+
     // Remove extra spaces and split by spaces
     const words = name.trim().split(/\s+/);
-    
+
     if (words.length === 1) {
       // Single word - take first 2 characters
       return name.substring(0, 2).toUpperCase();
@@ -451,7 +451,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   // const getLogoOrInitials = (job) => {
   //   const logoUrl = getOrganizationLogo(job);
   //   const orgName = getOrganizationName(job);
-    
+
   //   if (logoUrl) {
   //     return (
   //       <img 
@@ -466,7 +466,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   //       />
   //     );
   //   }
-    
+
   //   // Show initials if no logo
   //   return (
   //     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center text-white font-bold text-sm">
@@ -475,32 +475,32 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   //   );
   // };
   const getLogoOrInitials = (job) => {
-  const logoUrl = getOrganizationLogo(job);
-  const orgName = getOrganizationName(job);
-  const initials = getInitials(orgName);
+    const logoUrl = getOrganizationLogo(job);
+    const orgName = getOrganizationName(job);
+    const initials = getInitials(orgName);
 
-  return (
-    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center">
-      {/* Background Layer: Initials are always here */}
-      <span className="text-white font-bold text-sm absolute z-0">
-        {initials}
-      </span>
+    return (
+      <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative bg-gradient-to-br from-[#143694] to-[#1e4ed8] flex items-center justify-center">
+        {/* Background Layer: Initials are always here */}
+        <span className="text-white font-bold text-sm absolute z-0">
+          {initials}
+        </span>
 
-      {/* Foreground Layer: Logo hides initials if it loads successfully */}
-      {logoUrl && (
-        <img 
-          src={logoUrl} 
-          alt={orgName} 
-          className="w-full h-full object-cover relative z-10"
-          onError={(e) => {
-            // If the URL exists but image fails to fetch, hide the img tag
-            e.target.style.display = 'none';
-          }}
-        />
-      )}
-    </div>
-  );
-};
+        {/* Foreground Layer: Logo hides initials if it loads successfully */}
+        {logoUrl && (
+          <img
+            src={logoUrl}
+            alt={orgName}
+            className="w-full h-full object-cover relative z-10"
+            onError={(e) => {
+              // If the URL exists but image fails to fetch, hide the img tag
+              e.target.style.display = 'none';
+            }}
+          />
+        )}
+      </div>
+    );
+  };
 
   const resolveLocation = (job) => {
     const jobData = job?.job;
@@ -531,15 +531,15 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   const handleUnsave = async (e, jobId) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
       const response = await UnsaveOppurtunity(jobId);
       if (response?.data?.success) {
         toast.success("Opportunity Unsaved");
-        
+
         // Remove the job from local state immediately for better UX
         setJobs(prevJobs => prevJobs.filter(job => job?.job?._id !== jobId));
-        
+
         // Optionally call parent refresh function if provided
         if (onRefresh) {
           onRefresh();
@@ -597,27 +597,27 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
               const orgName = getOrganizationName(job);
               const locationText = resolveLocation(job);
               const roles = job?.job?.jobRoles || [];
-          console.log('here',job)
+              console.log('here', job)
               return (
                 // In your JobList component, update the Link section:
 
-<Link
-  key={job?.job?._id}
-  to={user?.userType === 'company' || user?.userType === 'employer'
-    ? `/${user?.userType}/saved-jobs/job/${job?.job?._id}`  // Company & Employer go to separate page
-    : user?.userType === 'college'
-    ? `/college/saved-jobs/job/${job?.job?._id}`  // College goes to unified via college path
-    : `/saved-jobs/job/${job?.job?._id}`          // Student/fresher path
-  }
-  state={{
-    job: job.job,
-    isSaved: true,
-    jobType: job.jobType,
-    userType: user?.userType
-  }}
-  className="group block"
->
-                  
+                <Link
+                  key={job?.job?._id}
+                  to={user?.userType === 'company' || user?.userType === 'employer'
+                    ? `/${user?.userType}/saved-jobs/job/${job?.job?._id}`  // Company & Employer go to separate page
+                    : user?.userType === 'college'
+                      ? `/college/saved-jobs/job/${job?.job?._id}`  // College goes to unified via college path
+                      : `/saved-jobs/job/${job?.job?._id}`          // Student/fresher path
+                  }
+                  state={{
+                    job: job.job,
+                    isSaved: true,
+                    jobType: job.jobType,
+                    userType: user?.userType
+                  }}
+                  className="group block"
+                >
+
                   <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
 
                     {/* Header */}
@@ -640,7 +640,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                                 Saved
                               </span>
                             </div>
-{console.log(job)}
+                            {console.log(job)}
                             {roles.length > 0 && (
                               <div className="flex flex-wrap gap-2 mt-3">
                                 {roles.slice(0, 3).map((role, index) => (
@@ -693,13 +693,13 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             </svg>
                             Start Date
                           </div>
-                        <div className="font-medium">
-    {job?.job?.startDate 
-      ? new Date(job.job.startDate).toLocaleDateString() 
-      : job?.job?.createdAt 
-        ? new Date(job.job.createdAt).toLocaleDateString() // Fallback to posting date
-        : "Immediate"} 
-  </div>
+                          <div className="font-medium">
+                            {job?.job?.startDate
+                              ? new Date(job.job.startDate).toLocaleDateString('en-IN')
+                              : job?.job?.createdAt
+                                ? new Date(job.job.createdAt).toLocaleDateString('en-IN') // Fallback to posting date
+                                : "Immediate"}
+                          </div>
                         </div>
 
                         <div>
@@ -710,12 +710,12 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             End Date
                           </div>
                           <div className="font-medium">
-    {job?.job?.endDate 
-      ? new Date(job.job.endDate).toLocaleDateString() 
-      : job?.job?.applicationDeadline // Check if it's named 'applicationDeadline'
-        ? new Date(job.job.applicationDeadline).toLocaleDateString()
-        : "Not Specified"}
-  </div>
+                            {job?.job?.endDate
+                              ? new Date(job.job.endDate).toLocaleDateString('en-IN')
+                              : job?.job?.applicationDeadline // Check if it's named 'applicationDeadline'
+                                ? new Date(job.job.applicationDeadline).toLocaleDateString('en-IN')
+                                : "Not Specified"}
+                          </div>
                         </div>
                       </div>
                     </div>

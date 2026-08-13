@@ -28,28 +28,28 @@ function InvitationsPage() {
         };
         fetchInvitations();
     }, []);
-    
-   
+
+
     const handleInvitationAccepted = (invitationId) => {
         setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
         setSelectedInvitation(null);
     };
 
-     const handleDecline = async (invitationId) => {
-        setIsDeclining(invitationId); 
+    const handleDecline = async (invitationId) => {
+        setIsDeclining(invitationId);
         try {
             await axios.post(
                 `${import.meta.env.VITE_Backend_URL}/api/team-member/invitations/${invitationId}/decline`,
                 {},
                 { withCredentials: true }
             );
-         
+
             setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
         } catch (err) {
             console.error("Failed to decline invitation:", err);
             alert('Could not decline the invitation. Please try again.');
         } finally {
-            setIsDeclining(null); 
+            setIsDeclining(null);
         }
     };
 
@@ -67,11 +67,11 @@ function InvitationsPage() {
                     invitations.map(inv => (
                         <div key={inv._id} className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                <img src={inv.companyLogo || 'https://via.placeholder.com/60'} alt={`${inv.companyName} logo`} className="w-16 h-16 mr-6 border rounded-md"/>
+                                <img src={inv.companyLogo || 'https://via.placeholder.com/60'} alt={`${inv.companyName} logo`} className="w-16 h-16 mr-6 border rounded-md" />
                                 <div className="flex-1 mt-4 sm:mt-0">
                                     <h2 className="text-xl font-semibold text-gray-900">{inv.companyName}</h2>
                                     <p className="text-gray-600">Hiring Manager</p> {/* This can be replaced with inv.role */}
-                                    <p className="text-sm text-gray-400">Invited on {new Date(inv.invitedOn).toLocaleDateString()}</p>
+                                    <p className="text-sm text-gray-400">Invited on {new Date(inv.invitedOn).toLocaleDateString('en-IN')}</p>
                                 </div>
                                 <div className="flex items-center mt-4 sm:mt-0 space-x-2">
                                     <button
@@ -100,7 +100,7 @@ function InvitationsPage() {
             </div>
 
             {selectedInvitation && (
-                <AcceptInvitationModal 
+                <AcceptInvitationModal
                     invitation={selectedInvitation}
                     onClose={() => setSelectedInvitation(null)}
                     onSuccess={handleInvitationAccepted}

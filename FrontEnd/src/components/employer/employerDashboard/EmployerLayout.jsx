@@ -1,4 +1,7 @@
 import { useState } from "react";
+import CollegeListingPage from "@/pages/company/employerDashboard/CollegeListingPage";
+import CollegeDetailModal from "@/components/company/employerDashboard/CollegeDetailModal";
+
 import EmployerListingPage from "@/pages/employer/employerDashboard/CollegeListingPage";
 import EmployerDetailsModal from "./EmployerDetailsModal";
 
@@ -34,7 +37,8 @@ const EmployerLayout = () => {
           
           {/* ================= MODAL (Left) ================= */}
           <div className="w-[900px] h-full rounded-l-2xl overflow-hidden shadow-2xl bg-white relative">
-            <EmployerDetailsModal
+            {/* <EmployerDetailsModal */}
+            <CollegeDetailModal
               college={selectedCollege}
               isOpen={isModalOpen}
               onClose={handleCloseModal}
@@ -83,7 +87,9 @@ const EmployerLayout = () => {
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       <div className="h-full overflow-y-auto p-4 md:p-6">
-        <EmployerListingPage 
+        {/* <EmployerListingPage  */}
+        <CollegeListingPage 
+          // compact={true}
           onCollegeSelect={handleCollegeSelect}
         />
       </div>
@@ -92,7 +98,8 @@ const EmployerLayout = () => {
       {isModalOpen && selectedCollege && !isZoomedView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <EmployerDetailsModal
+          {/* <EmployerDetailsModal */}
+          <CollegeDetailModal
             college={selectedCollege}
             isOpen={isModalOpen}
             onClose={handleCloseModal}

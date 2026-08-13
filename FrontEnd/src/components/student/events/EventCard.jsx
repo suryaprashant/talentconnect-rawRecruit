@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const EventCard = ({ event_name,event }) => {
+const EventCard = ({ event_name, event }) => {
 
   const convertDate = () => {
 
@@ -38,10 +38,10 @@ const EventCard = ({ event_name,event }) => {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center text-xs text-gray-500 mb-1">
-                <span>{new Date(event.startDate).toLocaleDateString()}</span>
+                <span>{new Date(event.startDate).toLocaleDateString('en-IN')}</span>
                 <span className="mx-2">•</span>
                 {/* <span>{event.prizes?.join(', ')}</span> */}
-                <span>{event.rewardsAndBenefits.length > 0 && event.rewardsAndBenefits[0].amount? `₹${event.rewardsAndBenefits[0].amount}`: "Exciting Prizes"}</span>
+                <span>{event.rewardsAndBenefits.length > 0 && event.rewardsAndBenefits[0].amount ? `₹${event.rewardsAndBenefits[0].amount}` : "Exciting Prizes"}</span>
                 <span className="mx-2">•</span>
                 <span>{event.registeredUsers} Users Registered</span>
               </div>

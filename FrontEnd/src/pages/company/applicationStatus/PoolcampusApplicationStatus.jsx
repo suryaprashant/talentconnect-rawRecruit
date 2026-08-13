@@ -395,7 +395,7 @@ const extractDegree = (job) => {
             jobId: item.job,
 
             status: item.currentStatus,
-            date: new Date(item.createdAt).toLocaleDateString(),
+            date: new Date(item.createdAt).toLocaleDateString('en-IN'),
 
             collegeName:
               collegeDetails?.collegeUniversityDetails?.collegeName || "College",
@@ -435,7 +435,7 @@ const extractDegree = (job) => {
             id: item._id,
             jobId: item.job || item._id,
             status: item.currentStatus || item.status || "Applied",
-            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
             collegeName: "College",
             collegeLogo: null,
             location: "Location not specified",

@@ -14,13 +14,13 @@ import { sendBulkNotifications } from "../utils/sendNotification.js";
 class HackathonHostingService {
 
     async getTotalHackathonCount() {
-    try {
-      return await Hackathon.countDocuments();
-    } catch (error) {
-      console.error("Error in getTotalHackathonCount:", error.message);
-      throw new Error("Failed to get total hackathon count");
+        try {
+            return await Hackathon.countDocuments();
+        } catch (error) {
+            console.error("Error in getTotalHackathonCount:", error.message);
+            throw new Error("Failed to get total hackathon count");
+        }
     }
-  }
     /**
      * Create a new hackathon
      * @param {Object} hackathonData - The hackathon data from request body
@@ -590,8 +590,8 @@ class HackathonHostingService {
         Dear ${registration.name},
     
         Your registration for "${hackathon.title}" has been confirmed.
-        Start Date: ${new Date(hackathon.startDate).toLocaleDateString()}
-        End Date: ${new Date(hackathon.endDate).toLocaleDateString()}
+        Start Date: ${new Date(hackathon.startDate).toLocaleDateString('en-IN')}
+        End Date: ${new Date(hackathon.endDate).toLocaleDateString('en-IN')}
         Location: ${hackathon.location}
     
         Regards,

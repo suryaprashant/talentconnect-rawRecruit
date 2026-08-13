@@ -218,10 +218,7 @@ export default function OnCampusJobManagement() {
   };*/}
 
   const displayLocations = (location, workLocation) => {
-  const finalLocation =
-    Array.isArray(location) && location.length > 0
-      ? location
-      : Array.isArray(workLocation) && workLocation.length > 0
+  const finalLocation = Array.isArray(workLocation) && workLocation.length > 0
         ? workLocation
         : null;
 
@@ -428,7 +425,7 @@ export default function OnCampusJobManagement() {
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
               <div className="col-span-3">Offering</div>
-              <div className="col-span-2">Locations</div>
+              <div className="col-span-2">Work Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
               <div className="col-span-2 text-center">New Applications</div>

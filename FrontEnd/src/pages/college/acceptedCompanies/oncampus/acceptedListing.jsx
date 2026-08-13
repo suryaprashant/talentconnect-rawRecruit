@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
-  Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, 
-  Building2, Calendar, FileText, User, AlertCircle, Users 
+import {
+  Search, Eye, ChevronLeft, ChevronRight, Trash, Filter,
+  Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail,
+  Building2, Calendar, FileText, User, AlertCircle, Users
 } from 'lucide-react';
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
-import { deleteCollegeJob , conversationWithCollege } from '@/lib/College_AxiosIntance';
+import { deleteCollegeJob, conversationWithCollege } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
@@ -91,7 +91,7 @@ export default function OnCampusJobManagement() {
     try {
       const response = await getPostedJobs("On-campus", "Accepted");
       console.log("Fetched jobs:", response?.data);
-      
+
       if (response.data && Array.isArray(response.data)) {
         // Process jobs to update their status based on dates
         const processedJobs = processJobsWithStatus(response.data);
@@ -109,19 +109,19 @@ export default function OnCampusJobManagement() {
     }
   };
 
-  const fetchCompaniesForJob = async (jobId, jobType,isVisited) => {
+  const fetchCompaniesForJob = async (jobId, jobType, isVisited) => {
     setCompaniesLoading(true);
     setError(null);
     try {
-      if(isVisited=='false'){
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted",isVisited);
-      console.log("Fetched companies for job:", response.data);
-      setCompanies(response.data || []);
+      if (isVisited == 'false') {
+        const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted", isVisited);
+        console.log("Fetched companies for job:", response.data);
+        setCompanies(response.data || []);
       }
-      else{
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
-      console.log("Fetched companies for job:", response.data);
-      setCompanies(response.data || []);
+      else {
+        const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
+        console.log("Fetched companies for job:", response.data);
+        setCompanies(response.data || []);
       }
     } catch (err) {
       console.error("Error fetching companies:", err);
@@ -249,8 +249,8 @@ export default function OnCampusJobManagement() {
     // Logic to block 0 applications removed.
     // It will now fetch and display the "No Applications Yet" view if empty.
     setSelectedJob(job);
-    const isVisited='false';
-    fetchCompaniesForJob(job._id, job.jobType,isVisited);
+    const isVisited = 'false';
+    fetchCompaniesForJob(job._id, job.jobType, isVisited);
   };
 
   const handleBackToList = () => {
@@ -263,57 +263,57 @@ export default function OnCampusJobManagement() {
     const [currentStatus, setCurrentStatus] = useState(companyApplication.currentStatus);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    
+
     // Add this line - get setSelectedConversation from the hook
-    const { setSelectedConversation, setShowFloatingChat } = useChat();  
+    const { setSelectedConversation, setShowFloatingChat } = useChat();
 
     if (!companyApplication || !companyApplication.applicant) {
-        return null;
+      return null;
     }
 
     const { _id: applicationId, applicant, createdAt } = companyApplication;
     const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
 
     const handleMessageClick = async (e) => {
-        e.stopPropagation();
+      e.stopPropagation();
 
-        if (!userId) {
-            toast.error("Company user not found");
-            return;
+      if (!userId) {
+        toast.error("Company user not found");
+        return;
+      }
+
+      console.log("Chatting with company:", {
+        userId,
+        companyDetails
+      });
+
+      // Now setSelectedConversation is defined
+      try {
+        const response = await conversationWithCollege(userId);
+
+        if (response.data) {
+          const conversationUser = {
+            _id: userId,
+            name: companyDetails?.companyName || 'Unknown Company',
+            fullname: companyDetails?.companyName || 'Unknown Company',
+            email: employerDetails?.workEmail || '',
+            profileImage:
+              profileImageUrl ||
+              'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            userType: 'company'
+          };
+
+          setSelectedConversation(conversationUser);
+          setTimeout(() => {
+            setShowFloatingChat(true);
+          }, 0);
+        } else {
+          toast.error('Failed to create conversation');
         }
-
-        console.log("Chatting with company:", {
-            userId,
-            companyDetails
-        });
-        
-        // Now setSelectedConversation is defined
-        try {
-            const response = await conversationWithCollege(userId);
-
-            if (response.data) {
-                const conversationUser = {
-                    _id: userId,
-                    name: companyDetails?.companyName || 'Unknown Company',
-                    fullname: companyDetails?.companyName || 'Unknown Company',
-                    email: employerDetails?.workEmail || '',
-                    profileImage:
-                        profileImageUrl ||
-                        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-                    userType: 'company'
-                };
-
-                setSelectedConversation(conversationUser);
-                setTimeout(() => {
-                  setShowFloatingChat(true);
-                }, 0);
-            } else {
-                toast.error('Failed to create conversation');
-            }
-        } catch (error) {
-            console.error('Chat error:', error);
-            toast.error('Error starting conversation');
-        }
+      } catch (error) {
+        console.error('Chat error:', error);
+        toast.error('Error starting conversation');
+      }
     };
 
     const handleReject = async (e) => {
@@ -395,7 +395,7 @@ export default function OnCampusJobManagement() {
                   <span className="ml-2">{companyDetails?.establishedYear || 'N/A'}</span>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
                   <MapPin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
@@ -457,12 +457,12 @@ export default function OnCampusJobManagement() {
                     </span>
                     <span className="text-sm text-gray-500 flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      Applied: {new Date(createdAt).toLocaleDateString()}
+                      Applied: {new Date(createdAt).toLocaleDateString('en-IN')}
                     </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
@@ -481,13 +481,13 @@ export default function OnCampusJobManagement() {
                     <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-700">
                     <Globe className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">Website:</span>
-                    <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
+                    <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer"
+                      className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.websiteUrl || 'Not provided'}
                     </a>
                   </div>
@@ -499,8 +499,8 @@ export default function OnCampusJobManagement() {
                   <div className="flex items-center text-gray-700">
                     <Linkedin className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <span className="font-medium">LinkedIn:</span>
-                    <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
-                       className="ml-2 text-[#1e4ed8] hover:underline truncate">
+                    <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer"
+                      className="ml-2 text-[#1e4ed8] hover:underline truncate">
                       {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
                     </a>
                   </div>
@@ -511,7 +511,7 @@ export default function OnCampusJobManagement() {
               <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <User className="w-5 h-5 text-[#1e4ed8]" />
-                  Contact Person Details 
+                  Contact Person Details
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center text-gray-700">
@@ -532,8 +532,8 @@ export default function OnCampusJobManagement() {
                     <Mail className="w-4 h-4 mr-3 text-[#1e4ed8]" />
                     <div>
                       <span className="font-medium">Email:</span>
-                      <a href={`mailto:${employerDetails?.workEmail}`} 
-                         className="ml-2 text-[#1e4ed8] hover:underline">
+                      <a href={`mailto:${employerDetails?.workEmail}`}
+                        className="ml-2 text-[#1e4ed8] hover:underline">
                         {employerDetails?.workEmail || 'N/A'}
                       </a>
                     </div>
@@ -553,11 +553,10 @@ export default function OnCampusJobManagement() {
                 <button
                   onClick={handleReject}
                   disabled={isProcessing || currentStatus === 'Rejected'}
-                  className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${
-                    currentStatus === 'Rejected'
+                  className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${currentStatus === 'Rejected'
                       ? 'bg-gradient-to-r from-red-700 to-red-800 text-white cursor-not-allowed'
                       : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5'
-                  } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isProcessing ? (
                     <>
@@ -575,7 +574,7 @@ export default function OnCampusJobManagement() {
                     </>
                   )}
                 </button>
-                
+
                 <button
                   onClick={handleMessageClick}
                   disabled={isProcessing}
@@ -588,7 +587,7 @@ export default function OnCampusJobManagement() {
             </div>
           </div>
         </div>
-        
+
         {/* Render the modal conditionally */}
         {showModal && <CompanyDetailsModal />}
       </>
@@ -694,46 +693,46 @@ export default function OnCampusJobManagement() {
         <div className="mb-12">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-3 mb-8">
 
-  <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
 
-    {/* Top Section */}
-    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+              {/* Top Section */}
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
 
-      <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
-          Accepted On-Campus Drives
-        </h1>
+                <div>
+                  <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight">
+                    Accepted On-Campus Drives
+                  </h1>
 
-        <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
-          Track your accepted on-campus drives efficiently
-        </p>
-      </div>
+                  <p className="text-gray-600 text-sm md:text-base mt-1 max-w-2xl">
+                    Track your accepted on-campus drives efficiently
+                  </p>
+                </div>
 
-    </div>
+              </div>
 
-    {/* Tabs */}
-    <div className="flex items-center gap-3 border-gray-200 pt-0">
+              {/* Tabs */}
+              <div className="flex items-center gap-3 border-gray-200 pt-0">
 
-      {/* Active */}
-      <button 
-        className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
-      >
-        On-Campus
-      </button>
+                {/* Active */}
+                <button
+                  className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm"
+                >
+                  On-Campus
+                </button>
 
-      {/* Inactive */}
-      <button 
-        onClick={() => navigate('/accepted/pool-campus-request')}
-        className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
-      >
-        Pool-Campus
-      </button>
+                {/* Inactive */}
+                <button
+                  onClick={() => navigate('/accepted/pool-campus-request')}
+                  className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+                >
+                  Pool-Campus
+                </button>
 
-    </div>
+              </div>
 
-  </div>
+            </div>
 
-</div>
+          </div>
 
           {/* Main Content Card */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">
@@ -774,175 +773,175 @@ export default function OnCampusJobManagement() {
             </div> */}
 
             {/* Table - 5 Columns */}
-<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
-  {/* Table Header */}
-  <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-    <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-      <div className="col-span-3">Degree</div>
-      <div className="col-span-2">Deadline</div>
-      <div className="col-span-2 text-center">Views</div>
-      <div className="col-span-3 text-center">New Applications</div>
-      <div className="col-span-2 text-center">Actions</div>
-    </div>
-  </div>
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
+              {/* Table Header */}
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  <div className="col-span-3">Degree</div>
+                  <div className="col-span-2">Deadline</div>
+                  <div className="col-span-2 text-center">Views</div>
+                  <div className="col-span-3 text-center">New Applications</div>
+                  <div className="col-span-2 text-center">Actions</div>
+                </div>
+              </div>
 
-  {/* Table Body */}
-  <div className="divide-y divide-gray-100">
-    {loading ? (
-      <div className="p-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
-        <p className="mt-4 text-gray-600">Loading drives...</p>
-      </div>
-    ) : currentJobs.length === 0 ? (
-      <div className="p-12 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
-          <Search className="h-8 w-8 text-gray-400" />
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No drives found</h3>
-        <p className="text-gray-600">No drives match your search criteria.</p>
-      </div>
-    ) : (
-      currentJobs.map(job => {
-        const jobId = job._id;
-        const degree = displayDegree(job);
-        const location = getLocation(job);
-        const deadline = job?.proposedSchedule?.endDate;
-        const views = job.views || 0;
-        const applications = job.applicationCount || 0;
-        
-        return (
-          <div key={jobId} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
-            <div className="grid grid-cols-12 gap-4 items-center">
-              {/* Degree Column - col-span-3 */}
-              <div className="col-span-3">
-                <div 
-                  onClick={() => {
-                    // Prepare data for CollegeDetailPage
-                    // const collegeData = {
-                    //   _id: job._id,
-                    //   isApplied: false,
-                    //   isSaved: false,
-                    //   collegePosted: job.collegePosted || job.collegeDetails,
-                    //   company: job.companyName || job.company,
-                    //   description: job.description,
-                    //   location: job.location,
-                    //   jobTitle: job.jobTitle,
-                    //   employmentType: job.employmentType,
-                    //   packageDetails: job.packageDetails,
-                    //   noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
-                    //   lookingFor: job.lookingFor || job.jobTitle,
-                    //   proposedSchedule: job.proposedSchedule,
-                    //   companyType: job.companyType,
-                    //   roundDetails: job.roundDetails,
-                    //   studentStreams: job.studentStreams,
-                    //   numberOfStudent: job.numberOfStudent,
-                    //   amenitiesRequired: job.amenitiesRequired,
-                    //   contactPerson: job.contactPerson,
-                    //   startDate: job?.proposedSchedule?.startDate,
-                    //   endDate: job?.proposedSchedule?.endDate,
-                    //   jobType: job.jobType || 'On-campus'
-                    // };
-                    
-                    // // Navigate to CollegeDetailPage with state data
-                    // navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
-                    //   state: {
-                    //     applicationData: collegeData,
-                    //     isApplied: false,
-                    //     isSaved: false
-                    //   }
-                    // });
-                    navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
-                      state: {
-                        applicationData: {
-                          ...job,
-                          isApplied: false,
-                          isSaved: false,
-                        },
-                        isApplied: false,
-                        isSaved: false,
-                      },
-                    });
-                  }}
-                  className="group cursor-pointer"
-                >
-                  <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
-                    {degree}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <MapPin className="h-3 w-3 text-gray-400" />
-                    <span className="text-sm text-gray-500 line-clamp-1">{location}</span>
+              {/* Table Body */}
+              <div className="divide-y divide-gray-100">
+                {loading ? (
+                  <div className="p-12 text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e4ed8]"></div>
+                    <p className="mt-4 text-gray-600">Loading drives...</p>
                   </div>
-                </div>
-              </div>
-              
-              {/* Deadline Column - col-span-2 */}
-              <div className="col-span-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-gray-400" />
-                  <span className="text-gray-700 text-sm">
-                    {formatDate(deadline)}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Views Column - col-span-2 */}
-              <div className="col-span-2 text-center">
-                <div className="flex items-center justify-center">
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
-                    {views}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Applications Column - col-span-3 */}
-              <div className="col-span-3 text-center">
-                <button
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleViewNewCompanies(job); 
-                  }}
-                  className="group flex items-center justify-center w-full cursor-pointer"
-                  title="View Applications"
-                >
-                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
-                    {applications}
-                  </span>
-                </button>
-              </div>
-              
-              {/* Actions Column - col-span-2 */}
-              <div className="col-span-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      handleViewCompanies(job); 
-                    }}
-                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
-                    title="View Company Applications"
-                  >
-                    {/* <Eye size={16} /> */}
-                    viewed
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(job._id);
-                    }}
-                    className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
-                    title="Delete Drive"
-                  >
-                    <Trash size={16} />
-                  </button>
-                </div>
+                ) : currentJobs.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
+                      <Search className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No drives found</h3>
+                    <p className="text-gray-600">No drives match your search criteria.</p>
+                  </div>
+                ) : (
+                  currentJobs.map(job => {
+                    const jobId = job._id;
+                    const degree = displayDegree(job);
+                    const location = getLocation(job);
+                    const deadline = job?.proposedSchedule?.endDate;
+                    const views = job.views || 0;
+                    const applications = job.applicationCount || 0;
+
+                    return (
+                      <div key={jobId} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          {/* Degree Column - col-span-3 */}
+                          <div className="col-span-3">
+                            <div
+                              onClick={() => {
+                                // Prepare data for CollegeDetailPage
+                                // const collegeData = {
+                                //   _id: job._id,
+                                //   isApplied: false,
+                                //   isSaved: false,
+                                //   collegePosted: job.collegePosted || job.collegeDetails,
+                                //   company: job.companyName || job.company,
+                                //   description: job.description,
+                                //   location: job.location,
+                                //   jobTitle: job.jobTitle,
+                                //   employmentType: job.employmentType,
+                                //   packageDetails: job.packageDetails,
+                                //   noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
+                                //   lookingFor: job.lookingFor || job.jobTitle,
+                                //   proposedSchedule: job.proposedSchedule,
+                                //   companyType: job.companyType,
+                                //   roundDetails: job.roundDetails,
+                                //   studentStreams: job.studentStreams,
+                                //   numberOfStudent: job.numberOfStudent,
+                                //   amenitiesRequired: job.amenitiesRequired,
+                                //   contactPerson: job.contactPerson,
+                                //   startDate: job?.proposedSchedule?.startDate,
+                                //   endDate: job?.proposedSchedule?.endDate,
+                                //   jobType: job.jobType || 'On-campus'
+                                // };
+
+                                // // Navigate to CollegeDetailPage with state data
+                                // navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
+                                //   state: {
+                                //     applicationData: collegeData,
+                                //     isApplied: false,
+                                //     isSaved: false
+                                //   }
+                                // });
+                                navigate(`/college-dashboard/preview/On-campus/${job._id}`, {
+                                  state: {
+                                    applicationData: {
+                                      ...job,
+                                      isApplied: false,
+                                      isSaved: false,
+                                    },
+                                    isApplied: false,
+                                    isSaved: false,
+                                  },
+                                });
+                              }}
+                              className="group cursor-pointer"
+                            >
+                              <h3 className="font-semibold text-gray-900 group-hover:text-[#1e4ed8] transition-colors line-clamp-2">
+                                {degree}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <MapPin className="h-3 w-3 text-gray-400" />
+                                <span className="text-sm text-gray-500 line-clamp-1">{location}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Deadline Column - col-span-2 */}
+                          <div className="col-span-2">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-3 w-3 text-gray-400" />
+                              <span className="text-gray-700 text-sm">
+                                {formatDate(deadline)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Views Column - col-span-2 */}
+                          <div className="col-span-2 text-center">
+                            <div className="flex items-center justify-center">
+                              <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
+                                {views}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Applications Column - col-span-3 */}
+                          <div className="col-span-3 text-center">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewNewCompanies(job);
+                              }}
+                              className="group flex items-center justify-center w-full cursor-pointer"
+                              title="View Applications"
+                            >
+                              <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
+                                {applications}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* Actions Column - col-span-2 */}
+                          <div className="col-span-2">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewCompanies(job);
+                                }}
+                                className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#1e4ed8] hover:bg-gray-50 hover:border-[#1e4ed8]/50 transition-all duration-200"
+                                title="View Company Applications"
+                              >
+                                {/* <Eye size={16} /> */}
+                                viewed
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(job._id);
+                                }}
+                                className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
+                                title="Delete Drive"
+                              >
+                                <Trash size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
-          </div>
-        );
-      })
-    )}
-  </div>
-</div>
 
             {/* Pagination */}
             {!loading && totalPages > 1 && (

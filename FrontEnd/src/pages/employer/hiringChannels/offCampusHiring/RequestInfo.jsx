@@ -1045,6 +1045,7 @@
 
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { ArrowLeft } from "lucide-react";
 import axios from '../../../../lib/axiosInstance';
 import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, MapPin, Briefcase, Target, DollarSign, Clock, MessageSquare, Award, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -1615,6 +1616,17 @@ const handleSelectOrAddSkill = async (skillName) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
+      <div className="mb-6">
+                      
+                      <button
+                        type="button"
+                        onClick={onBackClick}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back
+                      </button>
+                    </div>
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
@@ -1700,7 +1712,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Degree */}
                   <div>
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Degree</label>
+                  <label className="block font-medium mb-2 text-sm text-gray-700">Degree <span className="text-red-500">*</span></label>
                   <CreatableSelect
                     isMulti
                     isClearable
@@ -1735,7 +1747,7 @@ const handleSelectOrAddSkill = async (skillName) => {
 
                 {/* Stream */}
                 <div>
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Stream</label>
+                  <label className="block font-medium mb-2 text-sm text-gray-700">Stream <span className="text-red-500">*</span></label>
                   <CreatableSelect
                     isMulti
                     isClearable
@@ -1911,7 +1923,7 @@ const handleSelectOrAddSkill = async (skillName) => {
 
                   {/* Job Roles */}
                   <div>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles <span className="text-red-500">*</span></label>
                     <CreatableSelect
                       isMulti
                       isClearable
@@ -2477,6 +2489,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                       <input 
                         type="tel" 
                         name="mobile" 
+                        inputMode="numeric"
+                        maxLength={10}
+                        pattern="[0-9]{10}"
                         value={formData.contactPerson.mobile} 
                         onChange={handleContactChange} 
                         placeholder="Enter 10-digit mobile number" 
@@ -2529,14 +2544,14 @@ const handleSelectOrAddSkill = async (skillName) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between pt-6 border-t border-gray-200">
-              <button
+            <div className="flex justify-center pt-6 border-t border-gray-200">
+              {/* <button
                 type="button"
                 onClick={onBackClick}
                 className="px-6 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors flex items-center"
               >
                 ← Back
-              </button>
+              </button> */}
               <button 
                 type="submit" 
                 disabled={isSubmitting} 

@@ -37,7 +37,7 @@ const HackathonCard = ({ hackathon }) => {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center text-xs text-gray-500 mb-1">
-                <span>{new Date(hackathon.startDate).toLocaleDateString()}</span>
+                <span>{new Date(hackathon.startDate).toLocaleDateString('en-IN')}</span>
                 <span className="mx-2">•</span>
                 {/* <span>{hackathon.prizes?.join(', ')}</span> */}
                 <span>Cash and Swags</span>

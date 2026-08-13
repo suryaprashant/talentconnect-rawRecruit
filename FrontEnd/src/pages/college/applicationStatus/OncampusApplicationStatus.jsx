@@ -25,23 +25,23 @@ export default function OncampusApplicationStatus() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await getUserApplicationStatus("On-campus");
       console.log("🔍 Step 1 - On-campus Application list response:", response);
-      
+
       if (!response || !response.data) {
         throw new Error("No response from API");
       }
-      
+
       const rawData = response.data?.data || [];
       console.log(`🔍 Found ${rawData.length} on-campus applications`);
-      
+
       if (rawData.length === 0) {
         setOncampusJobs([]);
         setLoading(false);
         return;
       }
-      
+
       // Fetch full job details for each application
       const detailedJobs = await Promise.all(
         rawData.map(async (item) => {
@@ -49,11 +49,11 @@ export default function OncampusApplicationStatus() {
             const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
             const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
             const jobDetails = jobResponse.data;
-            
+
             const companyUserId = jobDetails.postedByUser || jobDetails.companyPosted?.userId;
             const companyLogo = item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl || null;
             const companyName = item.companyProfile?.companyDetails?.companyName || "Company";
-            console.log('image url',companyLogo)
+            console.log('image url', companyLogo)
 
             // Extract job roles
             let jobRolesText = "Position";
@@ -62,31 +62,31 @@ export default function OncampusApplicationStatus() {
             } else if (jobDetails?.lookingFor) {
               jobRolesText = jobDetails.lookingFor;
             }
-            
-            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-              ? jobDetails.jobRoles[0] 
+
+            const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+              ? jobDetails.jobRoles[0]
               : jobDetails?.lookingFor || "Position";
-            
-            const location = Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0 
-              ? jobDetails.workLocation.join(', ') 
+
+            const location = Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0
+              ? jobDetails.workLocation.join(', ')
               : "Location not specified";
-            
+
             const employmentType = Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
               ? jobDetails.employmentType.join(', ')
               : "Full-time";
-            
+
             const degree = Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : "Degree requirements";
             const skills = Array.isArray(jobDetails?.skills) ? jobDetails.skills : [];
             const description = jobDetails?.description || "No description available";
-            
+
             return {
               ...item,
               id: item._id,
               jobId: jobId,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
               company: companyName,
               companyLogo: companyLogo,
               jobTitle: firstJobRole,
@@ -105,14 +105,14 @@ export default function OncampusApplicationStatus() {
                 employmentType: employmentType
               }
             };
-            
+
           } catch (jobError) {
             console.error(`❌ Error fetching on-campus job ${item.job}:`, jobError);
             return {
               ...item,
               id: item._id,
               status: item.currentStatus || item.status || "Applied",
-              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+              date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
               company: "Company",
               companyLogo: null,
               jobTitle: "Position",
@@ -128,24 +128,24 @@ export default function OncampusApplicationStatus() {
           }
         })
       );
-      
+
       console.log("✅ Final detailed on-campus jobs:", detailedJobs);
       setOncampusJobs(detailedJobs);
       if (detailedJobs.length > 0) {
         setSelectedJob(detailedJobs[0]);
       }
-      
+
     } catch (error) {
       console.error("❌ Error in fetchApplication:", error);
       setError(error.message || "Failed to fetch applications");
-      
+
       if (error.response?.data?.data) {
         const rawData = error.response.data.data;
         const fallbackJobs = rawData.map(item => ({
           ...item,
           id: item._id,
           status: item.currentStatus || "Applied",
-          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : "N/A",
           company: "Company",
           companyLogo: null,
           jobTitle: "Position",
@@ -178,15 +178,15 @@ export default function OncampusApplicationStatus() {
   const getStatusIndex = (status) => {
     if (!status) return 0;
     const lowerStatus = status.toLowerCase();
-    
+
     // If rejected, show 0% progress (stays at Applied step)
     if (lowerStatus === 'rejected') return 0;
-    
+
     // For normal progression
     if (lowerStatus === 'applied') return 0;
     if (lowerStatus === 'shortlisted') return 1;
     if (lowerStatus === 'accepted') return 2;
-    
+
     return 0;
   };
 
@@ -202,19 +202,19 @@ export default function OncampusApplicationStatus() {
       console.log(`🔄 Retrying fetch for on-campus job ${jobId}`);
       const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
       const jobDetails = jobResponse.data;
-      
+
       setOncampusJobs(prev => prev.map(job => {
         if (job.jobId === jobId) {
           const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-          
-          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
-            ? jobDetails.jobRoles[0] 
+
+          const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
+            ? jobDetails.jobRoles[0]
             : jobDetails?.lookingFor || "Position";
-          
+
           const jobRolesText = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0
             ? jobDetails.jobRoles.join(', ')
             : jobDetails?.lookingFor || "Position";
-          
+
           return {
             ...job,
             company: companyName,
@@ -224,8 +224,8 @@ export default function OncampusApplicationStatus() {
             employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
               ? jobDetails.employmentType.join(', ')
               : job.employmentType,
-            location: Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0 
-              ? jobDetails.workLocation.join(', ') 
+            location: Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0
+              ? jobDetails.workLocation.join(', ')
               : job.location,
             degree: Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
@@ -237,13 +237,13 @@ export default function OncampusApplicationStatus() {
         }
         return job;
       }));
-      
+
     } catch (error) {
       console.error(`❌ Failed to retry on-campus job ${jobId}:`, error);
     }
   };
 
-  console.log('job',filteredJobs)
+  console.log('job', filteredJobs)
 
   const handleViewFullDetails = (job) => {
     console.log('Opening modal for job:', job?.jobId || job?.id);
@@ -312,60 +312,60 @@ export default function OncampusApplicationStatus() {
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mt-3 mb-6">
 
-  {/* Top Row */}
-  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+          {/* Top Row */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
 
-    {/* Left: Title */}
-    <div className="flex items-center gap-3">
-      <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
-        <Award className="h-5 w-5 text-[#1e4ed8]" />
-      </div>
+            {/* Left: Title */}
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg">
+                <Award className="h-5 w-5 text-[#1e4ed8]" />
+              </div>
 
-      <div>
-        <h1 className="text-xl font-semibold text-[#143694]">
-          On-Campus Application Status
-        </h1>
-        <p className="text-sm text-gray-600">
-          {oncampusJobs.length} on-campus application(s) found
-        </p>
-      </div>
-    </div>
+              <div>
+                <h1 className="text-xl font-semibold text-[#143694]">
+                  On-Campus Application Status
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {oncampusJobs.length} on-campus application(s) found
+                </p>
+              </div>
+            </div>
 
-    {/* Right: Search */}
-    <div className="relative w-full sm:w-72">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-        <Search className="h-4 w-4 text-[#143694]" />
-      </div>
+            {/* Right: Search */}
+            <div className="relative w-full sm:w-72">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                <Search className="h-4 w-4 text-[#143694]" />
+              </div>
 
-      <input
-        type="text"
-        placeholder="Search applications..."
-        className="w-full pl-10 pr-4 py-2 bg-white border border-[#1e4ed8] rounded-lg focus:ring-2 focus:ring-[#143694] focus:outline-none text-sm placeholder:text-gray-400"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </div>
-  </div>
+              <input
+                type="text"
+                placeholder="Search applications..."
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#1e4ed8] rounded-lg focus:ring-2 focus:ring-[#143694] focus:outline-none text-sm placeholder:text-gray-400"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
 
-  {/* Bottom Row: Tabs */}
-  <div className="flex items-center gap-3 border-gray-200 pt-0">
+          {/* Bottom Row: Tabs */}
+          <div className="flex items-center gap-3 border-gray-200 pt-0">
 
-    {/* Active */}
-    <button className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm">
-      On-Campus
-    </button>
+            {/* Active */}
+            <button className="px-5 py-2 bg-[#143694] text-white rounded-full font-medium text-sm shadow-sm">
+              On-Campus
+            </button>
 
-    {/* Inactive */}
-    <button 
-      onClick={() => navigate('/application-status/poolcampus')}
-      className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
-    >
-      Pool-Campus
-    </button>
+            {/* Inactive */}
+            <button
+              onClick={() => navigate('/application-status/poolcampus')}
+              className="px-5 py-2 text-gray-500 hover:text-[#143694] hover:bg-gray-100 rounded-full font-medium text-sm transition-all"
+            >
+              Pool-Campus
+            </button>
 
-  </div>
+          </div>
 
-</div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Applications List */}
@@ -379,7 +379,7 @@ export default function OncampusApplicationStatus() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-2">
                 {filteredJobs.length > 0 ? (
                   <div className="space-y-2">
@@ -387,33 +387,31 @@ export default function OncampusApplicationStatus() {
                       <div
                         key={job.id}
                         onClick={() => setSelectedJob(job)}
-                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
-                          selectedJob?.id === job.id 
-                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#1e4ed8]/20' 
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${selectedJob?.id === job.id
+                            ? 'bg-gradient-to-r from-[#143694]/10 to-[#1e4ed8]/10 border border-[#1e4ed8]/20'
                             : 'hover:bg-white/30 border border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-start gap-3">
                           <div className="w-9 h-9 flex-shrink-0">
                             {job.companyLogo ? (
-                              <img 
-                                src={job.companyLogo} 
+                              <img
+                                src={job.companyLogo}
                                 alt={job.company}
                                 className="w-9 h-9 rounded-lg object-cover border border-white/60"
                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                               />
                             ) : null}
-                            <div 
-                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center font-bold text-xs ${
-                                selectedJob?.id === job.id 
-                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white' 
+                            <div
+                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center font-bold text-xs ${selectedJob?.id === job.id
+                                  ? 'bg-gradient-to-br from-[#143694] to-[#1e4ed8] text-white'
                                   : 'bg-white/50 border border-white/60 text-[#1e4ed8]'
-                              }`}
+                                }`}
                             >
                               {getCompanyInitials(job.company)}
                             </div>
                           </div>
-                  
+
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
@@ -422,12 +420,11 @@ export default function OncampusApplicationStatus() {
                                 <MapPin className="h-3 w-3 mr-1 text-[#1e4ed8]" />
                                 {job.location}
                               </span>
-                              <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-blue-100 text-[#143694] border border-blue-200'
-                              }`}>
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                  job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                    job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                      'bg-blue-100 text-[#143694] border border-blue-200'
+                                }`}>
                                 {job.status}
                               </span>
                             </div>
@@ -463,8 +460,8 @@ export default function OncampusApplicationStatus() {
 
           {/* Status and Details */}
           <div className="lg:col-span-2">
-          {selectedJob ? (
-            <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col">
+            {selectedJob ? (
+              <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col">
                 {/* Status Progress */}
                 <div className="p-5 border-b border-white/60">
                   <div className="flex items-center justify-between mb-3">
@@ -474,8 +471,8 @@ export default function OncampusApplicationStatus() {
                     </div>
                     <div className="w-12 h-12 flex-shrink-0">
                       {selectedJob.companyLogo ? (
-                        <img 
-                          src={selectedJob.companyLogo} 
+                        <img
+                          src={selectedJob.companyLogo}
                           alt={selectedJob.company}
                           className="w-12 h-12 rounded-xl object-cover border border-white/60"
                         />
@@ -486,7 +483,7 @@ export default function OncampusApplicationStatus() {
                       )}
                     </div>
                   </div>
-                  
+
                   {selectedJob.status.toLowerCase() === 'rejected' ? (
                     // Rejected Status - Simple 2-step bar
                     <div className="relative">
@@ -521,11 +518,10 @@ export default function OncampusApplicationStatus() {
                           const isActive = idx <= currentIdx;
                           return (
                             <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
-                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                                isActive 
+                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${isActive
                                   ? 'bg-[#1e4ed8] border-[#1e4ed8] text-white'
                                   : 'bg-white/50 border-white/60 text-gray-400'
-                              }`}>
+                                }`}>
                                 {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
                               </div>
                               <span className={`text-xs text-center ${isActive ? 'text-[#1e4ed8] font-medium' : 'text-gray-500'}`}>
@@ -557,7 +553,7 @@ export default function OncampusApplicationStatus() {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Calendar className="h-4 w-4 text-[#1e4ed8]" />
@@ -565,7 +561,7 @@ export default function OncampusApplicationStatus() {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.degree}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <MapPin className="h-4 w-4 text-[#1e4ed8]" />
@@ -573,7 +569,7 @@ export default function OncampusApplicationStatus() {
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.location}</p>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Clock className="h-4 w-4 text-[#1e4ed8]" />
@@ -614,14 +610,14 @@ export default function OncampusApplicationStatus() {
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                <button 
-                  onClick={() => handleViewFullDetails(selectedJob)}
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300"
-                >
-                  View Full Details
-                  <ArrowRight className="h-3.5 w-3.5 ml-2" />
-                </button>
-              </div>
+                    <button
+                      onClick={() => handleViewFullDetails(selectedJob)}
+                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#143694]/40 transition-all duration-300"
+                    >
+                      View Full Details
+                      <ArrowRight className="h-3.5 w-3.5 ml-2" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : oncampusJobs.length === 0 ? (
@@ -650,8 +646,8 @@ export default function OncampusApplicationStatus() {
       </div>
       {isModalOpen && modalJobId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
           <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">

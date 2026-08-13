@@ -163,7 +163,7 @@ const ServiceRequestManagement = () => {
                 placeholder="Search by requester name, email, organization..."
               />
             </div>
-            
+
             {/* Status Filter */}
             <select
               value={filterStatus}
@@ -233,7 +233,7 @@ const ServiceRequestManagement = () => {
                       </td>
                       <td className="p-2">{req.organizationName || "N/A"}</td>
                       <td className="p-2">
-                        {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : "N/A"}
+                        {req.createdAt ? new Date(req.createdAt).toLocaleDateString('en-IN') : "N/A"}
                       </td>
                     </tr>
                   ))

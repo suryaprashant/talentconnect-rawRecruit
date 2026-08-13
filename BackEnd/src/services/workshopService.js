@@ -16,12 +16,12 @@ class WorkshopService {
 
     async getTotalWorkShopCount() {
         try {
-              return await Workshop.countDocuments();
-            } catch (error) {
-              console.error("Error in getTotalHackathonCount:", error.message);
-              throw new Error("Failed to get total hackathon count");
-            }
-        
+            return await Workshop.countDocuments();
+        } catch (error) {
+            console.error("Error in getTotalHackathonCount:", error.message);
+            throw new Error("Failed to get total hackathon count");
+        }
+
     };
 
 
@@ -576,8 +576,8 @@ class WorkshopService {
         Dear ${registration.name},
 
         Your registration for "${workshop.title}" has been confirmed.
-        Start Date: ${new Date(workshop.startDate).toLocaleDateString()}
-        End Date: ${new Date(workshop.endDate).toLocaleDateString()}
+        Start Date: ${new Date(workshop.startDate).toLocaleDateString('en-IN')}
+        End Date: ${new Date(workshop.endDate).toLocaleDateString('en-IN')}
         Location: ${workshop.location}
 
         Regards,

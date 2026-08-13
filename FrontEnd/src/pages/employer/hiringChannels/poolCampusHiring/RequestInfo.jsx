@@ -1165,6 +1165,7 @@
 
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { ArrowLeft } from "lucide-react";
 import axios from '../../../../lib/axiosInstance';
 import { ChevronDown, X, Building2, Mail, Phone, Link, Calendar, Users, Briefcase, Target, DollarSign, Clock, MessageSquare, MapPin, Layers, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -1176,7 +1177,9 @@ import BackButton from '@/components/layout/BackButton';
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
-export default function PoolCampusHiringForm() {
+export default function PoolCampusHiringForm({
+  onBackClick
+}) {
   // Updated data structure for College Type → Degree → Stream
   const collegeTypeDegreeMapping = {
     'Engineering': {
@@ -1930,6 +1933,17 @@ const handleSelectOrAddSkill = async (skillName) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 py-4">
+       <div className="mb-6">
+                
+                <button
+                  type="button"
+                  onClick={onBackClick}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[#4B5563] hover:bg-white/60 transition-all font-medium"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </button>
+              </div>
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-4 mb-6">
@@ -3036,7 +3050,10 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact person mobile no <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                      <input type="tel" name="mobile" value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                      <input type="tel" name="mobile" maxLength={10}
+                          pattern="[0-9]{10}"
+                        inputMode="numeric"
+                        value={formData.contactPerson.mobile} onChange={handleContactChange} placeholder="Enter 10-digit mobile number" className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#143694]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
                     </div>
                   </div>
                 </div>
@@ -3068,8 +3085,8 @@ const handleSelectOrAddSkill = async (skillName) => {
             </div>
 
             {/* Register Button */}
-            <div className="flex justify-between pt-4">
-              <BackButton></BackButton>
+            <div className="flex justify-center pt-4">
+              {/* <BackButton></BackButton> */}
               <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#143694]/30 focus:outline-none focus:ring-2 focus:ring-[#143694]/50 transition-all duration-200 disabled:opacity-50">
                 {isSubmitting ? 'Submitting...' : 'Register'}
               </button>

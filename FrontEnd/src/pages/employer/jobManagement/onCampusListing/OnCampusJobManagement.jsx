@@ -336,7 +336,7 @@ export default function OnCampusJobManagement() {
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
               <div className="col-span-3">Looking For</div>
-              <div className="col-span-2">Locations</div>
+              <div className="col-span-2">Work Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
               <div className="col-span-2 text-center">New Applications</div>
@@ -392,7 +392,7 @@ export default function OnCampusJobManagement() {
                       <div className="flex items-center gap-2">
                         <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                         <span className="text-gray-700 text-sm capitalize truncate">
-                          {displayLocations(job.location)}
+                          {displayLocations(job.workLocation)}
                         </span>
                       </div>
                     </div>

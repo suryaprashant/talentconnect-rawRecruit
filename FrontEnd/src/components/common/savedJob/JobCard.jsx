@@ -34,7 +34,7 @@ const JobCard = ({ job, userType = 'student' }) => {
   };
 
   const getDisplayData = () => {
-    switch(userType) {
+    switch (userType) {
       case 'college':
         return {
           title: jobData?.collegeUniversityDetails?.collegeName || 'College',
@@ -42,7 +42,7 @@ const JobCard = ({ job, userType = 'student' }) => {
           mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Job Opportunity',
           description: jobData?.description || 'No description available',
           metaInfo: [
-            { label: 'Posted Date', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString() : 'N/A' },
+            { label: 'Posted Date', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString('en-IN') : 'N/A' },
             { label: 'Eligible Courses', value: normalizeArrayField(jobData?.eligibleCourses) },
             { label: 'Batch', value: normalizeArrayField(jobData?.eligibleBatches) }
           ]
@@ -57,7 +57,7 @@ const JobCard = ({ job, userType = 'student' }) => {
           metaInfo: [
             { label: 'Experience', value: jobData?.experienceRequired || 'Fresher' },
             { label: 'Salary', value: jobData?.salary || 'Not disclosed' },
-            { label: 'Posted', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString() : 'N/A' }
+            { label: 'Posted', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString('en-IN') : 'N/A' }
           ]
         };
 
@@ -70,7 +70,7 @@ const JobCard = ({ job, userType = 'student' }) => {
           metaInfo: [
             { label: 'Department', value: jobData?.department || 'N/A' },
             { label: 'Positions', value: jobData?.numberOfPositions || '1' },
-            { label: 'Deadline', value: jobData?.applicationDeadline ? new Date(jobData.applicationDeadline).toLocaleDateString() : 'N/A' }
+            { label: 'Deadline', value: jobData?.applicationDeadline ? new Date(jobData.applicationDeadline).toLocaleDateString('en-IN') : 'N/A' }
           ]
         };
 
@@ -83,7 +83,7 @@ const JobCard = ({ job, userType = 'student' }) => {
           metaInfo: [
             { label: 'Stipend', value: jobData?.stipend || jobData?.salary || 'Not specified' },
             { label: 'Duration', value: jobData?.internshipDuration || 'Not specified' },
-            { label: 'Apply By', value: jobData?.lastDateToApply ? new Date(jobData.lastDateToApply).toLocaleDateString() : 'N/A' }
+            { label: 'Apply By', value: jobData?.lastDateToApply ? new Date(jobData.lastDateToApply).toLocaleDateString('en-IN') : 'N/A' }
           ]
         };
 
@@ -131,7 +131,7 @@ const JobCard = ({ job, userType = 'student' }) => {
         <div className="ml-4 flex-1">
           {/* Dynamic title based on user type */}
           <h2 className="text-xl font-bold">{displayData.title}</h2>
-          
+
           {/* Subtitle based on user type */}
           <p className="text-sm text-gray-500 mb-1">{displayData.subtitle}</p>
 
@@ -146,7 +146,7 @@ const JobCard = ({ job, userType = 'student' }) => {
 
           {/* Main heading */}
           <h3 className="font-bold text-xl capitalize">{displayData.mainHeading}</h3>
-          
+
           {/* Description */}
           <p className="mt-2 text-sm text-gray-600 line-clamp-3 capitalize">
             {displayData.description}

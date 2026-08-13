@@ -284,7 +284,7 @@ const UserManagement = () => {
                 placeholder="Search by name, email..."
               />
             </div>
-            
+
             {/* User Type Filter */}
             <select
               value={filterType}
@@ -332,17 +332,17 @@ const UserManagement = () => {
                           <span>{getUserTypeDisplay(user.userType)}</span>
                         </div>
                       </td>
-                      
+
                       <td className="p-2">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {new Date(user.createdAt).toLocaleDateString('en-IN')}
                       </td>
                       <td className="p-2">
-                        {new Date(user.updatedAt).toLocaleDateString()}
+                        {new Date(user.updatedAt).toLocaleDateString('en-IN')}
                       </td>
                       <td className="p-2 text-right">
                         <div className="flex items-center justify-end space-x-2 relative">
-                          
-                          
+
+
                           {/* Status Dropdown */}
                           {showStatusDropdown === user._id && (
                             <div className="absolute right-0 top-10 bg-white border rounded-md shadow-lg z-10">
@@ -350,9 +350,8 @@ const UserManagement = () => {
                                 <button
                                   key={status}
                                   onClick={() => handleUpdateStatus(user._id, status)}
-                                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 capitalize ${
-                                    user.status === status ? "bg-slate-50 font-semibold" : ""
-                                  }`}
+                                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 capitalize ${user.status === status ? "bg-slate-50 font-semibold" : ""
+                                    }`}
                                 >
                                   {status}
                                 </button>
