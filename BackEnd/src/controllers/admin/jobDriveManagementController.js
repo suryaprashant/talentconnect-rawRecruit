@@ -279,12 +279,9 @@ export const getAcceptedReferralJobsForAdmin = async (req, res) => {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    
-
     // 2. Call service
     const jobs = await getAcceptedReferralJobsService();
 
-  
     // 3. Response
     return res.status(200).json({
       count: jobs.length,
@@ -371,13 +368,31 @@ export const updateJobVisibilityThreshold = async (req, res) => {
         .json({ error: "Threshold must be between 0 and 100" });
     }
 
-    // Updates all admin accounts (global config pattern)
     await Auth.updateMany(
       { userType: "admin" },
       { jobVisibilityThreshold: threshold },
     );
 
     res.status(200).json({ message: `Threshold updated to ${threshold}%` });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getJobVisibilityThreshold = async (req, res) => {
+  try {
+    const admin = await Auth.findOne({ userType: "admin" });
+
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const threshold = admin.jobVisibilityThreshold ?? 0; 
+
+    res.status(200).json({
+      threshold,
+      message: `Current threshold is ${threshold}%`,
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

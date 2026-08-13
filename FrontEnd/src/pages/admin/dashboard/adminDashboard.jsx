@@ -1,16 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAdmin } from "../../../context/AdminProvider";
 
-
 import {
-  Users, Building2, GraduationCap, FileText, TrendingUp,
-  Shield, LogOut, Settings, SlidersHorizontal, BarChart3,
-  Eye, X, CheckCircle2, AlertCircle, RotateCcw, Briefcase,
-  Plus
-} from 'lucide-react';
+  Users,
+  Building2,
+  GraduationCap,
+  FileText,
+  TrendingUp,
+  Shield,
+  LogOut,
+  Settings,
+  SlidersHorizontal,
+  BarChart3,
+  Eye,
+  X,
+  CheckCircle2,
+  AlertCircle,
+  RotateCcw,
+  Briefcase,
+  Plus,
+} from "lucide-react";
 import axios from "../../../lib/axiosInstance";
-
-
 
 /* ─────────────────────────────────────────────
    Shared styles
@@ -869,37 +879,17 @@ const ThresholdModal = ({ isOpen, onClose }) => {
   const [inputValue, setInputValue] = useState("50");
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
   const overlayRef = useRef(null);
 
-  const handleSliderChange = (e) => {
-    const v = Number(e.target.value);
-    setThreshold(v);
-    setInputValue(String(v));
-    setStatus(null);
-  };
-  const handleInputChange = (e) => {
-    const r = e.target.value;
-    setInputValue(r);
-    const n = Number(r);
-    if (!isNaN(n) && n >= 0 && n <= 100) setThreshold(n);
-    setStatus(null);
-  };
-  const handleInputBlur = () => {
-    const n = Math.min(100, Math.max(0, Number(inputValue) || 0));
-    setThreshold(n);
-    setInputValue(String(n));
-  };
-  const handleOverlay = (e) => {
-    if (e.target === overlayRef.current) onClose();
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    setStatus(null);
+  const getThreshold = async () => {
     try {
-      await axios.patch(
-        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/updateThreshold`,
-        { threshold },
+      setFetching(true);
+      setStatus(null);
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/getThreshold`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -908,18 +898,123 @@ const ThresholdModal = ({ isOpen, onClose }) => {
           withCredentials: true,
         },
       );
+
+      // Axios response is inside response.data
+      const value = Number(response?.data?.threshold);
+
+      if (!Number.isNaN(value)) {
+        const safeValue = Math.min(100, Math.max(0, value));
+
+        setThreshold(safeValue);
+        setInputValue(String(safeValue));
+      }
+    } catch (error) {
+      console.error("Failed to get threshold:", error);
+      setStatus("error");
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  // Fetch threshold only when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      getThreshold();
+    }
+  }, [isOpen]);
+
+  const handleSliderChange = (e) => {
+    const value = Number(e.target.value);
+
+    setThreshold(value);
+    setInputValue(String(value));
+    setStatus(null);
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+
+    // Allow empty input while typing
+    setInputValue(value);
+    setStatus(null);
+
+    if (value === "") {
+      return;
+    }
+
+    const numberValue = Number(value);
+
+    if (!Number.isNaN(numberValue) && numberValue >= 0 && numberValue <= 100) {
+      setThreshold(numberValue);
+    }
+  };
+
+  const handleInputBlur = () => {
+    let value = Number(inputValue);
+
+    if (Number.isNaN(value)) {
+      value = 0;
+    }
+
+    value = Math.min(100, Math.max(0, value));
+
+    setThreshold(value);
+    setInputValue(String(value));
+  };
+
+  const handleOverlay = (e) => {
+    if (e.target === overlayRef.current) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = async () => {
+    const value = Number(threshold);
+
+    if (Number.isNaN(value) || value < 0 || value > 100) {
+      setStatus("error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setStatus(null);
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/updateThreshold`,
+        {
+          threshold: value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        },
+      );
+
+      console.log("Threshold update response:", response.data);
+
+      // Keep UI in sync
+      setThreshold(value);
+      setInputValue(String(value));
       setStatus("success");
-    } catch {
+    } catch (error) {
+      console.error("Failed to update threshold:", error);
       setStatus("error");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const trackColor =
     threshold < 33 ? "#22c55e" : threshold < 66 ? "#f59e0b" : "#ef4444";
+
   const headerBg = "linear-gradient(135deg, #f97316 0%, #ea580c 100%)";
 
   return (
@@ -950,6 +1045,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
           overflow: "hidden",
         }}
       >
+        {/* HEADER */}
         <div
           style={{
             background: headerBg,
@@ -959,7 +1055,13 @@ const ThresholdModal = ({ isOpen, onClose }) => {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
             <div
               style={{
                 background: "rgba(255,255,255,0.2)",
@@ -969,6 +1071,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
             >
               <SlidersHorizontal size={20} color="#fff" />
             </div>
+
             <div>
               <h2
                 style={{
@@ -981,6 +1084,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               >
                 Job Visibility Threshold
               </h2>
+
               <p
                 style={{
                   margin: "3px 0 0",
@@ -993,6 +1097,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               </p>
             </div>
           </div>
+
           <button
             onClick={onClose}
             style={{
@@ -1007,8 +1112,16 @@ const ThresholdModal = ({ isOpen, onClose }) => {
             <X size={16} color="#fff" />
           </button>
         </div>
+
+        {/* BODY */}
         <div style={{ padding: "28px" }}>
-          <div style={{ textAlign: "center", marginBottom: "28px" }}>
+          {/* THRESHOLD VALUE */}
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: "28px",
+            }}
+          >
             <span
               style={{
                 fontSize: "64px",
@@ -1020,13 +1133,19 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                 display: "block",
               }}
             >
-              {threshold}
+              {fetching ? "..." : threshold}
+
               <span
-                style={{ fontSize: "28px", fontWeight: 600, color: "#94a3b8" }}
+                style={{
+                  fontSize: "28px",
+                  fontWeight: 600,
+                  color: "#94a3b8",
+                }}
               >
                 %
               </span>
             </span>
+
             <p
               style={{
                 margin: "6px 0 0",
@@ -1042,6 +1161,8 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                   : `Jobs scoring above ${threshold}% match will be shown`}
             </p>
           </div>
+
+          {/* SLIDER */}
           <div style={{ marginBottom: "20px" }}>
             <input
               type="range"
@@ -1050,12 +1171,18 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               step={1}
               value={threshold}
               onChange={handleSliderChange}
+              disabled={fetching || loading}
               className="threshold-slider"
               style={{
-                background: `linear-gradient(to right, ${trackColor} ${threshold}%, #e2e8f0 ${threshold}%)`,
-                color: trackColor,
+                width: "100%",
+                background: `linear-gradient(
+                  to right,
+                  ${trackColor} ${threshold}%,
+                  #e2e8f0 ${threshold}%
+                )`,
               }}
             />
+
             <div
               style={{
                 display: "flex",
@@ -1063,20 +1190,22 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                 marginTop: "6px",
               }}
             >
-              {["0%", "25%", "50%", "75%", "100%"].map((l) => (
+              {["0%", "25%", "50%", "75%", "100%"].map((label) => (
                 <span
-                  key={l}
+                  key={label}
                   style={{
                     fontSize: "11px",
                     color: "#94a3b8",
                     fontFamily: "sans-serif",
                   }}
                 >
-                  {l}
+                  {label}
                 </span>
               ))}
             </div>
           </div>
+
+          {/* EXACT VALUE */}
           <div style={{ marginBottom: "24px" }}>
             <label
               style={{
@@ -1092,7 +1221,14 @@ const ThresholdModal = ({ isOpen, onClose }) => {
             >
               Or enter exact value
             </label>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
               <input
                 type="number"
                 min={0}
@@ -1100,6 +1236,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                 value={inputValue}
                 onChange={handleInputChange}
                 onBlur={handleInputBlur}
+                disabled={fetching || loading}
                 style={{
                   width: "100px",
                   padding: "10px 14px",
@@ -1114,6 +1251,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                   background: "#fafafa",
                 }}
               />
+
               <span
                 style={{
                   color: "#64748b",
@@ -1125,6 +1263,8 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               </span>
             </div>
           </div>
+
+          {/* SUCCESS */}
           {status === "success" && (
             <div
               style={{
@@ -1139,6 +1279,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               }}
             >
               <CheckCircle2 size={16} color="#16a34a" />
+
               <span
                 style={{
                   color: "#15803d",
@@ -1150,6 +1291,8 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               </span>
             </div>
           )}
+
+          {/* ERROR */}
           {status === "error" && (
             <div
               style={{
@@ -1164,6 +1307,7 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               }}
             >
               <AlertCircle size={16} color="#dc2626" />
+
               <span
                 style={{
                   color: "#b91c1c",
@@ -1175,9 +1319,17 @@ const ThresholdModal = ({ isOpen, onClose }) => {
               </span>
             </div>
           )}
-          <div style={{ display: "flex", gap: "10px" }}>
+
+          {/* BUTTONS */}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+            }}
+          >
             <button
               onClick={onClose}
+              disabled={loading}
               style={{
                 flex: 1,
                 padding: "12px",
@@ -1188,33 +1340,29 @@ const ThresholdModal = ({ isOpen, onClose }) => {
                 fontWeight: 600,
                 fontFamily: "'DM Sans', sans-serif",
                 color: "#475569",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#f8fafc";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#fff";
+                cursor: loading ? "not-allowed" : "pointer",
               }}
             >
               Cancel
             </button>
+
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || fetching}
               style={{
                 flex: 2,
                 padding: "12px",
                 border: "none",
                 borderRadius: "10px",
-                background: loading
-                  ? "#d1d5db"
-                  : "linear-gradient(135deg, #f97316, #ea580c)",
+                background:
+                  loading || fetching
+                    ? "#d1d5db"
+                    : "linear-gradient(135deg, #f97316, #ea580c)",
                 fontSize: "14px",
                 fontWeight: 700,
                 fontFamily: "'DM Sans', sans-serif",
                 color: "#fff",
-                cursor: loading ? "not-allowed" : "pointer",
+                cursor: loading || fetching ? "not-allowed" : "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1250,14 +1398,12 @@ const ThresholdModal = ({ isOpen, onClose }) => {
   );
 };
 
-
-
 const AddCompanyCareerModal = ({ isOpen, onClose }) => {
-  const [companyName, setCompanyName] = useState('');
-  const [careerPageUrl, setCareerPageUrl] = useState('');
+  const [companyName, setCompanyName] = useState("");
+  const [careerPageUrl, setCareerPageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
-  const [errMsg, setErrMsg] = useState('');
+  const [errMsg, setErrMsg] = useState("");
   const overlayRef = useRef(null);
 
   const handleOverlay = (e) => {
@@ -1266,8 +1412,8 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async () => {
     if (!companyName.trim() || !careerPageUrl.trim()) {
-      setStatus('error');
-      setErrMsg('Company name and career page URL are required.');
+      setStatus("error");
+      setErrMsg("Company name and career page URL are required.");
       return;
     }
 
@@ -1283,19 +1429,21 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json",
           },
           withCredentials: true,
-        }
+        },
       );
 
-      setStatus('success');
-      setCompanyName('');
-      setCareerPageUrl('');
+      setStatus("success");
+      setCompanyName("");
+      setCareerPageUrl("");
     } catch (err) {
-      setStatus('error');
-      setErrMsg(err?.response?.data?.message || 'Failed to add company career page.');
+      setStatus("error");
+      setErrMsg(
+        err?.response?.data?.message || "Failed to add company career page.",
+      );
     } finally {
       setLoading(false);
     }
@@ -1308,47 +1456,68 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
       ref={overlayRef}
       onClick={handleOverlay}
       style={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
-        background: 'rgba(107,114,128,0.5)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        background: "rgba(107,114,128,0.5)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1000,
-        animation: 'fadeIn .18s ease',
+        animation: "fadeIn .18s ease",
       }}
     >
       <div
         style={{
-          background: '#fff',
-          borderRadius: '16px',
-          width: '100%',
-          maxWidth: '460px',
-          margin: '0 16px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
-          animation: 'slideUp .22s cubic-bezier(0.34,1.56,0.64,1)',
-          overflow: 'hidden',
+          background: "#fff",
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "460px",
+          margin: "0 16px",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
+          animation: "slideUp .22s cubic-bezier(0.34,1.56,0.64,1)",
+          overflow: "hidden",
         }}
       >
         <div
           style={{
-            background: 'linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)',
-            padding: '24px 28px 20px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
+            background: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+            padding: "24px 28px 20px",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '10px', padding: '8px' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                borderRadius: "10px",
+                padding: "8px",
+              }}
+            >
               <Building2 size={20} color="#fff" />
             </div>
             <div>
-              <h2 style={{ margin: 0, color: '#fff', fontSize: '17px', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  color: "#fff",
+                  fontSize: "17px",
+                  fontWeight: 700,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
                 Add Company
               </h2>
-              <p style={{ margin: '3px 0 0', color: '#ccfbf1', fontSize: '12.5px', fontFamily: 'sans-serif' }}>
+              <p
+                style={{
+                  margin: "3px 0 0",
+                  color: "#ccfbf1",
+                  fontSize: "12.5px",
+                  fontFamily: "sans-serif",
+                }}
+              >
                 Add company name and career page URL
               </p>
             </div>
@@ -1357,21 +1526,29 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255,255,255,0.2)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '6px',
-              cursor: 'pointer',
-              display: 'flex',
+              background: "rgba(255,255,255,0.2)",
+              border: "none",
+              borderRadius: "8px",
+              padding: "6px",
+              cursor: "pointer",
+              display: "flex",
             }}
           >
             <X size={16} color="#fff" />
           </button>
         </div>
 
-        <div style={{ padding: '28px' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '8px' }}>
+        <div style={{ padding: "28px" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: 700,
+                color: "#334155",
+                marginBottom: "8px",
+              }}
+            >
               Company Name
             </label>
             <input
@@ -1383,18 +1560,26 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
               }}
               placeholder="Enter company name"
               style={{
-                width: '100%',
-                padding: '12px 14px',
-                border: '1.5px solid #e2e8f0',
-                borderRadius: '10px',
-                outline: 'none',
-                fontSize: '14px',
+                width: "100%",
+                padding: "12px 14px",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: "10px",
+                outline: "none",
+                fontSize: "14px",
               }}
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '8px' }}>
+          <div style={{ marginBottom: "20px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: 700,
+                color: "#334155",
+                marginBottom: "8px",
+              }}
+            >
               Career Page URL
             </label>
             <input
@@ -1406,43 +1591,69 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
               }}
               placeholder="https://careers.company.com"
               style={{
-                width: '100%',
-                padding: '12px 14px',
-                border: '1.5px solid #e2e8f0',
-                borderRadius: '10px',
-                outline: 'none',
-                fontSize: '14px',
+                width: "100%",
+                padding: "12px 14px",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: "10px",
+                outline: "none",
+                fontSize: "14px",
               }}
             />
           </div>
 
-          {status === 'success' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
+          {status === "success" && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                borderRadius: "10px",
+                padding: "10px 14px",
+                marginBottom: "16px",
+              }}
+            >
               <CheckCircle2 size={16} color="#16a34a" />
-              <span style={{ color: '#15803d', fontSize: '13.5px' }}>Company added successfully!</span>
+              <span style={{ color: "#15803d", fontSize: "13.5px" }}>
+                Company added successfully!
+              </span>
             </div>
           )}
 
-          {status === 'error' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
+          {status === "error" && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                borderRadius: "10px",
+                padding: "10px 14px",
+                marginBottom: "16px",
+              }}
+            >
               <AlertCircle size={16} color="#dc2626" />
-              <span style={{ color: '#b91c1c', fontSize: '13.5px' }}>{errMsg}</span>
+              <span style={{ color: "#b91c1c", fontSize: "13.5px" }}>
+                {errMsg}
+              </span>
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: "flex", gap: "10px" }}>
             <button
               onClick={onClose}
               style={{
                 flex: 1,
-                padding: '12px',
-                border: '1.5px solid #e2e8f0',
-                borderRadius: '10px',
-                background: '#fff',
-                fontSize: '14px',
+                padding: "12px",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: "10px",
+                background: "#fff",
+                fontSize: "14px",
                 fontWeight: 600,
-                color: '#475569',
-                cursor: 'pointer',
+                color: "#475569",
+                cursor: "pointer",
               }}
             >
               Cancel
@@ -1453,21 +1664,30 @@ const AddCompanyCareerModal = ({ isOpen, onClose }) => {
               disabled={loading}
               style={{
                 flex: 2,
-                padding: '12px',
-                border: 'none',
-                borderRadius: '10px',
-                background: loading ? '#d1d5db' : 'linear-gradient(135deg, #14b8a6, #0f766e)',
-                fontSize: '14px',
+                padding: "12px",
+                border: "none",
+                borderRadius: "10px",
+                background: loading
+                  ? "#d1d5db"
+                  : "linear-gradient(135deg, #14b8a6, #0f766e)",
+                fontSize: "14px",
                 fontWeight: 700,
-                color: '#fff',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
+                color: "#fff",
+                cursor: loading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
               }}
             >
-              {loading ? 'Adding…' : <><Plus size={15} />Add Company</>}
+              {loading ? (
+                "Adding…"
+              ) : (
+                <>
+                  <Plus size={15} />
+                  Add Company
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -1499,8 +1719,6 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-
-     
       const response = await axios.get(
         `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/overview`,
         {
@@ -1882,7 +2100,10 @@ const AdminDashboard = () => {
         onClose={() => setWeightsOpen(false)}
       />
 
-      <AddCompanyCareerModal isOpen={addCompanyOpen} onClose={() => setAddCompanyOpen(false)} />
+      <AddCompanyCareerModal
+        isOpen={addCompanyOpen}
+        onClose={() => setAddCompanyOpen(false)}
+      />
     </div>
   );
 };
