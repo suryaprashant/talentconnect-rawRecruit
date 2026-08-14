@@ -453,7 +453,6 @@ export const login = async (req, res) => {
       });
     }
 
-    
     const session = await createUserSession({
       user,
       req,
@@ -539,7 +538,9 @@ export const deleteAccount = async (req, res) => {
   let dbSession = null;
 
   try {
-   
+    // ==========================================
+    // 1. CHECK AUTHENTICATED USER
+    // ==========================================
 
     if (!req.user?._id) {
       return res.status(401).json({
@@ -552,7 +553,7 @@ export const deleteAccount = async (req, res) => {
     const { password } = req.body;
 
     // ==========================================
-    // 2. FIND USER
+    // 2. FIND USER FROM AUTH
     // ==========================================
 
     const user = await Auth.findById(userId);
@@ -567,10 +568,21 @@ export const deleteAccount = async (req, res) => {
     }
 
     // ==========================================
-    // 3. PASSWORD VALIDATION
+    // 3. GET AUTH PROVIDER FROM DATABASE
     // ==========================================
 
-    if (user.authProvider === "manual") {
+    const authProvider = user.authProvider;
+
+    console.log(
+      `Delete account request: userId=${userId}, authProvider=${authProvider}`
+    );
+
+    // ==========================================
+    // 4. PASSWORD VALIDATION
+    // ==========================================
+
+    // Only manual accounts require password
+    if (authProvider === "manual") {
       if (!password) {
         return res.status(400).json({
           success: false,
@@ -578,7 +590,17 @@ export const deleteAccount = async (req, res) => {
         });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      if (!user.password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is not configured for this account",
+        });
+      }
+
+      const isMatch = await bcrypt.compare(
+        password,
+        user.password
+      );
 
       if (!isMatch) {
         return res.status(401).json({
@@ -589,39 +611,63 @@ export const deleteAccount = async (req, res) => {
     }
 
     // ==========================================
-    // 4. START MONGODB SESSION
+    // 5. START MONGODB SESSION
     // ==========================================
 
     dbSession = await mongoose.startSession();
 
     // ==========================================
-    // 5. START TRANSACTION
+    // 6. START TRANSACTION
     // ==========================================
 
     await dbSession.withTransaction(async () => {
-      
 
-      await StudentProfile.deleteOne({ userId }, { session: dbSession });
+      // Student Profile
+      await StudentProfile.deleteOne(
+        { userId },
+        { session: dbSession }
+      );
 
-      await Onboarding.deleteOne({ userId }, { session: dbSession });
-      await  JobPostingTable.deleteOne({postedByUser:userId},{session:dbSession})
-     
+      // Onboarding
+      await Onboarding.deleteOne(
+        { userId },
+        { session: dbSession }
+      );
 
-      await FresherProfile.deleteOne({ userId }, { session: dbSession });
+      // Jobs posted by user
+      await JobPostingTable.deleteMany(
+        { postedByUser: userId },
+        { session: dbSession }
+      );
 
-      
+      // Fresher Profile
+      await FresherProfile.deleteOne(
+        { userId },
+        { session: dbSession }
+      );
 
-      await CollegeProfile.deleteOne({ userId }, { session: dbSession });
+      // College Profile
+      await CollegeProfile.deleteOne(
+        { userId },
+        { session: dbSession }
+      );
 
-      await RefreshToken.deleteMany({ userId }, { session: dbSession });
+      // Refresh Tokens
+      await RefreshToken.deleteMany(
+        { userId },
+        { session: dbSession }
+      );
 
+      // Finally delete Auth user
       const deletedUser = await Auth.deleteOne(
         { _id: userId },
-        { session: dbSession },
+        { session: dbSession }
       );
 
       if (deletedUser.deletedCount === 0) {
-        const error = new Error("User could not be deleted");
+        const error = new Error(
+          "User could not be deleted"
+        );
 
         error.statusCode = 404;
 
@@ -629,24 +675,49 @@ export const deleteAccount = async (req, res) => {
       }
     });
 
-    console.log("✅ Account deletion transaction committed");
+    // ==========================================
+    // 7. TRANSACTION SUCCESS
+    // ==========================================
+
+    console.log(
+      `✅ Account deletion transaction committed for ${userId}`
+    );
+
+    // ==========================================
+    // 8. CLEAR AUTH COOKIES
+    // ==========================================
 
     clearAuthCookies(res);
+
+    // ==========================================
+    // 9. SUCCESS RESPONSE
+    // ==========================================
 
     return res.status(200).json({
       success: true,
       message: "Account deleted successfully",
     });
-  } catch (error) {
-    console.error("Delete Account Error:", error);
 
-    return res.status(error.statusCode || 500).json({
+  } catch (error) {
+
+    console.error(
+      "❌ Delete Account Error:",
+      error
+    );
+
+    return res.status(
+      error.statusCode || 500
+    ).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message:
+        error.message ||
+        "Internal Server Error",
     });
+
   } finally {
+
     // ==========================================
-    // END SESSION
+    // 10. END MONGODB SESSION
     // ==========================================
 
     if (dbSession) {

@@ -104,12 +104,12 @@ export const NOTIFICATION_SCREEN_MAP = {
     subtopic: "",
     body: { senderId: "senderId", referenceId: "referenceId" },
   },
-  NEW_MATCHING_REFERRAL_JOB : {
+  NEW_MATCHING_REFERRAL_JOB: {
     topic: "Jobs",
     subtopic: "JobDetail",
     body: { jobId: "jobId" },
   },
-  NEW_ALUMNI_JOINED_NETWORK : {
+  NEW_ALUMNI_JOINED_NETWORK: {
     topic: "Alumni Network",
     subtopic: "Alumni Detail",
     body: { userId: "userId" },
@@ -122,7 +122,11 @@ export const NOTIFICATION_SCREEN_MAP = {
   NEW_REFERRAL_REQUEST: {
     topic: "Referrals",
     subtopic: "Received Requests",
-    body: { requestId: "referenceId", userId: "senderId", applicationId: "linkedApplicationId" },
+    body: {
+      requestId: "referenceId",
+      userId: "senderId",
+      applicationId: "linkedApplicationId",
+    },
   },
   REFERRAL_REQUEST_ACCEPTED: {
     topic: "Referrer",
@@ -136,43 +140,77 @@ export const NOTIFICATION_SCREEN_MAP = {
   },
 };
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
-const SKIP_DB_TYPES = ["NEW_CHAT_MESSAGE", "MESSAGE", "INTERVIEW_SCHEDULED", "APPLICATION_INTERVIEW_SCHEDULED" ];
+const SKIP_DB_TYPES = [
+  "NEW_CHAT_MESSAGE",
+  "MESSAGE",
+  "INTERVIEW_SCHEDULED",
+  "APPLICATION_INTERVIEW_SCHEDULED",
+];
 const sendNotification = async ({
-  recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId,
+  recipientId,
+  senderId,
+  type,
+  message,
+  referenceId,
+  jobType,
+  meta,
+  jobId,
+  userId,
+  session,
 }) => {
   // Build enriched meta with deep link info
   const screenInfo = NOTIFICATION_SCREEN_MAP[type];
-  
+
   console.log("===== NOTIFICATION DEBUG =====");
   console.log("type:", type);
   console.log("screenInfo:", screenInfo);
-  console.log("Input - userId:", userId, "jobId:", jobId, "referenceId:", referenceId, "senderId:", senderId);
-  
-  // ✅ FIXED: Build body with proper value mapping
+  console.log(
+    "Input - userId:",
+    userId,
+    "jobId:",
+    jobId,
+    "referenceId:",
+    referenceId,
+    "senderId:",
+    senderId,
+  );
+
+  // ==========================================
+  // Build enriched body
+  // ==========================================
+
   let enrichedBody = {};
+
   if (screenInfo?.body) {
     enrichedBody = Object.fromEntries(
       Object.entries(screenInfo.body)
         .map(([key, sourceKey]) => {
           let value = null;
-          
-          // Map source key to actual value
-          if (sourceKey === "senderId")      value = senderId?.toString();
-          else if (sourceKey === "jobId")    value = jobId?.toString();
-          else if (sourceKey === "userId")   value = userId?.toString();
-          else if (sourceKey === "referenceId")  value = referenceId?.toString();
-          else if (sourceKey === "applicationId") value = referenceId?.toString();
-          else if (sourceKey === "linkedApplicationId") value = meta?.linkedApplicationId;  // 👈 new, isolated case
-          // Only include if value exists
+
+          if (sourceKey === "senderId") {
+            value = senderId?.toString();
+          } else if (sourceKey === "jobId") {
+            value = jobId?.toString();
+          } else if (sourceKey === "userId") {
+            value = userId?.toString();
+          } else if (sourceKey === "referenceId") {
+            value = referenceId?.toString();
+          } else if (sourceKey === "applicationId") {
+            value = referenceId?.toString();
+          } else if (sourceKey === "linkedApplicationId") {
+            value = meta?.linkedApplicationId;
+          }
+
           if (value) {
             return [key, value];
           }
+
           return null;
         })
-        .filter(Boolean) // Remove null entries
+        .filter(Boolean),
     );
   }
- 
+
   const enrichedMeta = {
     ...meta,
     ...(screenInfo && {
@@ -181,64 +219,111 @@ const sendNotification = async ({
       body: enrichedBody,
     }),
   };
-  
+
   console.log("enrichedMeta:", JSON.stringify(enrichedMeta, null, 2));
+
   console.log("==============================");
+
   let notification = null;
-  // 1. Save to DB
+
+  // ==========================================
+  // 1. Save notification to DB
+  // ==========================================
+
   console.error("\n🔵 ABOUT TO SAVE NOTIFICATION 🔵");
-  console.error("enrichedMeta being saved:", JSON.stringify(enrichedMeta, null, 2));
-  console.error("🔵\n");
+
   if (!SKIP_DB_TYPES.includes(type)) {
-   notification = await Notification.create({
-    recipientId, 
-    senderId, 
-    type, 
-    message,
-    referenceId, 
-    jobType,
-    meta: enrichedMeta,   // 👈 now includes topic, subtopic, body
-    jobId, 
-    read: false,
-  });
-   }
-  // console.error("\n🟢 NOTIFICATION SAVED 🟢");
-  // console.error("ID:", notification._id);
-  // console.error("meta from DB:", JSON.stringify(notification.meta, null, 2));
-  // console.error("🟢\n");
- 
+    if (session) {
+      // Transaction is being used
+      const createdNotifications = await Notification.create(
+        [
+          {
+            recipientId,
+            senderId,
+            type,
+            message,
+            referenceId,
+            jobType,
+            meta: enrichedMeta,
+            jobId,
+            read: false,
+          },
+        ],
+        { session },
+      );
+
+      notification = createdNotifications[0];
+    } else {
+      // Normal usage without transaction
+      notification = await Notification.create({
+        recipientId,
+        senderId,
+        type,
+        message,
+        referenceId,
+        jobType,
+        meta: enrichedMeta,
+        jobId,
+        read: false,
+      });
+    }
+  }
+
+  console.error("🔵 NOTIFICATION DB SAVE COMPLETED 🔵");
+
+  // ==========================================
   // 2. Socket emit
-  // const socketId = getReceiverSocketId(recipientId.toString());
-  // if (socketId) {
-  //   const populatedNotification = await Notification.findById(notification._id)
-  //     .populate("senderId", "name userType profileImage");
-  //   io.to(socketId).emit("newNotification", populatedNotification);
-  // }
+  // ==========================================
+  //
+  // IMPORTANT:
+  // This runs AFTER the transaction is committed
+  // because sendNotification() is called after
+  // commitTransaction() in your controller.
+  //
+  // ==========================================
+
   const socketId = getReceiverSocketId(recipientId.toString());
+
   if (socketId) {
     const payload = notification
-      ? await Notification.findById(notification._id)
-          .populate("senderId", "name userType profileImage")
+      ? await Notification.findById(notification._id).populate(
+          "senderId",
+          "name userType profileImage",
+        )
       : {
-          recipientId, senderId, type, message,
-          referenceId, jobType, meta: enrichedMeta, jobId,
-          read: false, createdAt: new Date(),
+          recipientId,
+          senderId,
+          type,
+          message,
+          referenceId,
+          jobType,
+          meta: enrichedMeta,
+          jobId,
+          read: false,
+          createdAt: new Date(),
         };
+
     io.to(socketId).emit("newNotification", payload);
   }
-  // 3. FCM
+
+  // ==========================================
+  // 3. FCM Push Notification
+  // ==========================================
+
   try {
     const user = await Auth.findById(recipientId).select("deviceToken");
+
     if (user?.deviceToken) {
       await pushNotification({
         deviceToken: user.deviceToken,
         title: type,
         body: message,
         data: {
-          topic:    screenInfo?.topic    ?? "",
+          topic: screenInfo?.topic ?? "",
           subtopic: screenInfo?.subtopic ?? "",
           type,
-          // Add resolved body values to FCM payload
+
+          // Resolved body values
           ...enrichedBody,
         },
       });
@@ -246,7 +331,7 @@ const sendNotification = async ({
   } catch (fcmErr) {
     console.error("FCM error (non-critical):", fcmErr);
   }
- 
+
   return notification;
 };
 
@@ -262,7 +347,9 @@ export const notifyReferralJobPosterOnApproval = async ({
     const posterAuthId = job.candidatePosted?.userId;
 
     if (!posterAuthId) {
-      console.error("❌ Could not resolve job poster authId from candidatePosted");
+      console.error(
+        "❌ Could not resolve job poster authId from candidatePosted",
+      );
       return;
     }
 
@@ -274,10 +361,13 @@ export const notifyReferralJobPosterOnApproval = async ({
     await sendNotification({
       recipientId: posterAuthId,
       senderId: adminAuthId,
-      type: approvalStatus === "Approved" ? "REFERRAL_JOB_APPROVED" : "REFERRAL_JOB_REJECTED",
+      type:
+        approvalStatus === "Approved"
+          ? "REFERRAL_JOB_APPROVED"
+          : "REFERRAL_JOB_REJECTED",
       message,
       referenceId: job._id,
-      jobId: job._id, 
+      jobId: job._id,
       jobType: "Referral",
       meta: { approvalStatus },
     });
@@ -439,48 +529,35 @@ export const notifyOnApplicationStatusChange = async ({
   jobType,
 }) => {
   const statusMessageMap = {
-    "Saved":
-      `${companyName} saved your application`,
+    Saved: `${companyName} saved your application`,
 
-    "Applied":
-      `Your application was submitted to ${companyName}`,
+    Applied: `Your application was submitted to ${companyName}`,
 
-    "Application Sent":
-      `${companyName} received your application`,
+    "Application Sent": `${companyName} received your application`,
 
-    "Awaiting Recruiter Action":
-      `Your application is awaiting recruiter review at ${companyName}`,
+    "Awaiting Recruiter Action": `Your application is awaiting recruiter review at ${companyName}`,
 
-    "Shortlisted":
-      `${companyName} shortlisted your application`,
+    Shortlisted: `${companyName} shortlisted your application`,
 
-    "Interview Scheduled":
-      `${companyName} scheduled an interview for your application`,
+    "Interview Scheduled": `${companyName} scheduled an interview for your application`,
 
-    "Offer Extended":
-      `${companyName} extended an offer for your application`,
+    "Offer Extended": `${companyName} extended an offer for your application`,
 
-    "Accepted":
-      `${companyName} accepted your application`,
+    Accepted: `${companyName} accepted your application`,
 
-    "Rejected":
-      `${companyName} rejected your application`,
+    Rejected: `${companyName} rejected your application`,
 
-    "Referred To Company":
-      `${companyName} referred your application to the company`,
+    "Referred To Company": `${companyName} referred your application to the company`,
 
-    "Offer Accepted":
-      `Your offer from ${companyName} has been accepted`,
+    "Offer Accepted": `Your offer from ${companyName} has been accepted`,
 
-    "Offer Rejected":
-      `Your offer from ${companyName} has been declined`,
+    "Offer Rejected": `Your offer from ${companyName} has been declined`,
 
-    "Joined the Company":
-      `Congratulations! You joined ${companyName}`,
+    "Joined the Company": `Congratulations! You joined ${companyName}`,
   };
 
   const message = statusMessageMap[status];
-  if (!message){
+  if (!message) {
     console.error(`No notification message configured for status: ${status}`);
     return;
   }
@@ -502,19 +579,25 @@ export const notifyOnApplicationStatusChange = async ({
       case "student":
       case "fresher":
       case "professional": {
-        const onboarding = await Onboarding.findById(application.applicant).select("userId");
+        const onboarding = await Onboarding.findById(
+          application.applicant,
+        ).select("userId");
         finalRecipientAuthId = onboarding?.userId;
         break;
       }
 
       case "college": {
-        const college = await CollegeOnboarding.findById(application.applicant).select("userId");
+        const college = await CollegeOnboarding.findById(
+          application.applicant,
+        ).select("userId");
         finalRecipientAuthId = college?.userId;
         break;
       }
 
       case "company": {
-        const company = await CompanyProfile.findById(application.applicant).select("userId");
+        const company = await CompanyProfile.findById(
+          application.applicant,
+        ).select("userId");
         finalRecipientAuthId = company?.userId;
         break;
       }
@@ -532,9 +615,7 @@ export const notifyOnApplicationStatusChange = async ({
   await sendNotification({
     recipientId: finalRecipientAuthId,
     senderId,
-    type: `APPLICATION_${status
-      .toUpperCase()
-      .replace(/\s+/g, "_")}`,
+    type: `APPLICATION_${status.toUpperCase().replace(/\s+/g, "_")}`,
     message,
     referenceId: applicationId,
     jobId: application?.job,
@@ -552,12 +633,16 @@ export async function notifyOnCollegeApplicationStatusChange({
 
     switch (application.applicantType) {
       case "company": {
-        const company = await CompanyProfile.findById(application.applicant).select("userId");
+        const company = await CompanyProfile.findById(
+          application.applicant,
+        ).select("userId");
         if (company?.userId) recipientAuthIds.push(company.userId);
         break;
       }
       case "employer": {
-        const employer = await EmployerProfile.findById(application.applicant).select("userId");
+        const employer = await EmployerProfile.findById(
+          application.applicant,
+        ).select("userId");
         if (employer?.userId) recipientAuthIds.push(employer.userId);
         break;
       }
@@ -567,10 +652,11 @@ export async function notifyOnCollegeApplicationStatusChange({
 
     if (!recipientAuthIds.length) return;
 
-    const college = await CollegeOnboarding.findOne({ userId: actorAuthId }).select(
-      "collegeUniversityDetails.collegeName"
-    );
-    const collegeName = college?.collegeUniversityDetails?.collegeName || "College";
+    const college = await CollegeOnboarding.findOne({
+      userId: actorAuthId,
+    }).select("collegeUniversityDetails.collegeName");
+    const collegeName =
+      college?.collegeUniversityDetails?.collegeName || "College";
 
     const STATUS_TYPE_MAP = {
       Shortlisted: "COLLEGE_APPLICATION_SHORTLISTED",
@@ -590,8 +676,8 @@ export async function notifyOnCollegeApplicationStatusChange({
           type: notificationType,
           message: `${collegeName} ${newStatus.toLowerCase()} your application`,
           referenceId: application._id,
-        })
-      )
+        }),
+      ),
     );
   } catch (error) {
     console.error("Application status notification failed:", error.message);
@@ -608,15 +694,27 @@ export async function createNotification({
   meta,
   jobId,
   userId,
+  session,
 }) {
   console.error("\n🟢🟢🟢 createNotification CALLED 🟢🟢🟢");
   console.error("Type:", type);
   console.error("RecipientId:", recipientId);
   console.error("UserId:", userId);
   console.error("🟢🟢🟢 About to call sendNotification 🟢🟢🟢\n");
-  
+
   try {
-    const result = await sendNotification({ recipientId, senderId, type, message, referenceId, jobType, meta, jobId, userId });
+    const result = await sendNotification({
+      recipientId,
+      senderId,
+      type,
+      message,
+      referenceId,
+      jobType,
+      meta,
+      jobId,
+      userId,
+      session,
+    });
     console.error("🟢 createNotification returned successfully\n");
     return result;
   } catch (error) {
@@ -716,8 +814,8 @@ export const notifyCandidateOnAdminInterviewScheduled = async ({
   time,
 }) => {
   await sendNotification({
-    recipientId,          // candidate authId
-    senderId,             // admin authId
+    recipientId, // candidate authId
+    senderId, // admin authId
     type: "INTERVIEW_SCHEDULED",
     message: `Admin scheduled interview for ${companyName} application`,
     referenceId: applicationId,
@@ -735,7 +833,7 @@ export const notifyOnNewChatMessage = async ({
 }) => {
   try {
     await sendNotification({
-      recipientId: receiverId,     // MUST be Auth._id
+      recipientId: receiverId, // MUST be Auth._id
       senderId,
       type: "NEW_CHAT_MESSAGE",
       message,
@@ -751,7 +849,7 @@ export const notifyCandidateOnReferralApproval = async ({
   applicantProfileId,
   applicantType,
   action,
-  adminAuthId
+  adminAuthId,
 }) => {
   try {
     let candidateAuthId = null;
@@ -762,8 +860,8 @@ export const notifyCandidateOnReferralApproval = async ({
       applicantType === "fresher" ||
       applicantType === "professional"
     ) {
-      const onboarding = await Onboarding.findById(applicantProfileId)
-        .select("userId");
+      const onboarding =
+        await Onboarding.findById(applicantProfileId).select("userId");
 
       candidateAuthId = onboarding?.userId;
     }
@@ -774,17 +872,16 @@ export const notifyCandidateOnReferralApproval = async ({
     }
 
     // 🔹 Resolve company name from job poster onboarding
-    const application = await Application.findById(applicationId)
-      .populate("job");
-      
+    const application =
+      await Application.findById(applicationId).populate("job");
+
     let companyName = "the company";
-      
+
     if (application?.job?.candidatePosted) {
-    
       const jobPosterOnboarding = await Onboarding.findById(
-        application.job.candidatePosted
+        application.job.candidatePosted,
       ).select("currentCompany");
-    
+
       if (jobPosterOnboarding?.currentCompany) {
         companyName = jobPosterOnboarding.currentCompany;
       }
@@ -804,7 +901,6 @@ export const notifyCandidateOnReferralApproval = async ({
       referenceId: applicationId,
       jobType: "Referral",
     });
-
   } catch (error) {
     console.error("Referral approval notification failed:", error.message);
   }
@@ -817,8 +913,10 @@ export const notifyReferralJobPosterOnNewApplication = async ({
 }) => {
   try {
     // 🔹 Fetch job and populate referrer's onboarding profile
-    const job = await JobPostingTable.findById(jobId)
-      .populate("candidatePosted", "userId currentCompany");
+    const job = await JobPostingTable.findById(jobId).populate(
+      "candidatePosted",
+      "userId currentCompany",
+    );
 
     if (!job) {
       console.error("❌ Job not found for referrer notification:", jobId);
@@ -842,9 +940,14 @@ export const notifyReferralJobPosterOnNewApplication = async ({
       jobType: "Referral",
     });
 
-    console.log(`✅ Notified referrer (${referrerAuthId}) of new approved application`);
+    console.log(
+      `✅ Notified referrer (${referrerAuthId}) of new approved application`,
+    );
   } catch (error) {
-    console.error("notifyReferralJobPosterOnNewApplication failed:", error.message);
+    console.error(
+      "notifyReferralJobPosterOnNewApplication failed:",
+      error.message,
+    );
   }
 };
 
@@ -887,12 +990,18 @@ export const notifySenderOnReferralRequestStatusChange = async ({
     await sendNotification({
       recipientId: senderAuthId,
       senderId: receiverAuthId,
-      type: status === "accepted" ? "REFERRAL_REQUEST_ACCEPTED" : "REFERRAL_REQUEST_REJECTED",
+      type:
+        status === "accepted"
+          ? "REFERRAL_REQUEST_ACCEPTED"
+          : "REFERRAL_REQUEST_REJECTED",
       message,
       referenceId: requestId,
       jobType: "Referral",
     });
   } catch (error) {
-    console.error("notifySenderOnReferralRequestStatusChange failed:", error.message);
+    console.error(
+      "notifySenderOnReferralRequestStatusChange failed:",
+      error.message,
+    );
   }
 };

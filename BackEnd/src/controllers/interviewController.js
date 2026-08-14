@@ -296,8 +296,14 @@ export const markInterviewAsRead = async (req, res) => {
   }
 };
 
+import mongoose from "mongoose";
+
 export async function scheduleInterviewByProfessional(req, res) {
+  const session = await mongoose.startSession();
+
   try {
+    session.startTransaction();
+
     const professionalAuthId = req.user._id;
 
     const {
@@ -311,6 +317,8 @@ export async function scheduleInterviewByProfessional(req, res) {
     } = req.body;
 
     if (!data) {
+      await session.abortTransaction();
+
       return res.status(400).json({
         success: false,
         msg: "Interview data missing",
@@ -319,29 +327,26 @@ export async function scheduleInterviewByProfessional(req, res) {
 
     const { date, time, meetLink, message } = data;
 
-    // 🔒 One interview per application
-    // const alreadyScheduled = await InterviewSchedule.findOne({
-    //   applicationId,
-    // });
-
-    // if (alreadyScheduled) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     msg: "Interview already scheduled",
-    //   });
-    // }
-
+    // ==========================================
     // Fetch Job
-    const job = await JobPostingTable.findById(jobId);
+    // ==========================================
+
+    const job = await JobPostingTable.findById(jobId)
+      .session(session);
 
     if (!job) {
+      await session.abortTransaction();
+
       return res.status(404).json({
         success: false,
         msg: "Job not found",
       });
     }
 
+    // ==========================================
     // Professional Snapshot
+    // ==========================================
+
     const professionalName =
       req.user.fullName ||
       req.user.name ||
@@ -353,7 +358,11 @@ export async function scheduleInterviewByProfessional(req, res) {
       profileType: applicantType,
     };
 
-    const interview = await InterviewSchedule.create({
+    // ==========================================
+    // Create Interview
+    // ==========================================
+
+    const interview = new InterviewSchedule({
       jobId,
       jobType: job.jobType || "Referral",
       applicationId,
@@ -387,7 +396,12 @@ export async function scheduleInterviewByProfessional(req, res) {
       readByApplicant: false,
     });
 
-    // 🔔 Notification
+    await interview.save({ session });
+
+    // ==========================================
+    // Create Notification
+    // ==========================================
+
     await createNotification({
       recipientId: applicantAuthId,
       senderId: professionalAuthId,
@@ -404,7 +418,17 @@ export async function scheduleInterviewByProfessional(req, res) {
         date,
         time,
       },
+
+      
+      session,
     });
+
+    // ==========================================
+    // Commit Transaction
+    // ==========================================
+
+    await session.commitTransaction();
+
     return res.status(201).json({
       success: true,
       msg: "Interview scheduled successfully",
@@ -412,6 +436,12 @@ export async function scheduleInterviewByProfessional(req, res) {
     });
 
   } catch (error) {
+    // ==========================================
+    // Rollback Transaction
+    // ==========================================
+
+    await session.abortTransaction();
+
     console.error(
       "❌ scheduleInterviewByProfessional error:",
       error
@@ -421,5 +451,12 @@ export async function scheduleInterviewByProfessional(req, res) {
       success: false,
       msg: "Internal server error",
     });
+
+  } finally {
+    // ==========================================
+    // End MongoDB Session
+    // ==========================================
+
+    await session.endSession();
   }
 }
