@@ -37,6 +37,7 @@ export const getApplicationOverView = async (req, res) => {
         totalAccepted,
         totalRejected
       }
+      
     });
   } catch (error) {
     console.error("Error fetching application overview:", error);
