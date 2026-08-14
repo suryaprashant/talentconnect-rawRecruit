@@ -16,6 +16,7 @@ export const handleReferralMilestone =
       onboarding.totalCandidatesReferred || 0;
 
     if (!MILESTONES.includes(count)) {
+
       return;
     }
 
@@ -39,6 +40,7 @@ export const handleReferralMilestone =
 
     await Onboarding.updateOne(
       {
+        
         userId: referrerAuthId,
       },
       {

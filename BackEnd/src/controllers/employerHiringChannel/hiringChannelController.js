@@ -34,6 +34,8 @@ const getCompanyIdToPostAs = async (userId) => {
             if (!ownProfile) {
                 return { error: 'You must create a company profile before you can post a job.' };
             }
+
+            
             companyIdToUse = ownProfile.data[0]._id;
         }
         return { companyId: companyIdToUse, error: null };

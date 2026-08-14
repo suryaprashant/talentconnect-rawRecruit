@@ -24,6 +24,7 @@ export const searchEmployers = async (req, res) => {
         })
         .select('name email')
         .limit(10);
+        
 
         res.status(200).json(users);
 
@@ -215,6 +216,7 @@ export const markAsRead = async (req, res) => {
         console.error('Error marking notification as read:', error);
         res.status(500).json({ message: 'Server error' });
     }
+
 };
 
 
@@ -225,6 +227,7 @@ export const getTeamMembers = async (req, res) => {
         if (!companyProfile) {
             return res.status(404).json({ message: 'Company profile not found for the user.' });
         }
+
 
         // 2. Find all team members for that company (without populating yet).
         const teamMembers = await TeamMember.find({ companyId: companyProfile._id }).lean();

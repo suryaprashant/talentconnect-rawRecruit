@@ -631,7 +631,7 @@ export const sendreqinfoEmail = async (email, name, message) => {
         </p>
       </div>
       <div class="footer">
-        <p>© ${new Date().getFullYear()} TalentConnect. All rights reserved.</p>
+        <p>© ${new Date().getFullYear()} Rawrecruit. All rights reserved.</p>
       </div>
     </div>
   </div>

@@ -99,6 +99,7 @@ export const createMessage = async ({
     } catch (socketError) {
       console.error(
         "Socket/notification error:",
+        
         socketError
       );
     }
