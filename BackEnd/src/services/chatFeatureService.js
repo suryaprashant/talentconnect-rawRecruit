@@ -28,61 +28,93 @@ const resolveToAuthId = async (userId) => {
     return userId;
 };
 
-export const createMessage = async ({ senderId, receiverId, message }) => {
-    const resolvedSenderId = await resolveToAuthId(senderId);
-    const resolvedReceiverId = await resolveToAuthId(receiverId);
+export const createMessage = async ({
+  senderId,
+  receiverId,
+  message,
+}) => {
+  const resolvedSenderId = await resolveToAuthId(senderId);
+  const resolvedReceiverId = await resolveToAuthId(receiverId);
 
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error("Database not connected");
-    }
-    
-    
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error("Database not connected");
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
     let conversation = await Conversation.findOne({
-        members: { $all: [resolvedSenderId, resolvedReceiverId] },
-    });
+      members: { $all: [resolvedSenderId, resolvedReceiverId] },
+    }).session(session);
 
     if (!conversation) {
-        conversation = await Conversation.create({
+      conversation = await Conversation.create(
+        [
+          {
             members: [resolvedSenderId, resolvedReceiverId],
-        });
+          },
+        ],
+        { session }
+      );
+
+      conversation = conversation[0];
     }
 
     const newMessage = new Message({
-        senderId: resolvedSenderId,
-        receiverId: resolvedReceiverId,
-        message,
+      senderId: resolvedSenderId,
+      receiverId: resolvedReceiverId,
+      message,
     });
 
-    if (newMessage) {
-        conversation.messages.push(newMessage._id);
-    }
+    conversation.messages.push(newMessage._id);
 
-    await Promise.all([conversation.save(), newMessage.save()]);
+    await newMessage.save({ session });
+    await conversation.save({ session });
 
-    // const receiverSocketId = getReceiverSocketId(receiverId);
-    // if (receiverSocketId) {
-    //     io.to(receiverSocketId).emit("newMessage", newMessage);
-    // }
+    // Commit DB changes first
+    await session.commitTransaction();
 
-     try {
-      const receiverSocketId = getReceiverSocketId(resolvedReceiverId.toString());
+    // ==========================================
+    // Socket + Push Notification
+    // Run ONLY after successful DB commit
+    // ==========================================
+
+    try {
+      const receiverSocketId = getReceiverSocketId(
+        resolvedReceiverId.toString()
+      );
+
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", newMessage);
       }
 
-      // 🔥 Send push + optional extra socket notification
       await notifyOnNewChatMessage({
-          senderId: resolvedSenderId,
-          receiverId: resolvedReceiverId,
-          message,
-          conversationId: conversation._id,
-     });
-
+        senderId: resolvedSenderId,
+        receiverId: resolvedReceiverId,
+        message,
+        conversationId: conversation._id,
+      });
     } catch (socketError) {
-      console.error("Socket emission error:", socketError);
+      console.error(
+        "Socket/notification error:",
+        socketError
+      );
     }
 
     return newMessage;
+  } catch (error) {
+    // Rollback all DB changes
+    await session.abortTransaction();
+
+    console.error("Create message transaction failed:", error);
+
+    throw error;
+  } finally {
+    // Always close the MongoDB session
+    await session.endSession();
+  }
 };
 
 

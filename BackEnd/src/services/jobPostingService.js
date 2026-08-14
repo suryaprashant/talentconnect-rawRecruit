@@ -511,6 +511,8 @@ export const getReferralJobsCursorService = async (
       scoreJob(job, student, W, i, "Referral Job"),
     );
 
+    console.log("scoreCard",scoredJobs);
+
     const passingJobs = scoredJobs.filter(
       (job) => job.matchScore >= visibilityThreshold,
     );

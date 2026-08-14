@@ -2097,7 +2097,7 @@ export const getReferralJobs = async (req, res) => {
       });
     }
     console.log("Enter 2...");
-    const userId = req.user._id;
+    const userId = "6a6adbf503171022222bfa94";
     const limit = parseInt(req.query.limit, 10) || 10;
     const cursor = req.query.cursor || null;
     // 2. Get student profile

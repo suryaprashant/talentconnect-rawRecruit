@@ -2282,7 +2282,7 @@ export const updateApplicationStatus = async (req, res) => {
         .json({ success: false, message: "Application not found" });
     }
 
-    // Update the status and push to history
+    
     application.currentStatus = status;
     application.statusHistory.push({
       status: status,
