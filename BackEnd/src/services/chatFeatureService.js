@@ -1,4 +1,4 @@
-import { getReceiverSocketId , io } from "../socketIO/server.js";
+import { getReceiverSocketId, io } from "../socketIO/server.js";
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/message.model.js";
 import Auth from "../models/authModel.js";
@@ -10,29 +10,25 @@ import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 
 const resolveToAuthId = async (userId) => {
-    try {
-        const authUser = await Auth.findById(userId);
-        if (authUser) return authUser._id;
+  try {
+    const authUser = await Auth.findById(userId);
+    if (authUser) return authUser._id;
 
-        const [college, company, candidate] = await Promise.all([
-            CollegeOnboarding.findOne({ $or: [{ _id: userId }, { userId }] }),
-            CompanyProfile.findOne({ $or: [{ _id: userId }, { userId }] }),
-            Onboarding.findOne({ $or: [{ _id: userId }, { userId }] })
-        ]);
+    const [college, company, candidate] = await Promise.all([
+      CollegeOnboarding.findOne({ $or: [{ _id: userId }, { userId }] }),
+      CompanyProfile.findOne({ $or: [{ _id: userId }, { userId }] }),
+      Onboarding.findOne({ $or: [{ _id: userId }, { userId }] }),
+    ]);
 
-        const profile = college || company || candidate;
-        if (profile?.userId) return profile.userId;
-    } catch (err) {
-        console.warn("resolveToAuthId failed:", err.message);
-    }
-    return userId;
+    const profile = college || company || candidate;
+    if (profile?.userId) return profile.userId;
+  } catch (err) {
+    console.warn("resolveToAuthId failed:", err.message);
+  }
+  return userId;
 };
 
-export const createMessage = async ({
-  senderId,
-  receiverId,
-  message,
-}) => {
+export const createMessage = async ({ senderId, receiverId, message }) => {
   const resolvedSenderId = await resolveToAuthId(senderId);
   const resolvedReceiverId = await resolveToAuthId(receiverId);
 
@@ -56,7 +52,7 @@ export const createMessage = async ({
             members: [resolvedSenderId, resolvedReceiverId],
           },
         ],
-        { session }
+        { session },
       );
 
       conversation = conversation[0];
@@ -83,7 +79,7 @@ export const createMessage = async ({
 
     try {
       const receiverSocketId = getReceiverSocketId(
-        resolvedReceiverId.toString()
+        resolvedReceiverId.toString(),
       );
 
       if (receiverSocketId) {
@@ -99,8 +95,8 @@ export const createMessage = async ({
     } catch (socketError) {
       console.error(
         "Socket/notification error:",
-        
-        socketError
+
+        socketError,
       );
     }
 
@@ -118,318 +114,250 @@ export const createMessage = async ({
   }
 };
 
-
 export const getMessagesForConversation = async ({ userId, chatPartnerId }) => {
-    const conversation = await Conversation.findOne({
-        members: { $all: [userId, chatPartnerId] },
-    }).populate("messages");
+  const conversation = await Conversation.findOne({
+    members: { $all: [userId, chatPartnerId] },
+  }).populate("messages");
 
-    if (!conversation) {
-        return [];
-    }
-    const messages = conversation.messages || [];
-    await Message.updateMany(
-        {
-            _id: { $in: messages.map(msg => msg._id) },
-            receiverId: userId,
-            read: { $ne: true }
-        },
-        { $set: { read: true } }
-    );
+  if (!conversation) {
+    return [];
+  }
+  const messages = conversation.messages || [];
+  await Message.updateMany(
+    {
+      _id: { $in: messages.map((msg) => msg._id) },
+      receiverId: userId,
+      read: { $ne: true },
+    },
+    { $set: { read: true } },
+  );
 
-    return messages;
+  return messages;
 };
 
 export const findOrCreateConversation = async ({ senderId, receiverId }) => {
-    let conversation = await Conversation.findOne({
-        members: { $all: [senderId, receiverId] },
+  let conversation = await Conversation.findOne({
+    members: { $all: [senderId, receiverId] },
+  });
+  if (!conversation) {
+    conversation = await Conversation.create({
+      members: [senderId, receiverId],
+      messages: [],
     });
-    if (!conversation) {
-        conversation = await Conversation.create({
-            members: [senderId, receiverId],
-            messages: []
-        });
-    }
-    const populatedConversation = await Conversation.findById(conversation._id)
-        .populate('members', 'name email profileImage userType')
-        .populate('messages');
+  }
+  const populatedConversation = await Conversation.findById(conversation._id)
+    .populate("members", "name email profileImage userType")
+    .populate("messages");
 
-    return populatedConversation;
+  return populatedConversation;
 };
 
-
 export const getUnreadMessageCounts = async ({ userId }) => {
-    
-    const unreadCounts = await Conversation.aggregate([
-        { $match: { members: { $in: [userId] } } },
-        { $unwind: "$messages" },
-        {
-            $lookup: {
-                from: "messages",
-                localField: "messages",
-                foreignField: "_id",
-                as: "messageData"
-            }
-        },
-        { $unwind: "$messageData" },
-        {
-            $match: {
-                "messageData.receiverId": userId,
-                "messageData.read": false
-            }
-        },
-        {
-            $group: {
-                _id: "$messageData.senderId",
-                count: { $sum: 1 }
-            }
-        }
-    ]);
-    return unreadCounts;
+  const unreadCounts = await Conversation.aggregate([
+    { $match: { members: { $in: [userId] } } },
+    { $unwind: "$messages" },
+    {
+      $lookup: {
+        from: "messages",
+        localField: "messages",
+        foreignField: "_id",
+        as: "messageData",
+      },
+    },
+    { $unwind: "$messageData" },
+    {
+      $match: {
+        "messageData.receiverId": userId,
+        "messageData.read": false,
+      },
+    },
+    {
+      $group: {
+        _id: "$messageData.senderId",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  return unreadCounts;
 };
 //
 export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
+  console.log("=== STEP 1: loggedInUserId ===");
+  console.log("value:", loggedInUserId);
+  console.log("type:", typeof loggedInUserId);
 
-    console.log("=== STEP 1: loggedInUserId ===");
-    console.log("value:", loggedInUserId);
-    console.log("type:", typeof loggedInUserId);
+  const loggedInObjectId = new mongoose.Types.ObjectId(loggedInUserId);
 
-    const loggedInObjectId = new mongoose.Types.ObjectId(loggedInUserId);
+  console.log("=== STEP 2: Querying Conversations ===");
+  const conversations = await Conversation.find({
+    members: { $in: [loggedInObjectId] },
+    messages: { $exists: true, $ne: [] },
+  }).sort({ updatedAt: -1 });
 
-    console.log("=== STEP 2: Querying Conversations ===");
-    const conversations = await Conversation.find({
-        members: { $in: [loggedInObjectId] },
-        messages: { $exists: true, $ne: [] }
-    }).sort({ updatedAt: -1 });
+  console.log("conversations found:", conversations.length);
+  console.log("raw conversations:", JSON.stringify(conversations, null, 2));
 
-    console.log("conversations found:", conversations.length);
-    console.log("raw conversations:", JSON.stringify(conversations, null, 2));
+  // ============================================
+  // Fetch last message for each conversation
+  // ============================================
 
-    // ============================================
-    // Fetch last message for each conversation
-    // ============================================
+  const lastMessageIds = conversations
+    .map(
+      (conversation) => conversation.messages[conversation.messages.length - 1],
+    )
+    .filter(Boolean);
 
-    const lastMessageIds = conversations
-        .map(conversation =>
-            conversation.messages[
-                conversation.messages.length - 1
-            ]
-        )
-        .filter(Boolean);
+  const lastMessages = await Message.find({
+    _id: { $in: lastMessageIds },
+  }).select("message");
 
-    const lastMessages = await Message.find({
-        _id: { $in: lastMessageIds }
-    }).select("message");
+  const messageMap = new Map(
+    lastMessages.map((msg) => [msg._id.toString(), msg.message]),
+  );
 
-    const messageMap = new Map(
-        lastMessages.map(msg => [
-            msg._id.toString(),
-            msg.message
-        ])
-    );
+  const lastMessageMap = new Map();
 
-    const lastMessageMap = new Map();
+  conversations.forEach((conversation) => {
+    const otherUserId = conversation.members
+      .find((member) => member.toString() !== loggedInUserId.toString())
+      ?.toString();
 
-    conversations.forEach(conversation => {
-        const otherUserId = conversation.members.find(
-            member => member.toString() !== loggedInUserId.toString()
-        )?.toString();
+    if (!otherUserId) return;
 
-        if (!otherUserId) return;
+    const lastMessageId =
+      conversation.messages[conversation.messages.length - 1]?.toString();
 
-        const lastMessageId =
-            conversation.messages[
-                conversation.messages.length - 1
-            ]?.toString();
+    lastMessageMap.set(otherUserId, messageMap.get(lastMessageId) || "");
+  });
 
-        lastMessageMap.set(
-            otherUserId,
-            messageMap.get(lastMessageId) || ""
-        );
-    });
+  const userIds = conversations
+    .map((conversation) => {
+      const otherUserId = conversation.members.find(
+        (member) => member.toString() !== loggedInUserId.toString(),
+      );
+      return otherUserId?.toString();
+    })
+    .filter(Boolean);
 
-    const userIds = conversations.map(conversation => {
-        const otherUserId = conversation.members.find(
-            member => member.toString() !== loggedInUserId.toString()
-        );
-        return otherUserId?.toString();
-    }).filter(Boolean);
+  console.log("=== STEP 3: Extracted userIds ===");
+  console.log("userIds:", userIds);
 
-    console.log("=== STEP 3: Extracted userIds ===");
-    console.log("userIds:", userIds);
+  const uniqueUserIds = [...new Set(userIds)];
+  console.log("uniqueUserIds:", uniqueUserIds);
 
-    const uniqueUserIds = [...new Set(userIds)];
-    console.log("uniqueUserIds:", uniqueUserIds);
+  if (uniqueUserIds.length === 0) {
+    console.log("⛔ STOPPING: uniqueUserIds is empty");
+    return [];
+  }
 
-    if (uniqueUserIds.length === 0) {
-        console.log("⛔ STOPPING: uniqueUserIds is empty");
-        return [];
-    }
+  const objectIds = uniqueUserIds.map((id) => new mongoose.Types.ObjectId(id));
 
-    const objectIds = uniqueUserIds.map(
-        id => new mongoose.Types.ObjectId(id)
-    );
+  console.log("=== STEP 4: Querying Auth ===");
+  const authUsers = await Auth.find({
+    _id: { $in: objectIds },
+  }).select("-password");
 
-    console.log("=== STEP 4: Querying Auth ===");
-    const authUsers = await Auth.find({
-        _id: { $in: objectIds }
-    }).select("-password");
+  console.log("authUsers found:", authUsers.length);
+  console.log("authUsers:", JSON.stringify(authUsers, null, 2));
 
-    console.log("authUsers found:", authUsers.length);
-    console.log("authUsers:", JSON.stringify(authUsers, null, 2));
+  console.log("=== STEP 5: Querying Profiles ===");
 
-    console.log("=== STEP 5: Querying Profiles ===");
+  const CollegeOnboarding = mongoose.model("CollegeOnboarding");
 
-    const CollegeOnboarding =
-        mongoose.model("CollegeOnboarding");
+  const CompanyProfile = mongoose.model("CompanyProfile");
 
-    const CompanyProfile =
-        mongoose.model("CompanyProfile");
-
-    const [
-        collegeProfiles,
-        companyProfiles,
-        candidateProfiles
-    ] = await Promise.all([
-        CollegeOnboarding.find({
-            userId: { $in: objectIds }
-        }),
-        CompanyProfile.find({
-            userId: { $in: objectIds }
-        }),
-        Onboarding.find({
-            userId: { $in: objectIds }
-        })
+  const [collegeProfiles, companyProfiles, candidateProfiles] =
+    await Promise.all([
+      CollegeOnboarding.find({
+        userId: { $in: objectIds },
+      }),
+      CompanyProfile.find({
+        userId: { $in: objectIds },
+      }),
+      Onboarding.find({
+        userId: { $in: objectIds },
+      }),
     ]);
 
-    console.log(
-        "collegeProfiles found:",
-        collegeProfiles.length
-    );
+  console.log("collegeProfiles found:", collegeProfiles.length);
 
-    console.log(
-        "companyProfiles found:",
-        companyProfiles.length
-    );
+  console.log("companyProfiles found:", companyProfiles.length);
 
-    console.log(
-        "candidateProfiles found:",
-        candidateProfiles.length
-    );
+  console.log("candidateProfiles found:", candidateProfiles.length);
 
-    // 6. Build profile maps keyed by userId string
+  // 6. Build profile maps keyed by userId string
 
-    const collegeMap = new Map();
-    collegeProfiles.forEach(p =>
-        collegeMap.set(
-            p.userId.toString(),
-            p
-        )
-    );
+  const collegeMap = new Map();
+  collegeProfiles.forEach((p) => collegeMap.set(p.userId.toString(), p));
 
-    const companyMap = new Map();
-    companyProfiles.forEach(p =>
-        companyMap.set(
-            p.userId.toString(),
-            p
-        )
-    );
+  const companyMap = new Map();
+  companyProfiles.forEach((p) => companyMap.set(p.userId.toString(), p));
 
-    const candidateMap = new Map();
-    candidateProfiles.forEach(p =>
-        candidateMap.set(
-            p.userId.toString(),
-            p
-        )
-    );
+  const candidateMap = new Map();
+  candidateProfiles.forEach((p) => candidateMap.set(p.userId.toString(), p));
 
-    // 7. Normalize
+  // 7. Normalize
 
-    const normalizedUsers = authUsers.map(user => {
-        const id = user._id.toString();
+  const normalizedUsers = authUsers.map((user) => {
+    const id = user._id.toString();
 
-        const college = collegeMap.get(id);
-        const company = companyMap.get(id);
-        const candidate = candidateMap.get(id);
+    const college = collegeMap.get(id);
+    const company = companyMap.get(id);
+    const candidate = candidateMap.get(id);
 
-        let name,
-            email,
-            profileImage,
-            userType;
+    let name, email, profileImage, userType;
 
-        if (college) {
+    if (college) {
+      name = college.collegeUniversityDetails?.collegeName;
 
-            name =
-                college.collegeUniversityDetails?.collegeName;
+      email = college.placementCoordinatorDetails?.officialEmail;
 
-            email =
-                college.placementCoordinatorDetails?.officialEmail;
+      profileImage = college.profileImage;
 
-            profileImage =
-                college.profileImage;
+      userType = "college";
+    } else if (company) {
+      name = company.companyDetails?.companyName;
 
-            userType = "college";
+      email = company.employerDetails?.workEmail;
 
-        } else if (company) {
+      profileImage = company.profileImageUrl;
 
-            name =
-                company.companyDetails?.companyName;
+      userType = "company";
+    } else if (candidate) {
+      name = candidate.name;
 
-            email =
-                company.employerDetails?.workEmail;
+      email = candidate.email;
 
-            profileImage =
-                company.profileImageUrl;
+      profileImage = candidate.profileImage;
 
-            userType = "company";
+      userType = candidate.profileType;
+    } else {
+      name = user.name;
+      email = user.email;
+      profileImage = user.profileImage;
+      userType = user.userType;
+    }
 
-        } else if (candidate) {
+    return {
+      _id: id,
+      name,
+      email,
+      profileImage,
+      userType,
+      last_message: lastMessageMap.get(id) || "",
+    };
+  });
 
-            name = candidate.name;
+  // 8. Preserve conversation order
 
-            email = candidate.email;
+  const userMap = new Map();
 
-            profileImage =
-                candidate.profileImage;
+  normalizedUsers.forEach((user) => userMap.set(user._id, user));
 
-            userType =
-                candidate.profileType;
-
-        } else {
-
-            name = user.name;
-            email = user.email;
-            profileImage =
-                user.profileImage;
-            userType =
-                user.userType;
-        }
-
-        return {
-            _id: id,
-            name,
-            email,
-            profileImage,
-            userType,
-            last_message:
-                lastMessageMap.get(id) || ""
-        };
-    });
-
-    // 8. Preserve conversation order
-
-    const userMap = new Map();
-
-    normalizedUsers.forEach(user =>
-        userMap.set(user._id, user)
-    );
-
-    return uniqueUserIds
-        .map(id => userMap.get(id))
-        .filter(Boolean);
+  return uniqueUserIds.map((id) => userMap.get(id)).filter(Boolean);
 };
 // export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
-   
+
 //     const allOtherUsers = await Auth.find({
 //         _id: { $ne: loggedInUserId }
 //     }).select("-password");
@@ -472,7 +400,6 @@ export const getSortedUsersByConversation = async ({ loggedInUserId }) => {
 //     return sortedUsers;
 // };
 
-
 export const getUserDetails = async ({ userId }) => {
   const user = await Auth.findById(userId).select("-password");
 
@@ -481,21 +408,20 @@ export const getUserDetails = async ({ userId }) => {
   }
 
   let profileImage = "";
-  let name="";
+  let name = "";
 
   if (user.userType === "company") {
     const profile = await CompanyProfile.findOne({ userId });
-    name=profile?.companyDetails?.companyName || "";
+    name = profile?.companyDetails?.companyName || "";
     profileImage = profile?.profileImageUrl || "";
 
-//   } else if (user.userType === "college") {
-//     const profile = await collegeOnboardingModel.findOne({ userId });
-//     name=profile?.collegeUniversityDetails?.collegeName || "";
-//     profileImage = profile?.profileImage || "";
-
+    //   } else if (user.userType === "college") {
+    //     const profile = await collegeOnboardingModel.findOne({ userId });
+    //     name=profile?.collegeUniversityDetails?.collegeName || "";
+    //     profileImage = profile?.profileImage || "";
   } else {
-    const  profile = await Onboarding.findOne({ userId });
-    name=profile?.name || "";
+    const profile = await Onboarding.findOne({ userId });
+    name = profile?.name || "";
     profileImage = profile?.profileImage || "";
   }
 
@@ -505,5 +431,137 @@ export const getUserDetails = async ({ userId }) => {
     email: user.email,
     userType: user.userType,
     profileImage,
+  };
+};
+
+export const markMessagesAsReadService = async ({
+  conversationId,
+  userId,
+}) => {
+  console.log("========== MARK READ SERVICE ==========");
+  console.log(
+    "conversationId/chatPartnerId:",
+    conversationId,
+  );
+  console.log("userId:", userId);
+
+  const conversation = await Conversation.findOne({
+    members: {
+      $all: [userId, conversationId],
+    },
+  }).select("messages");
+
+  if (!conversation) {
+    throw new Error("Conversation not found");
+  }
+
+  const unreadMessages = await Message.find({
+    _id: {
+      $in: conversation.messages,
+    },
+
+    receiverId: userId,
+
+    read: false,
+  }).select("_id senderId");
+
+  console.log(
+    "unreadMessages:",
+    unreadMessages,
+  );
+
+  /*
+   * Nothing to update
+   */
+
+  if (unreadMessages.length === 0) {
+    return {
+      modifiedCount: 0,
+      messageIds: [],
+      senderIds: [],
+      readAt: null,
+    };
+  }
+
+  const readAt = new Date();
+
+  const messageIds =
+    unreadMessages.map((message) =>
+      message._id.toString(),
+    );
+
+  const senderIds = [
+    ...new Set(
+      unreadMessages.map((message) =>
+        message.senderId.toString(),
+      ),
+    ),
+  ];
+
+  /*
+   * Update messages
+   */
+
+  const result = await Message.updateMany(
+    {
+      _id: {
+        $in: unreadMessages.map(
+          (message) => message._id,
+        ),
+      },
+
+      receiverId: userId,
+
+      read: false,
+    },
+    {
+      $set: {
+        read: true
+      },
+    },
+  );
+
+  console.log(
+    "Updated messages:",
+    result.modifiedCount,
+  );
+
+  /*
+   * Send ONE realtime read receipt
+   */
+
+  if (result.modifiedCount > 0) {
+    for (const senderId of senderIds) {
+      console.log(
+        "🔵 Sending read receipt to:",
+        senderId,
+      );
+
+      io.to(`user:${senderId}`).emit(
+        "messages:read",
+        {
+          conversationId:
+            conversationId.toString(),
+
+          messageIds,
+
+          readBy:
+            userId.toString(),
+
+          readAt:
+            readAt.toISOString(),
+        },
+      );
+    }
+  }
+
+  return {
+    modifiedCount: result.modifiedCount,
+
+    messageIds,
+
+    senderIds,
+
+    readAt,
   };
 };

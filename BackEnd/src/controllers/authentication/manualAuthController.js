@@ -634,13 +634,13 @@ export const deleteAccount = async (req, res) => {
         { session: dbSession }
       );
 
-      // Jobs posted by user
+      
       await JobPostingTable.deleteMany(
         { postedByUser: userId },
         { session: dbSession }
       );
 
-      // Fresher Profile
+      
       await FresherProfile.deleteOne(
         { userId },
         { session: dbSession }
