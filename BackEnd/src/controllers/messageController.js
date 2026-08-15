@@ -5,7 +5,9 @@ import {
   getUnreadMessageCounts,
   getSortedUsersByConversation,
   getUserDetails,
+  markMessagesAsReadService,
 } from "../services/chatFeatureService.js";
+import { getReceiverSocketId, io } from "../socketIO/server.js";
 
 // Send message from one user to another
 export const sendMessage = async (req, res) => {
@@ -86,14 +88,50 @@ export const allUsers = async (req, res) => {
 };
 
 export const userDetails = async (req, res) => {
-  try{
+  try {
     const userId = req.params.id;
-    const user=await getUserDetails({userId});
+    const user = await getUserDetails({ userId });
     res.status(200).json(user);
-  }catch (error) {
+  } catch (error) {
     console.error("Error in fetching user details:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
+export const markMessagesAsRead = async (req, res) => {
+  try {
+    const userId = req.user._id;
 
+    const { conversationId } = req.body;
+
+    if (!conversationId) {
+      return res.status(400).json({
+        success: false,
+        message: "conversationId is required",
+      });
+    }
+
+    const result = await markMessagesAsReadService({
+      conversationId,
+      userId,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Messages marked as read",
+      data: result,
+    });
+  } catch (error) {
+    console.error(
+      "❌ MARK READ CONTROLLER ERROR:",
+      error,
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error.message ||
+        "Failed to mark messages as read",
+    });
+  }
+};

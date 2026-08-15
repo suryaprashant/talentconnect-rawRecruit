@@ -1,7 +1,7 @@
 import express from "express";
 
 import secureRoute from "../middlewares/secureRouteMiddleware.js"
-import { allUsers, createConversation, getMessage, getUnreadCount, sendMessage ,userDetails} from "../controllers/messageController.js";
+import { allUsers, createConversation, getMessage, getUnreadCount, sendMessage ,userDetails,markMessagesAsRead} from "../controllers/messageController.js";
 
 
 import { messageReadLimiter,chatSendLimiter, unreadCountLimiter, conversationLimiter,userSearchLimiter} from "../middlewares/ratelimiter/index.js" 
@@ -35,6 +35,13 @@ router.post(
     secureRoute,
     conversationLimiter,
     createConversation
+);
+
+router.post(
+  "/mark-read",
+  secureRoute,
+  messageReadLimiter,
+  markMessagesAsRead
 );
 
 router.get(
