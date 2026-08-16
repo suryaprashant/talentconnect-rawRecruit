@@ -4,7 +4,8 @@ import {
   getUserBoardOverView,
   updateUserStatus,
   deleteUser,
-  getUserStatusCounts
+  getUserStatusCounts,
+  getUserDetail,
 } from "../../controllers/admin/userManagementController.js";
 import {
     searchLimiter,
@@ -48,5 +49,9 @@ router.delete(
     deleteAccountLimiter,
     deleteUser
 );
+router.get(
+    '/',
+    getUserDetail,
+)
 
 export default router;

@@ -33,7 +33,8 @@ import {
   getCandidateDashboardStats,
   getReferredCandidatesPipeline, 
   updateReferralCandidateStatus,
-  getApplicationDetailsById
+  getApplicationDetailsById,
+  getReferralAsked,
 } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 import {
@@ -312,6 +313,9 @@ router.get(
   secureRoute,
   searchLimiter,
   getProfessionalReferralMetrics
+);
+router.get(
+  "/referral-asked",secureRoute,getReferralAsked
 );
 
 // ============================================================

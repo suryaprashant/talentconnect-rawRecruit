@@ -3,9 +3,11 @@ import { UserCheck, Building2, Briefcase, Users, Search, ChevronDown, Eye, Check
 import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import { useAdmin } from "../../../context/AdminProvider";
+import { useNavigate } from "react-router-dom";
 
 const UserManagement = () => {
   const { adminUser } = useAdmin();
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -322,7 +324,14 @@ const UserManagement = () => {
                     <tr key={user._id} className="border-b hover:bg-slate-50">
                       <td className="p-2">
                         <div className="space-y-1">
-                          <div className="font-medium">{user.name || "N/A"}</div>
+                           <div
+      className="font-medium text-[#143694] cursor-pointer hover:underline"
+      onClick={() =>
+        navigate(`/admin/users/${user._id}/${user.userType}`)
+      }
+    >
+      {user.name || "N/A"}
+    </div>
                           <div className="text-sm text-slate-500">{user.email}</div>
                         </div>
                       </td>

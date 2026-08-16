@@ -3,6 +3,7 @@ import Auth from "../../models/authModel.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../../models/collegeDashboard/collegeOnboardingModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
+import { userDetailService } from "../../services/adminService.js";
 
 /**
  * @desc    Get user count by status and type
@@ -253,3 +254,20 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+export const getUserDetail = async (req, res) => {
+  try {
+    const { userType, userId } = req.query;
+
+    const userDetail = await userDetailService(userId,userType);
+
+    return res.status(200).json(userDetail);
+  } catch (error) {
+    console.error("Error getting user detail:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get user details"
+    });
+  }
+}
