@@ -17,6 +17,7 @@ import ScheduledInterviewPage from "@/pages/admin/adminPages/ScheduledInterviewP
 import AdminManageBlogs from "@/pages/admin/adminPages/adminBlog";
 import AdminNormalization from "@/pages/admin/adminPages/adminNormalization";
 import BackupPage from "@/pages/admin/adminPages/BackupPage";
+import UserDetail from "@/pages/admin/userDetail";
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -33,16 +34,20 @@ const AdminRoutes = () => {
       >
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUserManagement />} />
+        <Route
+          path="users/:userId/:userType"
+          element={<UserDetail />}
+        />
         <Route path="jobs" element={<AdminJobManagement />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="applications" element={<AdminApplication />} />
         <Route path="referral-posted" element={<AllReferralPost />} />
-        <Route path="manage-referral" element={<ManageReferral/>}/>
-        <Route path="scheduled-interviews" element={<ScheduledInterviewPage/>}/>
-        <Route path="manage-blogs" element={<AdminManageBlogs/>}/>
-        <Route path="normalization-logs" element={<AdminNormalization/>}/>
+        <Route path="manage-referral" element={<ManageReferral />} />
+        <Route path="scheduled-interviews" element={<ScheduledInterviewPage />} />
+        <Route path="manage-blogs" element={<AdminManageBlogs />} />
+        <Route path="normalization-logs" element={<AdminNormalization />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="backup" element={<BackupPage/>}/>
+        <Route path="backup" element={<BackupPage />} />
 
       </Route>
     </Routes>
