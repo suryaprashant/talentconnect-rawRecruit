@@ -11,8 +11,8 @@ const UserDetail = () => {
     userType === "professional"
       ? "jobsPosted"
       : ["student", "fresher"].includes(userType)
-      ? "jobsapplied"
-      : "oncampus"
+        ? "jobsapplied"
+        : "oncampus"
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -109,7 +109,17 @@ const UserDetail = () => {
   // USER DATA
   // ============================================================
 
-  const user = userDetail?.user;
+  const user = (() => {
+    if (Array.isArray(userDetail?.user?.data)) return userDetail.user.data[0];
+    if (Array.isArray(userDetail?.data)) return userDetail.data[0];
+    if (userDetail?.user?.data && typeof userDetail.user.data === "object" && !Array.isArray(userDetail.user.data)) {
+      return userDetail.user.data;
+    }
+    if (userDetail?.data && typeof userDetail.data === "object" && !Array.isArray(userDetail.data)) {
+      return userDetail.data;
+    }
+    return userDetail?.user || userDetail || null;
+  })();
 
   // ============================================================
   // JOB TYPE SECTIONS
@@ -130,20 +140,20 @@ const UserDetail = () => {
           { key: "referralAsked", label: "Asked for Referral" },
         ]
       : userType === "college"
-      ? [
-        { key: "oncampus", label: "On-campus" },
-        { key: "poolcampus", label: "Pool-campus" },
-        { key: "jobsapplied", label: "Applied Jobs" },
-        { key: "savedJobs", label: "Saved Jobs" },
-      ]
-      : [
-        { key: "oncampus", label: "On-campus" },
-        { key: "poolcampus", label: "Pool-campus" },
-        { key: "offcampus", label: "Off-campus" },
-        { key: "internship", label: "Internship" },
-        { key: "jobsapplied", label: "Applied Jobs" },
-        { key: "savedJobs", label: "Saved Jobs" },
-      ];
+        ? [
+          { key: "oncampus", label: "On-campus" },
+          { key: "poolcampus", label: "Pool-campus" },
+          { key: "jobsapplied", label: "Applied Jobs" },
+          { key: "savedJobs", label: "Saved Jobs" },
+        ]
+        : [
+          { key: "oncampus", label: "On-campus" },
+          { key: "poolcampus", label: "Pool-campus" },
+          { key: "offcampus", label: "Off-campus" },
+          { key: "internship", label: "Internship" },
+          { key: "jobsapplied", label: "Applied Jobs" },
+          { key: "savedJobs", label: "Saved Jobs" },
+        ];
 
   // ============================================================
   // CURRENT SECTION
@@ -480,16 +490,16 @@ const UserDetail = () => {
                     <div>
                       <span className="text-slate-500">Current Salary</span>
                       <p className="font-medium text-slate-800">
-                        {user?.currentSalaryAmount 
-                          ? `${user.currentSalaryCurrency} ${user.currentSalaryAmount}` 
+                        {user?.currentSalaryAmount
+                          ? `${user.currentSalaryCurrency} ${user.currentSalaryAmount}`
                           : "N/A"}
                       </p>
                     </div>
                     <div>
                       <span className="text-slate-500">Expected Salary</span>
                       <p className="font-medium text-slate-800">
-                        {user?.expectedSalaryAmount 
-                          ? `${user.expectedSalaryCurrency} ${user.expectedSalaryAmount}` 
+                        {user?.expectedSalaryAmount
+                          ? `${user.expectedSalaryCurrency} ${user.expectedSalaryAmount}`
                           : "N/A"}
                       </p>
                     </div>
@@ -535,7 +545,7 @@ const UserDetail = () => {
                           {idx !== user.educations.length - 1 && (
                             <div className="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200"></div>
                           )}
-                          
+
                           <div className="bg-slate-50 p-4 rounded-lg">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
@@ -577,7 +587,7 @@ const UserDetail = () => {
                           {idx !== user.experiences.length - 1 && (
                             <div className="absolute left-1.5 top-4 w-0.5 h-full bg-green-200"></div>
                           )}
-                          
+
                           <div className="bg-slate-50 p-4 rounded-lg">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
@@ -1379,8 +1389,8 @@ const UserDetail = () => {
                 type="button"
                 onClick={() => setActiveType(section.key)}
                 className={`relative z-10 px-5 py-2.5 text-sm font-semibold rounded-md transition-colors ${activeType === section.key
-                    ? "text-[#143694]"
-                    : "text-slate-500 hover:text-slate-800"
+                  ? "text-[#143694]"
+                  : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 {section.label}
@@ -1422,73 +1432,73 @@ const UserDetail = () => {
         {/* ================================================== */}
 
         {activeType !== "referralAsked" && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-          {/* Total Jobs */}
+            {/* Total Jobs */}
 
-          <div className="rounded-xl border bg-card shadow text-center">
-            <div className="p-6">
+            <div className="rounded-xl border bg-card shadow text-center">
+              <div className="p-6">
 
-              <div className="text-2xl font-bold text-slate-800">
-                {jobs.length}
+                <div className="text-2xl font-bold text-slate-800">
+                  {jobs.length}
+                </div>
+
+                <div className="text-sm text-slate-600 mt-1">
+                  Total Jobs
+                </div>
+
               </div>
-
-              <div className="text-sm text-slate-600 mt-1">
-                Total Jobs
-              </div>
-
             </div>
-          </div>
 
-          {/* Applied */}
+            {/* Applied */}
 
-          <div className="rounded-xl border bg-card shadow text-center">
-            <div className="p-6">
+            <div className="rounded-xl border bg-card shadow text-center">
+              <div className="p-6">
 
-              <div className="text-2xl font-bold text-[#143694]">
-                {totals.applied || 0}
+                <div className="text-2xl font-bold text-[#143694]">
+                  {totals.applied || 0}
+                </div>
+
+                <div className="text-sm text-slate-600 mt-1">
+                  Total Applied
+                </div>
+
               </div>
-
-              <div className="text-sm text-slate-600 mt-1">
-                Total Applied
-              </div>
-
             </div>
-          </div>
 
-          {/* Shortlisted */}
+            {/* Shortlisted */}
 
-          <div className="rounded-xl border bg-card shadow text-center">
-            <div className="p-6">
+            <div className="rounded-xl border bg-card shadow text-center">
+              <div className="p-6">
 
-              <div className="text-2xl font-bold text-orange-700">
-                {totals.shortlisted || 0}
+                <div className="text-2xl font-bold text-orange-700">
+                  {totals.shortlisted || 0}
+                </div>
+
+                <div className="text-sm text-slate-600 mt-1">
+                  Total Shortlisted
+                </div>
+
               </div>
-
-              <div className="text-sm text-slate-600 mt-1">
-                Total Shortlisted
-              </div>
-
             </div>
-          </div>
 
-          {/* Accepted */}
+            {/* Accepted */}
 
-          <div className="rounded-xl border bg-card shadow text-center">
-            <div className="p-6">
+            <div className="rounded-xl border bg-card shadow text-center">
+              <div className="p-6">
 
-              <div className="text-2xl font-bold text-green-700">
-                {totals.accepted || 0}
+                <div className="text-2xl font-bold text-green-700">
+                  {totals.accepted || 0}
+                </div>
+
+                <div className="text-sm text-slate-600 mt-1">
+                  Total Accepted
+                </div>
+
               </div>
-
-              <div className="text-sm text-slate-600 mt-1">
-                Total Accepted
-              </div>
-
             </div>
-          </div>
 
-        </div>
+          </div>
         )}
 
         {/* ================================================== */}
@@ -1503,18 +1513,18 @@ const UserDetail = () => {
               {activeType === "referralAsked"
                 ? "Asked for Referral"
                 : isApplicationSection
-                ? activeType === "jobsapplied"
-                  ? "Applied Jobs"
-                  : "Saved Jobs"
-                : "Posted Jobs"}
+                  ? activeType === "jobsapplied"
+                    ? "Applied Jobs"
+                    : "Saved Jobs"
+                  : "Posted Jobs"}
             </h3>
 
             <p className="text-sm text-slate-500 mt-1">
               {activeType === "referralAsked"
                 ? "Referrals requested"
                 : isApplicationSection
-                ? "Job activity details"
-                : "Recruitment details for each job"}
+                  ? "Job activity details"
+                  : "Recruitment details for each job"}
             </p>
 
           </div>
