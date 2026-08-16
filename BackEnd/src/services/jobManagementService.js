@@ -1,7 +1,9 @@
- import HiringDrive from "../models/hiringChannelOffCampusRegisterModel.js";
-import {JobPostingTable} from "../models/jobPostingsModel.js"
+import HiringDrive from "../models/hiringChannelOffCampusRegisterModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js"
 import mongoose from "mongoose";
 import Application from "../models/applicationModel.js";
+import AuthSchema from "../models/authModel.js";
+
 
 export async function getOffCampusJobsService(companyId) {
     try {
@@ -39,7 +41,7 @@ export async function getOffCampusJobsService(companyId) {
 //             target = "";
 //             break;
 //     }
-    
+
 //     try {
 //         const response = await JobPostingTable.aggregate([
 //             {
@@ -88,7 +90,7 @@ export async function getOffCampusJobsService(companyId) {
 //     }
 // };
 
-export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited,active) => {
+export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited, active) => {
     const targetMap = {
         "campus-placement": "Applied",
         "poolCampus-placement": "Applied",
@@ -102,7 +104,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
     try {
         let response = await JobPostingTable.aggregate([
             {
-               $match: {
+                $match: {
                     collegePosted: new mongoose.Types.ObjectId(collegeId),
                     jobType: jobType,
                     // ✅ active=false → inactive jobs, everything else → active jobs
@@ -114,7 +116,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             // --- NEW: Lookup College Details ---
             {
                 $lookup: {
-                    from:  "collegeonboardings", // Ensure this matches your MongoDB collection name
+                    from: "collegeonboardings", // Ensure this matches your MongoDB collection name
                     localField: "collegePosted",
                     foreignField: "_id",
                     as: "collegeInfo"
@@ -132,21 +134,21 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             },
             {
                 $addFields: {
-                collegeName: "$collegeInfo.collegeUniversityDetails.collegeName",
+                    collegeName: "$collegeInfo.collegeUniversityDetails.collegeName",
                     // Extracting the specific address fields you requested
-                 // FIXED
-collegeAddress: {
-    location: "$collegeInfo.collegeUniversityDetails.collegeLocation",
-    city: "$collegeInfo.collegeUniversityDetails.city",
-    state: "$collegeInfo.collegeUniversityDetails.state",
-    pincode: "$collegeInfo.collegeUniversityDetails.pincode"
-},
+                    // FIXED
+                    collegeAddress: {
+                        location: "$collegeInfo.collegeUniversityDetails.collegeLocation",
+                        city: "$collegeInfo.collegeUniversityDetails.city",
+                        state: "$collegeInfo.collegeUniversityDetails.state",
+                        pincode: "$collegeInfo.collegeUniversityDetails.pincode"
+                    },
                     applicationCount: {
                         $size: {
                             $filter: {
                                 input: "$jobApplications",
                                 as: "application",
-                                cond: { 
+                                cond: {
                                     $and: [
                                         { $eq: ["$$application.currentStatus", target] },
                                         { $eq: ["$$application.isVisited", isVisited === 'true' || isVisited === true] },
@@ -160,11 +162,11 @@ collegeAddress: {
             {
                 $project: {
                     jobApplications: 0,
-                    collegeInfo: 0 
+                    collegeInfo: 0
                 }
             }
         ]);
-     
+
         return { success: true, response };
     } catch (error) {
         console.error("Aggregation Error:", error);
@@ -172,9 +174,153 @@ collegeAddress: {
     }
 };
 
+export const getJobPostedWithCountsService = async (
+    Id,
+    jobType,
+    userType,
+    user,
+    authUserId = null
+) => {
+    try {
+        let match = {};
+
+        if (userType === "company" || userType === "employer") {
+            match = {
+                companyPosted: Id,
+                jobType: jobType
+            };
+
+        } else if (userType === "college") {
+            match = {
+                collegePosted: Id,
+                jobType: jobType
+            };
+        }
+        else
+        {
+            match = {
+                candidatePosted: Id,
+                jobType: jobType
+            };
+        }
+
+        const response = await JobPostingTable.aggregate([
+            {
+                $match: match
+            },
+
+            {
+                $lookup: {
+                    from: "applications",
+                    localField: "_id",
+                    foreignField: "job",
+                    as: "jobApplications"
+                }
+            },
+
+            {
+                $addFields: {
+                    appliedCount: {
+                        $size: {
+                            $filter: {
+                                input: "$jobApplications",
+                                as: "application",
+                                cond: {
+                                    $eq: [
+                                        "$$application.currentStatus",
+                                        "Applied"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+
+                    shortlistedCount: {
+                        $size: {
+                            $filter: {
+                                input: "$jobApplications",
+                                as: "application",
+                                cond: {
+                                    $eq: [
+                                        "$$application.currentStatus",
+                                        "Shortlisted"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+
+                    acceptedCount: {
+                        $size: {
+                            $filter: {
+                                input: "$jobApplications",
+                                as: "application",
+                                cond: {
+                                    $eq: [
+                                        "$$application.currentStatus",
+                                        "Accepted"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            {
+                $project: {
+                    jobApplications: 0
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+
+                    jobs: {
+                        $push: "$$ROOT"
+                    },
+
+                    totalApplied: {
+                        $sum: "$appliedCount"
+                    },
+
+                    totalShortlisted: {
+                        $sum: "$shortlistedCount"
+                    },
+
+                    totalAccepted: {
+                        $sum: "$acceptedCount"
+                    }
+                }
+            }
+        ]);
+
+        const result = response[0] || {
+            jobs: [],
+            totalApplied: 0,
+            totalShortlisted: 0,
+            totalAccepted: 0
+        };
+
+        return {
+            success: true,
+                jobs: result.jobs,
+                totals: {
+                    applied: result.totalApplied,
+                    shortlisted: result.totalShortlisted,
+                    accepted: result.totalAccepted
+                }
+        };
+
+    } catch (error) {
+        console.log("Error:", error.message);
+        throw new Error("Failed to fetch jobs with application counts");
+    }
+};
+
 // export const deleteJobPostingService = async (jobId, collegeId) => {
 //     try {
-        
+
 //         if (!mongoose.Types.ObjectId.isValid(jobId)) {
 //             throw new Error("Invalid job ID");
 //         }
@@ -196,13 +342,13 @@ collegeAddress: {
 //         session.startTransaction();
 
 //         try {
-            
+
 //             const deleteApplicationsResult = await Application.deleteMany(
 //                 { job: new mongoose.Types.ObjectId(jobId) },
 //                 { session }
 //             );
 
-            
+
 //             const deleteJobResult = await JobPostingTable.deleteOne(
 //                 { _id: new mongoose.Types.ObjectId(jobId) },
 //                 { session }
@@ -221,7 +367,7 @@ collegeAddress: {
 //             };
 
 //         } catch (transactionError) {
-         
+
 //             await session.abortTransaction();
 //             session.endSession();
 //             throw transactionError;
@@ -238,8 +384,8 @@ export const deleteJobPostingService = async (jobId, collegeId) => {
     try {
         // Atomic update: finds the job belonging to THIS college and marks inactive
         const job = await JobPostingTable.findOneAndUpdate(
-            { 
-                _id: jobId, 
+            {
+                _id: jobId,
                 collegePosted: collegeId, // Ensure ownership
                 inactive: { $ne: true }   // Only update if not already inactive
             },
@@ -251,14 +397,37 @@ export const deleteJobPostingService = async (jobId, collegeId) => {
             throw new Error("Job not found or unauthorized to delete");
         }
 
-        return { 
-            success: true, 
+        return {
+            success: true,
             msg: "Job marked as inactive successfully",
-            data: job 
+            data: job
         };
 
     } catch (error) {
         console.error("Service Error - deleteJobPosting:", error.message);
         throw error;
     }
+};
+
+export const getAppliedApplicationsService = async (userId) => {
+  const applications = await Application.find({
+    applicant: userId,
+    currentStatus: { $ne: "Saved" }
+  })
+    .populate("job")
+    .sort({ updatedAt: -1 })
+    .lean();
+
+  return applications;
+};
+export const getSavedApplicationsService = async (userId) => {
+  const applications = await Application.find({
+    applicant: userId,
+    currentStatus: "Saved"
+  })
+    .populate("job")
+    .sort({ updatedAt: -1 })
+    .lean();
+
+  return applications;
 };

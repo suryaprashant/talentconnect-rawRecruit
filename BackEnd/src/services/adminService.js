@@ -1,5 +1,9 @@
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  Application  from "../models/applicationModel.js"
+import { getCollegeService } from "./collegeService.js";
+import {getCompanyService} from "./companyService.js";
+import { getJobPostedWithCountsService , getAppliedApplicationsService , getSavedApplicationsService} from "./jobManagementService.js";
+import Onboarding from "../models/studentonboardingModel.js";
 import mongoose from "mongoose";
 
 
@@ -329,7 +333,27 @@ export const updateReferralApplicationStatusService = async ({
 
   return application;
 };
+export const getReferralAskedService = async ({referralRequestId}) => {
+   const jobs = await JobPostingTable.find({
+    referralRequestId,
+    // isAskForReferral: true,
+    // inactive: false
+  })
+    .select({
+      jobStatus: 1,
+      careerPageUrl: 1,
+      "receiverProfile.name": 1,
+      "receiverProfile.email": 1
+    })
+    .lean();
 
+  return jobs.map(job => ({
+    status: job.jobStatus,
+    jobLink: job.careerPageUrl,
+    name: job.receiverProfile?.name || "",
+    email: job.receiverProfile?.email || ""
+  }));
+}
 
 
 // export const getAllProfessionalReferralsService = async (professionalProfileId) => {
@@ -816,4 +840,77 @@ export const fetchProfessionalReferralMetrics = async (professionalProfileId) =>
     responseRate,        // e.g. 65.50  (means 65.50%)
     referralSuccessRate, // e.g. 40.00  (means 40.00%)
   };
+};
+
+export const userDetailService = async (userId, userType) => {
+    try {
+      if(userType=="college" || userType == "company" || userType=="employer")
+      {
+        let user = null;
+        let oncampus =null;
+        let poolcampus=null;
+        let offcampus=null;
+        let internship=null;
+
+        console.log(userType+" "+userId);
+        if (userType == "college")
+        {
+            user = await getCollegeService(userId);
+        }
+        else if(userType=="company" || userType=="employer")
+        {
+            user = await getCompanyService(userId);
+        }
+        // else
+        //   user=await Onboarding.findOne({userId});
+        console.log(user);
+        oncampus =await getJobPostedWithCountsService(user.data[0]._id,"On-campus",userType,user);
+        poolcampus=await getJobPostedWithCountsService(user.data[0]._id,"Pool-campus",userType,user);
+        offcampus=await getJobPostedWithCountsService(user.data[0]._id,"Off-campus",userType,user);
+        internship=await getJobPostedWithCountsService(user.data[0]._id,"Internship",userType,user);
+        const savedJobs =await getSavedApplicationsService(user.data[0]._id);
+        const jobsapplied = await getAppliedApplicationsService(user.data[0]._id);
+
+        return {
+            success: true,
+            data: {
+                user,
+                oncampus,
+                poolcampus,
+                offcampus,
+                internship,
+                jobsapplied,
+                savedJobs,
+            }
+        };
+      }
+      else
+      {
+        let user = await Onboarding.findOne({userId});
+        console.log(user);
+        console.log(userId," ANDDD ",user._id);
+        let referralMetrics=null;
+        if(userType == "professional")
+          referralMetrics = await fetchProfessionalReferralMetrics(user._id);
+        const jobsPosted = await getJobPostedWithCountsService(user._id,"Referral",userType);
+        const referralAsked = await getReferralAskedService({referralRequestId:user._id});
+        const jobsapplied = await getAppliedApplicationsService(user._id);
+        const savedJobs =await getSavedApplicationsService(user._id);
+        return {
+            success: true,
+            data: {
+                user,
+                jobsPosted,
+                referralMetrics,
+                referralAsked,
+                jobsapplied,
+                savedJobs,
+            }
+        };
+      }
+
+    } catch (error) {
+        console.error("User Detail Service Error:", error);
+        throw new Error("Failed to fetch user details");
+    }
 };

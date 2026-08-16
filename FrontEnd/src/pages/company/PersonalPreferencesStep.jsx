@@ -81,7 +81,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
           {/* Decorative top bar */}
           <div className="h-1 bg-gradient-to-r from-[#143694] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
-          <h1 className="text-2xl font-bold mb-1 text-gray-800">Introduce Yourself as a Company!</h1>
+          <h1 className="text-2xl font-bold mb-1 text-gray-800">Introduce Yourself as Company's Representative!</h1>
           <p className="text-gray-600 mb-6">
             Help candidates connect with the right recruiter in your company!
           </p>

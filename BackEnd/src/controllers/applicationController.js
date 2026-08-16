@@ -54,6 +54,7 @@ import {
   getAllProfessionalReferralsService,
   getCompanyReferralFeedService,
   fetchProfessionalReferralMetrics,
+  getReferralAskedService,
 } from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
 import Onboarding from "../models/studentonboardingModel.js";
@@ -556,6 +557,16 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     next(error);
   }
 };
+export async function getReferralAsked(req,res)
+{
+  try{
+    console.log(req.query.referralRequestId);
+    const resp=await getReferralAskedService( {referralRequestId: req.query.referralRequestId});
+    res.status(200).json(resp);
+  }catch{
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 export async function unsaveJobByUser(req, res) {
   const { jobId } = req.params; // jobId passed in the URL
   const userId = req.user._id;
