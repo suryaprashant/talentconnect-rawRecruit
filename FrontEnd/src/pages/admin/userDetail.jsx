@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "../../lib/axiosInstance";
 
 const UserDetail = () => {
@@ -231,19 +231,14 @@ const UserDetail = () => {
   const getJobTitle = (item) => {
     const job = getActualJob(item);
 
-    // Try jobTitle first (might be array or string)
-    if (job?.jobTitle) {
-      if (Array.isArray(job.jobTitle)) {
-        return job.jobTitle.length ? job.jobTitle.join(", ") : "Untitled Job";
-      }
-      return job.jobTitle;
-    }
+    const roles = Array.isArray(job?.jobRoles) ? job.jobRoles.filter(Boolean) : [];
+    if (roles.length) return roles.join(", ");
 
-    // Fallback to jobRoles
-    if (Array.isArray(job?.jobRoles)) {
-      return job.jobRoles.length
-        ? job.jobRoles.join(", ")
-        : "Untitled Job";
+    const titles = Array.isArray(job?.jobTitle) ? job.jobTitle.filter(Boolean) : [];
+    if (titles.length) return titles.join(", ");
+
+    if (typeof job?.jobTitle === "string" && job.jobTitle.trim()) {
+      return job.jobTitle;
     }
 
     return "Untitled Job";
@@ -1678,11 +1673,18 @@ const UserDetail = () => {
                           {/* Job */}
 
                           <td className="p-3">
-
-                            <div className="font-medium text-slate-900">
-                              {getJobTitle(item)}
-                            </div>
-
+                            {job?._id ? (
+                              <Link
+                                to={`/admin/job-details/${job._id}`}
+                                className="font-medium text-[#143694] hover:underline"
+                              >
+                                {getJobTitle(item)}
+                              </Link>
+                            ) : (
+                              <div className="font-medium text-slate-900">
+                                {getJobTitle(item)}
+                              </div>
+                            )}
                           </td>
 
                           {/* Status */}

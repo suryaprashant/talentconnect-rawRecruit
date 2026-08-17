@@ -1,6 +1,6 @@
 import {
   getTotalJobPostedCount,
-  getAll,
+  getAll,getJobDetailsService,
 } from "../../services/jobPostingService.js";
 import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
@@ -15,6 +15,9 @@ import {
 import { ok } from "assert";
 import Auth from "../../models/authModel.js";
 import { jobNotificationQueue } from "../../queue/jobNotificationQueue.js";
+import { getAllApplications } from "../../services/applicationService.js";
+
+
 export const getJobDriveOverView = async (req, res) => {
   try {
     const [
@@ -397,3 +400,16 @@ export const getJobVisibilityThreshold = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getJobDetails = async (req, res) => {
+  try{
+    const { jobId } = req.query;
+    const job=await getJobDetailsService(jobId);
+    console.log(jobId);
+    console.log(job);
+    const applications = await getAllApplications(jobId);
+    console.log(applications);
+    res.status(200).json({job,applications});
+  }catch{
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}

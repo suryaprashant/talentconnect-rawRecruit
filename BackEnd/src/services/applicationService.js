@@ -2109,3 +2109,135 @@ export async function getCandidateDashboardStatsService(profileId) {
     throw new Error("Failed to fetch candidate dashboard stats");
   }
 }
+
+export const getAllApplications = async (jobId) => {
+  try {
+    const applications = await Application.aggregate([
+      {
+        $match: {
+          job: new mongoose.Types.ObjectId(jobId),
+          currentStatus: { $ne: "Saved" }
+        }
+      },
+
+      // College applicant
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "collegeApplicant"
+        }
+      },
+
+      // Company / Employer applicant
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "companyApplicant"
+        }
+      },
+
+      // Student / Professional / Fresher applicant
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "candidateApplicant"
+        }
+      },
+
+      {
+        $addFields: {
+          applicantName: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ["$applicantType", "college"]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$collegeApplicant.collegeUniversityDetails.collegeName",
+                      0
+                    ]
+                  }
+                },
+                {
+                  case: {
+                    $in: ["$applicantType", ["company", "employer"]]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$companyApplicant.companyDetails.companyName",
+                      0
+                    ]
+                  }
+                }
+              ],
+              default: {
+                $arrayElemAt: [
+                  "$candidateApplicant.name",
+                  0
+                ]
+              }
+            }
+          },
+
+          // Get actual Auth userId
+          userId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ["$applicantType", "college"]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$collegeApplicant.userId",
+                      0
+                    ]
+                  }
+                },
+                {
+                  case: {
+                    $in: ["$applicantType", ["company", "employer"]]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$companyApplicant.userId",
+                      0
+                    ]
+                  }
+                }
+              ],
+              default: {
+                $arrayElemAt: [
+                  "$candidateApplicant.userId",
+                  0
+                ]
+              }
+            }
+          }
+        }
+      },
+
+      {
+        $project: {
+          collegeApplicant: 0,
+          companyApplicant: 0,
+          candidateApplicant: 0
+        }
+      }
+    ]);
+
+    return applications;
+
+  } catch (error) {
+    console.log("Error fetching applications:", error);
+    throw error;
+  }
+};
