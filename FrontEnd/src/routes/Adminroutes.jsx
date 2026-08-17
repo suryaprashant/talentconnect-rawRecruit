@@ -18,6 +18,8 @@ import AdminManageBlogs from "@/pages/admin/adminPages/adminBlog";
 import AdminNormalization from "@/pages/admin/adminPages/adminNormalization";
 import BackupPage from "@/pages/admin/adminPages/BackupPage";
 import UserDetail from "@/pages/admin/userDetail";
+import JobDetails from "@/pages/admin/JobDetails";
+
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -38,7 +40,9 @@ const AdminRoutes = () => {
           path="users/:userId/:userType"
           element={<UserDetail />}
         />
+
         <Route path="jobs" element={<AdminJobManagement />} />
+        <Route path="job-details/:jobId" element={<JobDetails />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="applications" element={<AdminApplication />} />
         <Route path="referral-posted" element={<AllReferralPost />} />

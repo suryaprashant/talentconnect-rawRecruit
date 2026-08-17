@@ -3,7 +3,7 @@ import adminAuth from "../../middlewares/adminMiddleware.js";
 import {
     getJobDriveOverView,
     getAllPositions,
-    getJobsBoardOverView
+    getJobsBoardOverView,getJobDetails,
 } from "../../controllers/admin/jobDriveManagementController.js"
 import {
     searchLimiter,
@@ -38,5 +38,9 @@ router.get(
     searchLimiter,
     getAllPositions
 );
+router.get(
+    '/Job-detail',
+    getJobDetails,
+)
 
 export default router;
