@@ -1015,7 +1015,7 @@ export const getJobDetailsService = async (jobId) => {
         },
       },
 
-      // Candidate poster
+      // Professional poster
       {
         $lookup: {
           from: "onboardings",
@@ -1029,7 +1029,13 @@ export const getJobDetailsService = async (jobId) => {
         $addFields: {
           poster: {
             $cond: [
-              { $ne: ["$companyPosted", null] },
+              // COMPANY
+              {
+                $ne: [
+                  { $ifNull: ["$companyPosted", null] },
+                  null,
+                ],
+              },
               {
                 name: {
                   $arrayElemAt: [
@@ -1045,9 +1051,16 @@ export const getJobDetailsService = async (jobId) => {
                   ],
                 },
               },
+
               {
                 $cond: [
-                  { $ne: ["$collegePosted", null] },
+                  // COLLEGE
+                  {
+                    $ne: [
+                      { $ifNull: ["$collegePosted", null] },
+                      null,
+                    ],
+                  },
                   {
                     name: {
                       $arrayElemAt: [
@@ -1063,6 +1076,8 @@ export const getJobDetailsService = async (jobId) => {
                       ],
                     },
                   },
+
+                  // PROFESSIONAL / CANDIDATE
                   {
                     name: {
                       $arrayElemAt: [
@@ -1070,7 +1085,7 @@ export const getJobDetailsService = async (jobId) => {
                         0,
                       ],
                     },
-                    type: "candidate",
+                    type: "professional",
                     userId: {
                       $arrayElemAt: [
                         "$candidatePoster.userId",
