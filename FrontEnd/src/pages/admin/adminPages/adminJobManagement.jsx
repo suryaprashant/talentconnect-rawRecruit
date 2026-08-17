@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Briefcase, Search, ChevronDown } from "lucide-react";
 import axios from "../../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
@@ -65,6 +66,20 @@ const JobDriveManagement = () => {
       default:
         return "bg-gray-100 text-gray-700";
     }
+  };
+
+  const getJobDisplayTitle = (job) => {
+    const roles = Array.isArray(job?.jobRoles) ? job.jobRoles.filter(Boolean) : [];
+    if (roles.length) return roles.join(", ");
+
+    const titles = Array.isArray(job?.jobTitle) ? job.jobTitle.filter(Boolean) : [];
+    if (titles.length) return titles.join(", ");
+
+    if (typeof job?.jobTitle === "string" && job.jobTitle.trim()) {
+      return job.jobTitle;
+    }
+
+    return "Untitled Job";
   };
 
   return (
@@ -174,7 +189,16 @@ const JobDriveManagement = () => {
                   jobs.map((job) => (
                     <tr key={job._id} className="border-b hover:bg-slate-50">
                       <td className="p-2">
-                        <div className="font-medium">{job.jobTitle || "N/A"}</div>
+                        {job?._id ? (
+                          <Link
+                            to={`/admin/job-details/${job._id}`}
+                            className="font-medium text-[#143694] hover:underline"
+                          >
+                            {getJobDisplayTitle(job)}
+                          </Link>
+                        ) : (
+                          <div className="font-medium">{getJobDisplayTitle(job)}</div>
+                        )}
                       </td>
                       <td className="p-2">{job.companyName || "N/A"}</td>
                       <td className="p-2">

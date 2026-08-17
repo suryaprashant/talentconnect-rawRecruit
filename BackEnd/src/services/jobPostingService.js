@@ -985,3 +985,120 @@ export const deleteReferralJobByIdService = async (
 //         throw error;
 //     }
 // };
+
+export const getJobDetailsService = async (jobId) => {
+  try {
+    const jobs = await JobPostingTable.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(jobId),
+        },
+      },
+
+      // Company poster
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "companyPosted",
+          foreignField: "_id",
+          as: "companyPoster",
+        },
+      },
+
+      // College poster
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "collegePosted",
+          foreignField: "_id",
+          as: "collegePoster",
+        },
+      },
+
+      // Candidate poster
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "candidatePosted",
+          foreignField: "_id",
+          as: "candidatePoster",
+        },
+      },
+
+      {
+        $addFields: {
+          poster: {
+            $cond: [
+              { $ne: ["$companyPosted", null] },
+              {
+                name: {
+                  $arrayElemAt: [
+                    "$companyPoster.companyDetails.companyName",
+                    0,
+                  ],
+                },
+                type: "company",
+                userId: {
+                  $arrayElemAt: [
+                    "$companyPoster.userId",
+                    0,
+                  ],
+                },
+              },
+              {
+                $cond: [
+                  { $ne: ["$collegePosted", null] },
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        "$collegePoster.collegeUniversityDetails.collegeName",
+                        0,
+                      ],
+                    },
+                    type: "college",
+                    userId: {
+                      $arrayElemAt: [
+                        "$collegePoster.userId",
+                        0,
+                      ],
+                    },
+                  },
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        "$candidatePoster.name",
+                        0,
+                      ],
+                    },
+                    type: "candidate",
+                    userId: {
+                      $arrayElemAt: [
+                        "$candidatePoster.userId",
+                        0,
+                      ],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+
+      // Remove temporary lookup arrays
+      {
+        $project: {
+          companyPoster: 0,
+          collegePoster: 0,
+          candidatePoster: 0,
+        },
+      },
+    ]);
+
+    return jobs[0] || null;
+
+  } catch (error) {
+    console.log("Error fetching job details:", error);
+    throw new Error("Failed to fetch job details");
+  }
+};

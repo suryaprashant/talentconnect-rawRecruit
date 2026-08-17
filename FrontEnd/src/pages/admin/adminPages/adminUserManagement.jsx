@@ -179,11 +179,11 @@ const UserManagement = () => {
                 <span>candidates ({statistics?.candidates?.total || 0})</span>
               </div>
             </div>
-            <div className="p-6 pt-0 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="p-6 pt-0 flex justify-center gap-4 mb-4">
               {[
                 { color: "blue", label: "Total", value: statistics?.candidates?.total || 0 },
-                { color: "green", label: "Active", value: statistics?.candidates?.active || 0 },
-                { color: "yellow", label: "Pending", value: statistics?.candidates?.pending || 0 },
+                { color: "green", label: "Active", value: statistics?.candidates?.pending || 0 },
+                // { color: "yellow", label: "Pending", value: statistics?.candidates?.pending || 0 },
                 { color: "red", label: "Blocked", value: statistics?.candidates?.blocked || 0 },
               ].map((item) => (
                 <div
@@ -209,11 +209,11 @@ const UserManagement = () => {
                 <span>colleges ({statistics?.colleges?.total || 0})</span>
               </div>
             </div>
-            <div className="p-6 pt-0 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="p-6 pt-0 flex justify-center gap-4 mb-4">
               {[
                 { color: "blue", label: "Total", value: statistics?.colleges?.total || 0 },
-                { color: "green", label: "Active", value: statistics?.colleges?.active || 0 },
-                { color: "yellow", label: "Pending", value: statistics?.colleges?.pending || 0 },
+                { color: "green", label: "Active", value: statistics?.colleges?.pending || 0 },
+                // { color: "yellow", label: "Pending", value: statistics?.colleges?.pending || 0 },
                 { color: "red", label: "Blocked", value: statistics?.colleges?.blocked || 0 },
               ].map((item) => (
                 <div
@@ -239,11 +239,11 @@ const UserManagement = () => {
                 <span>companies ({statistics?.companies?.total || 0})</span>
               </div>
             </div>
-            <div className="p-6 pt-0 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="p-6 pt-0 flex justify-center gap-4 mb-4">
               {[
                 { color: "blue", label: "Total", value: statistics?.companies?.total || 0 },
-                { color: "green", label: "Active", value: statistics?.companies?.active || 0 },
-                { color: "yellow", label: "Pending", value: statistics?.companies?.pending || 0 },
+                { color: "green", label: "Active", value: statistics?.companies?.pending || 0 },
+                // { color: "yellow", label: "Pending", value: statistics?.companies?.pending || 0 },
                 { color: "red", label: "Blocked", value: statistics?.companies?.blocked || 0 },
               ].map((item) => (
                 <div
