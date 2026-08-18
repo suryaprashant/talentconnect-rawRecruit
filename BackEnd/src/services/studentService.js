@@ -10,12 +10,65 @@ export async function getAllOnboardingFormsService(page = 1, limit = 6) {
   try {
     const skip = (page - 1) * limit;
 
-    const [forms, total] = await Promise.all([
-      OnboardingModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    const pipeline = [
+      // Join Onboarding.userId with Auth._id
+      {
+        $lookup: {
+          from: "auths", // MongoDB collection name of Auth model
+          localField: "userId",
+          foreignField: "_id",
+          as: "authUser",
+        },
+      },
 
-      OnboardingModel.countDocuments({}),
+      
+      {
+        $match: {
+          "authUser.onboardingCompleted": true,
+        },
+      },
+
+     
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+
+     
+      {
+        $skip: skip,
+      },
+
+      {
+        $limit: limit,
+      },
+    ];
+
+    const [forms, countResult] = await Promise.all([
+      OnboardingModel.aggregate(pipeline),
+
+      OnboardingModel.aggregate([
+        {
+          $lookup: {
+            from: "auths",
+            localField: "userId",
+            foreignField: "_id",
+            as: "authUser",
+          },
+        },
+        {
+          $match: {
+            "authUser.onboarding": true,
+          },
+        },
+        {
+          $count: "total",
+        },
+      ]),
     ]);
 
+    const total = countResult[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
 
     return {
