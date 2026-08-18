@@ -2078,6 +2078,7 @@ export const getReferralJobs = async (req, res) => {
 
       const filter = {
         jobType: "Referral",
+        approvalStatus: "Approved",
         inactive: false,
         isAskForReferral: false,
       };
