@@ -2080,7 +2080,7 @@ export const getReferralJobs = async (req, res) => {
         jobType: "Referral",
         approvalStatus: "Approved",
         inactive: false,
-        isAskForReferral: false,
+        isAskForReferral: { $ne: true },
       };
 
       const [publicData, total] = await Promise.all([
