@@ -14,14 +14,22 @@ import Onboarding from "../models/studentonboardingModel.js";
 import {alumniNetworkQueue} from "../queue/alumniNetworkQueue.js";
 export const getAllOnboardingForms = async (req, res) => {
   try {
-    const result = await getAllOnboardingFormsService();
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = 6;
+
+    const result = await getAllOnboardingFormsService(page, limit);
+
     res.status(200).json({
-      message: "Successfully fetched all onboarding forms.",
-      data: result,
+      success: true,
+      message: "Successfully fetched onboarding forms.",
+      data: result.forms,
+      pagination: result.pagination,
     });
   } catch (error) {
     console.error("Error fetching all onboarding forms:", error);
+
     res.status(500).json({
+      success: false,
       message: "Internal server error while fetching forms.",
       error: error.message,
     });
