@@ -6,10 +6,29 @@ import { JobPostingTable } from "../models/jobPostingsModel.js";
 import Application from "../models/applicationModel.js";
 import { resolveCollege, resolveCompany } from "./normalizationService.js";
 // Get all onboarding forms
-export async function getAllOnboardingFormsService() {
+export async function getAllOnboardingFormsService(page = 1, limit = 6) {
   try {
-    const forms = await OnboardingModel.find({});
-    return forms;
+    const skip = (page - 1) * limit;
+
+    const [forms, total] = await Promise.all([
+      OnboardingModel.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit),
+
+      OnboardingModel.countDocuments({}),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      forms,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   } catch (error) {
     throw error;
   }
@@ -308,7 +327,7 @@ export async function submitOnboardingFormService(userId, body, files) {
 
     referralSource: body.referralSource,
 
-    status : parseJsonObject("status"),
+    status: parseJsonObject("status"),
   };
 
   return await handleOnboardingUpdate(updateData, files);
@@ -370,7 +389,7 @@ export async function updateOnboardingFormService(userId, body, files) {
     "publications",
     "achievements",
     "projectsHandled",
-    "status"
+    "status",
   ];
 
   jsonFields.forEach((field) => {
@@ -384,12 +403,12 @@ export async function updateOnboardingFormService(userId, body, files) {
   // Experiences Logic
   // =========================
   // let currentCompany = "";
-  console.log("all company :",updates.experiences);
+  console.log("all company :", updates.experiences);
   if (Array.isArray(updates.experiences)) {
     const currentExp = updates.experiences.find(
       (e) => e.isCurrent === true || e.isCurrent === "true",
     );
-    console.log("true vala company :",currentExp?.company);
+    console.log("true vala company :", currentExp?.company);
     updates.currentCompany = currentExp?.company || "";
 
     if (currentExp?.company) {
@@ -747,16 +766,19 @@ export const handleOnboardingUpdate = async (updateData, files) => {
       exp.company_display = result.displayName;
     }
   }
-  console.log("current company is entered : ",updateData.currentCompany);
-  console.log("status : ",updateData.status);
-  
+  console.log("current company is entered : ", updateData.currentCompany);
+  console.log("status : ", updateData.status);
+
   const existingOnboarding = await OnboardingModel.findOne({
     userId: updateData.userId,
   });
-  console.log("update.currentCompany : ",updateData.currentCompany);
-  console.log("update.status : ",updateData.status);
-  if (updateData.currentCompany !== undefined || updateData.status!==undefined) {
-    if (updateData.currentCompany){
+  console.log("update.currentCompany : ", updateData.currentCompany);
+  console.log("update.status : ", updateData.status);
+  if (
+    updateData.currentCompany !== undefined ||
+    updateData.status !== undefined
+  ) {
+    if (updateData.currentCompany) {
       const result = await resolveCompany(updateData.currentCompany);
 
       if (result) {
@@ -769,32 +791,29 @@ export const handleOnboardingUpdate = async (updateData, files) => {
         updateData.currentCompany_display = "";
       }
       const currentExperience = updateData.experiences?.find(
-        exp => exp.isCurrent
+        (exp) => exp.isCurrent,
       );
       updateData.status = {
-          type: "employed",
-          since: currentExperience?.startDate || new Date(),
-          note: "",
-          expectedReturn: null,
+        type: "employed",
+        since: currentExperience?.startDate || new Date(),
+        note: "",
+        expectedReturn: null,
       };
-    }
-    else if (updateData.status?.type) {
+    } else if (updateData.status?.type) {
       updateData.currentCompany_master_id = null;
       updateData.currentCompany_canonical_id = "";
       updateData.currentCompany_display = "";
 
       if (existingOnboarding?.status?.type !== updateData.status.type) {
-          updateData.status.since = new Date();
+        updateData.status.since = new Date();
       } else {
-          updateData.status.since = existingOnboarding.status.since;
+        updateData.status.since = existingOnboarding.status.since;
       }
 
       if (updateData.status.type !== "career_break") {
-          updateData.status.expectedReturn = null;
+        updateData.status.expectedReturn = null;
       }
-    }
-    else
-    {
+    } else {
       updateData.currentCompany_master_id = null;
       updateData.currentCompany_canonical_id = "";
       updateData.currentCompany_display = "";

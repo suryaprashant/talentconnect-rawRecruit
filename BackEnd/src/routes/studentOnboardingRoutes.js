@@ -29,7 +29,7 @@ const upload = multer({ storage: storage });
 // GET all onboarding forms - uses searchLimiter (60 per minute)
 router.get(
     "/onboarding",
-    secureRoute,
+    // secureRoute,
     searchLimiter,
     getAllOnboardingForms
 );

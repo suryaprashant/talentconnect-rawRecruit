@@ -44,7 +44,6 @@ export const fetchMetricsForJob = async (jobId) => {
       jobType: "Referral",
       adminApprovalStatus: "Approved",
       "statusHistory.status": "Referred To Company",
-
     }),
 
     // Total interview scheduled
@@ -73,15 +72,15 @@ export const fetchMetricsForJob = async (jobId) => {
   const responseRate =
     totalApplicationsReceived > 0
       ? Math.round(
-        (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
-      ) / 100
+          (totalReferredToCompany / totalApplicationsReceived) * 100 * 100,
+        ) / 100
       : 0;
 
   const referralSuccessRate =
     totalReferredToCompany > 0
       ? Math.round(
-        (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
-      ) / 100
+          (totalAcceptedByCompany / totalReferredToCompany) * 100 * 100,
+        ) / 100
       : 0;
 
   return {
@@ -418,10 +417,7 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
       const date = new Date(endDate);
       date.setHours(0, 0, 0, 0);
 
-      return (
-        posting.visibleTo === "Company" &&
-        date >= today
-      );
+      return posting.visibleTo === "Company" && date >= today;
     });
 
     // Guest / no company context
@@ -1174,7 +1170,7 @@ export const getPoolCampusForCompany = async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     const filteredPostings = postings.filter((posting) => {
-      const endDate = posting.endDate || posting.proposedSchedule?.endDate ;
+      const endDate = posting.endDate || posting.proposedSchedule?.endDate;
 
       // No end date => considered active
       if (!endDate) {
@@ -1184,10 +1180,7 @@ export const getPoolCampusForCompany = async (req, res) => {
       const date = new Date(endDate);
       date.setHours(0, 0, 0, 0);
 
-      return (
-        posting.visibleTo === "Company" &&
-        date >= today
-      );
+      return posting.visibleTo === "Company" && date >= today;
     });
 
     // Guest view
@@ -1455,9 +1448,9 @@ export const getJobPostings = async (req, res) => {
 const norm = (v) =>
   v
     ? String(v)
-      .toLowerCase()
-      .replace(/[\s.\-_]/g, "")
-      .trim()
+        .toLowerCase()
+        .replace(/[\s.\-_]/g, "")
+        .trim()
     : "";
 
 // ─── Fetch weights from DB with fallback to hardcoded defaults ───────────────
@@ -1579,7 +1572,7 @@ const logConfig = (W, threshold) => {
   );
   console.log(
     `\x1b[33m║    TOTAL         : ${String(total + "%").padEnd(26)}\x1b[0m` +
-    `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`,
+      `${total !== 100 ? "\x1b[31m⚠ NOT 100!\x1b[0m" : "\x1b[32m✔\x1b[0m"}`,
   );
   console.log(
     "\x1b[33m╠══════════════════════════════════════════════╣\x1b[0m",
@@ -1650,8 +1643,8 @@ export const getInternshipPostings = async (req, res) => {
     const afterAppliedFilter =
       userId && appliedJobIds.length > 0
         ? filteredByBroadcast.filter(
-          (p) => !appliedJobIds.some((id) => id.equals(p._id)),
-        )
+            (p) => !appliedJobIds.some((id) => id.equals(p._id)),
+          )
         : filteredByBroadcast;
 
     // ── STEP 6: GUEST (not logged in) — return all, score 0 ──────────────
@@ -1701,8 +1694,6 @@ export const getInternshipPostings = async (req, res) => {
         job.companyPosted?.companyDetails?.companyName ||
         job.companyName ||
         "Company";
-
-
 
       // ── 1. JOB ROLES (W.jobRoles %) ─────────────────────────────────
       const sRoles = (student.jobRoles || []).map(norm);
@@ -1756,9 +1747,9 @@ export const getInternshipPostings = async (req, res) => {
         requiredCGPA > 0
           ? requiredCGPA
           : (() => {
-            const m = fullJobText.match(cgpaRegex);
-            return m ? parseFloat(m[1]) : 0;
-          })();
+              const m = fullJobText.match(cgpaRegex);
+              return m ? parseFloat(m[1]) : 0;
+            })();
 
       if (effectiveCGPA === 0) {
         breakdown.cgpa = W.cgpa;
@@ -1852,12 +1843,12 @@ export const getInternshipPostings = async (req, res) => {
       // ── TOTAL SCORE ──────────────────────────────────────────────────
       const totalScore = Math.min(
         breakdown.roles +
-        breakdown.skills +
-        breakdown.cgpa +
-        breakdown.batchYear +
-        breakdown.location +
-        breakdown.salary +
-        breakdown.tools,
+          breakdown.skills +
+          breakdown.cgpa +
+          breakdown.batchYear +
+          breakdown.location +
+          breakdown.salary +
+          breakdown.tools,
         100,
       );
 
@@ -1947,7 +1938,6 @@ export const getInternshipPostings = async (req, res) => {
           ...cleanJob,
           jobTitle: jobRoles, // or jobRoles?.[0] if you want only the first role
         };
-
       });
 
     return sendResponse(res, 200, {
@@ -2081,17 +2071,46 @@ export const getReferralJobs = async (req, res) => {
     console.log("Enter ...");
     if (!req.user) {
       console.log("Req.user :", req.user);
-      const publicData = await JobPostingTable.find({ jobType: "Referral", inactive: false })
-        .populate("candidatePosted", "currentCompany")
-        .lean();
+
+      const page = Math.max(parseInt(req.query.page) || 1, 1);
+      const limit = 6;
+      const skip = (page - 1) * limit;
+
+      const filter = {
+        jobType: "Referral",
+        inactive: false,
+        isAskForReferral: false,
+      };
+
+      const [publicData, total] = await Promise.all([
+        JobPostingTable.find(filter)
+          .populate("candidatePosted", "_id userId name email currentCompany")
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+
+        JobPostingTable.countDocuments(filter),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
 
       return res.status(200).json({
         success: true,
+
         data: publicData.map((job) => ({
           ...job,
           matchScore: 0,
           alumniCount: 0,
         })),
+
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNextPage: page < totalPages,
+        },
+
         isGuest: true,
         message: "Login to see all referrals from your college",
       });
