@@ -1,6 +1,6 @@
 import {
   getTotalJobPostedCount,
-  getAll,getJobDetailsService,
+  getAll, getJobDetailsService,
 } from "../../services/jobPostingService.js";
 import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
@@ -381,6 +381,43 @@ export const updateJobVisibilityThreshold = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const updateTrendingJobThreshold = async (req, res) => {
+  try {
+    const applicants = Number(req.body.applicants);
+    const daysCount = Number(req.body.daysCount);
+
+    if (
+      !Number.isInteger(applicants) ||
+      applicants < 0 ||
+      !Number.isInteger(daysCount) ||
+      daysCount < 0
+    ) {
+      return res.status(400).json({
+        error: "Applicants and daysCount must be 0 or greater",
+      });
+    }
+
+    await Auth.updateMany(
+      { userType: "admin" },
+      {
+        $set: {
+          trendingJobThreshold: {
+            applicants,
+            daysCount,
+          },
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: `Trending job threshold updated to ${applicants} applicants in the last ${daysCount} days`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
 
 export const getJobVisibilityThreshold = async (req, res) => {
   try {
@@ -390,7 +427,7 @@ export const getJobVisibilityThreshold = async (req, res) => {
       return res.status(404).json({ error: "Admin not found" });
     }
 
-    const threshold = admin.jobVisibilityThreshold ?? 0; 
+    const threshold = admin.jobVisibilityThreshold ?? 0;
 
     res.status(200).json({
       threshold,
@@ -400,16 +437,37 @@ export const getJobVisibilityThreshold = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getTrendingJobThreshold = async (req, res) => {
+  try {
+    const admin = await Auth.findOne({ userType: "admin" });
+
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const threshold = admin.trendingJobThreshold ?? {
+      applicants: 0,
+      daysCount: 1,
+    };
+
+    res.status(200).json({
+      threshold,
+      message: `Current trending job threshold is ${threshold.applicants} applicants in the last ${threshold.daysCount} days`,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 export const getJobDetails = async (req, res) => {
-  try{
+  try {
     const { jobId } = req.query;
-    const job=await getJobDetailsService(jobId);
+    const job = await getJobDetailsService(jobId);
     console.log(jobId);
     console.log(job);
     const applications = await getAllApplications(jobId);
     console.log(applications);
-    res.status(200).json({job,applications});
-  }catch{
+    res.status(200).json({ job, applications });
+  } catch {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

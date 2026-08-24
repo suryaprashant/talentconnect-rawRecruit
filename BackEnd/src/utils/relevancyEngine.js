@@ -216,18 +216,18 @@ export const norm = (v) => {
   if (Array.isArray(v)) return v.map((s) => norm(s));
   return v
     ? String(v)
-        .toLowerCase()
-        .replace(/[\s.\-_]/g, "")
-        .trim()
+      .toLowerCase()
+      .replace(/[\s.\-_]/g, "")
+      .trim()
     : "";
 };
 
 export const normStr = (v) =>
   v
     ? String(v)
-        .toLowerCase()
-        .replace(/[\s.\-_]/g, "")
-        .trim()
+      .toLowerCase()
+      .replace(/[\s.\-_]/g, "")
+      .trim()
     : "";
 
 export const calcExperienceYears = (experiences = []) => {
@@ -440,6 +440,32 @@ export const fetchThreshold = async () => {
   return { value: 0, adminEmail: "N/A", _source: "hardcoded-default" };
 };
 
+export const fetchTrendingThreshold = async () => {
+  try {
+    const adminDoc = await Auth.findOne({ userType: "admin" })
+      .select("trendingJobThreshold email")
+      .lean();
+    if (adminDoc) {
+      return {
+        value: adminDoc.trendingJobThreshold ?? {
+          applicants: 0,
+          daysCount: 1,
+        },
+        adminEmail: adminDoc.email || "unknown",
+        _source: "database",
+      };
+    }
+  } catch (err) {
+    console.error("[THRESHOLD] DB fetch failed, defaulting to 0:", err.message);
+  }
+  return {
+    value: {
+      applicants: 0,
+      daysCount: 1,
+    }, adminEmail: "N/A", _source: "hardcoded-default"
+  };
+};
+
 export const logConfig = (W, threshold, label = "RELEVANCY ENGINE") => {
   const total = Object.entries(W)
     .filter(([k]) => k !== "_source")
@@ -505,7 +531,7 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   if (weightTotal !== 100) {
     console.warn(
       `[WARN] Weight map for ${profileTag} sums to ${weightTotal}, not 100. ` +
-        `Scores will be proportionally off.`,
+      `Scores will be proportionally off.`,
     );
   }
 
@@ -551,7 +577,7 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   );
   console.log(
     `\n${C.bold}${C.cyan}----  ${label} #${index + 1}  [${profileTag}]  ` +
-      `------------------------------------${C.reset}`,
+    `------------------------------------${C.reset}`,
   );
   console.log(`  Title     : ${JSON.stringify(job.jobTitle)}`);
   console.log(`  Poster    : ${posterName}`);
@@ -561,12 +587,12 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`  Profile   : ${profileTag}  [weights: ${W._source ?? "?"}]`);
   console.log(
     `  Edu       : degree="${primaryEdu.degree}"  spec="${primaryEdu.specialization}"` +
-      `  cgpa=${primaryEdu.cgpa}  grad=${primaryEdu.yearOfGraduation}`,
+    `  cgpa=${primaryEdu.cgpa}  grad=${primaryEdu.yearOfGraduation}`,
   );
   console.log(
     `  Weights   : skills=${W.skills} stream=${W.stream} degree=${W.degree}` +
-      ` roles=${W.jobRoles} exp=${W.experience} cgpa=${W.cgpa} batch=${W.batchYear}` +
-      ` salary=${W.salary} location=${W.location}`,
+    ` roles=${W.jobRoles} exp=${W.experience} cgpa=${W.cgpa} batch=${W.batchYear}` +
+    ` salary=${W.salary} location=${W.location}`,
   );
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -639,8 +665,8 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
     gateMultiplier = 1.0;
     console.log(
       `  ${C.green}PASS: skill match ${skillMatchPct.toFixed(1)}%` +
-        (jobSkillsNorm.length === 0 ? " (no skills listed)" : " >= 50%") +
-        ` → normal scoring${C.reset}`,
+      (jobSkillsNorm.length === 0 ? " (no skills listed)" : " >= 50%") +
+      ` → normal scoring${C.reset}`,
     );
   }
 
@@ -980,9 +1006,9 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
       requiredCGPA > 0
         ? requiredCGPA
         : (() => {
-            const m = fullJobText.match(cgpaRegex);
-            return m ? parseFloat(m[1]) : 0;
-          })();
+          const m = fullJobText.match(cgpaRegex);
+          return m ? parseFloat(m[1]) : 0;
+        })();
 
     console.log(
       `  Student CGPA : ${sCGPA}  |  Required : ${effectiveCGPA || "none"}`,
@@ -1069,7 +1095,7 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   console.log(`\n${DIM.NOTICE}`);
   console.log(
     `  Student notice : "${studentNoticePeriodRaw}"  serving=${isServingNotice}` +
-      `  effectiveDays=${effectiveNoticeDays ?? "N/A"}`,
+    `  effectiveDays=${effectiveNoticeDays ?? "N/A"}`,
   );
   console.log(
     `  Job immediate  : ${jobRequiresImmediate}  jobMaxDays=${jobMaxNoticeDays ?? "not specified"}`,
@@ -1153,7 +1179,7 @@ export const scoreJob = (job, student, W, index, label = "Job") => {
   breakdown.noticePeriodDays = Math.round(rawNoticeDaysScore * gateMultiplier);
   console.log(
     `  NoticeDays : ${noticeDaysTier}  ` +
-      `${ss(breakdown.noticePeriodDays, W.noticePeriodDays ?? 0)}`,
+    `${ss(breakdown.noticePeriodDays, W.noticePeriodDays ?? 0)}`,
   );
 
   // ══════════════════════════════════════════════════════════════════════════

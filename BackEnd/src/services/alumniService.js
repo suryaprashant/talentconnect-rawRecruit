@@ -11,6 +11,7 @@ import { paginatedResponse } from "../utils/paginate.js";
 import { JobPostingTable} from "../models/jobPostingsModel.js"
 
 import {getCompanyFuse} from "./fuseIndexService.js"
+import Application from "../models/applicationModel.js";
 
 const escapeRegex = (value = "") => {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -635,3 +636,253 @@ export const getAlumniByCompanyForCandidate = async ({
   };
 };
 
+export const getAllAlumni = async(myProfile,userId)=>{
+  const collegeQuery =
+        buildCollegeAlumniQuery(
+          myProfile,
+          userId
+        );
+  
+      const companyQuery =
+        buildCompanyAlumniQuery(
+          myProfile,
+          userId
+        );
+  
+      let collegeAlumni = [];
+      let companyAlumni = [];
+  
+      if (collegeQuery) {
+        collegeAlumni =
+          await Onboarding.find(
+            collegeQuery
+          ).lean();
+      }
+  
+      if (companyQuery) {
+        companyAlumni =
+          await Onboarding.find(
+            companyQuery
+          ).lean();
+      }
+  
+      // =====================================================
+      // STEP 5: MERGE + REMOVE DUPLICATES
+      // =====================================================
+  
+      const mergedAlumni = [
+        ...collegeAlumni,
+        ...companyAlumni,
+      ];
+  
+      const uniqueAlumniMap = new Map();
+  
+      mergedAlumni.forEach((person) => {
+        const key =
+          person.userId?.toString();
+  
+        if (!uniqueAlumniMap.has(key)) {
+          uniqueAlumniMap.set(key, person);
+        }
+      });
+  
+      const uniqueAlumni = Array.from(
+        uniqueAlumniMap.values()
+      );
+      return uniqueAlumni;
+}
+
+export const getAlumniReferredService = async (myProfile, userId) => {
+  try {
+    // Get all alumni related to current user
+    const alumniList = await getAllAlumni(
+      myProfile,
+      userId
+    );
+
+    if (!alumniList.length) {
+      return [];
+    }
+
+    // Application.applicant contains Onboarding._id
+    const alumniIds = alumniList
+      .map((alumni) => alumni._id)
+      .filter(Boolean);
+
+    const referredStatuses = [
+      "Referred To Company",
+      "Shortlisted",
+      "Interview Scheduled",
+      "Offer Extended",
+      "Accepted",
+      "Rejected",
+      "Offer Accepted",
+      "Offer Rejected",
+      "Joined the Company",
+    ];
+
+    // Find applications belonging to alumni
+    const applications = await Application.find({
+      applicant: { $in: alumniIds },
+      currentStatus: {
+        $in: referredStatuses,
+      },
+    })
+      .populate("job")
+      .lean();
+
+    // Map using Onboarding._id
+    const alumniMap = new Map(
+      alumniList.map((alumni) => [
+        alumni._id.toString(),
+        alumni,
+      ])
+    );
+
+    const result = applications
+      .map((application) => {
+        const alumni = alumniMap.get(
+          application.applicant?.toString()
+        );
+
+        if (!alumni || !application.job) {
+          return null;
+        }
+
+        const job = application.job;
+
+        // =====================================================
+        // FIND COMMON COLLEGE
+        // =====================================================
+
+        let organization = null;
+
+        const myColleges = (myProfile.educations || [])
+          .map(
+            (edu) =>
+              edu.college_canonical_id ||
+              edu.college
+          )
+          .filter(Boolean);
+
+        const alumniColleges = (
+          alumni.educations || []
+        )
+          .map(
+            (edu) =>
+              edu.college_canonical_id ||
+              edu.college
+          )
+          .filter(Boolean);
+
+        const commonCollege = myColleges.find(
+          (college) =>
+            alumniColleges.includes(college)
+        );
+
+        if (commonCollege) {
+          organization =
+            myProfile.educations?.find(
+              (edu) =>
+                (edu.college_canonical_id ||
+                  edu.college) === commonCollege
+            )?.college_display ||
+            alumni.educations?.find(
+              (edu) =>
+                (edu.college_canonical_id ||
+                  edu.college) === commonCollege
+            )?.college_display ||
+            commonCollege;
+        }
+
+        // =====================================================
+        // IF NO COMMON COLLEGE, FIND COMMON COMPANY
+        // =====================================================
+
+        if (!organization) {
+          const myCompanies = [
+            myProfile.currentCompany_canonical_id ||
+              myProfile.currentCompany,
+
+            ...(myProfile.experiences || []).map(
+              (exp) =>
+                exp.company_canonical_id ||
+                exp.company
+            ),
+          ].filter(Boolean);
+
+          const alumniCompanies = [
+            alumni.currentCompany_canonical_id ||
+              alumni.currentCompany,
+
+            ...(alumni.experiences || []).map(
+              (exp) =>
+                exp.company_canonical_id ||
+                exp.company
+            ),
+          ].filter(Boolean);
+
+          const commonCompany = myCompanies.find(
+            (company) =>
+              alumniCompanies.includes(company)
+          );
+
+          if (commonCompany) {
+            organization =
+              alumni.currentCompany_display ||
+              alumni.currentCompany ||
+              alumni.experiences?.find(
+                (exp) =>
+                  (exp.company_canonical_id ||
+                    exp.company) === commonCompany
+              )?.company_display ||
+              commonCompany;
+          }
+        }
+
+        if (!organization) {
+          organization = "Alumni";
+        }
+
+        // =====================================================
+        // JOB ROLE
+        // =====================================================
+
+        const jobRole =
+          job.jobRoles?.length > 0
+            ? job.jobRoles.join(", ")
+            : job.jobTitle?.length > 0
+              ? job.jobTitle.join(", ")
+              : "a job";
+
+        // =====================================================
+        // COMPANY NAME
+        // =====================================================
+
+        const companyName =
+          job.companyName ||
+          "the company";
+
+        const alumniName =
+          alumni.name ||
+          "An alumnus";
+
+        return {
+          alumniId: alumni._id,
+          jobId: job._id,
+          currentStatus: application.currentStatus,
+          message: `${alumniName} (${organization}) got referred to ${jobRole} @${companyName}`,
+        };
+      })
+      .filter(Boolean);
+
+    return result;
+  } catch (error) {
+    console.error(
+      "Error fetching referred alumni:",
+      error
+    );
+
+    throw error;
+  }
+};

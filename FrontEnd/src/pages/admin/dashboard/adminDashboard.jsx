@@ -299,7 +299,7 @@ const RelevancyWeightsModal = ({ isOpen, onClose }) => {
           setFetched((prev) => ({ ...prev, [mode]: true }));
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setFetching(false));
   }, [isOpen, mode]);
 
@@ -1398,6 +1398,188 @@ const ThresholdModal = ({ isOpen, onClose }) => {
   );
 };
 
+const TrendingThresholdModal = ({ isOpen, onClose }) => {
+  const [values, setValues] = useState({ applicants: 0, daysCount: 1 });
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const getTrendingThreshold = async () => {
+      try {
+        setFetching(true);
+        setStatus(null);
+        const response = await axios.get(
+          `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/getTrendingThreshold`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          },
+        );
+        const threshold = response?.data?.threshold;
+        if (threshold) {
+          setValues({
+            applicants: Math.max(0, Number(threshold.applicants) || 0),
+            daysCount: Math.max(0, Number(threshold.daysCount) || 0),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to get trending threshold:", error);
+        setStatus("error");
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    getTrendingThreshold();
+  }, [isOpen]);
+
+  const handleChange = (field, value) => {
+    setValues((current) => ({
+      ...current,
+      [field]: value === "" ? "" : Math.max(0, Number(value) || 0),
+    }));
+    setStatus(null);
+  };
+
+  const handleSubmit = async () => {
+    const applicants = Number(values.applicants);
+    const daysCount = Number(values.daysCount);
+    if (!Number.isInteger(applicants) || !Number.isInteger(daysCount) || applicants < 0 || daysCount < 0) {
+      setStatus("error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setStatus(null);
+      await axios.patch(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/updateTrendingThreshold`,
+        { applicants, daysCount },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        },
+      );
+      setValues({ applicants, daysCount });
+      setStatus("success");
+    } catch (error) {
+      console.error("Failed to update trending threshold:", error);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOverlay = (event) => {
+    if (event.target === overlayRef.current) onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={overlayRef}
+      onClick={handleOverlay}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(107,114,128,0.5)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+        animation: "fadeIn .18s ease",
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "460px",
+          margin: "0 16px",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
+          animation: "slideUp .22s cubic-bezier(0.34,1.56,0.64,1)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            background: "linear-gradient(135deg, #0f766e 0%, #115e59 100%)",
+            padding: "24px 28px 20px",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ background: "rgba(255,255,255,0.2)", borderRadius: "10px", padding: "8px", display: "flex" }}>
+              <TrendingUp size={20} color="#fff" />
+            </div>
+            <div>
+              <h2 style={{ margin: 0, color: "#fff", fontSize: "17px", fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>
+                Trending Job Threshold
+              </h2>
+              <p style={{ margin: "3px 0 0", color: "#ccfbf1", fontSize: "12.5px", fontFamily: "sans-serif" }}>
+                Set when a job becomes trending
+              </p>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "8px", padding: "6px", cursor: "pointer", display: "flex" }}>
+            <X size={16} color="#fff" />
+          </button>
+        </div>
+
+        <div style={{ padding: "28px" }}>
+          {[['applicants', 'Applicants'], ['daysCount', 'Days count']].map(([field, label]) => (
+            <div key={field} style={{ marginBottom: "18px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "#334155", marginBottom: "8px", fontFamily: "'DM Sans', sans-serif" }}>
+                {label}
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={values[field]}
+                onChange={(event) => handleChange(field, event.target.value)}
+                disabled={fetching || loading}
+                style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "2px solid #0f766e", borderRadius: "10px", outline: "none", fontSize: "16px", fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#115e59" }}
+              />
+            </div>
+          ))}
+
+          <p style={{ margin: "0 0 20px", color: "#64748b", fontSize: "13px", fontFamily: "sans-serif" }}>
+            Jobs with more than {values.applicants || 0} applicants in the last {values.daysCount || 0} days will be marked trending.
+          </p>
+
+          {status === "success" && <div style={{ color: "#15803d", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", fontSize: "13.5px" }}>Trending threshold updated successfully.</div>}
+          {status === "error" && <div style={{ color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", fontSize: "13.5px" }}>Failed to update trending threshold. Use whole numbers 0 or greater.</div>}
+
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={onClose} disabled={loading} style={{ flex: 1, padding: "12px", border: "1.5px solid #e2e8f0", borderRadius: "10px", background: "#fff", fontSize: "14px", fontWeight: 600, color: "#475569", cursor: loading ? "not-allowed" : "pointer" }}>
+              Cancel
+            </button>
+            <button onClick={handleSubmit} disabled={loading || fetching} style={{ flex: 2, padding: "12px", border: "none", borderRadius: "10px", background: loading || fetching ? "#d1d5db" : "linear-gradient(135deg, #0f766e, #115e59)", fontSize: "14px", fontWeight: 700, color: "#fff", cursor: loading || fetching ? "not-allowed" : "pointer" }}>
+              {loading ? "Updating..." : "Apply Threshold"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AddCompanyCareerModal = ({ isOpen, onClose }) => {
   const [companyName, setCompanyName] = useState("");
   const [careerPageUrl, setCareerPageUrl] = useState("");
@@ -1710,6 +1892,7 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [thresholdOpen, setThresholdOpen] = useState(false);
+  const [trendingThresholdOpen, setTrendingThresholdOpen] = useState(false);
   const [weightsOpen, setWeightsOpen] = useState(false);
   const [addCompanyOpen, setAddCompanyOpen] = useState(false);
 
@@ -1873,7 +2056,7 @@ const AdminDashboard = () => {
               Recent Activity
             </h3>
             {dashboardData.recentActivity &&
-            dashboardData.recentActivity.length > 0 ? (
+              dashboardData.recentActivity.length > 0 ? (
               <div className="space-y-3">
                 {dashboardData.recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-center space-x-3">
@@ -1986,6 +2169,26 @@ const AdminDashboard = () => {
               Update Threshold
             </button>
           </div>
+          <div
+            onClick={() => setTrendingThresholdOpen(true)}
+            className="bg-white shadow rounded-lg p-6 cursor-pointer border-2 border-transparent hover:border-teal-200 hover:shadow-md transition-all duration-200"
+            style={{ position: "relative", overflow: "hidden" }}
+          >
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "linear-gradient(90deg, #0f766e, #14b8a6)" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+              <div className="p-3 rounded-md bg-teal-600" style={{ display: "flex", flexShrink: 0 }}>
+                <TrendingUp size={18} color="#fff" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">Trending Jobs</h3>
+            </div>
+            <p className="text-gray-500 mb-4" style={{ fontSize: "14px" }}>
+              Set the applicant activity needed for a job to trend.
+            </p>
+            <button className="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 font-medium text-sm" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              <SlidersHorizontal size={14} />
+              Update Threshold
+            </button>
+          </div>
         </div>
 
         {/* Relevancy Weights banner */}
@@ -2094,6 +2297,10 @@ const AdminDashboard = () => {
       <ThresholdModal
         isOpen={thresholdOpen}
         onClose={() => setThresholdOpen(false)}
+      />
+      <TrendingThresholdModal
+        isOpen={trendingThresholdOpen}
+        onClose={() => setTrendingThresholdOpen(false)}
       />
       <RelevancyWeightsModal
         isOpen={weightsOpen}
