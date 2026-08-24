@@ -10,7 +10,9 @@ import {
   updateReferralJobApprovalStatus,
   getAcceptedReferralJobsForAdmin,
   updateJobVisibilityThreshold,
+  updateTrendingJobThreshold,
   getJobVisibilityThreshold,
+  getTrendingJobThreshold
 } from "../../controllers/admin/jobDriveManagementController.js";
 import {
   getReferralApplicationsForAdmin,
@@ -74,6 +76,8 @@ router.get(
 router.patch("/updateThreshold", adminLimiter, updateJobVisibilityThreshold);
 
 router.get("/getThreshold", adminLimiter, getJobVisibilityThreshold);
+router.get("/getTrendingThreshold", adminLimiter, getTrendingJobThreshold);
+router.patch("/updateTrendingThreshold", adminLimiter, updateTrendingJobThreshold);
 
 // GET accepted referral jobs - uses searchLimiter (60 per minute)
 router.get(

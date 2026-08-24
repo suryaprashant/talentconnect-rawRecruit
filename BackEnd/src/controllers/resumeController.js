@@ -375,4 +375,3 @@ export const viewResumeAsPdf = async (req, res) => {
     res.status(500).json({ error: "Failed to serve resume as PDF" });
   }
 };
-

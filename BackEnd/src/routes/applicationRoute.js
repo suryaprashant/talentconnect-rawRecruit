@@ -43,6 +43,7 @@ import {
   profileUpdateLimiter,
   adminLimiter,
 } from "../middlewares/ratelimiter/index.js";
+import { alumniGotReferred } from "../controllers/fomoController.js";
 
 const router = express.Router();
 
@@ -336,6 +337,13 @@ router.get(
   secureRoute,
   searchLimiter,
   getApplicationDetailsById
+);
+
+router.get(
+  '/alumni-referred',
+  secureRoute,
+  searchLimiter,
+  alumniGotReferred
 );
 
 export default router;

@@ -1,4 +1,5 @@
 import express from "express";
+import { alumniPosted , trendingjobs} from "../controllers/fomoController.js";
 
 // import { fetchOpportunitiesForCollegeStudent, findRelevantJoblistingOpportunity, findRelevantOpportunityById } from "../controllers/relevantJobsController.js";
 import {
@@ -62,3 +63,15 @@ router.get(
 // //router.get('/jobDetails/referral/:jobId', findReferalOpportunityById);
 
 export default router;
+
+router.get(
+    '/alumni-posted',
+    verifyUser,
+    searchLimiter,
+    alumniPosted
+);
+router.get(
+    '/trending',
+    searchLimiter,
+    trendingjobs
+);
