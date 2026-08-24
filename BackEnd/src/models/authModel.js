@@ -73,7 +73,17 @@ const AuthSchema = new mongoose.Schema({
     default: 0,  // 0 = show all jobs
     min: 0,
     max: 100
-  }
+  },
+  trendingJobThreshold: {
+    applicants: {
+      type: Number,
+      default: 0,
+    },
+    daysCount: {
+      type: Number,
+      default: 1,
+    },
+},
 
 }, { timestamps: true });
 

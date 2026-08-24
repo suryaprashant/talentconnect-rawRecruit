@@ -148,6 +148,7 @@ const jobPostingSchema = new mongoose.Schema(
     numberOfOpenings: { type: Number },
     numberOfStudent: [{ type: String }],
     noOfplacedStudents: { type: String },
+    applicationCount : {type:Number ,default: 0},
     contactPerson: {
       name: { type: String },
       designation: { type: String },

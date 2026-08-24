@@ -535,8 +535,8 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
 
         recipientAuthId = collegeOnboarding?.userId || null;
       }
-      console.log("entering send notification2...",recipientAuthId);
-      console.log("entering send notification3...",response.data.currentStatus);
+      console.log("entering send notification2...", recipientAuthId);
+      console.log("entering send notification3...", response.data.currentStatus);
       if (recipientAuthId) {
         notifyOnApplicationStatusChange({
           recipientId: recipientAuthId,
@@ -557,13 +557,12 @@ export const updateReferralCandidateStatus = async (req, res, next) => {
     next(error);
   }
 };
-export async function getReferralAsked(req,res)
-{
-  try{
+export async function getReferralAsked(req, res) {
+  try {
     console.log(req.query.referralRequestId);
-    const resp=await getReferralAskedService( {referralRequestId: req.query.referralRequestId});
+    const resp = await getReferralAskedService({ referralRequestId: req.query.referralRequestId });
     res.status(200).json(resp);
-  }catch{
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -798,6 +797,11 @@ export async function createOffcampusApplication(req, res) {
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
+
+    await JobPostingTable.findByIdAndUpdate(
+      jobId,
+      { $inc: { applicationCount: 1 } }
+    );
     // NEW: Trigger score + ranking calculation (debounced, non-blocking)
     scheduleScoreUpdate(userId).catch((err) => {
       console.error("❌ Failed to schedule score update:", err);
@@ -854,6 +858,11 @@ export async function createJobListingApplication(req, res) {
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
+    await JobPostingTable.findByIdAndUpdate(
+      jobId,
+      { $inc: { applicationCount: 1 } }
+    );
+
     res.status(201).json(application);
   } catch (error) {
     console.log("Error: ", error);
@@ -909,6 +918,11 @@ export async function createIntershipApplication(req, res) {
 
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
+
+    await JobPostingTable.findByIdAndUpdate(
+      internshipId,
+      { $inc: { applicationCount: 1 } }
+    );
 
     // NEW: Trigger score + ranking calculation (debounced, non-blocking)
     scheduleScoreUpdate(userId).catch((err) => {
@@ -983,6 +997,10 @@ export async function createReferralApplication(req, res) {
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
     }
+    await JobPostingTable.findByIdAndUpdate(
+      referralId,
+      { $inc: { applicationCount: 1 } }
+    );
 
     scheduleScoreUpdate(userId).catch((err) => {
       console.error("❌ Failed to schedule score update:", err);
@@ -1407,7 +1425,7 @@ export async function getCollegeApplicationsByJob(req, res) {
       targetStatus,
       isVisited,
     );
-    
+
     // to be implement -- sorting feature like ATS
     console.log(response);
 
@@ -2293,7 +2311,7 @@ export const updateApplicationStatus = async (req, res) => {
         .json({ success: false, message: "Application not found" });
     }
 
-    
+
     application.currentStatus = status;
     application.statusHistory.push({
       status: status,
