@@ -72,7 +72,6 @@ router.get(
 );
 router.get(
     '/trending',
-    verifyUser,
     searchLimiter,
     trendingjobs
 );

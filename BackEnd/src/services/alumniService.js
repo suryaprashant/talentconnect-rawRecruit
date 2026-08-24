@@ -868,7 +868,7 @@ export const getAlumniReferredService = async (myProfile, userId) => {
           "An alumnus";
 
         return {
-          alumniId: alumni._id,
+          alumniId: alumni.userId,
           jobId: job._id,
           currentStatus: application.currentStatus,
           message: `${alumniName} (${organization}) got referred to ${jobRole} @${companyName}`,

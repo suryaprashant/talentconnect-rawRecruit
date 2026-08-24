@@ -1,5 +1,8 @@
 import Onboarding from "../models/studentonboardingModel.js";
-import { getAllAlumni , getAlumniReferredService} from "../services/alumniService.js";
+import {
+  getAllAlumni,
+  getAlumniReferredService,
+} from "../services/alumniService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import { fetchTrendingThreshold } from "../utils/relevancyEngine.js";
 import Application from "../models/applicationModel.js";
@@ -21,10 +24,7 @@ export const alumniPosted = async (req, res) => {
     }
 
     // Get all alumni related to the current user
-    const alumniList = await getAllAlumni(
-      myProfile,
-      userId
-    );
+    const alumniList = await getAllAlumni(myProfile, userId);
 
     if (!alumniList.length) {
       return res.status(200).json({
@@ -45,22 +45,16 @@ export const alumniPosted = async (req, res) => {
 
     // Map alumni by their Auth userId
     const alumniMap = new Map(
-      alumniList.map((alumni) => [
-        alumni.userId.toString(),
-        alumni,
-      ])
+      alumniList.map((alumni) => [alumni.userId.toString(), alumni]),
     );
 
     const result = jobs
       .map((job) => {
-        const alumni = alumniMap.get(
-          job.postedByUser?.toString()
-        );
+        const alumni = alumniMap.get(job.postedByUser?.toString());
 
         if (!alumni) return null;
 
-        const alumniName =
-          alumni.name || "An alumnus";
+        const alumniName = alumni.name || "An alumnus";
 
         // =====================================================
         // FIND HOW THIS PERSON IS AN ALUMNI
@@ -73,26 +67,15 @@ export const alumniPosted = async (req, res) => {
         // -----------------------------------------------------
 
         const myColleges = (myProfile.educations || [])
-          .map(
-            (edu) =>
-              edu.college_canonical_id ||
-              edu.college
-          )
+          .map((edu) => edu.college_canonical_id || edu.college)
           .filter(Boolean);
 
-        const alumniColleges = (
-          alumni.educations || []
-        )
-          .map(
-            (edu) =>
-              edu.college_canonical_id ||
-              edu.college
-          )
+        const alumniColleges = (alumni.educations || [])
+          .map((edu) => edu.college_canonical_id || edu.college)
           .filter(Boolean);
 
-        const commonCollege = myColleges.find(
-          (college) =>
-            alumniColleges.includes(college)
+        const commonCollege = myColleges.find((college) =>
+          alumniColleges.includes(college),
         );
 
         if (commonCollege) {
@@ -100,13 +83,11 @@ export const alumniPosted = async (req, res) => {
           organization =
             myProfile.educations?.find(
               (edu) =>
-                (edu.college_canonical_id ||
-                  edu.college) === commonCollege
+                (edu.college_canonical_id || edu.college) === commonCollege,
             )?.college_display ||
             alumni.educations?.find(
               (edu) =>
-                (edu.college_canonical_id ||
-                  edu.college) === commonCollege
+                (edu.college_canonical_id || edu.college) === commonCollege,
             )?.college_display ||
             commonCollege;
         }
@@ -117,30 +98,23 @@ export const alumniPosted = async (req, res) => {
 
         if (!organization) {
           const myCompanies = [
-            myProfile.currentCompany_canonical_id ||
-              myProfile.currentCompany,
+            myProfile.currentCompany_canonical_id || myProfile.currentCompany,
 
             ...(myProfile.experiences || []).map(
-              (exp) =>
-                exp.company_canonical_id ||
-                exp.company
+              (exp) => exp.company_canonical_id || exp.company,
             ),
           ].filter(Boolean);
 
           const alumniCompanies = [
-            alumni.currentCompany_canonical_id ||
-              alumni.currentCompany,
+            alumni.currentCompany_canonical_id || alumni.currentCompany,
 
             ...(alumni.experiences || []).map(
-              (exp) =>
-                exp.company_canonical_id ||
-                exp.company
+              (exp) => exp.company_canonical_id || exp.company,
             ),
           ].filter(Boolean);
 
-          const commonCompany = myCompanies.find(
-            (company) =>
-              alumniCompanies.includes(company)
+          const commonCompany = myCompanies.find((company) =>
+            alumniCompanies.includes(company),
           );
 
           if (commonCompany) {
@@ -149,8 +123,7 @@ export const alumniPosted = async (req, res) => {
               alumni.currentCompany ||
               alumni.experiences?.find(
                 (exp) =>
-                  (exp.company_canonical_id ||
-                    exp.company) === commonCompany
+                  (exp.company_canonical_id || exp.company) === commonCompany,
               )?.company_display ||
               commonCompany;
           }
@@ -185,10 +158,7 @@ export const alumniPosted = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error(
-      "Error fetching alumni posted jobs:",
-      error
-    );
+    console.error("Error fetching alumni posted jobs:", error);
 
     return res.status(500).json({
       success: false,
@@ -213,20 +183,14 @@ export const alumniGotReferred = async (req, res) => {
       });
     }
 
-    const data = await getAlumniReferredService(
-      myProfile,
-      userId
-    );
+    const data = await getAlumniReferredService(myProfile, userId);
 
     return res.status(200).json({
       success: true,
       data,
     });
   } catch (error) {
-    console.error(
-      "alumniReferred controller error:",
-      error
-    );
+    console.error("alumniReferred controller error:", error);
 
     return res.status(500).json({
       success: false,
@@ -260,7 +224,10 @@ export const trendingjobs = async (req, res) => {
 
     const trendingJobs = await Application.aggregate([
       {
-        $match: matchStage,
+        $match: {
+          ...matchStage,
+          isAskForReferral: { $ne: true },
+        },
       },
 
       {
@@ -289,6 +256,13 @@ export const trendingjobs = async (req, res) => {
         $unwind: "$job",
       },
 
+      // Exclude off-campus jobs
+      {
+        $match: {
+          "job.jobType": { $ne: "off-campus" },
+        },
+      },
+
       {
         $project: {
           _id: 0,
@@ -303,7 +277,6 @@ export const trendingjobs = async (req, res) => {
       success: true,
       trendingJobs,
     });
-
   } catch (error) {
     console.error("Error fetching trending jobs:", error);
 
