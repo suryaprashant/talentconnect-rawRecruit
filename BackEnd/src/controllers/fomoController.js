@@ -41,6 +41,7 @@ export const alumniPosted = async (req, res) => {
     // Get all jobs posted by these alumni
     const jobs = await JobPostingTable.find({
       postedByUser: { $in: alumniUserIds },
+       approvalStatus: "Approved",
     }).lean();
 
     // Map alumni by their Auth userId
