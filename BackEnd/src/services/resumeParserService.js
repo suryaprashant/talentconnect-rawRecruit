@@ -400,7 +400,7 @@ export const parseResumeWithPython = async (fileBuffer, fileName) => {
     formData.append("file", fileBuffer, fileName);
 
     const response = await axios.post(
-      "http://31.97.232.215:10000/api/resume/parse",
+      "http://31.97.232.215:8001/api/resume/parse",
       formData,
       {
         headers: {
