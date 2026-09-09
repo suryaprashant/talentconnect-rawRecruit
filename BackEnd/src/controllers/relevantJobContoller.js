@@ -217,6 +217,15 @@ export const getRelevantOffCampusJobs = async (req, res) => {
     const studentExpYears =
       parseYearsFromString(student.totalYearsOfExperience) ||
       calcExperienceYears(student.experiences || []);
+    
+    const studentSkills = (student.skills || []).map(norm);
+const sRoles = (student.jobRoles || []).map(norm);
+const studentDegree = norm(student.degree);
+const studentStream = norm(student.specialization);
+const sLocs = (student.locations || []).map(norm);
+const sCGPA = parseFloat(student.cgpa) || 0;
+const sYear = norm(student.yearOfGraduation);
+const sExp = Number(student.expectedSalaryAmount) || 0;
 
     // ── STEP 5: SCORE every job (broadcast filter applied AFTER scoring) ──
     const scoredJobs = jobs.map((job) => {
@@ -236,7 +245,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
         job.companyPosted?.companyDetails?.companyName || "Company";
 
       // ── 1. SKILLS (W.skills %) ───────────────────────────────────────
-      const studentSkills = (student.skills || []).map(norm);
+      // const studentSkills = (student.skills || []).map(norm);
 
       if (jobReqSkills.length === 0) {
         breakdown.skills = W.skills;
@@ -252,7 +261,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 2. JOB ROLES (W.jobRoles %) ─────────────────────────────────
-      const sRoles = (student.jobRoles || []).map(norm);
+      // const sRoles = (student.jobRoles || []).map(norm);
       const jRoles = (job.jobRoles || job.jobTitle).map(norm);
 
       if (jRoles.length === 0) {
@@ -305,7 +314,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 4. DEGREE (W.degree %) ──────────────────────────────────────
-      const studentDegree = norm(student.degree);
+      // const studentDegree = norm(student.degree);
       const jobDegrees = (job.degree || []).map(norm);
       const degreeKeywords = [
         "btech","be","bsc","mtech","mca","mba","bca","bcom","ba","bba",
@@ -343,7 +352,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 5. STREAM (W.stream %) ──────────────────────────────────────
-      const studentStream = norm(student.specialization);
+      // const studentStream = norm(student.specialization);
       const jobStreams = (job.studentStreams || []).map(norm);
 
       const relatedGroups = [
@@ -374,7 +383,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 6. CGPA (W.cgpa %) ──────────────────────────────────────────
-      const sCGPA = parseFloat(student.cgpa) || 0;
+      // const sCGPA = parseFloat(student.cgpa) || 0;
       const requiredCGPA = parseFloat(job.cgpa) || 0;
       const cgpaRegex =
         /(?:cgpa|cut-off|cutoff|minimum|min)\s*[:>=]*\s*([0-9]\.[0-9]|[0-9]{2})/i;
@@ -398,7 +407,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 7. BATCH YEAR (W.batchYear %) ───────────────────────────────
-      const sYear = norm(student.yearOfGraduation);
+      // const sYear = norm(student.yearOfGraduation);
       const yearRegex = /\b(202[0-9]|2030)\b/;
 
       if (!yearRegex.test(fullJobText)) {
@@ -412,7 +421,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 8. LOCATION (W.location %) ──────────────────────────────────
-      const sLocs = (student.locations || []).map(norm);
+      // const sLocs = (student.locations || []).map(norm);
       const jLocs = (job.workLocation || []).map(norm);
       const isRemote = (job.workMode || []).some((m) =>
         norm(m).includes("remote")
@@ -440,7 +449,7 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       }
 
       // ── 9. SALARY (W.salary %) ──────────────────────────────────────
-      const sExp = Number(student.expectedSalaryAmount) || 0;
+      // const sExp = Number(student.expectedSalaryAmount) || 0;
       const jSal = Number(job.packageDetails?.totalCTC) || 0;
 
       if (sExp === 0 || jSal === 0) {
@@ -516,28 +525,38 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       };
     });
 
+const eligibleJobs = scoredJobs
+  .filter((j) => j.matchScore >= visibilityThreshold)
+  .filter((j) => j._broadcastAllowed);
 
+const companyNames = [
+  ...new Set(
+    eligibleJobs
+      .map((job) => job.companyName)
+      .filter(Boolean)
+  ),
+];
     // ── STEP 5.5: Enrich scored jobs with alumni count ────────────────────
-const enrichedJobs = await Promise.all(
-  scoredJobs.map(async (job) => {
-    let alumniCount = 0;
+// const enrichedJobs = await Promise.all(
+//   scoredJobs.map(async (job) => {
+//     let alumniCount = 0;
 
-    if (student?.college && job.companyName) {
-      try {
-        alumniCount = await Onboarding.countDocuments({
-          college: student.college,
-          userId: { $ne: userId },
-          profileType: "professional",
-          currentCompany: { $regex: new RegExp(`^${job.companyName}$`, "i") },
-        });
-      } catch (err) {
-        console.error(`[ALUMNI] Failed to count for ${job.companyName}:`, err.message);
-      }
-    }
+//     if (student?.college && job.companyName) {
+//       try {
+//         alumniCount = await Onboarding.countDocuments({
+//           college: student.college,
+//           userId: { $ne: userId },
+//           profileType: "professional",
+//           currentCompany: { $regex: new RegExp(`^${job.companyName}$`, "i") },
+//         });
+//       } catch (err) {
+//         console.error(`[ALUMNI] Failed to count for ${job.companyName}:`, err.message);
+//       }
+//     }
 
-    return { ...job, alumniCount };
-  })
-);
+//     return { ...job, alumniCount };
+//   })
+// );
     // ── STEP 6: Apply threshold AND broadcast filter ───────────────────────
     // const finalData = scoredJobs
     //   .filter((j) => j.matchScore >= visibilityThreshold) // threshold gate
@@ -552,11 +571,60 @@ const enrichedJobs = await Promise.all(
     // const broadcastBlocked = scoredJobs.filter(
     //   (j) => j.matchScore >= visibilityThreshold && !j._broadcastAllowed
     // ).length;
-    
+    let alumniCounts = [];
+
+if (student?.college && companyNames.length > 0) {
+  try {
+    alumniCounts = await Onboarding.aggregate([
+      {
+        $match: {
+          college: student.college,
+          userId: { $ne: userId },
+          profileType: "professional",
+          currentCompany: {
+            $in: companyNames,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $toLower: "$currentCompany",
+          },
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+  } catch (err) {
+    console.error(
+      "[ALUMNI] Failed to fetch alumni counts:",
+      err.message
+    );
+  }
+}
+
+// ── Convert counts into a Map ────────────────────────────────────────
+
+const alumniMap = new Map(
+  alumniCounts.map((item) => [
+    item._id,
+    item.count,
+  ])
+);
+
+// ── Enrich jobs in memory ────────────────────────────────────────────
+
+const enrichedJobs = eligibleJobs.map((job) => ({
+  ...job,
+  alumniCount:
+    alumniMap.get(
+      job.companyName.toLowerCase()
+    ) || 0,
+}));
 // ── STEP 6: Apply threshold AND broadcast filter ───────────────────────
-const finalData = enrichedJobs                               // ← changed
-  .filter((j) => j.matchScore >= visibilityThreshold)
-  .filter((j) => j._broadcastAllowed)
+const finalData = enrichedJobs
   .sort((a, b) => b.matchScore - a.matchScore)
   .map(({ _broadcastAllowed, ...job }) => job);
 
