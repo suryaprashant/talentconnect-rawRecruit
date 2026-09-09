@@ -633,7 +633,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
     // console.log("postings : ",postings);
 
     // Filter out inactive jobs
-    postings = postings.filter((posting) => posting.inactive !== true);
+    //postings = postings.filter((posting) => posting.inactive !== true); 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Compare only the date
 
@@ -908,7 +908,7 @@ export const getPoolCampusForCollege = async (req, res) => {
 
     // 2. Fetch all Pool-campus postings
     let postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
-    postings = postings.filter((posting) => posting.inactive !== true);
+    //postings = postings.filter((posting) => posting.inactive !== true); 
 
     // 3. Apply Visibility and Location Filter
     const filteredByLocation = postings.filter((posting) => {
@@ -1621,7 +1621,7 @@ export const getInternshipPostings = async (req, res) => {
 
     // ── STEP 3: Fetch base internship postings ────────────────────────────
     let postings = await getJobPostingsByJobTypeService("Internship", userId);
-    postings = postings.filter((posting) => posting.inactive !== true);
+ //postings = postings.filter((posting) => posting.inactive !== true);    
 
     // ── STEP 4: Strict visibility + broadcast filter (preserved) ─────────
     const filteredByBroadcast = postings.filter((posting) => {
