@@ -136,11 +136,22 @@ export const getJobPostingsByJobTypeService = async (
   studentProfile = null,
 ) => {
   try {
-    const postings = await JobPostingTable.find({ jobType })
+    // const postings = await JobPostingTable.find({ jobType })
+    //   .populate({
+    //     path: "companyPosted",
+    //     select:
+    //       "companyDetails profileImage profileImageUrl name hiringPreferences", // companyDetails is already in companyPosted
+    //   })
+    //   .lean();
+
+    const postings = await JobPostingTable.find({
+      jobType,
+      inactive: { $ne: true },
+    })
       .populate({
         path: "companyPosted",
         select:
-          "companyDetails profileImage profileImageUrl name hiringPreferences", // companyDetails is already in companyPosted
+          "companyDetails profileImage profileImageUrl name hiringPreferences",
       })
       .lean();
 
@@ -464,7 +475,7 @@ export const getReferralJobsCursorService = async (
   const query = {
     jobType: "Referral",
     approvalStatus: "Approved",
-    inactive : false,
+    inactive: false,
     isAskForReferral: { $ne: true },
 
     candidatePosted: {
@@ -511,7 +522,7 @@ export const getReferralJobsCursorService = async (
       scoreJob(job, student, W, i, "Referral Job"),
     );
 
-    console.log("scoreCard",scoredJobs);
+    console.log("scoreCard", scoredJobs);
 
     const passingJobs = scoredJobs.filter(
       (job) => job.matchScore >= visibilityThreshold,
@@ -869,14 +880,17 @@ export const getJobPostedByCompanyService = async (
       response = await JobPostingTable.find({
         collegePosted: Id,
         jobType: jobType,
-      }).populate({
-        path: "collegePosted",
-        select: "collegeUniversityDetails.collegeName"
-      }).lean();
+      })
+        .populate({
+          path: "collegePosted",
+          select: "collegeUniversityDetails.collegeName",
+        })
+        .lean();
     //  console.log(response);
-    response = response.map(job => ({
+    response = response.map((job) => ({
       ...job,
-      collegeName: job.collegePosted?.collegeUniversityDetails?.collegeName || "",
+      collegeName:
+        job.collegePosted?.collegeUniversityDetails?.collegeName || "",
     }));
     return { success: true, response: response };
   } catch (error) {
@@ -1031,10 +1045,7 @@ export const getJobDetailsService = async (jobId) => {
             $cond: [
               // COMPANY
               {
-                $ne: [
-                  { $ifNull: ["$companyPosted", null] },
-                  null,
-                ],
+                $ne: [{ $ifNull: ["$companyPosted", null] }, null],
               },
               {
                 name: {
@@ -1045,10 +1056,7 @@ export const getJobDetailsService = async (jobId) => {
                 },
                 type: "company",
                 userId: {
-                  $arrayElemAt: [
-                    "$companyPoster.userId",
-                    0,
-                  ],
+                  $arrayElemAt: ["$companyPoster.userId", 0],
                 },
               },
 
@@ -1056,10 +1064,7 @@ export const getJobDetailsService = async (jobId) => {
                 $cond: [
                   // COLLEGE
                   {
-                    $ne: [
-                      { $ifNull: ["$collegePosted", null] },
-                      null,
-                    ],
+                    $ne: [{ $ifNull: ["$collegePosted", null] }, null],
                   },
                   {
                     name: {
@@ -1070,27 +1075,18 @@ export const getJobDetailsService = async (jobId) => {
                     },
                     type: "college",
                     userId: {
-                      $arrayElemAt: [
-                        "$collegePoster.userId",
-                        0,
-                      ],
+                      $arrayElemAt: ["$collegePoster.userId", 0],
                     },
                   },
 
                   // PROFESSIONAL / CANDIDATE
                   {
                     name: {
-                      $arrayElemAt: [
-                        "$candidatePoster.name",
-                        0,
-                      ],
+                      $arrayElemAt: ["$candidatePoster.name", 0],
                     },
                     type: "professional",
                     userId: {
-                      $arrayElemAt: [
-                        "$candidatePoster.userId",
-                        0,
-                      ],
+                      $arrayElemAt: ["$candidatePoster.userId", 0],
                     },
                   },
                 ],
@@ -1111,7 +1107,6 @@ export const getJobDetailsService = async (jobId) => {
     ]);
 
     return jobs[0] || null;
-
   } catch (error) {
     console.log("Error fetching job details:", error);
     throw new Error("Failed to fetch job details");
