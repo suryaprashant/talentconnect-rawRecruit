@@ -26,6 +26,124 @@ const sendResponse = (res, statusCode, data) =>
 const sendError = (res, statusCode, message) =>
   res.status(statusCode).json({ message });
 
+export const fetchMetricsForJobs = async (jobIds) => {
+  if (!jobIds.length) {
+    return new Map();
+  }
+
+  const results = await Application.aggregate([
+    {
+      $match: {
+        job: { $in: jobIds },
+        jobType: "Referral",
+        adminApprovalStatus: "Approved",
+      },
+    },
+    {
+      $group: {
+        _id: "$job",
+
+        totalApplicationsReceived: {
+          $sum: 1,
+        },
+
+        totalReferredToCompany: {
+          $sum: {
+            $cond: [
+              {
+                $in: [
+                  "Referred To Company",
+                  "$statusHistory.status",
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+
+        totalInterviewScheduled: {
+          $sum: {
+            $cond: [
+              {
+                $in: [
+                  "Interview Scheduled",
+                  "$statusHistory.status",
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+
+        totalAcceptedByCompany: {
+          $sum: {
+            $cond: [
+              {
+                $in: [
+                  "$currentStatus",
+                  [
+                    "Offer Extended",
+                    "Accepted",
+                    "Offer Accepted",
+                    "Joined the Company",
+                  ],
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+      },
+    },
+  ]);
+
+  const metricsMap = new Map();
+
+  for (const result of results) {
+    const responseRate =
+      result.totalApplicationsReceived > 0
+        ? Math.round(
+            (result.totalReferredToCompany /
+              result.totalApplicationsReceived) *
+              100 *
+              100,
+          ) / 100
+        : 0;
+
+    const referralSuccessRate =
+      result.totalReferredToCompany > 0
+        ? Math.round(
+            (result.totalAcceptedByCompany /
+              result.totalReferredToCompany) *
+              100 *
+              100,
+          ) / 100
+        : 0;
+
+    metricsMap.set(String(result._id), {
+      totalApplicationsReceived:
+        result.totalApplicationsReceived,
+
+      totalReferredToCompany:
+        result.totalReferredToCompany,
+
+      totalInterviewScheduled:
+        result.totalInterviewScheduled,
+
+      totalAcceptedByCompany:
+        result.totalAcceptedByCompany,
+
+      responseRate,
+      referralSuccessRate,
+    });
+  }
+
+  return metricsMap;
+};
+
 export const fetchMetricsForJob = async (jobId) => {
   const [
     totalApplicationsReceived,
@@ -166,12 +284,34 @@ export const getProfessionalReferrals = async (req, res) => {
       JobPostingTable.countDocuments(query),
     ]);
 
-    const referralsWithMetrics = await Promise.all(
-      referrals.map(async (job) => {
-        const metrics = await fetchMetricsForJob(job._id);
-        return { ...job, metrics };
-      }),
-    );
+    // const referralsWithMetrics = await Promise.all(
+    //   referrals.map(async (job) => {
+    //     const metrics = await fetchMetricsForJob(job._id);
+    //     return { ...job, metrics };
+    //   }),
+    // );
+    const jobIds = referrals.map((job) => job._id);
+
+const metricsMap = await fetchMetricsForJobs(jobIds);
+
+const defaultMetrics = {
+  totalApplicationsReceived: 0,
+  totalReferredToCompany: 0,
+  totalInterviewScheduled: 0,
+  totalAcceptedByCompany: 0,
+  responseRate: 0,
+  referralSuccessRate: 0,
+};
+
+const referralsWithMetrics = referrals.map((job) => {
+  const metrics =
+    metricsMap.get(String(job._id)) || defaultMetrics;
+
+  return {
+    ...job,
+    metrics,
+  };
+});
 
     const pagination = paginatedResponse(referralsWithMetrics, total, {
       page,
@@ -633,7 +773,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
     // console.log("postings : ",postings);
 
     // Filter out inactive jobs
-    postings = postings.filter((posting) => posting.inactive !== true);
+    //postings = postings.filter((posting) => posting.inactive !== true); 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Compare only the date
 
@@ -908,7 +1048,7 @@ export const getPoolCampusForCollege = async (req, res) => {
 
     // 2. Fetch all Pool-campus postings
     let postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
-    postings = postings.filter((posting) => posting.inactive !== true);
+    //postings = postings.filter((posting) => posting.inactive !== true); 
 
     // 3. Apply Visibility and Location Filter
     const filteredByLocation = postings.filter((posting) => {
@@ -1621,7 +1761,7 @@ export const getInternshipPostings = async (req, res) => {
 
     // ── STEP 3: Fetch base internship postings ────────────────────────────
     let postings = await getJobPostingsByJobTypeService("Internship", userId);
-    postings = postings.filter((posting) => posting.inactive !== true);
+ //postings = postings.filter((posting) => posting.inactive !== true);    
 
     // ── STEP 4: Strict visibility + broadcast filter (preserved) ─────────
     const filteredByBroadcast = postings.filter((posting) => {
