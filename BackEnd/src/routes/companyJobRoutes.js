@@ -25,7 +25,7 @@ const router = express.Router();
 // POST get alumni for career page - uses searchLimiter (60 per minute)
 router.post(
   "/career-page-referral",
-  secureRoute,
+  // secureRoute,
   searchLimiter,
   getAlumniForCareerPageUrl
 );

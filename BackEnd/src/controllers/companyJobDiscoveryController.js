@@ -118,17 +118,159 @@ import { getAlumniWhoCanHelpService } from "./AlumniJobsController.js";
 //   }
 // };
 
+// export const getAlumniForCareerPageUrl = async (req, res) => {
+//   try {
+//     const senderUserId = req.user?._id || req.user?.id;
+//     const rawCareerPageUrl = String(req.body.careerPageUrl || "").trim();
+
+//     if (!senderUserId) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Unauthorized. Sender user ID not found.",
+//       });
+//     }
+
+//     if (!rawCareerPageUrl) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "careerPageUrl is required.",
+//       });
+//     }
+
+//     const urlValidation = await validateCareerPageUrl(rawCareerPageUrl);
+
+//     if (!urlValidation.valid) {
+//       return res.status(400).json({
+//         success: false,
+//         message: urlValidation.message,
+//       });
+//     }
+
+//     const careerPageUrl = urlValidation.normalizedUrl;
+//     const companyName = urlValidation.companyName;
+
+//     if (!companyName) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Unable to extract company name from this job URL.",
+//         data: {
+//           careerPageUrl,
+//         },
+//       });
+//     }
+
+//     const companyResult = await resolveCompany(companyName);
+//     const canonicalCompanyId = companyResult?.canonicalId;
+
+//     if (!canonicalCompanyId) {
+//       // await logNormalization({
+//       //   entityType: "company",
+//       //   rawInput: companyName,
+//       //   normalizedInput: normalizeText(companyName),
+//       //   canonicalId: null,
+//       //   displayName: null,
+//       //   confidence: null,
+//       //   matchType: "unmatched",
+//       // });
+
+//       return res.status(404).json({
+//         success: false,
+//         message: `No alumni found for Company ${companyName}.`,
+//         companyName,
+//         careerPageUrl,
+//         pendingReview: true,
+//       });
+//     }
+
+//     const senderProfile = await Onboarding.findOne({
+//       userId: senderUserId,
+//     }).lean();
+
+//     if (!senderProfile) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Profile not found. Complete onboarding first.",
+//       });
+//     }
+
+//     const alumniResult = await getAlumniByCompanyForCandidate({
+//       userId: senderUserId,
+//       postedByUser: null,
+//       company: companyName,
+//       page: 1,
+//       limit: 100,
+//     });
+
+
+//     // const alumniResult = await getAlumniWhoCanHelpService({
+//     //   userId: senderUserId,
+//     //   postedByUser: null,
+//     //   company: companyName,
+//     //   page: 1,
+//     //   limit: 100,
+//     // });
+
+//     let alumniList = alumniResult?.data || [];
+
+//     alumniList = alumniList.filter(
+//       (alumni) =>
+//         alumni?.userId && String(alumni.userId) !== String(senderUserId),
+//     );
+//     let alumniFound = true;
+//     if (alumniList.length === 0) {
+//       alumniFound = false;
+//       alumniList = await Onboarding.find({
+//         currentCompany_canonical_id: canonicalCompanyId,
+//       }).lean();
+
+//       alumniList = alumniList.filter(
+//         (alumni) =>
+//           alumni?.userId && String(alumni.userId) !== String(senderUserId),
+//       );
+//     }
+
+//     if (alumniList.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "No alumni or current employee found for this company.",
+//         data: {
+//           companyName,
+//           careerPageUrl,
+//           alumni: [],
+//         },
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Alumni fetched successfully.",
+//       data: {
+//         companyName,
+//         careerPageUrl,
+//         alumniFound,
+//         // sourceType: alumniResult?.sourceType,
+//         totalAlumniFound: alumniList.length,
+//         alumni: alumniList,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("getAlumniForCareerPageUrl error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message || "Failed to fetch alumni.",
+//     });
+//   }
+// };
+
 export const getAlumniForCareerPageUrl = async (req, res) => {
   try {
+    // User authenticated ho sakta hai ya nahi
     const senderUserId = req.user?._id || req.user?.id;
-    const rawCareerPageUrl = String(req.body.careerPageUrl || "").trim();
 
-    if (!senderUserId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized. Sender user ID not found.",
-      });
-    }
+    const rawCareerPageUrl = String(
+      req.body.careerPageUrl || "",
+    ).trim();
 
     if (!rawCareerPageUrl) {
       return res.status(400).json({
@@ -163,16 +305,6 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
     const canonicalCompanyId = companyResult?.canonicalId;
 
     if (!canonicalCompanyId) {
-      // await logNormalization({
-      //   entityType: "company",
-      //   rawInput: companyName,
-      //   normalizedInput: normalizeText(companyName),
-      //   canonicalId: null,
-      //   displayName: null,
-      //   confidence: null,
-      //   matchType: "unmatched",
-      // });
-
       return res.status(404).json({
         success: false,
         message: `No alumni found for Company ${companyName}.`,
@@ -182,57 +314,82 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
       });
     }
 
-    const senderProfile = await Onboarding.findOne({
-      userId: senderUserId,
-    }).lean();
+    let alumniList = [];
+    let alumniFound = true;
 
-    if (!senderProfile) {
-      return res.status(404).json({
-        success: false,
-        message: "Profile not found. Complete onboarding first.",
+    /*
+     * AUTHENTICATED USER
+     *
+     * Existing flow remains exactly the same.
+     */
+    if (senderUserId) {
+      const senderProfile = await Onboarding.findOne({
+        userId: senderUserId,
+      }).lean();
+
+      if (!senderProfile) {
+        return res.status(404).json({
+          success: false,
+          message: "Profile not found. Complete onboarding first.",
+        });
+      }
+
+      const alumniResult = await getAlumniByCompanyForCandidate({
+        userId: senderUserId,
+        postedByUser: null,
+        company: companyName,
+        page: 1,
+        limit: 100,
       });
+
+      alumniList = alumniResult?.data || [];
+
+      // Don't return the logged-in user himself
+      alumniList = alumniList.filter(
+        (alumni) =>
+          alumni?.userId &&
+          String(alumni.userId) !== String(senderUserId),
+      );
+
+      /*
+       * Existing fallback for authenticated users
+       */
+      if (alumniList.length === 0) {
+        alumniFound = false;
+
+        alumniList = await Onboarding.find({
+          currentCompany_canonical_id: canonicalCompanyId,
+        }).lean();
+
+        alumniList = alumniList.filter(
+          (alumni) =>
+            alumni?.userId &&
+            String(alumni.userId) !== String(senderUserId),
+        );
+      }
     }
 
-    const alumniResult = await getAlumniByCompanyForCandidate({
-      userId: senderUserId,
-      postedByUser: null,
-      company: companyName,
-      page: 1,
-      limit: 100,
-    });
-
-
-    // const alumniResult = await getAlumniWhoCanHelpService({
-    //   userId: senderUserId,
-    //   postedByUser: null,
-    //   company: companyName,
-    //   page: 1,
-    //   limit: 100,
-    // });
-
-    let alumniList = alumniResult?.data || [];
-
-    alumniList = alumniList.filter(
-      (alumni) =>
-        alumni?.userId && String(alumni.userId) !== String(senderUserId),
-    );
-    let alumniFound = true;
-    if (alumniList.length === 0) {
+    /*
+     * UNAUTHENTICATED USER
+     *
+     * No req.user -> directly find alumni/current employees
+     * of this company.
+     */
+    else {
       alumniFound = false;
+
       alumniList = await Onboarding.find({
         currentCompany_canonical_id: canonicalCompanyId,
       }).lean();
-
-      alumniList = alumniList.filter(
-        (alumni) =>
-          alumni?.userId && String(alumni.userId) !== String(senderUserId),
-      );
     }
 
+    /*
+     * No alumni found
+     */
     if (alumniList.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No alumni or current employee found for this company.",
+        message: `No alumni or current employee found for ${companyName} company.`,
         data: {
           companyName,
           careerPageUrl,
@@ -248,7 +405,6 @@ export const getAlumniForCareerPageUrl = async (req, res) => {
         companyName,
         careerPageUrl,
         alumniFound,
-        // sourceType: alumniResult?.sourceType,
         totalAlumniFound: alumniList.length,
         alumni: alumniList,
       },
