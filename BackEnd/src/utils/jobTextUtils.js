@@ -11,10 +11,7 @@ import DiscoveredCompany from "../models/DiscoveredCompany.js";
 
 const logger = {
   error(message, error) {
-    console.error(
-      message,
-      error?.message || error || "",
-    );
+    console.error(message, error?.message || error || "");
   },
 };
 
@@ -55,6 +52,17 @@ export const isUnsupportedPlatform = (platform) =>
 
 const UNSUPPORTED_PLATFORM_MESSAGE =
   "Please use a job URL from LinkedIn, Naukri, Unstop, Wellfound, Greenhouse, Lever, Workday, or Ashby instead.";
+
+const unsupportedPlatformResult = (platform) => ({
+  jobTitle: "",
+  companyName: "",
+  searchCompanyName: "",
+  unsupported: true,
+  supported: false,
+  platform,
+  reason: "PLATFORM_NOT_SUPPORTED",
+  message: UNSUPPORTED_PLATFORM_MESSAGE,
+});
 
 /* ============================================================================
  * CONSTANTS
@@ -408,9 +416,7 @@ export const normalizeInputUrl = (value = "") => {
     return "";
   }
 
-  return /^https?:\/\//i.test(url)
-    ? url
-    : `https://${url}`;
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
 };
 
 export const normalizeCompanyName = (value = "") =>
@@ -452,17 +458,13 @@ const toTitleCase = (value = "") =>
         return lower.toUpperCase();
       }
 
-      return lower
-        ? `${lower[0].toUpperCase()}${lower.slice(1)}`
-        : "";
+      return lower ? `${lower[0].toUpperCase()}${lower.slice(1)}` : "";
     })
     .join(" ");
 
 const slugToCompanyName = (value = "") =>
   toTitleCase(
-    decodeURIComponent(
-      String(value || ""),
-    )
+    decodeURIComponent(String(value || ""))
       .replace(/[_-]+/g, " ")
       .trim(),
   );
@@ -471,16 +473,10 @@ const getHost = (urlOrParsed) => {
   try {
     const parsed =
       typeof urlOrParsed === "string"
-        ? new URL(
-            normalizeInputUrl(
-              urlOrParsed,
-            ),
-          )
+        ? new URL(normalizeInputUrl(urlOrParsed))
         : urlOrParsed;
 
-    return parsed.hostname
-      .replace(/^www\./, "")
-      .toLowerCase();
+    return parsed.hostname.replace(/^www\./, "").toLowerCase();
   } catch {
     return "";
   }
@@ -491,40 +487,24 @@ const getHost = (urlOrParsed) => {
  * ========================================================================== */
 
 const isBlockedValue = (value = "") => {
-  const normalized =
-    cleanText(value).toLowerCase();
+  const normalized = cleanText(value).toLowerCase();
 
-  return BLOCKED_PAGE_VALUES.some(
-    (blocked) =>
-      normalized.includes(blocked),
-  );
+  return BLOCKED_PAGE_VALUES.some((blocked) => normalized.includes(blocked));
 };
 
-const isPlatformMarketingText = (
-  value = "",
-) =>
-  PLATFORM_MARKETING_PATTERNS.some(
-    (pattern) =>
-      pattern.test(cleanText(value)),
-  );
+const isPlatformMarketingText = (value = "") =>
+  PLATFORM_MARKETING_PATTERNS.some((pattern) => pattern.test(cleanText(value)));
 
-const isGenericCompanyValue = (
-  value = "",
-) =>
-  GENERIC_COMPANY_NAMES.has(
-    normalizeCompanyName(value),
-  );
+const isGenericCompanyValue = (value = "") =>
+  GENERIC_COMPANY_NAMES.has(normalizeCompanyName(value));
 
 // Guards against boolean/status-flag style values ("true", "false", "null",
 // "N/A", pure numbers, punctuation-only strings, ...) that pass every other
 // structural check but are clearly not company names. This is the fix for
 // values like `data-company-name="true"` (a feature flag on an unrelated
 // element) being mistaken for a real company.
-const isJunkCompanyValue = (
-  value = "",
-) => {
-  const normalized =
-    cleanText(value).toLowerCase();
+const isJunkCompanyValue = (value = "") => {
+  const normalized = cleanText(value).toLowerCase();
 
   if (!normalized) {
     return true;
@@ -551,11 +531,8 @@ const isJunkCompanyValue = (
   return false;
 };
 
-export const cleanCompanyName = (
-  value = "",
-) => {
-  const raw =
-    cleanText(value);
+export const cleanCompanyName = (value = "") => {
+  const raw = cleanText(value);
 
   if (
     !raw ||
@@ -573,10 +550,7 @@ export const cleanCompanyName = (
       /\s*[-–—]\s*(LinkedIn|Naukri|Indeed|Unstop|Dare2Compete|Wellfound|Glassdoor|Internshala|Foundit|Monster|Cutshort).*$/gi,
       "",
     )
-    .replace(
-      /\s*[-–—]\s*Jobs.*$/gi,
-      "",
-    )
+    .replace(/\s*[-–—]\s*Jobs.*$/gi, "")
     .replace(
       /\s+(Careers|Hiring|Openings|Opening|Job|Jobs|Internship|Internships|Reviews)\s*$/gi,
       "",
@@ -587,12 +561,8 @@ export const cleanCompanyName = (
     cleaned.length < 2 ||
     cleaned.length > 160 ||
     isBlockedValue(cleaned) ||
-    isPlatformMarketingText(
-      cleaned,
-    ) ||
-    isGenericCompanyValue(
-      cleaned,
-    ) ||
+    isPlatformMarketingText(cleaned) ||
+    isGenericCompanyValue(cleaned) ||
     isJunkCompanyValue(cleaned)
   ) {
     return "";
@@ -601,17 +571,10 @@ export const cleanCompanyName = (
   return cleaned;
 };
 
-const cleanJobTitle = (
-  value = "",
-) => {
-  const raw =
-    cleanText(value);
+const cleanJobTitle = (value = "") => {
+  const raw = cleanText(value);
 
-  if (
-    !raw ||
-    isBlockedValue(raw) ||
-    isPlatformMarketingText(raw)
-  ) {
+  if (!raw || isBlockedValue(raw) || isPlatformMarketingText(raw)) {
     return "";
   }
 
@@ -624,27 +587,16 @@ const cleanJobTitle = (
     .trim();
 };
 
-export const canonicalizeCompanyBrand = (
-  value = "",
-) =>
-  cleanCompanyName(value);
+export const canonicalizeCompanyBrand = (value = "") => cleanCompanyName(value);
 
 /* ============================================================================
  * CANDIDATE VALIDATION
  * ========================================================================== */
 
-const isValidCompanyCandidate = (
-  value = "",
-  context = {},
-) => {
-  const text =
-    cleanText(value);
+const isValidCompanyCandidate = (value = "", context = {}) => {
+  const text = cleanText(value);
 
-  if (
-    !text ||
-    text.length < 2 ||
-    text.length > 160
-  ) {
+  if (!text || text.length < 2 || text.length > 160) {
     return false;
   }
 
@@ -669,84 +621,50 @@ const isValidCompanyCandidate = (
     return false;
   }
 
-  const words =
-    normalizePhrase(text)
-      .split(" ")
-      .filter(Boolean);
+  const words = normalizePhrase(text).split(" ").filter(Boolean);
 
   if (words.length > 8) {
     return false;
   }
 
-  const actionCount =
-    words.filter((word) =>
-      ACTION_WORDS.has(word),
-    ).length;
+  const actionCount = words.filter((word) => ACTION_WORDS.has(word)).length;
 
-  if (
-    words.length <= 6 &&
-    actionCount >= 2
-  ) {
+  if (words.length <= 6 && actionCount >= 2) {
     return false;
   }
 
-  const jobContextCount =
-    words.filter((word) =>
-      JOB_CONTEXT_WORDS.has(word),
-    ).length;
+  const jobContextCount = words.filter((word) =>
+    JOB_CONTEXT_WORDS.has(word),
+  ).length;
 
-  if (
-    words.length <= 5 &&
-    jobContextCount >=
-      Math.ceil(words.length / 2)
-  ) {
+  if (words.length <= 5 && jobContextCount >= Math.ceil(words.length / 2)) {
     return false;
   }
 
-  const elementName =
-    String(
-      context.elementName || "",
-    ).toLowerCase();
+  const elementName = String(context.elementName || "").toLowerCase();
 
-  if (
-    elementName === "button" ||
-    elementName === "input"
-  ) {
+  if (elementName === "button" || elementName === "input") {
     return false;
   }
 
-  if (
-    context.requiredJobRelation &&
-    !context.hasJobRelation
-  ) {
+  if (context.requiredJobRelation && !context.hasJobRelation) {
     return false;
   }
 
   return true;
 };
 
-const isSameCompanyAndTitle = (
-  companyName = "",
-  jobTitle = "",
-) => {
-  const company =
-    normalizeCompanyName(
-      companyName,
-    );
+const isSameCompanyAndTitle = (companyName = "", jobTitle = "") => {
+  const company = normalizeCompanyName(companyName);
 
-  const title =
-    normalizeCompanyName(
-      jobTitle,
-    );
+  const title = normalizeCompanyName(jobTitle);
 
   if (!company || !title) {
     return false;
   }
 
   return (
-    company === title ||
-    company.includes(title) ||
-    title.includes(company)
+    company === title || company.includes(title) || title.includes(company)
   );
 };
 
@@ -755,12 +673,10 @@ const isSameCompanyAndTitle = (
  * ========================================================================== */
 
 const isLinkedInHost = (host = "") =>
-  host === "linkedin.com" ||
-  host.endsWith(".linkedin.com");
+  host === "linkedin.com" || host.endsWith(".linkedin.com");
 
 const isNaukriHost = (host = "") =>
-  host === "naukri.com" ||
-  host.endsWith(".naukri.com");
+  host === "naukri.com" || host.endsWith(".naukri.com");
 
 const isUnstopHost = (host = "") =>
   host === "unstop.com" ||
@@ -769,13 +685,10 @@ const isUnstopHost = (host = "") =>
   host.endsWith(".dare2compete.com");
 
 const isIndeedHost = (host = "") =>
-  host === "indeed.com" ||
-  host.endsWith(".indeed.com");
+  host === "indeed.com" || host.endsWith(".indeed.com");
 
 const isWellfoundHost = (host = "") =>
-  host === "wellfound.com" ||
-  host === "angel.co" ||
-  host.endsWith(".angel.co");
+  host === "wellfound.com" || host === "angel.co" || host.endsWith(".angel.co");
 
 const isGreenhouseHost = (host = "") =>
   host === "boards.greenhouse.io" ||
@@ -783,74 +696,50 @@ const isGreenhouseHost = (host = "") =>
   host.endsWith(".greenhouse.io");
 
 const isLeverHost = (host = "") =>
-  host === "jobs.lever.co" ||
-  host.endsWith(".lever.co");
+  host === "jobs.lever.co" || host.endsWith(".lever.co");
 
 const isWorkdayHost = (host = "") =>
-  host.includes("workdayjobs.com") ||
-  host.includes("myworkdayjobs.com");
+  host.includes("workdayjobs.com") || host.includes("myworkdayjobs.com");
 
 const isAshbyHost = (host = "") =>
-  host === "jobs.ashbyhq.com" ||
-  host.endsWith(".ashbyhq.com");
+  host === "jobs.ashbyhq.com" || host.endsWith(".ashbyhq.com");
 
-export const detectJobPlatform = (
-  jobUrl = "",
-) => {
-  const host =
-    getHost(jobUrl);
+export const detectJobPlatform = (jobUrl = "") => {
+  const host = getHost(jobUrl);
 
-  if (isLinkedInHost(host))
-    return JOB_PLATFORMS.LINKEDIN;
+  if (isLinkedInHost(host)) return JOB_PLATFORMS.LINKEDIN;
 
-  if (isNaukriHost(host))
-    return JOB_PLATFORMS.NAUKRI;
+  if (isNaukriHost(host)) return JOB_PLATFORMS.NAUKRI;
 
-  if (isUnstopHost(host))
-    return JOB_PLATFORMS.UNSTOP;
+  if (isUnstopHost(host)) return JOB_PLATFORMS.UNSTOP;
 
-  if (isIndeedHost(host))
-    return JOB_PLATFORMS.INDEED;
+  if (isIndeedHost(host)) return JOB_PLATFORMS.INDEED;
 
-  if (isWellfoundHost(host))
-    return JOB_PLATFORMS.WELLFOUND;
+  if (isWellfoundHost(host)) return JOB_PLATFORMS.WELLFOUND;
 
-  if (isGreenhouseHost(host))
-    return JOB_PLATFORMS.GREENHOUSE;
+  if (isGreenhouseHost(host)) return JOB_PLATFORMS.GREENHOUSE;
 
-  if (isLeverHost(host))
-    return JOB_PLATFORMS.LEVER;
+  if (isLeverHost(host)) return JOB_PLATFORMS.LEVER;
 
-  if (isWorkdayHost(host))
-    return JOB_PLATFORMS.WORKDAY;
+  if (isWorkdayHost(host)) return JOB_PLATFORMS.WORKDAY;
 
-  if (isAshbyHost(host))
-    return JOB_PLATFORMS.ASHBY;
+  if (isAshbyHost(host)) return JOB_PLATFORMS.ASHBY;
 
   return JOB_PLATFORMS.UNKNOWN;
 };
 
-const isKnownJobPlatform = (
-  host = "",
-) =>
+const isKnownJobPlatform = (host = "") =>
   KNOWN_JOB_DOMAINS.some(
-    (domain) =>
-      host === domain ||
-      host.endsWith(`.${domain}`),
+    (domain) => host === domain || host.endsWith(`.${domain}`),
   );
 
 /* ============================================================================
  * URL HELPERS
  * ========================================================================== */
 
-const normalizeUrlForCompare = (
-  value = "",
-) => {
+const normalizeUrlForCompare = (value = "") => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(value),
-      );
+    const parsed = new URL(normalizeInputUrl(value));
 
     return `${parsed.protocol}//${parsed.hostname}${parsed.pathname}`
       .toLowerCase()
@@ -860,85 +749,49 @@ const normalizeUrlForCompare = (
   }
 };
 
-const hasJobKeywordInUrl = (
-  parsed,
-) => {
+const hasJobKeywordInUrl = (parsed) => {
   const text =
-    `${parsed.hostname}${parsed.pathname}${parsed.search}`
-      .toLowerCase();
+    `${parsed.hostname}${parsed.pathname}${parsed.search}`.toLowerCase();
 
-  return CAREER_KEYWORDS.some(
-    (keyword) =>
-      text.includes(keyword),
-  );
+  return CAREER_KEYWORDS.some((keyword) => text.includes(keyword));
 };
 
-const isPlainCompanyHomepage = (
-  parsed,
-) => {
-  const pathname =
-    parsed.pathname.replace(
-      /\/+/g,
-      "/",
-    );
+const isPlainCompanyHomepage = (parsed) => {
+  const pathname = parsed.pathname.replace(/\/+/g, "/");
 
-  if (
-    pathname === "/" &&
-    !parsed.search
-  ) {
+  if (pathname === "/" && !parsed.search) {
     return true;
   }
 
-  const parts =
-    pathname
-      .split("/")
-      .filter(Boolean);
+  const parts = pathname.split("/").filter(Boolean);
 
-  return (
-    parts.length <= 1 &&
-    !parsed.search &&
-    !hasJobKeywordInUrl(parsed)
-  );
+  return parts.length <= 1 && !parsed.search && !hasJobKeywordInUrl(parsed);
 };
 
 /* ============================================================================
  * SECURITY
  * ========================================================================== */
 
-const isPrivateIp = (
-  ip = "",
-) => {
-  const family =
-    net.isIP(ip);
+const isPrivateIp = (ip = "") => {
+  const family = net.isIP(ip);
 
   if (!family) {
     return true;
   }
 
-  if (
-    ["0.0.0.0", "::", "::1"].includes(
-      ip,
-    )
-  ) {
+  if (["0.0.0.0", "::", "::1"].includes(ip)) {
     return true;
   }
 
   if (family === 4) {
-    const parts =
-      ip.split(".").map(
-        Number,
-      );
+    const parts = ip.split(".").map(Number);
 
     if (
       parts[0] === 10 ||
       parts[0] === 127 ||
-      (parts[0] === 169 &&
-        parts[1] === 254) ||
-      (parts[0] === 192 &&
-        parts[1] === 168) ||
-      (parts[0] === 172 &&
-        parts[1] >= 16 &&
-        parts[1] <= 31)
+      (parts[0] === 169 && parts[1] === 254) ||
+      (parts[0] === 192 && parts[1] === 168) ||
+      (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)
     ) {
       return true;
     }
@@ -946,8 +799,7 @@ const isPrivateIp = (
     return false;
   }
 
-  const normalized =
-    ip.toLowerCase();
+  const normalized = ip.toLowerCase();
 
   return (
     normalized.startsWith("fc") ||
@@ -956,84 +808,48 @@ const isPrivateIp = (
   );
 };
 
-const assertSafePublicUrl =
-  async (rawUrl) => {
-    const normalized =
-      normalizeInputUrl(rawUrl);
+const assertSafePublicUrl = async (rawUrl) => {
+  const normalized = normalizeInputUrl(rawUrl);
 
-    const parsed =
-      new URL(normalized);
+  const parsed = new URL(normalized);
 
-    if (
-      !["http:", "https:"].includes(
-        parsed.protocol,
-      )
-    ) {
-      throw new Error(
-        "Unsupported URL protocol",
-      );
-    }
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("Unsupported URL protocol");
+  }
 
-    const hostname =
-      parsed.hostname.toLowerCase();
+  const hostname = parsed.hostname.toLowerCase();
 
-    if (
-      !hostname ||
-      hostname === "localhost" ||
-      hostname.endsWith(".local")
-    ) {
-      throw new Error(
-        "Unsafe URL hostname",
-      );
-    }
+  if (!hostname || hostname === "localhost" || hostname.endsWith(".local")) {
+    throw new Error("Unsafe URL hostname");
+  }
 
-    if (
-      net.isIP(hostname) &&
-      isPrivateIp(hostname)
-    ) {
-      throw new Error(
-        "Private IP is not allowed",
-      );
-    }
+  if (net.isIP(hostname) && isPrivateIp(hostname)) {
+    throw new Error("Private IP is not allowed");
+  }
 
-    const addresses =
-      await dns.lookup(
-        hostname,
-        {
-          all: true,
-        },
-      );
+  const addresses = await dns.lookup(hostname, {
+    all: true,
+  });
 
-    if (
-      !addresses.length ||
-      addresses.some(
-        ({ address }) =>
-          isPrivateIp(address),
-      )
-    ) {
-      throw new Error(
-        "Private or internal destination",
-      );
-    }
+  if (
+    !addresses.length ||
+    addresses.some(({ address }) => isPrivateIp(address))
+  ) {
+    throw new Error("Private or internal destination");
+  }
 
-    return parsed;
-  };
+  return parsed;
+};
 
 /* ============================================================================
  * PLATFORM URL FALLBACKS
  * ========================================================================== */
 
-const extractNaukriJobInfoFromUrl = (
-  url,
-) => {
+const extractNaukriJobInfoFromUrl = (url) => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(url),
-      );
+    const parsed = new URL(normalizeInputUrl(url));
 
-    const host =
-      getHost(parsed);
+    const host = getHost(parsed);
 
     if (!isNaukriHost(host)) {
       return {
@@ -1042,160 +858,77 @@ const extractNaukriJobInfoFromUrl = (
       };
     }
 
-    const path =
-      decodeURIComponent(
-        parsed.pathname,
-      )
-        .replace(
-          /^\/+|\/+$/g,
-          "",
-        );
+    const path = decodeURIComponent(parsed.pathname).replace(/^\/+|\/+$/g, "");
 
-    if (
-      !/^job-listings(?:-|\/)/i.test(
-        path,
-      )
-    ) {
+    if (!/^job-listings(?:-|\/)/i.test(path)) {
       return {
         jobTitle: "",
         companyName: "",
       };
     }
 
-    let slug =
-      path
-        .replace(
-          /^job-listings(?:-|\/)/i,
-          "",
-        )
-        .replace(/\//g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "")
-        .replace(
-          /-\d{8,20}$/i,
-          "",
-        )
-        .replace(
-          /-\d+-to-\d+-years?$/i,
-          "",
-        )
-        .replace(
-          /-\d+-\d+-years?$/i,
-          "",
-        )
-        .replace(
-          /-\d+\+?-years?$/i,
-          "",
-        );
+    let slug = path
+      .replace(/^job-listings(?:-|\/)/i, "")
+      .replace(/\//g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .replace(/-\d{8,20}$/i, "")
+      .replace(/-\d+-to-\d+-years?$/i, "")
+      .replace(/-\d+-\d+-years?$/i, "")
+      .replace(/-\d+\+?-years?$/i, "");
 
-    for (
-      const location of [
-        ...NAUKRI_LOCATIONS,
-      ].sort(
-        (a, b) =>
-          b.length - a.length,
-      )
-    ) {
-      if (
-        slug.endsWith(
-          `-${location}`,
-        )
-      ) {
-        slug =
-          slug.slice(
-            0,
-            -location.length - 1,
-          );
+    for (const location of [...NAUKRI_LOCATIONS].sort(
+      (a, b) => b.length - a.length,
+    )) {
+      if (slug.endsWith(`-${location}`)) {
+        slug = slug.slice(0, -location.length - 1);
         break;
       }
     }
 
-    const tokens =
-      slug
-        .split("-")
-        .filter(Boolean)
-        .map((x) =>
-          x.toLowerCase(),
-        );
+    const tokens = slug
+      .split("-")
+      .filter(Boolean)
+      .map((x) => x.toLowerCase());
 
     let best = null;
 
     for (
       let companySize = 1;
-      companySize <=
-      Math.min(5, tokens.length - 1);
+      companySize <= Math.min(5, tokens.length - 1);
       companySize += 1
     ) {
-      const start =
-        tokens.length -
-        companySize;
+      const start = tokens.length - companySize;
 
-      const companyTokens =
-        tokens.slice(start);
+      const companyTokens = tokens.slice(start);
 
-      const titleTokens =
-        tokens.slice(0, start);
+      const titleTokens = tokens.slice(0, start);
 
-      const company =
-        cleanCompanyName(
-          toTitleCase(
-            companyTokens.join(
-              " ",
-            ),
-          ),
-        );
+      const company = cleanCompanyName(toTitleCase(companyTokens.join(" ")));
 
-      if (
-        !company ||
-        !isValidCompanyCandidate(
-          company,
-        )
-      ) {
+      if (!company || !isValidCompanyCandidate(company)) {
         continue;
       }
 
-      let score =
-        companySize === 2
-          ? 12
-          : companySize === 1
-            ? 6
-            : 4;
+      let score = companySize === 2 ? 12 : companySize === 1 ? 6 : 4;
 
-      const lastToken =
-        companyTokens.at(-1);
+      const lastToken = companyTokens.at(-1);
 
-      if (
-        COMPANY_SUFFIX_WORDS.has(
-          lastToken,
-        )
-      ) {
+      if (COMPANY_SUFFIX_WORDS.has(lastToken)) {
         score += 20;
       }
 
-      if (
-        companyTokens.some(
-          (token) =>
-            JOB_CONTEXT_WORDS.has(
-              token,
-            ),
-        )
-      ) {
+      if (companyTokens.some((token) => JOB_CONTEXT_WORDS.has(token))) {
         score -= 15;
       }
 
-      const roleCount =
-        titleTokens.filter(
-          (token) =>
-            ROLE_WORDS.has(token),
-        ).length;
+      const roleCount = titleTokens.filter((token) =>
+        ROLE_WORDS.has(token),
+      ).length;
 
-      score +=
-        roleCount * 7;
+      score += roleCount * 7;
 
-      if (
-        !best ||
-        score > best.score
-      ) {
+      if (!best || score > best.score) {
         best = {
           company,
           titleTokens,
@@ -1205,15 +938,8 @@ const extractNaukriJobInfoFromUrl = (
     }
 
     return {
-      jobTitle: cleanJobTitle(
-        toTitleCase(
-          best?.titleTokens?.join(
-            " ",
-          ) || "",
-        ),
-      ),
-      companyName:
-        best?.company || "",
+      jobTitle: cleanJobTitle(toTitleCase(best?.titleTokens?.join(" ") || "")),
+      companyName: best?.company || "",
     };
   } catch {
     return {
@@ -1223,88 +949,41 @@ const extractNaukriJobInfoFromUrl = (
   }
 };
 
-const extractUnstopJobInfoFromUrl = (
-  url,
-) => {
+const extractUnstopJobInfoFromUrl = (url) => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(url),
-      );
+    const parsed = new URL(normalizeInputUrl(url));
 
-    const parts =
-      decodeURIComponent(
-        parsed.pathname,
-      )
-        .split("/")
-        .filter(Boolean);
+    const parts = decodeURIComponent(parsed.pathname)
+      .split("/")
+      .filter(Boolean);
 
-    const index =
-      parts.findIndex((part) =>
-        [
-          "job",
-          "jobs",
-          "internship",
-          "internships",
-        ].includes(
-          part.toLowerCase(),
-        ),
-      );
+    const index = parts.findIndex((part) =>
+      ["job", "jobs", "internship", "internships"].includes(part.toLowerCase()),
+    );
 
-    if (
-      index === -1 ||
-      !parts[index + 1]
-    ) {
+    if (index === -1 || !parts[index + 1]) {
       return {
         jobTitle: "",
         companyName: "",
       };
     }
 
-    const slug =
-      parts[index + 1]
-        .replace(
-          /-\d{4,20}$/i,
-          "",
-        );
+    const slug = parts[index + 1].replace(/-\d{4,20}$/i, "");
 
-    const tokens =
-      slug
-        .split("-")
-        .filter(Boolean);
+    const tokens = slug.split("-").filter(Boolean);
 
-    for (
-      let size = 1;
-      size <=
-      Math.min(4, tokens.length - 1);
-      size += 1
-    ) {
-      const start =
-        tokens.length - size;
+    for (let size = 1; size <= Math.min(4, tokens.length - 1); size += 1) {
+      const start = tokens.length - size;
 
-      const company =
-        cleanCompanyName(
-          toTitleCase(
-            tokens
-              .slice(start)
-              .join(" "),
-          ),
-        );
+      const company = cleanCompanyName(
+        toTitleCase(tokens.slice(start).join(" ")),
+      );
 
-      if (
-        isValidCompanyCandidate(
-          company,
-        )
-      ) {
+      if (isValidCompanyCandidate(company)) {
         return {
-          jobTitle:
-            cleanJobTitle(
-              toTitleCase(
-                tokens
-                  .slice(0, start)
-                  .join(" "),
-              ),
-            ),
+          jobTitle: cleanJobTitle(
+            toTitleCase(tokens.slice(0, start).join(" ")),
+          ),
           companyName: company,
         };
       }
@@ -1322,17 +1001,11 @@ const extractUnstopJobInfoFromUrl = (
   }
 };
 
-const extractWorkdayJobInfoFromUrl = (
-  url,
-) => {
+const extractWorkdayJobInfoFromUrl = (url) => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(url),
-      );
+    const parsed = new URL(normalizeInputUrl(url));
 
-    const host =
-      getHost(parsed);
+    const host = getHost(parsed);
 
     if (!isWorkdayHost(host)) {
       return {
@@ -1341,65 +1014,30 @@ const extractWorkdayJobInfoFromUrl = (
       };
     }
 
-    const hostParts =
-      host
-        .split(".")
-        .filter(Boolean);
+    const hostParts = host.split(".").filter(Boolean);
 
-    const wdIndex =
-      hostParts.findIndex(
-        (part) =>
-          /^wd\d+$/i.test(part),
-      );
+    const wdIndex = hostParts.findIndex((part) => /^wd\d+$/i.test(part));
 
-    const tenant =
-      wdIndex > 0
-        ? hostParts[wdIndex - 1]
-        : "";
+    const tenant = wdIndex > 0 ? hostParts[wdIndex - 1] : "";
 
-    const pathParts =
-      parsed.pathname
-        .split("/")
-        .filter(Boolean);
+    const pathParts = parsed.pathname.split("/").filter(Boolean);
 
-    const localeIndex =
-      pathParts.findIndex(
-        (part) =>
-          /^[a-z]{2}-[a-z]{2}$/i.test(
-            part,
-          ),
-      );
+    const localeIndex = pathParts.findIndex((part) =>
+      /^[a-z]{2}-[a-z]{2}$/i.test(part),
+    );
 
-    const site =
-      localeIndex !== -1
-        ? pathParts[
-            localeIndex + 1
-          ]
-        : "";
+    const site = localeIndex !== -1 ? pathParts[localeIndex + 1] : "";
 
-    const jobSlug =
-      pathParts.at(-1) || "";
+    const jobSlug = pathParts.at(-1) || "";
 
     return {
-      jobTitle:
-        cleanJobTitle(
-          jobSlug
-            .replace(
-              /_(?:JR|REF|R|REQ|JOB)[-_]?\d.*$/i,
-              "",
-            )
-            .replace(
-              /[-_]+/g,
-              " ",
-            ),
-        ),
+      jobTitle: cleanJobTitle(
+        jobSlug
+          .replace(/_(?:JR|REF|R|REQ|JOB)[-_]?\d.*$/i, "")
+          .replace(/[-_]+/g, " "),
+      ),
 
-      companyName:
-        cleanCompanyName(
-          slugToCompanyName(
-            tenant || site,
-          ),
-        ),
+      companyName: cleanCompanyName(slugToCompanyName(tenant || site)),
     };
   } catch {
     return {
@@ -1409,125 +1047,62 @@ const extractWorkdayJobInfoFromUrl = (
   }
 };
 
-const extractCompanyFromPlatformUrl = (
-  url,
-) => {
+const extractCompanyFromPlatformUrl = (url) => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(url),
-      );
+    const parsed = new URL(normalizeInputUrl(url));
 
-    const host =
-      getHost(parsed);
+    const host = getHost(parsed);
 
-    const parts =
-      parsed.pathname
-        .split("/")
-        .filter(Boolean);
+    const parts = parsed.pathname.split("/").filter(Boolean);
 
-    if (
-      isNaukriHost(host)
-    ) {
-      return extractNaukriJobInfoFromUrl(
-        url,
-      ).companyName;
+    if (isNaukriHost(host)) {
+      return extractNaukriJobInfoFromUrl(url).companyName;
     }
 
-    if (
-      isUnstopHost(host)
-    ) {
-      return extractUnstopJobInfoFromUrl(
-        url,
-      ).companyName;
+    if (isUnstopHost(host)) {
+      return extractUnstopJobInfoFromUrl(url).companyName;
     }
 
-    if (
-      isWorkdayHost(host)
-    ) {
-      return extractWorkdayJobInfoFromUrl(
-        url,
-      ).companyName;
+    if (isWorkdayHost(host)) {
+      return extractWorkdayJobInfoFromUrl(url).companyName;
     }
 
-    if (
-      isGreenhouseHost(host)
-    ) {
+    if (isGreenhouseHost(host)) {
       const slug =
-        host === "boards.greenhouse.io" ||
-        host === "job-boards.greenhouse.io"
+        host === "boards.greenhouse.io" || host === "job-boards.greenhouse.io"
           ? parts[0]
           : host.split(".")[0];
 
-      return cleanCompanyName(
-        slugToCompanyName(slug),
-      );
+      return cleanCompanyName(slugToCompanyName(slug));
     }
 
-    if (
-      isLeverHost(host)
-    ) {
-      const slug =
-        host === "jobs.lever.co"
-          ? parts[0]
-          : host.split(".")[0];
+    if (isLeverHost(host)) {
+      const slug = host === "jobs.lever.co" ? parts[0] : host.split(".")[0];
 
-      return cleanCompanyName(
-        slugToCompanyName(slug),
-      );
+      return cleanCompanyName(slugToCompanyName(slug));
     }
 
-    if (
-      isAshbyHost(host)
-    ) {
-      const slug =
-        host === "jobs.ashbyhq.com"
-          ? parts[0]
-          : host.split(".")[0];
+    if (isAshbyHost(host)) {
+      const slug = host === "jobs.ashbyhq.com" ? parts[0] : host.split(".")[0];
 
-      return cleanCompanyName(
-        slugToCompanyName(slug),
-      );
+      return cleanCompanyName(slugToCompanyName(slug));
     }
 
-    if (
-      isWellfoundHost(host)
-    ) {
-      const companyIndex =
-        parts.findIndex(
-          (part) =>
-            part.toLowerCase() ===
-            "company",
-        );
+    if (isWellfoundHost(host)) {
+      const companyIndex = parts.findIndex(
+        (part) => part.toLowerCase() === "company",
+      );
 
-      if (
-        companyIndex !== -1 &&
-        parts[companyIndex + 1]
-      ) {
-        return cleanCompanyName(
-          slugToCompanyName(
-            parts[
-              companyIndex + 1
-            ],
-          ),
-        );
+      if (companyIndex !== -1 && parts[companyIndex + 1]) {
+        return cleanCompanyName(slugToCompanyName(parts[companyIndex + 1]));
       }
 
-      const jobsIndex =
-        parts.findIndex(
-          (part) =>
-            part.toLowerCase() ===
-            "jobs",
-        );
+      const jobsIndex = parts.findIndex(
+        (part) => part.toLowerCase() === "jobs",
+      );
 
-      if (
-        jobsIndex > 0
-      ) {
-        return cleanCompanyName(
-          slugToCompanyName(
-            parts[jobsIndex - 1],
-          ),
-        );
+      if (jobsIndex > 0) {
+        return cleanCompanyName(slugToCompanyName(parts[jobsIndex - 1]));
       }
     }
 
@@ -1537,68 +1112,98 @@ const extractCompanyFromPlatformUrl = (
   }
 };
 
-export const extractCompanyNameFromCareerUrl =
-  (url = "") => {
-    const platformCompany =
-      extractCompanyFromPlatformUrl(
-        url,
-      );
+const extractDeterministicCompanyFromPlatformUrl = (url, platform) => {
+  try {
+    const parsed = new URL(normalizeInputUrl(url));
+    const host = getHost(parsed);
+    const parts = parsed.pathname
+      .split("/")
+      .filter(Boolean)
+      .map((part) => decodeURIComponent(part));
 
-    if (platformCompany) {
-      return platformCompany;
+    let slug = "";
+
+    if (
+      platform === JOB_PLATFORMS.LEVER &&
+      host === "jobs.lever.co" &&
+      parts.length >= 2
+    ) {
+      slug = parts[0];
+    } else if (
+      platform === JOB_PLATFORMS.GREENHOUSE &&
+      ["boards.greenhouse.io", "job-boards.greenhouse.io"].includes(host) &&
+      parts.length >= 2
+    ) {
+      slug = parts[0];
+    } else if (
+      platform === JOB_PLATFORMS.ASHBY &&
+      host === "jobs.ashbyhq.com" &&
+      parts.length >= 2
+    ) {
+      slug = parts[0];
+    } else if (
+      platform === JOB_PLATFORMS.WELLFOUND &&
+      parts[0]?.toLowerCase() === "company" &&
+      parts[1]
+    ) {
+      slug = parts[1];
+    } else if (
+      platform === JOB_PLATFORMS.LINKEDIN &&
+      parts[0]?.toLowerCase() === "company" &&
+      parts[1]
+    ) {
+      slug = parts[1];
     }
 
-    try {
-      const parsed =
-        new URL(
-          normalizeInputUrl(url),
-        );
+    const company = cleanCompanyName(slugToCompanyName(slug));
 
-      const host =
-        getHost(parsed);
+    return isValidCompanyCandidate(company) ? company : "";
+  } catch {
+    return "";
+  }
+};
 
-      if (
-        isKnownJobPlatform(host)
-      ) {
-        return "";
-      }
+export const extractCompanyNameFromCareerUrl = (url = "") => {
+  const platformCompany = extractCompanyFromPlatformUrl(url);
 
-      const parts =
-        host
-          .split(".")
-          .filter(Boolean);
+  if (platformCompany) {
+    return platformCompany;
+  }
 
-      if (parts.length < 2) {
-        return "";
-      }
+  try {
+    const parsed = new URL(normalizeInputUrl(url));
 
-      const ignored =
-        new Set([
-          "www",
-          "career",
-          "careers",
-          "job",
-          "jobs",
-          "hiring",
-          "work",
-          "apply",
-          "boards",
-        ]);
+    const host = getHost(parsed);
 
-      const companyPart =
-        ignored.has(parts[0])
-          ? parts[1]
-          : parts[0];
-
-      return cleanCompanyName(
-        slugToCompanyName(
-          companyPart,
-        ),
-      );
-    } catch {
+    if (isKnownJobPlatform(host)) {
       return "";
     }
-  };
+
+    const parts = host.split(".").filter(Boolean);
+
+    if (parts.length < 2) {
+      return "";
+    }
+
+    const ignored = new Set([
+      "www",
+      "career",
+      "careers",
+      "job",
+      "jobs",
+      "hiring",
+      "work",
+      "apply",
+      "boards",
+    ]);
+
+    const companyPart = ignored.has(parts[0]) ? parts[1] : parts[0];
+
+    return cleanCompanyName(slugToCompanyName(companyPart));
+  } catch {
+    return "";
+  }
+};
 
 /* ============================================================================
  * JSON-LD
@@ -1613,53 +1218,32 @@ const safeJsonParse = (value) => {
 };
 
 const getJsonType = (value) => {
-  if (
-    !value ||
-    typeof value !== "object"
-  ) {
+  if (!value || typeof value !== "object") {
     return [];
   }
 
-  const type =
-    value["@type"];
+  const type = value["@type"];
 
   return Array.isArray(type)
-    ? type.map((x) =>
-        String(x).toLowerCase(),
-      )
+    ? type.map((x) => String(x).toLowerCase())
     : typeof type === "string"
       ? [type.toLowerCase()]
       : [];
 };
 
-const extractOrganizationName = (
-  value,
-) => {
-  if (
-    !value ||
-    typeof value !== "object"
-  ) {
+const extractOrganizationName = (value) => {
+  if (!value || typeof value !== "object") {
     return "";
   }
 
-  const org =
-    value.hiringOrganization;
+  const org = value.hiringOrganization;
 
-  if (
-    typeof org === "string"
-  ) {
+  if (typeof org === "string") {
     return cleanCompanyName(org);
   }
 
-  if (
-    org &&
-    typeof org === "object"
-  ) {
-    return cleanCompanyName(
-      org.name ||
-        org.legalName ||
-        org.alternateName,
-    );
+  if (org && typeof org === "object") {
+    return cleanCompanyName(org.name || org.legalName || org.alternateName);
   }
 
   return cleanCompanyName(
@@ -1674,64 +1258,33 @@ const extractOrganizationName = (
   );
 };
 
-const extractJobPostingObjects = (
-  value,
-  result = [],
-  depth = 0,
-) => {
-  if (
-    !value ||
-    depth > 15
-  ) {
+const extractJobPostingObjects = (value, result = [], depth = 0) => {
+  if (!value || depth > 15) {
     return result;
   }
 
-  if (
-    Array.isArray(value)
-  ) {
+  if (Array.isArray(value)) {
     for (const item of value) {
-      extractJobPostingObjects(
-        item,
-        result,
-        depth + 1,
-      );
+      extractJobPostingObjects(item, result, depth + 1);
     }
 
     return result;
   }
 
-  if (
-    typeof value !== "object"
-  ) {
+  if (typeof value !== "object") {
     return result;
   }
 
-  const types =
-    getJsonType(value);
+  const types = getJsonType(value);
 
-  if (
-    types.some((type) =>
-      type.endsWith(
-        "jobposting",
-      ),
-    )
-  ) {
-    const jobTitle =
-      cleanJobTitle(
-        value.jobTitle ||
-          value.title ||
-          value.postingTitle,
-      );
+  if (types.some((type) => type.endsWith("jobposting"))) {
+    const jobTitle = cleanJobTitle(
+      value.jobTitle || value.title || value.postingTitle,
+    );
 
-    const companyName =
-      extractOrganizationName(
-        value,
-      );
+    const companyName = extractOrganizationName(value);
 
-    if (
-      jobTitle ||
-      companyName
-    ) {
+    if (jobTitle || companyName) {
       result.push({
         jobTitle,
         companyName,
@@ -1739,48 +1292,30 @@ const extractJobPostingObjects = (
     }
   }
 
-  for (const child of Object.values(
-    value,
-  )) {
-    extractJobPostingObjects(
-      child,
-      result,
-      depth + 1,
-    );
+  for (const child of Object.values(value)) {
+    extractJobPostingObjects(child, result, depth + 1);
   }
 
   return result;
 };
 
-const extractJsonLdCandidates = (
-  $,
-) => {
+const extractJsonLdCandidates = ($) => {
   const result = [];
 
-  $(
-    'script[type="application/ld+json"]',
-  ).each((_, script) => {
-    const raw =
-      $(script).text();
+  $('script[type="application/ld+json"]').each((_, script) => {
+    const raw = $(script).text();
 
-    if (
-      !raw ||
-      raw.length > 1_000_000
-    ) {
+    if (!raw || raw.length > 1_000_000) {
       return;
     }
 
-    const parsed =
-      safeJsonParse(raw);
+    const parsed = safeJsonParse(raw);
 
     if (!parsed) {
       return;
     }
 
-    extractJobPostingObjects(
-      parsed,
-      result,
-    );
+    extractJobPostingObjects(parsed, result);
   });
 
   return result;
@@ -1790,105 +1325,64 @@ const extractJsonLdCandidates = (
  * EMBEDDED STATE
  * ========================================================================== */
 
-const collectStateCandidates = (
-  value,
-  result = [],
-  depth = 0,
-) => {
-  if (
-    !value ||
-    depth > 14
-  ) {
+const collectStateCandidates = (value, result = [], depth = 0) => {
+  if (!value || depth > 14) {
     return result;
   }
 
-  if (
-    Array.isArray(value)
-  ) {
+  if (Array.isArray(value)) {
     for (const item of value) {
-      collectStateCandidates(
-        item,
-        result,
-        depth + 1,
-      );
+      collectStateCandidates(item, result, depth + 1);
     }
 
     return result;
   }
 
-  if (
-    typeof value !== "object"
-  ) {
+  if (typeof value !== "object") {
     return result;
   }
 
-  const jobTitle =
-    cleanJobTitle(
-      value.jobTitle ||
-        value.job_title ||
-        value.postingTitle ||
-        value.jobPostingTitle,
-    );
+  const jobTitle = cleanJobTitle(
+    value.jobTitle ||
+      value.job_title ||
+      value.postingTitle ||
+      value.jobPostingTitle,
+  );
 
-  const companyName =
-    extractOrganizationName(
-      value,
-    );
+  const companyName = extractOrganizationName(value);
 
-  if (
-    jobTitle &&
-    companyName &&
-    isValidCompanyCandidate(
-      companyName,
-    )
-  ) {
+  if (jobTitle && companyName && isValidCompanyCandidate(companyName)) {
     result.push({
       jobTitle,
       companyName,
     });
   }
 
-  for (const child of Object.values(
-    value,
-  )) {
-    collectStateCandidates(
-      child,
-      result,
-      depth + 1,
-    );
+  for (const child of Object.values(value)) {
+    collectStateCandidates(child, result, depth + 1);
   }
 
   return result;
 };
 
-const extractStateCandidates = (
-  $,
-) => {
+const extractStateCandidates = ($) => {
   const result = [];
 
-  $(
-    "#__NEXT_DATA__,script#__NEXT_DATA__,script[type=\"application/json\"]",
-  ).each((_, script) => {
-    const raw =
-      $(script).text();
+  $('#__NEXT_DATA__,script#__NEXT_DATA__,script[type="application/json"]').each(
+    (_, script) => {
+      const raw = $(script).text();
 
-    if (
-      !raw ||
-      raw.length > 1_000_000
-    ) {
-      return;
-    }
+      if (!raw || raw.length > 1_000_000) {
+        return;
+      }
 
-    const parsed =
-      safeJsonParse(raw);
+      const parsed = safeJsonParse(raw);
 
-    if (parsed) {
-      collectStateCandidates(
-        parsed,
-        result,
-      );
-    }
-  });
+      if (parsed) {
+        collectStateCandidates(parsed, result);
+      }
+    },
+  );
 
   return result;
 };
@@ -1904,10 +1398,7 @@ const PLATFORM_DOM_SELECTORS = {
       '[data-tracking-control-name="public_jobs_topcard-org-name"]',
       ".topcard__flavor",
     ],
-    title: [
-      ".topcard__title",
-      "h1",
-    ],
+    title: [".topcard__title", "h1"],
   },
 
   [JOB_PLATFORMS.NAUKRI]: {
@@ -1931,10 +1422,7 @@ const PLATFORM_DOM_SELECTORS = {
       "[data-company-name]",
       "[data-employer-name]",
     ],
-    title: [
-      '[data-testid="job-title"]',
-      "h1",
-    ],
+    title: ['[data-testid="job-title"]', "h1"],
   },
 
   [JOB_PLATFORMS.WELLFOUND]: {
@@ -1943,10 +1431,7 @@ const PLATFORM_DOM_SELECTORS = {
       "[data-company-name]",
       '[itemprop="name"]',
     ],
-    title: [
-      '[data-testid="job-title"]',
-      "h1",
-    ],
+    title: ['[data-testid="job-title"]', "h1"],
   },
 
   [JOB_PLATFORMS.GREENHOUSE]: {
@@ -1955,10 +1440,7 @@ const PLATFORM_DOM_SELECTORS = {
       '[data-testid="company-name"]',
       '[itemprop="name"]',
     ],
-    title: [
-      '[data-qa="job-title"]',
-      "h1",
-    ],
+    title: ['[data-qa="job-title"]', "h1"],
   },
 
   [JOB_PLATFORMS.LEVER]: {
@@ -1967,11 +1449,7 @@ const PLATFORM_DOM_SELECTORS = {
       '[data-testid="company-name"]',
       '[itemprop="name"]',
     ],
-    title: [
-      '[data-qa="posting-name"]',
-      '[data-testid="job-title"]',
-      "h1",
-    ],
+    title: ['[data-qa="posting-name"]', '[data-testid="job-title"]', "h1"],
   },
 
   [JOB_PLATFORMS.WORKDAY]: {
@@ -1994,19 +1472,12 @@ const PLATFORM_DOM_SELECTORS = {
       "[data-company-name]",
       '[itemprop="name"]',
     ],
-    title: [
-      '[data-testid="job-title"]',
-      "h1",
-    ],
+    title: ['[data-testid="job-title"]', "h1"],
   },
 };
 
-const getElementCandidate = (
-  $,
-  node,
-) => {
-  const elementName =
-    node[0]?.name || "";
+const getElementCandidate = ($, node) => {
+  const elementName = node[0]?.name || "";
 
   const values = [
     node.attr("content"),
@@ -2017,16 +1488,12 @@ const getElementCandidate = (
   ];
 
   for (const value of values) {
-    const company =
-      cleanCompanyName(value);
+    const company = cleanCompanyName(value);
 
     if (
-      isValidCompanyCandidate(
-        company,
-        {
-          elementName,
-        },
-      )
+      isValidCompanyCandidate(company, {
+        elementName,
+      })
     ) {
       return company;
     }
@@ -2035,40 +1502,24 @@ const getElementCandidate = (
   return "";
 };
 
-const extractPlatformDomCandidate = (
-  $,
-  platform,
-  kind,
-) => {
-  const selectors =
-    PLATFORM_DOM_SELECTORS[
-      platform
-    ]?.[kind] || [];
+const extractPlatformDomCandidate = ($, platform, kind) => {
+  const selectors = PLATFORM_DOM_SELECTORS[platform]?.[kind] || [];
 
   for (const selector of selectors) {
-    const node =
-      $(selector).first();
+    const node = $(selector).first();
 
     if (!node.length) {
       continue;
     }
 
     if (kind === "company") {
-      const company =
-        getElementCandidate(
-          $,
-          node,
-        );
+      const company = getElementCandidate($, node);
 
       if (company) {
         return company;
       }
     } else {
-      const title =
-        cleanJobTitle(
-          node.attr("content") ||
-            node.text(),
-        );
+      const title = cleanJobTitle(node.attr("content") || node.text());
 
       if (title) {
         return title;
@@ -2079,53 +1530,40 @@ const extractPlatformDomCandidate = (
   return "";
 };
 
-const extractLabeledCompanyValue = (
-  $,
-) => {
+const extractLabeledCompanyValue = ($) => {
   const labels =
     /^(company|employer|organization|organisation|hiring organization|hiring organisation)$/i;
 
   let result = "";
 
-  $("dt,dt + dd,label,span,div,p").each(
-    (_, element) => {
-      if (result) {
-        return;
+  $("dt,dt + dd,label,span,div,p").each((_, element) => {
+    if (result) {
+      return;
+    }
+
+    const label = cleanText($(element).text());
+
+    if (!labels.test(label)) {
+      return;
+    }
+
+    const parent = $(element).parent();
+
+    const values = [
+      parent.find("dd").first().text(),
+      parent.find("a").first().text(),
+      $(element).next().text(),
+    ];
+
+    for (const value of values) {
+      const company = cleanCompanyName(value);
+
+      if (isValidCompanyCandidate(company)) {
+        result = company;
+        break;
       }
-
-      const label =
-        cleanText(
-          $(element).text(),
-        );
-
-      if (!labels.test(label)) {
-        return;
-      }
-
-      const parent =
-        $(element).parent();
-
-      const values = [
-        parent.find("dd").first().text(),
-        parent.find("a").first().text(),
-        $(element).next().text(),
-      ];
-
-      for (const value of values) {
-        const company =
-          cleanCompanyName(value);
-
-        if (
-          isValidCompanyCandidate(
-            company,
-          )
-        ) {
-          result = company;
-          break;
-        }
-      }
-    },
-  );
+    }
+  });
 
   return result;
 };
@@ -2134,43 +1572,25 @@ const extractLabeledCompanyValue = (
  * BLOCK PAGE DETECTION
  * ========================================================================== */
 
-const isBlockedHtmlPage = (
-  html = "",
-) => {
+const isBlockedHtmlPage = (html = "") => {
   if (!html) {
     return false;
   }
 
-  const $ =
-    cheerio.load(html);
+  const $ = cheerio.load(html);
 
-  const title =
-    cleanText(
-      $("title").text(),
-    ).toLowerCase();
+  const title = cleanText($("title").text()).toLowerCase();
 
-  const h1 =
-    cleanText(
-      $("h1")
-        .first()
-        .text(),
-    ).toLowerCase();
+  const h1 = cleanText($("h1").first().text()).toLowerCase();
 
-  const body =
-    cleanText(
-      $("body").text(),
-    )
-      .slice(0, 3000)
-      .toLowerCase();
+  const body = cleanText($("body").text()).slice(0, 3000).toLowerCase();
 
   return BLOCKED_PAGE_VALUES.some(
     (blocked) =>
       title.includes(blocked) ||
       h1.includes(blocked) ||
       body.startsWith(blocked) ||
-      body.includes(
-        ` ${blocked} `,
-      ),
+      body.includes(` ${blocked} `),
   );
 };
 
@@ -2178,11 +1598,8 @@ const isBlockedHtmlPage = (
  * META
  * ========================================================================== */
 
-const extractCompanyFromMetaText = (
-  value = "",
-) => {
-  const text =
-    cleanText(value);
+const extractCompanyFromMetaText = (value = "") => {
+  const text = cleanText(value);
 
   if (!text) {
     return "";
@@ -2195,16 +1612,9 @@ const extractCompanyFromMetaText = (
   ];
 
   for (const pattern of patterns) {
-    const company =
-      cleanCompanyName(
-        text.match(pattern)?.[1],
-      );
+    const company = cleanCompanyName(text.match(pattern)?.[1]);
 
-    if (
-      isValidCompanyCandidate(
-        company,
-      )
-    ) {
+    if (isValidCompanyCandidate(company)) {
       return company;
     }
   }
@@ -2242,22 +1652,14 @@ const extractJobInfoFromHtml = (
     };
   }
 
-  const $ =
-    cheerio.load(html);
+  const $ = cheerio.load(html);
 
   debugLog("CHEERIO_START", {
     platform,
     htmlLength: html.length,
     title: cleanText($("title").text()),
-    h1: cleanText(
-      $("h1")
-        .first()
-        .text(),
-    ),
-    jsonLdCount:
-      $(
-        'script[type="application/ld+json"]',
-      ).length,
+    h1: cleanText($("h1").first().text()),
+    jsonLdCount: $('script[type="application/ld+json"]').length,
   });
 
   let jobTitle = "";
@@ -2269,49 +1671,39 @@ const extractJobInfoFromHtml = (
    * 1. Structured HTML
    * ---------------------------------------------------------------------- */
 
-  const structuredCompany =
-    (() => {
-      const selectors = [
-        "[data-company-name]",
-        "[data-employer-name]",
-        '[itemprop="hiringOrganization"] [itemprop="name"]',
-        '[itemprop="hiringOrganization"]',
-      ];
+  const structuredCompany = (() => {
+    const selectors = [
+      "[data-company-name]",
+      "[data-employer-name]",
+      '[itemprop="hiringOrganization"] [itemprop="name"]',
+      '[itemprop="hiringOrganization"]',
+    ];
 
-      for (const selector of selectors) {
-        const node =
-          $(selector).first();
+    for (const selector of selectors) {
+      const node = $(selector).first();
 
-        if (!node.length) {
-          continue;
-        }
-
-        const candidate =
-          getElementCandidate(
-            $,
-            node,
-          );
-
-        if (candidate) {
-          return candidate;
-        }
+      if (!node.length) {
+        continue;
       }
 
-      return "";
-    })();
+      const candidate = getElementCandidate($, node);
+
+      if (candidate) {
+        return candidate;
+      }
+    }
+
+    return "";
+  })();
 
   debugLog("STRUCTURED_HTML", {
-    company:
-      structuredCompany ||
-      "<empty>",
+    company: structuredCompany || "<empty>",
   });
 
   if (structuredCompany) {
-    companyName =
-      structuredCompany;
+    companyName = structuredCompany;
 
-    companySource =
-      "structured-html";
+    companySource = "structured-html";
 
     companyConfidence = 0.97;
   }
@@ -2320,46 +1712,30 @@ const extractJobInfoFromHtml = (
    * 2. JSON-LD
    * ---------------------------------------------------------------------- */
 
-  const jsonLdCandidates =
-    extractJsonLdCandidates(
-      $,
-    );
+  const jsonLdCandidates = extractJsonLdCandidates($);
 
   debugLog("JSON_LD", {
-    candidates:
-      jsonLdCandidates,
+    candidates: jsonLdCandidates,
   });
 
   for (const candidate of jsonLdCandidates) {
-    if (
-      !jobTitle &&
-      candidate.jobTitle
-    ) {
-      jobTitle =
-        candidate.jobTitle;
+    if (!jobTitle && candidate.jobTitle) {
+      jobTitle = candidate.jobTitle;
     }
 
     if (
       !companyName &&
       candidate.companyName &&
-      isValidCompanyCandidate(
-        candidate.companyName,
-      )
+      isValidCompanyCandidate(candidate.companyName)
     ) {
-      companyName =
-        candidate.companyName;
+      companyName = candidate.companyName;
 
-      companySource =
-        "json-ld";
+      companySource = "json-ld";
 
-      companyConfidence =
-        0.995;
+      companyConfidence = 0.995;
     }
 
-    if (
-      jobTitle &&
-      companyName
-    ) {
+    if (jobTitle && companyName) {
       break;
     }
   }
@@ -2369,38 +1745,23 @@ const extractJobInfoFromHtml = (
    * ---------------------------------------------------------------------- */
 
   if (!jobTitle) {
-    jobTitle =
-      extractPlatformDomCandidate(
-        $,
-        platform,
-        "title",
-      );
+    jobTitle = extractPlatformDomCandidate($, platform, "title");
   }
 
   if (!companyName) {
-    const candidate =
-      extractPlatformDomCandidate(
-        $,
-        platform,
-        "company",
-      );
+    const candidate = extractPlatformDomCandidate($, platform, "company");
 
     debugLog("PLATFORM_DOM", {
       platform,
-      company:
-        candidate ||
-        "<empty>",
+      company: candidate || "<empty>",
     });
 
     if (candidate) {
-      companyName =
-        candidate;
+      companyName = candidate;
 
-      companySource =
-        "platform-dom";
+      companySource = "platform-dom";
 
-      companyConfidence =
-        0.92;
+      companyConfidence = 0.92;
     }
   }
 
@@ -2409,26 +1770,18 @@ const extractJobInfoFromHtml = (
    * ---------------------------------------------------------------------- */
 
   if (!companyName) {
-    const candidate =
-      extractLabeledCompanyValue(
-        $,
-      );
+    const candidate = extractLabeledCompanyValue($);
 
     debugLog("LABELED_DOM", {
-      company:
-        candidate ||
-        "<empty>",
+      company: candidate || "<empty>",
     });
 
     if (candidate) {
-      companyName =
-        candidate;
+      companyName = candidate;
 
-      companySource =
-        "labeled-dom";
+      companySource = "labeled-dom";
 
-      companyConfidence =
-        0.89;
+      companyConfidence = 0.89;
     }
   }
 
@@ -2436,43 +1789,26 @@ const extractJobInfoFromHtml = (
    * 5. Embedded app state
    * ---------------------------------------------------------------------- */
 
-  const stateCandidates =
-    extractStateCandidates(
-      $,
-    );
+  const stateCandidates = extractStateCandidates($);
 
   debugLog("EMBEDDED_STATE", {
-    candidates:
-      stateCandidates,
+    candidates: stateCandidates,
   });
 
   for (const candidate of stateCandidates) {
-    if (
-      !jobTitle &&
-      candidate.jobTitle
-    ) {
-      jobTitle =
-        candidate.jobTitle;
+    if (!jobTitle && candidate.jobTitle) {
+      jobTitle = candidate.jobTitle;
     }
 
-    if (
-      !companyName &&
-      candidate.companyName
-    ) {
-      companyName =
-        candidate.companyName;
+    if (!companyName && candidate.companyName) {
+      companyName = candidate.companyName;
 
-      companySource =
-        "embedded-state";
+      companySource = "embedded-state";
 
-      companyConfidence =
-        0.94;
+      companyConfidence = 0.94;
     }
 
-    if (
-      jobTitle &&
-      companyName
-    ) {
+    if (jobTitle && companyName) {
       break;
     }
   }
@@ -2483,43 +1819,28 @@ const extractJobInfoFromHtml = (
 
   if (!companyName) {
     const metadata = [
-      $(
-        'meta[property="og:title"]',
-      ).attr("content"),
+      $('meta[property="og:title"]').attr("content"),
 
-      $(
-        'meta[name="twitter:title"]',
-      ).attr("content"),
+      $('meta[name="twitter:title"]').attr("content"),
 
-      $(
-        'meta[name="description"]',
-      ).attr("content"),
+      $('meta[name="description"]').attr("content"),
 
-      $(
-        'meta[property="og:description"]',
-      ).attr("content"),
+      $('meta[property="og:description"]').attr("content"),
     ];
 
     debugLog("METADATA", {
-      values:
-        metadata,
+      values: metadata,
     });
 
     for (const value of metadata) {
-      const candidate =
-        extractCompanyFromMetaText(
-          value,
-        );
+      const candidate = extractCompanyFromMetaText(value);
 
       if (candidate) {
-        companyName =
-          candidate;
+        companyName = candidate;
 
-        companySource =
-          "metadata";
+        companySource = "metadata";
 
-        companyConfidence =
-          0.72;
+        companyConfidence = 0.72;
 
         break;
       }
@@ -2531,49 +1852,30 @@ const extractJobInfoFromHtml = (
    * ---------------------------------------------------------------------- */
 
   if (!jobTitle) {
-    const title =
-      cleanJobTitle(
-        $(
-          'meta[property="og:title"]',
-        ).attr("content") ||
-          $("title").text() ||
-          $("h1").first().text(),
-      );
+    const title = cleanJobTitle(
+      $('meta[property="og:title"]').attr("content") ||
+        $("title").text() ||
+        $("h1").first().text(),
+    );
 
-    jobTitle =
-      title || "";
+    jobTitle = title || "";
   }
 
-  jobTitle =
-    cleanJobTitle(
-      jobTitle,
-    );
+  jobTitle = cleanJobTitle(jobTitle);
 
-  companyName =
-    cleanCompanyName(
-      companyName,
-    );
+  companyName = cleanCompanyName(companyName);
 
   /* ------------------------------------------------------------------------
    * 8. Final safety checks
    * ---------------------------------------------------------------------- */
 
-  if (
-    !isValidCompanyCandidate(
-      companyName,
-    )
-  ) {
+  if (!isValidCompanyCandidate(companyName)) {
     companyName = "";
     companySource = "";
     companyConfidence = 0;
   }
 
-  if (
-    isSameCompanyAndTitle(
-      companyName,
-      jobTitle,
-    )
-  ) {
+  if (isSameCompanyAndTitle(companyName, jobTitle)) {
     companyName = "";
     companySource = "";
     companyConfidence = 0;
@@ -2599,108 +1901,73 @@ const extractJobInfoFromHtml = (
  * AXIOS
  * ========================================================================== */
 
-const fetchHtmlSafely = async (
-  url,
-) => {
-  let currentUrl =
-    normalizeInputUrl(url);
+const fetchHtmlSafely = async (url) => {
+  let currentUrl = normalizeInputUrl(url);
 
   const MAX_REDIRECTS = 5;
 
-  for (
-    let i = 0;
-    i <= MAX_REDIRECTS;
-    i += 1
-  ) {
-    const safeUrl =
-      await assertSafePublicUrl(
-        currentUrl,
-      );
-
-    const response =
-      await axios.get(
-        safeUrl.toString(),
-        {
-          timeout: 5000,
-          maxRedirects: 0,
-          maxContentLength:
-            5 * 1024 * 1024,
-          maxBodyLength:
-            5 * 1024 * 1024,
-          responseType: "text",
-
-          validateStatus:
-            (status) =>
-              status >= 200 &&
-              status < 400,
-
-          headers: {
-            "User-Agent":
-              USER_AGENT,
-            Accept:
-              "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language":
-              "en-IN,en;q=0.9",
-            "Cache-Control":
-              "no-cache",
-            Pragma: "no-cache",
-          },
-        },
-      );
-
-    debugLog("AXIOS_RESPONSE", {
-      url:
-        safeUrl.toString(),
-      status:
-        response.status,
-      contentType:
-        response.headers?.[
-          "content-type"
-        ] || "",
-    });
+  for (let i = 0; i <= MAX_REDIRECTS; i += 1) {
+    const redirectPlatform = detectJobPlatform(currentUrl);
 
     if (
-      response.status >= 200 &&
-      response.status < 300
+      redirectPlatform === JOB_PLATFORMS.UNKNOWN ||
+      isUnsupportedPlatform(redirectPlatform)
     ) {
+      throw new Error("Redirected to an unsupported platform");
+    }
+
+    const safeUrl = await assertSafePublicUrl(currentUrl);
+
+    const response = await axios.get(safeUrl.toString(), {
+      timeout: 5000,
+      maxRedirects: 0,
+      maxContentLength: 5 * 1024 * 1024,
+      maxBodyLength: 5 * 1024 * 1024,
+      responseType: "text",
+
+      validateStatus: (status) => status >= 200 && status < 400,
+
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9",
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+    });
+
+    debugLog("AXIOS_RESPONSE", {
+      url: safeUrl.toString(),
+      status: response.status,
+      contentType: response.headers?.["content-type"] || "",
+    });
+
+    if (response.status >= 200 && response.status < 300) {
       return {
         html:
-          typeof response.data ===
-          "string"
+          typeof response.data === "string"
             ? response.data
-            : String(
-                response.data ||
-                  "",
-              ),
+            : String(response.data || ""),
 
-        finalUrl:
-          safeUrl.toString(),
+        finalUrl: safeUrl.toString(),
       };
     }
 
-    const location =
-      response.headers?.location;
+    const location = response.headers?.location;
 
-    if (
-      !location ||
-      i === MAX_REDIRECTS
-    ) {
-      throw new Error(
-        "Too many or invalid redirects",
-      );
+    if (!location || i === MAX_REDIRECTS) {
+      throw new Error("Too many or invalid redirects");
     }
 
-    currentUrl =
-      new URL(
-        location,
-        safeUrl,
-      ).toString();
+    currentUrl = new URL(location, safeUrl).toString();
   }
 
-  throw new Error(
-    "Redirect limit exceeded",
-  );
+  throw new Error("Redirect limit exceeded");
 };
+
+const isNonRetryableHttpStatus = (status) =>
+  [401, 403, 404, 408, 429, 500, 502, 503].includes(status);
 
 /* ============================================================================
  * PLAYWRIGHT
@@ -2716,8 +1983,7 @@ let browserIdleTimer = null;
 // errors like "Target page, context or browser has been closed".
 let activeBrowserUsers = 0;
 
-const BROWSER_IDLE_MS =
-  60_000;
+const BROWSER_IDLE_MS = 60_000;
 
 const clearBrowserIdleTimer = () => {
   if (browserIdleTimer) {
@@ -2726,42 +1992,35 @@ const clearBrowserIdleTimer = () => {
   }
 };
 
-const scheduleBrowserShutdown =
-  () => {
-    clearBrowserIdleTimer();
+const scheduleBrowserShutdown = () => {
+  clearBrowserIdleTimer();
 
-    // Don't arm the shutdown timer while a scrape is actively running.
+  // Don't arm the shutdown timer while a scrape is actively running.
+  if (activeBrowserUsers > 0) {
+    return;
+  }
+
+  browserIdleTimer = setTimeout(async () => {
+    // Re-check in case a new scrape started while we were waiting.
     if (activeBrowserUsers > 0) {
       return;
     }
 
-    browserIdleTimer =
-      setTimeout(
-        async () => {
-          // Re-check in case a new scrape started while we were waiting.
-          if (activeBrowserUsers > 0) {
-            return;
-          }
+    const current = browserPromise;
 
-          const current =
-            browserPromise;
+    browserPromise = null;
 
-          browserPromise = null;
+    try {
+      const browser = await current;
 
-          try {
-            const browser =
-              await current;
+      await browser?.close();
+    } catch {
+      // Best effort.
+    }
+  }, BROWSER_IDLE_MS);
 
-            await browser?.close();
-          } catch {
-            // Best effort.
-          }
-        },
-        BROWSER_IDLE_MS,
-      );
-
-    browserIdleTimer.unref?.();
-  };
+  browserIdleTimer.unref?.();
+};
 
 const launchBrowser = () =>
   chromium
@@ -2785,8 +2044,7 @@ const getBrowser = async () => {
     browserPromise = launchBrowser();
   }
 
-  let browser =
-    await browserPromise;
+  let browser = await browserPromise;
 
   // The cached browser may have crashed or been closed externally (e.g. a
   // race with the idle-shutdown timer, or the OS killing the process). In
@@ -2800,381 +2058,249 @@ const getBrowser = async () => {
   return browser;
 };
 
-const isBrowserClosedError = (
-  error,
-) =>
+const isBrowserClosedError = (error) =>
   /has been closed|target closed|browser has been closed/i.test(
     error?.message || "",
   );
 
-const scrapeWithPlaywrightOnce =
-  async (
-    url,
-    platform,
-  ) => {
-    let context = null;
+const scrapeWithPlaywrightOnce = async (url, platform) => {
+  let context = null;
 
-    activeBrowserUsers += 1;
+  activeBrowserUsers += 1;
 
-    try {
-      await assertSafePublicUrl(
-        url,
-      );
+  try {
+    await assertSafePublicUrl(url);
 
-      const browser =
-        await getBrowser();
+    const browser = await getBrowser();
 
-      context =
-        await browser.newContext(
-          {
-            userAgent:
-              USER_AGENT,
+    context = await browser.newContext({
+      userAgent: USER_AGENT,
 
-            viewport: {
-              width: 1366,
-              height: 768,
-            },
+      viewport: {
+        width: 1366,
+        height: 768,
+      },
 
-            locale: "en-IN",
-          },
-        );
+      locale: "en-IN",
+    });
 
-      const page =
-        await context.newPage();
+    const page = await context.newPage();
 
-      await page.route(
-        "**/*",
-        async (route) => {
-          const type =
-            route
-              .request()
-              .resourceType();
+    await page.route("**/*", async (route) => {
+      const request = route.request();
 
-          if (
-            [
-              "image",
-              "media",
-              "font",
-            ].includes(type)
-          ) {
-            await route.abort();
-            return;
-          }
+      if (request.isNavigationRequest()) {
+        const requestPlatform = detectJobPlatform(request.url());
 
-          await route.continue();
-        },
-      );
-
-      await page.goto(
-        url,
-        {
-          waitUntil:
-            "domcontentloaded",
-          timeout: 5000,
-        },
-      );
-
-      debugLog(
-        "PLAYWRIGHT_PAGE",
-        {
-          requestedUrl:
-            url,
-
-          actualUrl:
-            page.url(),
-
-          title:
-            await page
-              .title()
-              .catch(
-                () => "",
-              ),
-
-          h1:
-            await page
-              .locator("h1")
-              .first()
-              .textContent()
-              .catch(
-                () => "",
-              ),
-
-          companyTestId:
-            await page
-              .locator(
-                '[data-testid="company-name"]',
-              )
-              .first()
-              .textContent()
-              .catch(
-                () => "",
-              ),
-
-          bodyPreview:
-            (
-              await page
-                .locator("body")
-                .innerText()
-                .catch(
-                  () => "",
-                )
-            ).slice(
-              0,
-              1200,
-            ),
-        },
-      );
-
-      const html =
-        await page.content();
-
-      debugLog(
-        "PLAYWRIGHT_HTML",
-        {
-          htmlLength:
-            html.length,
-
-          blocked:
-            isBlockedHtmlPage(
-              html,
-            ),
-        },
-      );
-
-      if (
-        isBlockedHtmlPage(
-          html,
-        )
-      ) {
-        return {
-          jobTitle: "",
-          companyName: "",
-        };
-      }
-
-      return extractJobInfoFromHtml(
-        html,
-        platform,
-      );
-    } finally {
-      try {
-        await context?.close();
-      } catch {
-        // Best effort.
-      }
-
-      activeBrowserUsers =
-        Math.max(
-          0,
-          activeBrowserUsers - 1,
-        );
-
-      scheduleBrowserShutdown();
-    }
-  };
-
-const scrapeWithPlaywright =
-  async (
-    url,
-    platform,
-  ) => {
-    try {
-      return await scrapeWithPlaywrightOnce(
-        url,
-        platform,
-      );
-    } catch (error) {
-      debugLog(
-        "PLAYWRIGHT_ERROR",
-        {
-          url,
-          message:
-            error?.message ||
-            "",
-        },
-      );
-
-      logger.error(
-        "Playwright scraping failed",
-        error,
-      );
-
-      // If the shared browser instance died mid-scrape (crash, or a race
-      // with the idle-shutdown timer), force a relaunch and retry exactly
-      // once instead of silently returning empty results.
-      if (isBrowserClosedError(error)) {
-        browserPromise = null;
-
-        try {
-          return await scrapeWithPlaywrightOnce(
-            url,
-            platform,
-          );
-        } catch (retryError) {
-          debugLog(
-            "PLAYWRIGHT_RETRY_ERROR",
-            {
-              url,
-              message:
-                retryError?.message ||
-                "",
-            },
-          );
-
-          logger.error(
-            "Playwright retry failed",
-            retryError,
-          );
+        if (
+          requestPlatform === JOB_PLATFORMS.UNKNOWN ||
+          isUnsupportedPlatform(requestPlatform)
+        ) {
+          await route.abort();
+          return;
         }
       }
+
+      const type = route.request().resourceType();
+
+      if (["image", "media", "font"].includes(type)) {
+        await route.abort();
+        return;
+      }
+
+      await route.continue();
+    });
+
+    await page.goto(url, {
+      waitUntil: "domcontentloaded",
+      timeout: 5000,
+    });
+
+    debugLog("PLAYWRIGHT_PAGE", {
+      requestedUrl: url,
+
+      actualUrl: page.url(),
+
+      title: await page.title().catch(() => ""),
+
+      h1: await page
+        .locator("h1")
+        .first()
+        .textContent()
+        .catch(() => ""),
+
+      companyTestId: await page
+        .locator('[data-testid="company-name"]')
+        .first()
+        .textContent()
+        .catch(() => ""),
+
+      bodyPreview: (
+        await page
+          .locator("body")
+          .innerText()
+          .catch(() => "")
+      ).slice(0, 1200),
+    });
+
+    const html = await page.content();
+
+    debugLog("PLAYWRIGHT_HTML", {
+      htmlLength: html.length,
+
+      blocked: isBlockedHtmlPage(html),
+    });
+
+    if (isBlockedHtmlPage(html)) {
+      return {
+        jobTitle: "",
+        companyName: "",
+      };
+    }
+
+    return extractJobInfoFromHtml(html, platform);
+  } finally {
+    try {
+      await context?.close();
+    } catch {
+      // Best effort.
+    }
+
+    activeBrowserUsers = Math.max(0, activeBrowserUsers - 1);
+
+    scheduleBrowserShutdown();
+  }
+};
+
+const scrapeWithPlaywright = async (url, platform) => {
+  try {
+    return await scrapeWithPlaywrightOnce(url, platform);
+  } catch (error) {
+    debugLog("PLAYWRIGHT_ERROR", {
+      url,
+      message: error?.message || "",
+    });
+
+    logger.error("Playwright scraping failed", error);
+
+    // If the shared browser instance died mid-scrape (crash, or a race
+    // with the idle-shutdown timer), force a relaunch and retry exactly
+    // once instead of silently returning empty results.
+    if (isBrowserClosedError(error)) {
+      browserPromise = null;
+
+      try {
+        return await scrapeWithPlaywrightOnce(url, platform);
+      } catch (retryError) {
+        debugLog("PLAYWRIGHT_RETRY_ERROR", {
+          url,
+          message: retryError?.message || "",
+        });
+
+        logger.error("Playwright retry failed", retryError);
+      }
+    }
+
+    return {
+      jobTitle: "",
+      companyName: "",
+    };
+  }
+};
+
+/* ============================================================================
+ * SCRAPING PIPELINE
+ * ========================================================================== */
+
+const scrapeJobInfoFromUrl = async (url, platform) => {
+  /*
+   * Protected platforms:
+   * use browser first.
+   *
+   * This is particularly important because Axios commonly gets 403
+   * on these platforms when hit with a plain HTTP request.
+   */
+  const browserFirst = [JOB_PLATFORMS.LINKEDIN, JOB_PLATFORMS.NAUKRI].includes(
+    platform,
+  );
+
+  if (browserFirst) {
+    debugLog("BROWSER_FIRST", {
+      platform,
+      url,
+    });
+
+    const browserResult = await scrapeWithPlaywright(url, platform);
+
+    if (browserResult.companyName || browserResult.jobTitle) {
+      return browserResult;
+    }
+  }
+
+  try {
+    const { html, finalUrl } = await fetchHtmlSafely(url);
+
+    const result = extractJobInfoFromHtml(html, platform);
+
+    if (result.companyName || result.jobTitle) {
+      return {
+        ...result,
+        finalUrl,
+      };
+    }
+  } catch (error) {
+    debugLog("AXIOS_ERROR", {
+      url,
+      status: error?.response?.status || null,
+
+      message: error?.message || "",
+
+      contentType: error?.response?.headers?.["content-type"] || "",
+
+      responsePreview:
+        typeof error?.response?.data === "string"
+          ? error.response.data.slice(0, 1000)
+          : "",
+    });
+
+    if (isNonRetryableHttpStatus(error?.response?.status)) {
+      debugLog("HTTP_BLOCKED", {
+        url,
+        status: error.response.status,
+      });
 
       return {
         jobTitle: "",
         companyName: "",
       };
     }
-  };
 
-/* ============================================================================
- * SCRAPING PIPELINE
- * ========================================================================== */
+    logger.error("Axios scraping failed", error);
+  }
 
-const scrapeJobInfoFromUrl =
-  async (
-    url,
-    platform,
-  ) => {
-    /*
-     * Protected platforms:
-     * use browser first.
-     *
-     * This is particularly important because Axios commonly gets 403
-     * on these platforms when hit with a plain HTTP request.
-     */
-    const browserFirst =
-      [
-        JOB_PLATFORMS.LINKEDIN,
-        JOB_PLATFORMS.NAUKRI,
-      ].includes(
-        platform,
-      );
-
-    if (browserFirst) {
-      debugLog(
-        "BROWSER_FIRST",
-        {
-          platform,
-          url,
-        },
-      );
-
-      const browserResult =
-        await scrapeWithPlaywright(
-          url,
-          platform,
-        );
-
-      if (
-        browserResult.companyName ||
-        browserResult.jobTitle
-      ) {
-        return browserResult;
-      }
-    }
-
-    try {
-      const {
-        html,
-        finalUrl,
-      } =
-        await fetchHtmlSafely(
-          url,
-        );
-
-      const result =
-        extractJobInfoFromHtml(
-          html,
-          platform,
-        );
-
-      if (
-        result.companyName ||
-        result.jobTitle
-      ) {
-        return {
-          ...result,
-          finalUrl,
-        };
-      }
-    } catch (error) {
-      debugLog("AXIOS_ERROR", {
-        url,
-        status:
-          error?.response?.status ||
-          null,
-
-        message:
-          error?.message ||
-          "",
-
-        contentType:
-          error?.response?.headers?.[
-            "content-type"
-          ] || "",
-
-        responsePreview:
-          typeof error?.response
-            ?.data ===
-          "string"
-            ? error.response.data.slice(
-                0,
-                1000,
-              )
-            : "",
-      });
-
-      logger.error(
-        "Axios scraping failed",
-        error,
-      );
-    }
-
-    return scrapeWithPlaywright(
-      url,
-      platform,
-    );
-  };
+  return scrapeWithPlaywright(url, platform);
+};
 
 /* ============================================================================
  * CACHE
  * ========================================================================== */
 
-const CACHE_TTL_MS =
-  15 * 60 * 1000;
+const CACHE_TTL_MS = 15 * 60 * 1000;
 
-const FAILURE_CACHE_TTL_MS =
-  60 * 1000;
+const FAILURE_CACHE_TTL_MS = 60 * 1000;
 
-const CACHE_MAX_ENTRIES =
-  500;
+const CACHE_MAX_ENTRIES = 500;
 
-const cache =
-  new Map();
+const cache = new Map();
 
-const getFromCache = (
-  key,
-) => {
-  const entry =
-    cache.get(key);
+const getFromCache = (key) => {
+  const entry = cache.get(key);
 
   if (!entry) {
     return null;
   }
 
-  if (
-    Date.now() >
-    entry.expiresAt
-  ) {
+  if (Date.now() > entry.expiresAt) {
     cache.delete(key);
     return null;
   }
@@ -3185,34 +2311,18 @@ const getFromCache = (
   return entry.value;
 };
 
-const setInCache = (
-  key,
-  value,
-  ttl,
-) => {
-  if (
-    cache.size >=
-    CACHE_MAX_ENTRIES
-  ) {
-    const oldest =
-      cache.keys()
-        .next()
-        .value;
+const setInCache = (key, value, ttl) => {
+  if (cache.size >= CACHE_MAX_ENTRIES) {
+    const oldest = cache.keys().next().value;
 
-    if (
-      oldest !==
-      undefined
-    ) {
-      cache.delete(
-        oldest,
-      );
+    if (oldest !== undefined) {
+      cache.delete(oldest);
     }
   }
 
   cache.set(key, {
     value,
-    expiresAt:
-      Date.now() + ttl,
+    expiresAt: Date.now() + ttl,
   });
 };
 
@@ -3220,41 +2330,19 @@ const setInCache = (
  * JOB TITLE URL FALLBACK
  * ========================================================================== */
 
-const titleFromUrlPath = (
-  url,
-) => {
+const titleFromUrlPath = (url) => {
   try {
-    const parsed =
-      new URL(
-        normalizeInputUrl(url),
-      );
+    const parsed = new URL(normalizeInputUrl(url));
 
-    const parts =
-      parsed.pathname
-        .split("/")
-        .filter(Boolean);
+    const parts = parsed.pathname.split("/").filter(Boolean);
 
-    const detailIndex =
-      parts.findIndex(
-        (part) =>
-          part.toLowerCase() ===
-          "details",
-      );
+    const detailIndex = parts.findIndex(
+      (part) => part.toLowerCase() === "details",
+    );
 
-    if (
-      detailIndex !== -1 &&
-      parts[detailIndex + 1]
-    ) {
+    if (detailIndex !== -1 && parts[detailIndex + 1]) {
       return cleanJobTitle(
-        decodeURIComponent(
-          parts[
-            detailIndex + 1
-          ],
-        )
-          .replace(
-            /[-_]+/g,
-            " ",
-          ),
+        decodeURIComponent(parts[detailIndex + 1]).replace(/[-_]+/g, " "),
       );
     }
 
@@ -3268,14 +2356,210 @@ const titleFromUrlPath = (
  * MAIN RESOLVER
  * ========================================================================== */
 
-const resolveJobInfoUncached =
-  async (
-    careerPageUrl,
-  ) => {
-    const normalizedUrl =
-      normalizeInputUrl(
-        careerPageUrl,
-      );
+const resolveJobInfoUncached = async (careerPageUrl) => {
+  const normalizedUrl = normalizeInputUrl(careerPageUrl);
+
+  if (!normalizedUrl) {
+    return {
+      jobTitle: "",
+      companyName: "",
+      searchCompanyName: "",
+    };
+  }
+
+  try {
+    const parsed = new URL(normalizedUrl);
+
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return {
+        jobTitle: "",
+        companyName: "",
+        searchCompanyName: "",
+      };
+    }
+  } catch {
+    return {
+      jobTitle: "",
+      companyName: "",
+      searchCompanyName: "",
+    };
+  }
+
+  const platform = detectJobPlatform(normalizedUrl);
+
+  debugLog("RESOLUTION_START", {
+    inputUrl: careerPageUrl,
+
+    normalizedUrl,
+    platform,
+  });
+
+  // Unsupported and unknown platforms are rejected immediately - no DNS
+  // lookup, HTTP request, Cheerio processing, or browser launch.
+  if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+    debugLog("PLATFORM_NOT_SUPPORTED", {
+      platform,
+      normalizedUrl,
+    });
+
+    return unsupportedPlatformResult(platform);
+  }
+
+  const deterministicCompany = extractDeterministicCompanyFromPlatformUrl(
+    normalizedUrl,
+    platform,
+  );
+
+  if (deterministicCompany) {
+    debugLog("URL_FAST_PATH", {
+      platform,
+      company: deterministicCompany,
+      source: `url:${platform}`,
+      confidence: 1,
+    });
+
+    return {
+      jobTitle: "",
+      companyName: deterministicCompany,
+      searchCompanyName: deterministicCompany,
+    };
+  }
+
+  const urlCompany = cleanCompanyName(
+    extractCompanyFromPlatformUrl(normalizedUrl),
+  );
+
+  const genericCompany = cleanCompanyName(
+    extractCompanyNameFromCareerUrl(normalizedUrl),
+  );
+
+  debugLog("URL_CANDIDATES", {
+    platform,
+    urlCompany: urlCompany || "<empty>",
+
+    genericCompany: genericCompany || "<empty>",
+  });
+
+  let scraped = {
+    jobTitle: "",
+    companyName: "",
+    companySource: "",
+    companyConfidence: 0,
+  };
+
+  /*
+   * Always try the page for protected/ambiguous platforms.
+   *
+   * This prevents Naukri URL guesses such as:
+   *
+   * business-analyst-risk-domain-infosysltd
+   *
+   * from automatically becoming the final answer.
+   */
+  const page = await scrapeJobInfoFromUrl(normalizedUrl, platform);
+
+  scraped = page;
+
+  let jobTitle = cleanJobTitle(
+    scraped.jobTitle ||
+      (platform === JOB_PLATFORMS.NAUKRI
+        ? extractNaukriJobInfoFromUrl(normalizedUrl).jobTitle
+        : platform === JOB_PLATFORMS.UNSTOP
+          ? extractUnstopJobInfoFromUrl(normalizedUrl).jobTitle
+          : platform === JOB_PLATFORMS.WORKDAY
+            ? extractWorkdayJobInfoFromUrl(normalizedUrl).jobTitle
+            : titleFromUrlPath(normalizedUrl)),
+  );
+
+  let companyName = cleanCompanyName(scraped.companyName);
+
+  let source = scraped.companySource || "";
+
+  let confidence = scraped.companyConfidence || 0;
+
+  /*
+   * URL fallbacks are used only when page extraction
+   * did not produce a company.
+   */
+  if (!companyName) {
+    const bestUrl = [
+      {
+        value: urlCompany,
+        confidence: [
+          JOB_PLATFORMS.GREENHOUSE,
+          JOB_PLATFORMS.LEVER,
+          JOB_PLATFORMS.ASHBY,
+        ].includes(platform)
+          ? 0.96
+          : 0.72,
+        source: "platform-url",
+      },
+
+      {
+        value: genericCompany,
+        confidence: 0.58,
+        source: "generic-url",
+      },
+    ]
+      .filter(
+        (candidate) =>
+          candidate.value && isValidCompanyCandidate(candidate.value),
+      )
+      .sort((a, b) => b.confidence - a.confidence)[0];
+
+    if (bestUrl) {
+      companyName = bestUrl.value;
+
+      source = bestUrl.source;
+
+      confidence = bestUrl.confidence;
+    }
+  }
+
+  /*
+   * Final semantic safety check.
+   */
+  if (isSameCompanyAndTitle(companyName, jobTitle)) {
+    companyName = "";
+    source = "";
+    confidence = 0;
+  }
+
+  if (!isValidCompanyCandidate(companyName)) {
+    companyName = "";
+    source = "";
+    confidence = 0;
+  }
+
+  const searchCompanyName = companyName;
+
+  debugLog("RESOLUTION_FINAL", {
+    platform,
+    jobTitle,
+    companyName,
+    searchCompanyName,
+    source,
+    confidence,
+  });
+
+  /*
+   * Keep public response shape clean.
+   */
+  return {
+    jobTitle,
+    companyName,
+
+    searchCompanyName: cleanCompanyName(searchCompanyName) || searchCompanyName,
+  };
+};
+
+/* ============================================================================
+ * PUBLIC API
+ * ========================================================================== */
+
+export const resolveJobInfoFromCareerUrl = async (careerPageUrl = "") => {
+  try {
+    const normalizedUrl = normalizeInputUrl(careerPageUrl);
 
     if (!normalizedUrl) {
       return {
@@ -3285,547 +2569,176 @@ const resolveJobInfoUncached =
       };
     }
 
-    const platform =
-      detectJobPlatform(
-        normalizedUrl,
-      );
+    // Fast-path rejection before even touching the cache/DNS: unsupported
+    // and unknown URLs always resolve the same way, so there is nothing
+    // worth caching or looking up here either.
+    const platform = detectJobPlatform(normalizedUrl);
 
-    debugLog(
-      "RESOLUTION_START",
-      {
-        inputUrl:
-          careerPageUrl,
+    if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+      return unsupportedPlatformResult(platform);
+    }
 
-        normalizedUrl,
-        platform,
-      },
-    );
+    const cacheKey = normalizeUrlForCompare(normalizedUrl) || normalizedUrl;
 
-    // Unsupported platforms (currently just Indeed) are rejected
-    // immediately - no DNS lookup, no HTTP request, no browser launch.
-    // This is what keeps the response fast instead of waiting out a
-    // Playwright timeout that was always going to end empty-handed.
-    if (isUnsupportedPlatform(platform)) {
-      debugLog("UNSUPPORTED_PLATFORM", {
-        platform,
-        normalizedUrl,
+    const cached = getFromCache(cacheKey);
+
+    if (cached) {
+      debugLog("CACHE_HIT", {
+        cacheKey,
       });
 
-      return {
-        jobTitle: "",
-        companyName: "",
-        searchCompanyName: "",
-        unsupported: true,
-        message: UNSUPPORTED_PLATFORM_MESSAGE,
-      };
+      return cached;
     }
 
-    const urlCompany =
-      cleanCompanyName(
-        extractCompanyFromPlatformUrl(
-          normalizedUrl,
-        ),
-      );
+    const result = await resolveJobInfoUncached(normalizedUrl);
 
-    const genericCompany =
-      cleanCompanyName(
-        extractCompanyNameFromCareerUrl(
-          normalizedUrl,
-        ),
-      );
-
-    debugLog(
-      "URL_CANDIDATES",
-      {
-        platform,
-        urlCompany:
-          urlCompany ||
-          "<empty>",
-
-        genericCompany:
-          genericCompany ||
-          "<empty>",
-      },
+    setInCache(
+      cacheKey,
+      result,
+      result.companyName ? CACHE_TTL_MS : FAILURE_CACHE_TTL_MS,
     );
 
-    let scraped = {
+    return result;
+  } catch (error) {
+    logger.error("Failed to resolve job information", error);
+
+    return {
       jobTitle: "",
       companyName: "",
-      companySource: "",
-      companyConfidence: 0,
+      searchCompanyName: "",
     };
+  }
+};
 
-    /*
-     * Always try the page for protected/ambiguous platforms.
-     *
-     * This prevents Naukri URL guesses such as:
-     *
-     * business-analyst-risk-domain-infosysltd
-     *
-     * from automatically becoming the final answer.
-     */
-    const page =
-      await scrapeJobInfoFromUrl(
-        normalizedUrl,
-        platform,
-      );
+export const resolveCompanyNameFromCareerUrl = async (careerPageUrl = "") => {
+  const normalizedUrl = normalizeInputUrl(careerPageUrl);
 
-    scraped = page;
+  const info = await resolveJobInfoFromCareerUrl(normalizedUrl);
 
-    let jobTitle =
-      cleanJobTitle(
-        scraped.jobTitle ||
-          (
-            platform ===
-            JOB_PLATFORMS.NAUKRI
-              ? extractNaukriJobInfoFromUrl(
-                  normalizedUrl,
-                ).jobTitle
-              : platform ===
-                JOB_PLATFORMS.UNSTOP
-              ? extractUnstopJobInfoFromUrl(
-                  normalizedUrl,
-                ).jobTitle
-              : platform ===
-                JOB_PLATFORMS.WORKDAY
-              ? extractWorkdayJobInfoFromUrl(
-                  normalizedUrl,
-                ).jobTitle
-              : titleFromUrlPath(
-                  normalizedUrl,
-                )
-          ),
-      );
-
-    let companyName =
-      cleanCompanyName(
-        scraped.companyName,
-      );
-
-    let source =
-      scraped.companySource ||
-      "";
-
-    let confidence =
-      scraped.companyConfidence ||
-      0;
-
-    /*
-     * URL fallbacks are used only when page extraction
-     * did not produce a company.
-     */
-    if (!companyName) {
-      const bestUrl =
-        [
-          {
-            value:
-              urlCompany,
-            confidence:
-              [
-                JOB_PLATFORMS.GREENHOUSE,
-                JOB_PLATFORMS.LEVER,
-                JOB_PLATFORMS.ASHBY,
-              ].includes(platform)
-                ? 0.96
-                : 0.72,
-            source:
-              "platform-url",
-          },
-
-          {
-            value:
-              genericCompany,
-            confidence:
-              0.58,
-            source:
-              "generic-url",
-          },
-        ]
-          .filter(
-            (candidate) =>
-              candidate.value &&
-              isValidCompanyCandidate(
-                candidate.value,
-              ),
-          )
-          .sort(
-            (a, b) =>
-              b.confidence -
-              a.confidence,
-          )[0];
-
-      if (bestUrl) {
-        companyName =
-          bestUrl.value;
-
-        source =
-          bestUrl.source;
-
-        confidence =
-          bestUrl.confidence;
-      }
-    }
-
-    /*
-     * Final semantic safety check.
-     */
-    if (
-      isSameCompanyAndTitle(
-        companyName,
-        jobTitle,
-      )
-    ) {
-      companyName = "";
-      source = "";
-      confidence = 0;
-    }
-
-    if (
-      !isValidCompanyCandidate(
-        companyName,
-      )
-    ) {
-      companyName = "";
-      source = "";
-      confidence = 0;
-    }
-
-    const restrictedFallback =
-      platform ===
-        JOB_PLATFORMS.NAUKRI ||
-      platform ===
-        JOB_PLATFORMS.UNSTOP ||
-      platform ===
-        JOB_PLATFORMS.WORKDAY;
-
-    const searchCompanyName =
-      restrictedFallback
-        ? companyName
-        : companyName ||
-          jobTitle;
-
-    debugLog(
-      "RESOLUTION_FINAL",
-      {
-        platform,
-        jobTitle,
-        companyName,
-        searchCompanyName,
-        source,
-        confidence,
-      },
-    );
-
-    /*
-     * Keep public response shape clean.
-     */
-    return {
-      jobTitle,
-      companyName,
-
-      searchCompanyName:
-        cleanCompanyName(
-          searchCompanyName,
-        ) ||
-        searchCompanyName,
-    };
-  };
-
-/* ============================================================================
- * PUBLIC API
- * ========================================================================== */
-
-export const resolveJobInfoFromCareerUrl =
-  async (
-    careerPageUrl = "",
-  ) => {
-    try {
-      const normalizedUrl =
-        normalizeInputUrl(
-          careerPageUrl,
-        );
-
-      if (!normalizedUrl) {
-        return {
-          jobTitle: "",
-          companyName: "",
-          searchCompanyName: "",
-        };
-      }
-
-      // Fast-path rejection before even touching the cache/DNS: an
-      // unsupported-platform URL always resolves the same way, so there
-      // is nothing worth caching or looking up here either.
-      const platform =
-        detectJobPlatform(
-          normalizedUrl,
-        );
-
-      if (isUnsupportedPlatform(platform)) {
-        return {
-          jobTitle: "",
-          companyName: "",
-          searchCompanyName: "",
-          unsupported: true,
-          message: UNSUPPORTED_PLATFORM_MESSAGE,
-        };
-      }
-
-      const cacheKey =
-        normalizeUrlForCompare(
-          normalizedUrl,
-        ) ||
-        normalizedUrl;
-
-      const cached =
-        getFromCache(
-          cacheKey,
-        );
-
-      if (cached) {
-        debugLog("CACHE_HIT", {
-          cacheKey,
-        });
-
-        return cached;
-      }
-
-      const result =
-        await resolveJobInfoUncached(
-          normalizedUrl,
-        );
-
-      setInCache(
-        cacheKey,
-        result,
-        result.companyName
-          ? CACHE_TTL_MS
-          : FAILURE_CACHE_TTL_MS,
-      );
-
-      return result;
-    } catch (error) {
-      logger.error(
-        "Failed to resolve job information",
-        error,
-      );
-
-      return {
-        jobTitle: "",
-        companyName: "",
-        searchCompanyName: "",
-      };
-    }
-  };
-
-export const resolveCompanyNameFromCareerUrl =
-  async (
-    careerPageUrl = "",
-  ) => {
-    const normalizedUrl =
-      normalizeInputUrl(
-        careerPageUrl,
-      );
-
-    const info =
-      await resolveJobInfoFromCareerUrl(
-        normalizedUrl,
-      );
-
-    return cleanCompanyName(
-      info.companyName ||
-        info.searchCompanyName,
-    );
-  };
+  return cleanCompanyName(info.companyName || info.searchCompanyName);
+};
 
 /* ============================================================================
  * VALIDATION
  * ========================================================================== */
 
-export const validateCareerPageUrl =
-  async (
-    careerPageUrl = "",
-  ) => {
-    if (
-      !careerPageUrl ||
-      typeof careerPageUrl !==
-        "string"
-    ) {
-      return {
-        valid: false,
-        message:
-          "careerPageUrl is required",
-      };
-    }
-
-    const normalizedUrl =
-      normalizeInputUrl(
-        careerPageUrl,
-      );
-
-    let parsed;
-
-    try {
-      parsed =
-        new URL(
-          normalizedUrl,
-        );
-    } catch {
-      return {
-        valid: false,
-        message:
-          "Please enter a valid URL",
-      };
-    }
-
-    if (
-      ![
-        "http:",
-        "https:",
-      ].includes(
-        parsed.protocol,
-      )
-    ) {
-      return {
-        valid: false,
-        message:
-          "Only HTTP and HTTPS URLs are allowed",
-      };
-    }
-
-    // Detect the platform as early as possible. Unsupported platforms
-    // (Indeed) are rejected right here - before the homepage check, the
-    // DNS-safety check, and the DB lookup - so an Indeed URL fails fast
-    // with a clear message instead of paying for work whose outcome is
-    // already decided.
-    const platform =
-      detectJobPlatform(
-        normalizedUrl,
-      );
-
-    if (isUnsupportedPlatform(platform)) {
-      return {
-        valid: false,
-        unsupportedPlatform: true,
-        platform,
-        message: UNSUPPORTED_PLATFORM_MESSAGE,
-      };
-    }
-
-    if (
-      isPlainCompanyHomepage(
-        parsed,
-      )
-    ) {
-      return {
-        valid: false,
-        message:
-          "Please enter a specific job URL, not a company homepage URL.",
-      };
-    }
-
-    try {
-      await assertSafePublicUrl(
-        normalizedUrl,
-      );
-    } catch {
-      return {
-        valid: false,
-        message:
-          "Private or internal URLs are not allowed",
-      };
-    }
-
-    const normalizedForCompare =
-      normalizeUrlForCompare(
-        normalizedUrl,
-      );
-
-    try {
-      const matchingCareerPage =
-        await DiscoveredCompany.findOne(
-          {
-            normalizedCareerPageUrl:
-              normalizedForCompare,
-          },
-        )
-          .select(
-            "companyName careerPageUrl",
-          )
-          .lean();
-
-      if (
-        matchingCareerPage
-      ) {
-        return {
-          valid: false,
-
-          alreadyExists: true,
-
-          message:
-            "This is the company career page URL. Please enter a specific job URL, not the main career page URL.",
-
-          data: {
-            companyName:
-              matchingCareerPage.companyName,
-
-            careerPageUrl:
-              matchingCareerPage.careerPageUrl,
-          },
-        };
-      }
-    } catch (error) {
-      logger.error(
-        "Career page lookup failed",
-        error,
-      );
-    }
-
-    if (
-      !isKnownJobPlatform(
-        getHost(parsed),
-      ) &&
-      !hasJobKeywordInUrl(
-        parsed,
-      )
-    ) {
-      return {
-        valid: false,
-        message:
-          "Please enter a valid job posting URL.",
-      };
-    }
-
-    const jobInfo =
-      await resolveJobInfoFromCareerUrl(
-        normalizedUrl,
-      );
-
-    if (
-      !jobInfo.companyName
-    ) {
-      return {
-        valid: false,
-        message:
-          "Unable to extract company name from this job URL.",
-      };
-    }
-
+export const validateCareerPageUrl = async (careerPageUrl = "") => {
+  if (!careerPageUrl || typeof careerPageUrl !== "string") {
     return {
-      valid: true,
-
-      normalizedUrl:
-        parsed.toString(),
-
-      companyName:
-        jobInfo.searchCompanyName,
-
-      actualCompanyName:
-        jobInfo.companyName,
-
-      jobTitle:
-        jobInfo.jobTitle,
-
-      platform,
+      valid: false,
+      message: "careerPageUrl is required",
     };
+  }
+
+  const normalizedUrl = normalizeInputUrl(careerPageUrl);
+
+  let parsed;
+
+  try {
+    parsed = new URL(normalizedUrl);
+  } catch {
+    return {
+      valid: false,
+      message: "Please enter a valid URL",
+    };
+  }
+
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    return {
+      valid: false,
+      message: "Only HTTP and HTTPS URLs are allowed",
+    };
+  }
+
+  // Detect the platform as early as possible. Unsupported platforms
+  // (Indeed) are rejected right here - before the homepage check, the
+  // DNS-safety check, and the DB lookup - so an Indeed URL fails fast
+  // with a clear message instead of paying for work whose outcome is
+  // already decided.
+  const platform = detectJobPlatform(normalizedUrl);
+
+  if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+    return {
+      valid: false,
+      unsupportedPlatform: true,
+      platform,
+      reason: "PLATFORM_NOT_SUPPORTED",
+      message: UNSUPPORTED_PLATFORM_MESSAGE,
+    };
+  }
+
+  if (isPlainCompanyHomepage(parsed)) {
+    return {
+      valid: false,
+      message: "Please enter a specific job URL, not a company homepage URL.",
+    };
+  }
+
+  try {
+    await assertSafePublicUrl(normalizedUrl);
+  } catch {
+    return {
+      valid: false,
+      message: "Private or internal URLs are not allowed",
+    };
+  }
+
+  const normalizedForCompare = normalizeUrlForCompare(normalizedUrl);
+
+  try {
+    const matchingCareerPage = await DiscoveredCompany.findOne({
+      normalizedCareerPageUrl: normalizedForCompare,
+    })
+      .select("companyName careerPageUrl")
+      .lean();
+
+    if (matchingCareerPage) {
+      return {
+        valid: false,
+
+        alreadyExists: true,
+
+        message:
+          "This is the company career page URL. Please enter a specific job URL, not the main career page URL.",
+
+        data: {
+          companyName: matchingCareerPage.companyName,
+
+          careerPageUrl: matchingCareerPage.careerPageUrl,
+        },
+      };
+    }
+  } catch (error) {
+    logger.error("Career page lookup failed", error);
+  }
+
+  if (!isKnownJobPlatform(getHost(parsed)) && !hasJobKeywordInUrl(parsed)) {
+    return {
+      valid: false,
+      message: "Please enter a valid job posting URL.",
+    };
+  }
+
+  const jobInfo = await resolveJobInfoFromCareerUrl(normalizedUrl);
+
+  if (!jobInfo.companyName) {
+    return {
+      valid: false,
+      message: "Unable to extract company name from this job URL.",
+    };
+  }
+
+  return {
+    valid: true,
+
+    normalizedUrl: parsed.toString(),
+
+    companyName: jobInfo.searchCompanyName,
+
+    actualCompanyName: jobInfo.companyName,
+
+    jobTitle: jobInfo.jobTitle,
+
+    platform,
   };
+};
