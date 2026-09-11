@@ -23,7 +23,7 @@ const router = express.Router();
 router.delete(
     '/:jobId',
     secureRoute,
-    deleteAccountLimiter,
+   
     deleteJob
 );
 
@@ -63,7 +63,7 @@ router.get(
 router.patch(
     '/reactivate/:jobId',
     secureRoute,
-    applicationLimiter,
+   
     reactivateJob
 );
 
