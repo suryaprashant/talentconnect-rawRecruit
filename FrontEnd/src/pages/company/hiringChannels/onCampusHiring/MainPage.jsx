@@ -1,0 +1,184 @@
+import React from 'react';
+import ServiceCard from './ServiceCard';
+import { Building2, Users, Sparkles } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // SEO Card Content
+  const serviceData = [
+    {
+      id: 1,
+      title: "Partnerships",
+      bullets: [
+        "Direct collaboration with colleges and universities",
+        "Structured on-campus recruitment drives",
+        "Faster coordination with placement teams",
+        "Improved hiring and placement outcomes"
+      ],
+      icon: Building2
+    },
+    {
+      id: 2,
+      title: "Talent Pipeline",
+      bullets: [
+        "Access to final-year students and fresh graduates",
+        "Consistent fresher talent pipeline",
+        "Role-aligned candidate participation",
+        "Early engagement with campus talent"
+      ],
+      icon: Users
+    },
+    {
+      id: 3,
+      title: "Hiring Operations",
+      bullets: [
+        "Centralized on-campus hiring management",
+        "Job posting, interviews, and selection tracking",
+        "Transparent recruitment workflows",
+        "Reduced hiring time and effort"
+      ],
+      icon: Sparkles
+    }
+  ];
+
+  return (
+    <>
+      {/* Meta Title and Description */}
+      <head>
+        <title>On-Campus Recruitment for Companies | RawRecruit</title>
+        <meta 
+          name="description" 
+          content="Hire freshers directly from colleges through structured on-campus recruitment. RawRecruit helps companies streamline campus hiring efficiently." 
+        />
+      </head>
+
+      <div className="min-h-screen bg-gradient-to-br from-[#143694]/5 via-[#f093fb]/5 to-[#1e4ed8]/5 overflow-hidden">
+
+        {/* <div className="container mx-auto px-4 pt-8 max-w-6xl">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-2">
+            <div className="flex items-center gap-3 mb-3">
+              <h2 className="text-3xl ml-1 mt-2 font-bold text-primaryBrand">Hiring Channels</h2>
+            </div>
+            
+            
+          </div>
+        </div> */}
+        <div className="container mx-auto px-4 max-w-6xl flex flex-col py-4">
+          
+          {/* Header */}
+          <header className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mt-5 mb-8">
+
+            {/* Top Row */}
+            <div className="flex items-start justify-between flex-wrap gap-4 mb-4">
+
+              {/* Left: Title */}
+              <div>
+                <h1 className="text-xl md:text-2xl font-semibold text-[#143694] tracking-tight leading-snug">
+                  On-Campus Recruitment
+                </h1>
+                <p className="text-gray-600 text-sm md:text-base">
+                  Hire top college talent through structured campus drives
+                </p>
+              </div>
+
+            </div>
+
+            {/* Tabs Row */}
+            <div className="flex items-center gap-2 border-gray-200 pt-0">
+
+              {/* Active */}
+              <button className="px-4 py-1.5 bg-[#1a3a8a] text-white rounded-full text-sm font-medium shadow-sm">
+                On-campus
+              </button>
+
+              {/* Others */}
+              <button 
+                onClick={() => navigate('/hiring-channels/pool-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Pool Campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/off-campus-hiring')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Off-campus
+              </button>
+
+              <button 
+                onClick={() => navigate('/hiring-channels/post-an-internship')}
+                className="px-4 py-1.5 text-gray-600 hover:text-[#1a3a8a] hover:bg-gray-100 rounded-full text-sm transition-all"
+              >
+                Internship
+              </button>
+
+            </div>
+
+          </header>
+
+          {/* Services - Square Cards with Bullet Points */}
+          <section className="mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {serviceData.map((service) => {
+                const IconComponent = service.icon;
+                return (
+                  <div
+                    key={service.id}
+                    className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col min-h-[320px]"
+                  >
+                    {/* Purple hover overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#143694]/0 to-[#1e4ed8]/0 group-hover:from-[#143694]/5 group-hover:to-[#1e4ed8]/5 rounded-lg transition-all duration-300"></div>
+                    
+                    {/* Purple border on hover */}
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#143694]/20 rounded-lg transition-all duration-300"></div>
+                    
+                    <div className="relative z-10 h-full flex flex-col">
+                      <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#143694]/20 to-[#1e4ed8]/20 rounded-lg mb-4">
+                        <IconComponent className="h-5 w-5 text-[#143694]" />
+                      </div>
+                      
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">
+                        {service.title}
+                      </h3>
+                      
+                      <ul className="space-y-3 flex-grow">
+                        {service.bullets.map((bullet, index) => (
+                          <li key={index} className="flex items-start">
+                            <div className="flex-shrink-0 w-1.5 h-1.5 bg-[#143694] rounded-full mt-2 mr-3"></div>
+                            <span className="text-gray-600 text-sm">{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+            <button
+              
+              onClick={onRegisterClick}
+              className="bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#143694]/30 transition-all text-base flex items-center justify-center gap-2"
+            >
+              <span>Register Now</span>
+              {/* <span className="text-sm opacity-80">– Start On-Campus Hiring</span> */}
+            </button>
+            <button
+              onClick={onRequestInfoClick}
+              className="bg-[#1e4ed8] text-white px-8 py-3.5 rounded-lg font-medium hover:bg-primaryBrand hover:shadow-lg transition-colors text-base flex items-center justify-center gap-2"
+            >
+              <span>Request Info</span>
+              {/* <span className="text-sm opacity-80">– Learn How Campus Hiring Works</span> */}
+            </button>
+          </section>
+
+        </div>
+      </div>
+    </>
+  );
+}

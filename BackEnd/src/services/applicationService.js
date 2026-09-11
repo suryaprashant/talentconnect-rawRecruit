@@ -1,0 +1,2243 @@
+import mongoose from 'mongoose';
+import { paginatedResponse } from "../utils/paginate.js";
+import Application from '../models/applicationModel.js';
+import { JobPostingTable } from '../models/jobPostingsModel.js';
+import { getCollegeService } from './collegeService.js';
+import { getCompanyService } from './companyService.js';
+import { getEmployerService } from './companyService.js';
+import OnboardingModel from "../models/studentonboardingModel.js";
+import InterviewSchedule from "../models/InterviewSchedule.Model.js";
+import {
+  fetchWeights,
+  fetchThreshold,
+  scoreJob,
+  logConfig,
+} from "../utils/relevancyEngine.js";
+import {
+  buildCollegeAlumniQuery,
+  buildCompanyAlumniQuery,
+} from "../services/entityQueryService.js";
+
+import {
+  resolveCompany,
+} from "../services/normalizationService.js";
+class AppError extends Error {
+    constructor(message, statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
+//////////////////////////////////////
+/**
+ * Deletes the 'Saved' application record for a specific user and job.
+ */
+export async function unsaveJobService(applicantId, jobId) {
+    try {
+        // We only remove the record if the status is "Saved".
+        // This prevents deleting an actual "Applied" or "Shortlisted" application.
+        const result = await Application.findOneAndDelete({
+            applicant: applicantId,
+            job: jobId,
+            currentStatus: "Saved"
+        });
+
+        if (!result) {
+            return { success: false, message: "Save record not found or job already applied" };
+        }
+
+        return { success: true, message: "Job removed from saved successfully" };
+    } catch (error) {
+        console.error("Error in unsaveJobService:", error.message);
+        throw new Error("Failed to unsave job");
+    }
+}
+
+export const getAll = async () => {
+    try {
+        const applications = await Application.find();
+        return applications;
+    } catch (error) {
+        console.error("❌ Error in getAllApplications service:", error.message);
+        throw new Error("Failed to fetch applications from the database");
+    }
+};
+
+// export const getTotalJobApplicationSubmited = async () => {
+//   try {
+//     const totalapplication = await Application.countDocuments({currentStatus:"Applied"});
+//     return totalapplication;
+//   } catch (error) {
+//     console.error("Error in getTotalJobApplicationSubmited:", error.message);
+//     throw new Error("Failed to get total Application");
+//   }
+// };
+
+export const getTotalJobApplicationSubmited = async (filter = {}) => {
+    try {
+        return await Application.countDocuments(filter);
+    } catch (error) {
+        console.error("Error in getTotalApplicationSubmited:", error);
+        throw error;
+    }
+};
+
+// check if similar application exists
+export async function getApplicationService(userId, userType, jobId, jobType) {
+    try {
+        const response = await Application.find({
+            applicant: userId,
+            applicantType: userType,
+            job: jobId,
+            jobType: jobType
+        });
+        return { success: true, response: response }
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+/*export async function getSavedJobsService(userId) {
+    try {
+        const applications = await Application.aggregate([
+            {
+                $match: {
+                    currentStatus: "Saved",
+                    applicant: new mongoose.Types.ObjectId(userId),
+                    // applicantType: userType
+                }
+            },
+            {
+                $lookup: {
+                    from: "jobpostingtables",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails"
+                }
+            }
+        ]);
+        return { success: true, data: applications }
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}*/
+
+//Prathmesh
+export async function getSavedJobsService(userId, pagination) {
+  try {
+
+    // Student profile
+    const student = await OnboardingModel.findById(userId).lean();
+
+    // Fetch weights
+    // const [W] = await Promise.all([
+    //   fetchWeights(),
+    // ]);
+    const W = await fetchWeights(student?.profileType ?? "student");
+    const { page, limit, skip } = pagination;
+    const applications = await Application.find({
+      currentStatus: "Saved",
+      applicant: userId,
+    })
+      .populate({
+        path: "job",
+        populate: [
+          {
+            path: "companyPosted",
+            model: "CompanyProfile",
+            select: "companyDetails.companyName profileImageUrl",
+          },
+          {
+            path: "candidatePosted",
+            model: "Onboarding",
+            select:
+              "profileImage currentCompany fullName currentRole",
+          },
+        ],
+      })
+      .lean();
+
+    // Score + alumniCount
+    const enrichedApplications = await Promise.all(
+      applications.map(async (application, i) => {
+
+        let alumniCount = 0;
+        let matchScore = 0;
+
+        // Dynamic match score calculation
+        if (application.job && student) {
+          const scoredJob = scoreJob(
+            application.job,
+            student,
+            W,
+            i,
+            "Saved Job"
+          );
+
+          matchScore = scoredJob?.matchScore ?? 0;
+        }
+
+        // Company name — job's own field first
+        const companyName =
+          application.job?.companyName ||
+          application.job?.candidatePosted?.currentCompany ||
+          application.job?.companyPosted?.companyDetails?.companyName;
+        
+        const jobTitle=application.job?.jobTitle;  
+
+        // Alumni count
+        if (companyName && student) {
+          try {
+            const studentColleges = [
+              ...new Set(
+                (student?.educations || [])
+                  .map(
+                    (edu) =>
+                      edu.college_canonical_id
+                  )
+                  .filter(Boolean)
+              ),
+            ];
+
+            const studentCompanies = [
+              ...new Set([
+                student?.currentCompany_canonical_id,
+
+                ...(student?.experiences || [])
+                  .map(
+                    (exp) =>
+                      exp.company_canonical_id
+                  ),
+              ].filter(Boolean)),
+            ];
+
+            const sharedWithStudentConditions = [
+              ...(studentColleges.length > 0
+                ? [{
+                    "educations.college_canonical_id": {
+                      $in: studentColleges,
+                    },
+                  }]
+                : []),
+
+              ...(studentCompanies.length > 0
+                ? [{
+                    currentCompany_canonical_id: {
+                      $in: studentCompanies,
+                    },
+                  }]
+                : []),
+
+              ...(studentCompanies.length > 0
+                ? [{
+                    "experiences.company_canonical_id": {
+                      $in: studentCompanies,
+                    },
+                  }]
+                : []),
+            ];
+            const targetCompany =
+              await resolveCompany(
+                companyName
+              );
+
+            const targetCanonicalId =
+              targetCompany?.canonicalId;
+            // Guard: skip DB call if student has no colleges and no companies
+            if (!targetCanonicalId) {
+              alumniCount = 0;
+            }
+            else if (
+              studentColleges.length === 0 &&
+              studentCompanies.length === 0
+            ) {
+              alumniCount = 0;
+            } else {
+              const excludedUserIds = [
+                student.userId,
+              ];
+
+              if (
+                application.job?.postedByUser
+              ) {
+                excludedUserIds.push(
+                  application.job
+                    .postedByUser
+                );
+              }
+
+              alumniCount =
+                await OnboardingModel.countDocuments({
+                  userId: {
+                    $nin: excludedUserIds,
+                  },
+
+                  $and: [
+                    {
+                      $or:
+                        sharedWithStudentConditions,
+                    },
+
+                    {
+                      $or: [
+                        {
+                          currentCompany_canonical_id:
+                            targetCanonicalId,
+                        },
+
+                        {
+                          "experiences.company_canonical_id":
+                            targetCanonicalId,
+                        },
+                      ],
+                    },
+                  ],
+                });
+            }
+
+          } catch (err) {
+            console.error(`[ALUMNI COUNT ERROR] ${companyName}:`, err.message);
+          }
+        }
+
+        return {
+          ...application,
+          matchScore,
+          alumniCount,
+        };
+      })
+    );
+
+    const total =
+      enrichedApplications.length;
+
+    const paginatedApplications =
+      enrichedApplications.slice(
+        skip,
+        skip + limit
+      );
+
+    return {
+      success: true,
+      ...paginatedResponse(
+        paginatedApplications,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
+    };
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    throw new Error("Failed to fetch saved jobs");
+  }
+}
+
+//prathmesh-company
+export async function getSavedCollegesService(applicantId, applicantType) {
+  try {
+    const applications = await Application.find({
+      applicant: applicantId,
+      applicantType: { $in: ["company", "employer"] },
+      currentStatus: "Saved",
+    })
+      .populate({
+        path: "job",
+        populate: {
+          path: "collegePosted",
+          // OPTIONAL (recommended if name missing)
+          populate: {
+            path: "collegeUniversityDetails",
+          },
+        },
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return {
+      success: true,
+      data: applications,
+    };
+  } catch (error) {
+    console.error("Error in getSavedCollegesService:", error);
+    return {
+      success: false,
+      message: "Failed to fetch saved colleges",
+    };
+  }
+}
+
+// save job by user
+export async function saveJobService(userId, userType, jobId, jobType) {
+    try {
+      
+        const existing = await getApplicationService(userId, userType, jobId, jobType);
+
+        if (existing?.response[0]?.currentStatus === "Applied" || existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Rejected" || existing?.response[0]?.currentStatus === "Accepted") {
+            return { success: false, message: `Already ${existing?.response[0]?.currentStatus}` };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            return { success: false, message: "Already saved" }
+        }
+        else {
+            const newApplication = new Application({
+                applicant: userId,
+                applicantType: userType,
+                appliedByType: userType, 
+                job: jobId,
+                jobType: jobType,
+                statusHistory: [{ status: "Saved" }],
+                currentStatus: "Saved"
+            });
+            await newApplication.save();
+        }
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}
+
+
+// create application
+{/*export async function createApplicationService({appliedByUserId,
+  appliedByType,
+  appliedForCompanyId,
+  jobId,
+  jobType,}) {
+    try {
+        // 1️⃣ Decide who the applicant is
+        let applicantId;
+
+        if (appliedByType === "employer") {
+          applicantId = appliedByUserId;               // employer profile
+        } else if (appliedByType === "company") {
+          applicantId = appliedForCompanyId;           // company profile
+        } else {
+          applicantId = appliedByUserId;               // student / college
+        }
+
+        const existing = await Application.findOne({
+          job: jobId,
+          jobType,
+          appliedForCompany: appliedForCompanyId,
+        });
+
+       
+        if (existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Accepted" || existing?.response[0]?.currentStatus === "Rejected") {
+            return { success: false, message: `currentStatus: ${existing?.response[0]?.currentStatus}` };
+        }
+        else if (existing?.response[0]?.currentStatus === "Applied") {
+            return { success: false, message: "Already Applied" };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            existing.response[0].currentStatus = "Applied";
+            existing.response[0].statusHistory.push({ status: "Applied" });
+            await existing.response[0].save();
+        }
+        else {
+            const newApplication = new Application({
+              applicant: applicantId,
+              applicantType: appliedByType,
+              appliedByType,
+              appliedForCompany: appliedForCompanyId, // 🔑 new field
+              job: jobId,
+              jobType: jobType,
+              statusHistory: [{ status: "Applied" }],
+              currentStatus: "Applied"
+            });
+
+            await newApplication.save();
+
+        }
+
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}*/}
+
+//step3 apply service
+export async function createApplicationService({
+  appliedByUserId,
+  appliedByType,
+  appliedForCompanyId,
+  jobId,
+  jobType,
+  matchScore,
+  referralCompany,
+}) {
+  console.log("🔍 createApplicationService called with:", {
+    appliedByUserId, appliedByType, appliedForCompanyId,
+    jobId, jobType, matchScore, referralCompany,
+  });
+
+  try {
+    // ── Validate matchScore ───────────────────────────────────────────────
+    if (matchScore !== undefined && matchScore !== null) {
+      if (typeof matchScore !== "number" || matchScore < 0 || matchScore > 100) {
+        return { success: false, message: "Invalid match score" };
+      }
+    }
+
+    // ── Resolve applicant ID ──────────────────────────────────────────────
+    let applicantId;
+    if (appliedByType === "company") {
+      applicantId = appliedForCompanyId;
+    } else {
+      applicantId = appliedByUserId;
+    }
+
+    // ── Referral job approval check ───────────────────────────────────────
+    if (jobType === "Referral") {
+      const job = await JobPostingTable.findOne({
+        _id: jobId,
+        jobType: "Referral",
+      }).select("approvalStatus");
+
+      if (!job) {
+        return { success: false, message: "Referral job not found" };
+      }
+      if (job.approvalStatus !== "Approved") {
+        return { success: false, message: "Referral job not approved by admin yet" };
+      }
+    }
+
+    // ── Build uniqueness match condition ──────────────────────────────────
+    const match = {
+      job: jobId,
+      jobType,
+      applicant: applicantId,
+    };
+
+    if (appliedForCompanyId) {
+      match.appliedForCompany = appliedForCompanyId;
+    }
+
+    // ── Check for existing application ────────────────────────────────────
+    const existing = await Application.findOne(match);
+
+    if (existing) {
+      if (["Shortlisted", "Accepted", "Rejected"].includes(existing.currentStatus)) {
+        return { success: false, message: `currentStatus: ${existing.currentStatus}` };
+      }
+
+      if (existing.currentStatus === "Applied") {
+        return { success: false, message: "Already Applied" };
+      }
+
+      if (existing.currentStatus === "Saved") {
+        existing.currentStatus = "Applied";
+        existing.statusHistory.push({ status: "Applied" });
+
+        if (matchScore !== undefined) existing.matchScore = matchScore;
+        if (referralCompany !== undefined) existing.refferalCompany = referralCompany; // ✅ inside block
+
+        await existing.save();
+        return { success: true, message: "Application submitted!" };
+      }
+    }
+
+    // ── Create new application ────────────────────────────────────────────
+    const newApplication = new Application({
+      applicant: applicantId,
+      applicantType: appliedByType,
+      appliedByType,
+      appliedForCompany: appliedForCompanyId || null,
+      job: jobId,
+      jobType,
+      statusHistory: [{ status: "Applied" }],
+      currentStatus: "Applied",
+      matchScore: matchScore ?? null,
+      referralCompany: referralCompany ?? null, // ✅
+    });
+
+    await newApplication.save();
+    return { success: true, message: "Application submitted!" };
+
+  } catch (error) {
+    console.error("createApplicationService error:", error);
+    throw new Error("Failed to Save");
+  }
+}
+
+export async function createInternshipApplicationService(userId, userType, jobId, jobType) {
+    try {
+        const existing = await getApplicationService(userId, userType, jobId, jobType);
+       
+        if (existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Accepted" || existing?.response[0]?.currentStatus === "Rejected") {
+            return { success: false, message: `currentStatus: ${existing?.response[0]?.currentStatus}` };
+        }
+        else if (existing?.response[0]?.currentStatus === "Applied") {
+            return { success: false, message: "Already Applied" };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            existing.response[0].currentStatus = "Applied";
+            existing.response[0].statusHistory.push({ status: "Applied" });
+            await existing.response[0].save();
+        }
+        else {
+            const newApplication = new Application({
+                applicant: userId,
+                applicantType: userType,
+                appliedByType: userType, 
+                job: jobId,
+                jobType: jobType,
+                statusHistory: [{ status: "Applied" }],
+                currentStatus: "Applied"
+            });
+            await newApplication.save();
+
+        }
+
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}
+
+
+// getStatus
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
+//     let fromCollection;
+//     let localField;
+//     if (userType === 'company') {
+//         fromCollection = "collegeonboardings";
+//         localField = "jobDetails.collegePosted";
+//     }
+//     if (userType === 'employer') {
+//         fromCollection = "collegeonboardings";
+//         localField = "jobDetails.collegePosted";
+//     }
+//     else {
+//         fromCollection = "companyprofiles";
+//         localField = "jobDetails.companyPosted";
+//     }
+
+//     try {
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             // { $unwind: '$jobDetails' },
+//             {
+//                 $lookup: {
+//                     from: fromCollection,
+//                     localField: localField,
+//                     foreignField: '_id',
+//                     // as: 'companyDetails'
+//                     as: 'postedByDetails'
+//                 }
+//             },
+//             // { $unwind: '$companyDetails' },
+//             // {
+//             //     $project: {
+//             //         job: 1,
+//             //         statusHistory: 1,
+//             //         currentStatus: 1,
+//             //         createdAt: 1,
+//             //         "jobDetails.jobTitle": 1,
+//             //         "jobDetails._id": 1,
+//             //         "jobDetails.jobDescription": 1,
+//             //         "jobDetails.preferredHiringLocation": 1,
+//             //         "jobDetails.yearsOfExperience": 1,
+//             //         "companyDetails.companyName": 1, // example field, adjust as needed
+//             //         "companyDetails.companyDetails": 1 // example field, adjust as needed
+//             //     }
+//             // }
+//         ]);
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+////////////MANAV//////////////
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
+
+
+//     try {
+        
+
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles', // Ensure this matches your DB collection name
+//                     localField: 'jobDetails.companyPosted',
+//                     foreignField: '_id',
+//                     as: 'companyProfile'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'collegeonboardings',
+//                     localField: 'jobDetails.collegePosted',
+//                     foreignField: '_id',
+//                     as: 'collegeDetails'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: userType === 'company' || userType === 'employer' 
+//                         ? 'collegeonboardings' 
+//                         : 'companyprofiles',
+//                     localField: 'jobDetails.postedBy',
+//                     foreignField: '_id',
+//                     as: 'postedByDetails'
+//                 }
+//             },
+//             // Add debug fields
+//             {
+//                $addFields: {
+//                     // This ensures jobDetails is an object, not an array
+//                     jobDetails: { $arrayElemAt: ["$jobDetails", 0] },
+//                     // This attaches the company profile (with the logo)
+//                     companyProfile: { $arrayElemAt: ["$companyProfileDetails", 0] },
+//                     collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] }
+//                 }
+//             }
+//         ]);
+
+//         // 🔍 COMPREHENSIVE DEBUGGING
+//         console.log("🔍 Total applications found:", applicationData.length);
+        
+//         if (applicationData.length > 0) {
+//             const firstApp = applicationData[0];
+//             //console.log("🔍 FIRST APPLICATION DEBUG:");
+//             //console.log(JSON.stringify(firstApp, null, 2));
+            
+//             //console.log("🔍 KEY FIELDS:");
+//             //console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
+//             //console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
+//             //console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
+            
+//             if (firstApp.collegeDetails && firstApp.collegeDetails.length > 0) {
+//                 const college = firstApp.collegeDetails[0];
+//                 console.log("4. collegeDetails[0] keys:", Object.keys(college));
+                
+//                 // Check EVERY field for possible college name
+//                 Object.keys(college).forEach(key => {
+//                     const value = college[key];
+//                     if (typeof value === 'string' && value.length < 100) {
+//                         console.log(`   "${key}": "${value}"`);
+//                     } else if (key === 'collegeUniversityDetails') {
+//                         console.log(`   "${key}":`, value);
+//                         if (value && typeof value === 'object') {
+//                             console.log(`   "${key}" keys:`, Object.keys(value));
+//                             Object.keys(value).forEach(subKey => {
+//                                 if (typeof value[subKey] === 'string') {
+//                                     console.log(`     "${subKey}": "${value[subKey]}"`);
+//                                 }
+//                             });
+//                         }
+//                     }
+//                 });
+                
+//                 // Try to find college name
+//                 console.log("5. Searching for college name...");
+//                 const possiblePaths = [
+//                     () => college.collegeUniversityDetails?.collegeName,
+//                     () => college.collegeUniversityDetails?.name,
+//                     () => college.collegeName,
+//                     () => college.name,
+//                     () => college.institutionName,
+//                     () => college.universityName,
+//                     () => college.collegeDetails?.collegeName
+//                 ];
+                
+//                 possiblePaths.forEach((path, i) => {
+//                     const result = path();
+//                     console.log(`   Path ${i + 1}: ${path.toString().match(/college\.([^}]+)/)?.[1] || 'unknown'} = "${result}"`);
+//                 });
+//             }
+//         }
+//           console.log(applicationData)
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
+//     try {
+//         console.log("🔍 BACKEND DEBUG - Starting service");
+//         console.log("🔍 Parameters:", { userId, jobType, userType });
+
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             // 🔥 DYNAMIC LOOKUP based on applicantType
+//             {
+//                 $lookup: {
+//                     from: {
+//                         $switch: {
+//                             branches: [
+//                                 {
+//                                     case: { $eq: ["$applicantType", "college"] },
+//                                     then: "collegeonboardings"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "student"] },
+//                                     then: "students"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "company"] },
+//                                     then: "companyprofiles"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "employer"] },
+//                                     then: "employers"
+//                                 }
+//                             ],
+//                             default: "collegeonboardings"  // Default if unknown
+//                         }
+//                     },
+//                     localField: 'applicant',
+//                     foreignField: '_id',
+//                     as: 'applicantDetails'
+//                 }
+//             },
+//             // For company info from job
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles',
+//                     localField: 'jobDetails.postedBy',
+//                     foreignField: '_id',
+//                     as: 'companyDetails'
+//                 }
+//             },
+//             // Add debug fields
+//             {
+//                 $addFields: {
+//                     debugApplicant: "$applicant",
+//                     debugApplicantType: "$applicantType",
+//                     debugApplicantDetailsCount: { $size: "$applicantDetails" },
+//                     debugJobDetailsCount: { $size: "$jobDetails" },
+//                     debugApplicantDetailsKeys: {
+//                         $cond: {
+//                             if: { $gt: [{ $size: "$applicantDetails" }, 0] },
+//                             then: { $objectToArray: { $arrayElemAt: ["$applicantDetails", 0] } },
+//                             else: []
+//                         }
+//                     }
+//                 }
+//             }
+//         ]);
+
+//         // DEBUGGING
+//         console.log("🔍 Total applications found:", applicationData.length);
+        
+//         if (applicationData.length > 0) {
+//             const firstApp = applicationData[0];
+//             console.log("🔍 FIRST APPLICATION DEBUG:");
+//             console.log("applicantType:", firstApp.applicantType);
+//             console.log("applicantDetails count:", firstApp.debugApplicantDetailsCount);
+            
+//             if (firstApp.applicantDetails && firstApp.applicantDetails.length > 0) {
+//                 const applicant = firstApp.applicantDetails[0];
+//                 console.log("🔍 Applicant Details Found!");
+//                 console.log("Collection:", firstApp.applicantType === 'college' ? 'collegeonboardings' : 'unknown');
+//                 console.log("All keys:", Object.keys(applicant));
+                
+//                 // Search for name/college name in all possible fields
+//                 const nameFields = ['collegeName', 'name', 'institutionName', 'universityName', 'collegeUniversityName', 'title'];
+//                 nameFields.forEach(field => {
+//                     if (applicant[field]) {
+//                         console.log(`✅ Found ${field}: "${applicant[field]}"`);
+//                     }
+//                 });
+//             }
+//         }
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+// job management
+// joblisting and offcampus
+
+export async function fetchApplicationStatusService(
+  userId,
+  jobType,
+  userType,
+  activeCompanyId = null,
+  pagination
+) {
+  try {
+    let matchStage = {
+      jobType,
+      currentStatus: { $ne: "Saved" },
+    };
+
+    if (userType === "employer") {
+      matchStage.appliedByType = "employer";
+      matchStage.appliedForCompany = new mongoose.Types.ObjectId(
+        activeCompanyId || userId
+      );
+    } else if (userType === "company") {
+      matchStage.appliedForCompany = new mongoose.Types.ObjectId(userId);
+    } else {
+      matchStage.applicant = new mongoose.Types.ObjectId(userId);
+    }
+
+    const { page, limit, skip } = pagination;
+
+    const total = await Application.countDocuments(matchStage);
+
+    const applicationData = await Application.aggregate([
+      { $match: matchStage },
+
+      {
+        $lookup: {
+          from: "jobpostingtables",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobDetails",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$jobDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "jobDetails.companyPosted",
+          foreignField: "_id",
+          as: "companyProfile",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "jobDetails.collegePosted",
+          foreignField: "_id",
+          as: "collegeDetails",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "jobDetails.candidatePosted",
+          foreignField: "_id",
+          as: "referralPosterProfile",
+        },
+      },
+
+      {
+        $addFields: {
+          
+          companyProfile: {
+            $arrayElemAt: ["$companyProfile", 0],
+          },
+
+          collegeDetails: {
+            $arrayElemAt: ["$collegeDetails", 0],
+          },
+
+          referralPosterProfile: {
+            $arrayElemAt: ["$referralPosterProfile", 0],
+          },
+          displayCompanyName: {
+            $cond: {
+              if: { $eq: ["$jobType", "Referral"] },
+
+              then: {
+                $ifNull: ["$referralCompany", "Referral"],
+              },
+
+              else: {
+                $ifNull: [
+                  {
+                    $arrayElemAt: [
+                      "$companyProfile.companyDetails.companyName",
+                      0,
+                    ],
+                  },
+                  "Unknown Company",
+                ],
+              },
+            },
+          },
+        },
+        
+      },
+      {
+        $addFields: {
+          "jobDetails.receiverProfile": {
+            $ifNull: [
+              "$jobDetails.receiverProfile",
+              "$referralPosterProfile",
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          referralPosterProfile: 0,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+
+      {
+        $skip: skip,
+      },
+
+      {
+        $limit: limit,
+      },
+    ]);
+
+    return {
+      success: true,
+
+      ...paginatedResponse(
+        applicationData,
+        total,
+        {
+          page,
+          limit,
+        }
+      ),
+    };
+  } catch (error) {
+    console.error("Aggregation Error:", error.message);
+    throw new Error("Failed to fetch");
+  }
+}
+
+
+
+export async function fetchApplicationsByJobService(
+  jobId,
+  jobType,
+  targetStatus,
+  isVisited
+) {
+  try {
+    console.log("bantai");
+    const matchConditions = {
+      job: new mongoose.Types.ObjectId(jobId),
+      jobType: jobType,
+      currentStatus: targetStatus,
+    };
+
+    if (isVisited !== undefined) {
+      matchConditions.isVisited =
+        isVisited === "true" || isVisited === true ? true : false;
+    }
+
+    const response = await Application.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "applicant",
+        },
+      },
+      {
+        $unwind: {
+          path: "$applicant",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          applicant: 1,
+          jobType: 1,
+          statusHistory: 1,
+          currentStatus: 1,
+          createdAt: 1,
+        },
+      },
+    ]);
+
+    const idsToMarkVisited = response
+      .filter((doc) => !doc.isVisited)
+      .map((doc) => doc._id);
+
+    if (idsToMarkVisited.length > 0) {
+      await Application.updateMany(
+        { _id: { $in: idsToMarkVisited } },
+        { $set: { isVisited: true } }
+      );
+    }
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error) {
+    console.log("Error:", error.message);
+    throw new Error("Failed to fetch");
+  }
+}
+
+
+
+// oncampus and poolcampus -> past new working for company employer Prathmesh
+export async function fetchCollegeApplicationsByJobService(
+  jobId,
+  jobType,
+  userType,
+  targetStatus,
+  isVisited
+) {
+  try {
+    console.log("hello 23");
+    const matchConditions = {
+      job: new mongoose.Types.ObjectId(jobId),
+      jobType,
+    };
+
+    if (targetStatus) {
+      matchConditions.currentStatus = targetStatus;
+    }
+
+    if (isVisited !== undefined) {
+      matchConditions.isVisited =
+        isVisited === "true" || isVisited === true;
+    }
+
+    console.log("MATCH =>", matchConditions);
+
+
+    const response = await Application.aggregate([
+      { $match: matchConditions },
+        
+      // ✅ Decide which ID to lookup
+      {
+        $addFields: {
+          effectiveApplicantId: {
+            $cond: [
+              {
+                $and: [
+                  { $eq: ["$appliedByType", "employer"] },
+                  { $ne: ["$appliedForCompany", null] }
+                ]
+              },
+              "$appliedForCompany", // employer applying for company
+              "$applicant"          // all others
+            ]
+          }
+        }
+      },
+    
+      // ---------- LOOKUPS ----------
+    
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "companyApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "collegeApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "onboardings", // fresher / student
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "studentApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "employerprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "employerApplicant"
+        }
+      },
+    
+      // ---------- FINAL APPLICANT SELECTOR ----------
+    
+      {
+        $addFields: {
+          applicant: {
+            $cond: [
+              // ⭐ Employer applying FOR COMPANY
+              {
+                $and: [
+                  { $eq: ["$appliedByType", "employer"] },
+                  { $ne: ["$appliedForCompany", null] }
+                ]
+              },
+              { $arrayElemAt: ["$companyApplicant", 0] },
+            
+              // ⭐ Otherwise choose based on applicantType
+              {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ["$applicantType", "company"] },
+                      then: { $arrayElemAt: ["$companyApplicant", 0] }
+                    },
+                    {
+                      case: { $eq: ["$applicantType", "college"] },
+                      then: { $arrayElemAt: ["$collegeApplicant", 0] }
+                    },
+                    {
+                      case: { $eq: ["$applicantType", "employer"] },
+                      then: { $arrayElemAt: ["$employerApplicant", 0] }
+                    },
+                    {
+                      case: {
+                        $in: ["$applicantType", ["student", "fresher", "professional"]]
+                      },
+                      then: { $arrayElemAt: ["$studentApplicant", 0] }
+                    }
+                  ],
+                  default: null
+                }
+              }
+            ]
+          }
+        }
+      },
+    
+      {
+        $project: {
+          applicant: 1,
+          applicantType: 1,
+          statusHistory: 1,
+          currentStatus: 1,
+          createdAt: 1,
+          isVisited: 1
+        }
+      }
+    ]);
+
+
+    const scheduledApplications = await InterviewSchedule.find({
+      applicationId: { $in: response.map(app => app._id) }
+    }).select("applicationId");
+
+    const scheduledSet = new Set(
+      scheduledApplications.map(item => item.applicationId.toString())
+    );
+
+    response.forEach(app => {
+      app.interviewScheduled = scheduledSet.has(app._id.toString());
+    });
+    // 👁️ mark visited only for new fetch
+    if (isVisited === "false" || isVisited === false) {
+      const idsToMarkVisited = response
+        .filter((doc) => doc.isVisited === false)
+        .map((doc) => doc._id);
+
+      if (idsToMarkVisited.length) {
+        await Application.updateMany(
+          { _id: { $in: idsToMarkVisited } },
+          { $set: { isVisited: true } }
+        );
+      }
+    }
+
+    return { success: true, data: response };
+  } catch (error) {
+    console.error("fetchCollegeApplicationsByJobService error:", error);
+    throw error;
+  }
+}
+
+
+// 🔥 NEW — used ONLY by college controller
+export async function fetchCollegeSideApplicationsByJobService(
+  jobId,
+  jobType,
+  targetStatus,
+  isVisited
+) {
+  const matchConditions = {
+    job: new mongoose.Types.ObjectId(jobId),
+    jobType,
+    currentStatus: targetStatus,
+  };
+
+  // College logic is SIMPLE
+  if (isVisited === "false" || isVisited === false) {
+    matchConditions.isVisited = false; // New
+  }
+
+  if (isVisited === "true" || isVisited === true) {
+    matchConditions.isVisited = true; // Past
+  }
+
+  const response = await Application.aggregate([
+    { $match: matchConditions },
+    {
+      $lookup: {
+        from: "companyprofiles",
+        localField: "applicant",
+        foreignField: "_id",
+        as: "applicant",
+      },
+    },
+    {
+      $unwind: {
+        path: "$applicant",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        applicant: 1,
+        statusHistory: 1,
+        currentStatus: 1,
+        createdAt: 1,
+        isVisited: 1,
+      },
+    },
+  ]);
+
+  // Mark visited ONLY for new applications
+  if (isVisited === "false" || isVisited === false) {
+    await Application.updateMany(
+      { _id: { $in: response.map(r => r._id) } },
+      { $set: { isVisited: true } }
+    );
+  }
+
+  return { success: true, data: response };
+}
+
+
+
+// count applications
+export async function countApplicationsService(jobId, jobType, targetStatus) {
+    try {
+        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: targetStatus, isVisited: false });
+        return { success: true, count: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed");
+    }
+}
+
+// shortlist application
+export async function ChangeStatusService(applicationId, newStatus) {
+    try {
+        const existing = await Application.findById(applicationId);
+        const allowedStatuses = [
+          "Applied",
+          "Application Sent",
+          "Referred To Company",
+          "Shortlisted",
+          "Interview Scheduled",
+          "Offer Extended",
+          "Accepted",
+          "Offer Accepted",
+          "Offer Rejected",
+          "Joined the Company",
+        ];
+
+        // console.log("existing response: ", existing);
+        if (existing?.currentStatus === newStatus) {
+            return { success: false, msg: `Already ${newStatus}` };
+        }
+        else if (allowedStatuses.includes(existing?.currentStatus)) {
+            existing.currentStatus = newStatus;
+            existing.isVisited = false;
+            existing.statusHistory.push({ status: newStatus });
+            await existing.save();
+            return { success: true, msg: `status changed to: ${newStatus}`, data: existing };
+        }
+        else {
+            return { success: false, msg: "Error" };
+        }
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed");
+    }
+}
+
+export async function fetchCompanyDashboardMetrics(user) {
+    try {
+        const userId = user._id;
+        const userType = user?.userType;
+
+        let companyProfileId;
+        let collegeProfileId;
+
+        // --- COMPANY USER ---
+        if (userType === 'company') {
+            const company = await getCompanyService(userId);
+
+            if (!company || !company.success || company.data.length === 0) {
+                throw new AppError("Company profile not found!", 404);
+            }
+
+            companyProfileId = company.data[0]._id;
+        }
+
+        // --- EMPLOYER USER ---
+        else if (userType === 'employer') {
+            const employer = await getEmployerService(user); // Pass the full user object
+
+            if (!employer || !employer.success || employer.data.length === 0) {
+                throw new AppError(employer.msg || "Employer profile not found!", 404);
+            }
+
+            companyProfileId = employer.data[0]._id;
+        }
+        // --- COLLEGE USER ---
+        else if (userType === 'college') {
+            const college = await getCollegeService(userId);
+
+            if (!college || !college.success || college.data.length === 0) {
+                throw new AppError(college.msg || "College profile not found!", 404);
+            }
+
+            collegeProfileId = college.data[0]._id;
+        } else {
+            throw new AppError("This user type cannot access this resource.", 403);
+        }
+
+        let query = {};
+        if (userType === 'college') {
+            query = { collegePosted: collegeProfileId };
+        } else {
+            query = { companyPosted: companyProfileId };
+        }
+
+        // Fetch all jobs posted by this company/college
+        const companyJobs = await JobPostingTable.find(query).select('_id jobType');
+        const totalActiveJobs = companyJobs.length;
+        const allJobIds = companyJobs.map(job => job._id);
+
+        if (allJobIds.length === 0) {
+            return {
+                appliedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                statusTotals: { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+                totalApplied: 0,
+                totalShortlisted: 0,
+                totalAccepted: 0,
+                totalRejected: 0,
+                // Add these for dashboard display
+                shortlistedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                acceptedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                rejectedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                totalActiveJobs,
+                totalOffers: 0,
+                totalScheduledInterviews: 0,
+                interviewsToday: 0
+            };
+        }
+
+        // ===== FIX 1: Count ALL applications (not just 'Applied') =====
+        // Count by job type (ALL applications regardless of status)
+        const allApplicationsByType = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds },
+                    currentStatus: { $ne: "Saved" }
+                    // REMOVED: currentStatus: 'Applied' - This was the bug!
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostingtables', // Ensure correct collection name
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            { $unwind: '$jobDetails' },
+            {
+                $group: {
+                    _id: '$jobDetails.jobType',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // ===== FIX 2: Also get counts by status AND type for dashboard table =====
+        const applicationsByStatusAndType = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds },
+                    currentStatus: { $ne: "Saved" }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostingtables',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            { $unwind: '$jobDetails' },
+            {
+                $group: {
+                    _id: {
+                        status: '$currentStatus',
+                        jobType: '$jobDetails.jobType'
+                    },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // ===== FIX 3: Count by status (same as before) =====
+        const statusCounts = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds },
+                    currentStatus: { $in: ['Shortlisted', 'Accepted', 'Rejected'] }
+                }
+            },
+            {
+                $group: {
+                    _id: '$currentStatus',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Format applied counts
+        const formattedAppliedCounts = {
+            'On-campus': 0,
+            'Pool-campus': 0,
+            'Off-campus': 0
+        };
+
+        allApplicationsByType.forEach(item => {
+            if (formattedAppliedCounts[item._id] !== undefined) {
+                formattedAppliedCounts[item._id] = item.count;
+            }
+        });
+
+        // Format counts by status and type for dashboard table
+        const formattedCountsByStatusAndType = {
+            'On-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+            'Pool-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+            'Off-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 }
+        };
+
+        applicationsByStatusAndType.forEach(item => {
+            const jobType = item._id.jobType;
+            const status = item._id.status;
+            
+            if (formattedCountsByStatusAndType[jobType] && 
+                formattedCountsByStatusAndType[jobType][status] !== undefined) {
+                formattedCountsByStatusAndType[jobType][status] = item.count;
+            }
+        });
+
+        // Format status counts
+        const formattedStatusCounts = {
+            'Shortlisted': 0,
+            'Accepted': 0,
+            'Rejected': 0
+        };
+
+        statusCounts.forEach(item => {
+            if (formattedStatusCounts[item._id] !== undefined) {
+                formattedStatusCounts[item._id] = item.count;
+            }
+        });
+
+        // Calculate total applied (sum of all applications)
+        const totalApplied = Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0);
+
+        /* ----------------------------------------------------
+           INTERVIEW METRICS
+        ---------------------------------------------------- */
+        const today = new Date().toISOString().split("T")[0];
+
+        let interviewMatch = {
+          status: "Scheduled"
+        };
+
+        if (userType === "college") {
+          // ✅ College → filter by applicant
+          interviewMatch.applicantProfileId = collegeProfileId;
+          interviewMatch.applicantType = "college";
+        } else {
+          // ✅ Company / Employer → filter by job
+          interviewMatch.jobId = { $in: allJobIds };
+        }
+
+        const [totalScheduledInterviews, interviewsToday] = await Promise.all([
+          InterviewSchedule.countDocuments(interviewMatch),
+          InterviewSchedule.countDocuments({
+            ...interviewMatch,
+            date: today
+          })
+        ]);
+        
+
+        return {
+            appliedByCategory: formattedAppliedCounts,
+            shortlistedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Shortlisted'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Shortlisted'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Shortlisted']
+            },
+            acceptedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Accepted'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Accepted'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Accepted']
+            },
+            rejectedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Rejected'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Rejected'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Rejected']
+            },
+            statusTotals: formattedStatusCounts,
+            totalApplied: totalApplied,
+            totalShortlisted: formattedStatusCounts.Shortlisted,
+            totalAccepted: formattedStatusCounts.Accepted,
+            totalRejected: formattedStatusCounts.Rejected,
+            totalActiveJobs,
+            totalOffers: formattedStatusCounts.Accepted,
+            totalScheduledInterviews,
+            interviewsToday
+        };
+
+    } catch (error) {
+        console.error('❌ Error in fetchCompanyDashboardMetrics:', error);
+        throw new AppError(error.message || 'Failed to fetch dashboard metrics', 500);
+    }
+}
+
+export const fetchProfessionalDashboardMetrics = async (user) => {
+  try {
+    if (!user || user.userType !== "professional") {
+      throw new AppError("Unauthorized access", 403);
+    }
+
+    console.log("👤 Auth User ID:", user._id);
+
+    /* ----------------------------------------------------
+       1️⃣ FETCH PROFESSIONAL ONBOARDING PROFILE
+    ---------------------------------------------------- */
+
+    const professionalProfile = await OnboardingModel.findOne({
+      userId: user._id
+    }).select("_id");
+
+    console.log("📄 Professional Profile ID:", professionalProfile?._id);
+
+    if (!professionalProfile) {
+      throw new AppError("Professional onboarding profile not found", 404);
+    }
+
+    const professionalProfileId = professionalProfile._id;
+
+    /* ----------------------------------------------------
+       1️⃣ JOBS POSTED BY PROFESSIONAL
+    ---------------------------------------------------- */
+
+    const jobStats = await JobPostingTable.aggregate([
+      {
+        $match: {
+          candidatePosted: professionalProfileId 
+        }
+      },
+      {
+        $group: {
+          _id: "$approvalStatus",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    let totalJobsPosted = 0;
+    let approvedJobs = 0;
+    let rejectedJobs = 0;
+
+    jobStats.forEach(stat => {
+      totalJobsPosted += stat.count;
+
+      if (stat._id === "Approved") approvedJobs = stat.count;
+      if (stat._id === "Rejected") rejectedJobs = stat.count;
+    });
+
+    /* ----------------------------------------------------
+       2️⃣ APPLICATIONS DONE BY PROFESSIONAL
+    ---------------------------------------------------- */
+
+    const totalApplicationsDone = await Application.countDocuments({
+      applicant: professionalProfileId,
+      appliedByType: "professional"
+    });
+
+    /* ----------------------------------------------------
+       RESPONSE
+    ---------------------------------------------------- */
+
+    return {
+      totalJobsPosted,
+      approvedJobs,
+      rejectedJobs,
+      totalApplicationsDone
+    };
+
+  } catch (error) {
+    console.error("❌ Error in fetchProfessionalDashboardMetrics:", error);
+    throw new AppError(
+      error.message || "Failed to fetch professional dashboard metrics",
+      error.statusCode || 500
+    );
+  }
+};
+
+// candidate
+// export async function fetchOffcampusApplicationService(userId) {
+//     try {
+
+//         const applicationData = await OffCampusApplication.aggregate([
+//             {
+//                 $match: {
+//                     user: new mongoose.Types.ObjectId(userId)
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'hiringdrives',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles',
+//                     localField: 'jobDetails.companyId',
+//                     foreignField: '_id',
+//                     as: 'companyDetails'
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     job: 1,
+//                     statusHistory: 1,
+//                     currentStatus: 1,
+//                     createdAt: 1,
+//                     "jobDetails.jobRoles": 1,
+//                     "jobDetails._id": 1,
+//                     "jobDetails.description": 1,
+//                     "jobDetails.workLocations": 1,
+//                     "jobDetails.workModes": 1,
+//                     "jobDetails.yearsOfExperience": 1,
+//                     "companyDetails.companyDetails": 1,
+//                 }
+//             }
+//             // {
+//             //     $unwind: '$jobDetails'
+//             // }
+//         ]);
+
+//         // const applicationData = await OffCampusApplication.find({ user: userId })
+//         //     .populate('job')
+//         //     .populate('$job.companyId')
+//         //     .lean();
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+// export async function fetchJoblistingApplicationService(userId) {
+//     try {
+
+//         const applicationData = await JobListingApplication.aggregate([
+//             {
+//                 $match: {
+//                     user: new mongoose.Types.ObjectId(userId)
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostings',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles',
+//                     localField: 'jobDetails.companyId',
+//                     foreignField: '_id',
+//                     as: 'companyDetails'
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     job: 1,
+//                     statusHistory: 1,
+//                     currentStatus: 1,
+//                     createdAt: 1,
+//                     "jobDetails.jobTitle": 1,
+//                     "jobDetails._id": 1,
+//                     "jobDetails.jobDescription": 1,
+//                     "jobDetails.preferredHiringLocation": 1,
+//                     // "jobDetails.workModes": 1,
+//                     "jobDetails.yearsOfExperience": 1,
+//                     "companyDetails.companyDetails": 1,
+//                 }
+//             }
+//             // {
+//             //     $unwind: '$jobDetails'
+//             // }
+//         ]);
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+// export async function fetchInternshipApplicationService(userId) {
+//     try {
+
+//         const applicationData = await InternshipApplication.aggregate([
+//             {
+//                 $match: {
+//                     user: new mongoose.Types.ObjectId(userId)
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'intern',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles',
+//                     localField: 'jobDetails.companyId',
+//                     foreignField: '_id',
+//                     as: 'companyDetails'
+//                 }
+//             },
+//             // {
+//             //     $project: {
+//             //         job: 1,
+//             //         statusHistory: 1,
+//             //         currentStatus: 1,
+//             //         createdAt: 1,
+//             //         "jobDetails.jobTitle": 1,
+//             //         "jobDetails._id": 1,
+//             //         "jobDetails.jobDescription": 1,
+//             //         "jobDetails.preferredHiringLocation": 1,
+//             //         // "jobDetails.workModes": 1,
+//             //         "jobDetails.yearsOfExperience": 1,
+//             //         "companyDetails.companyDetails": 1,
+//             //     }
+//             // }
+//             // {
+//             //     $unwind: '$jobDetails'
+//             // }
+//         ]);
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+// export async function createJobListingApplicationService(userId, jobId) {
+//     try {
+//         const newApplication = new JobListingApplication({
+//             user: userId,
+//             job: jobId,
+//             statusHistory: [{ status: "Applied" }],
+//             currentStatus: "Applied"
+//         });
+//         await newApplication.save();
+//         return { success: true, message: 'Application submited!' };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to Save");
+//     }
+// }
+
+// export async function fetchShortlistedCandidatesService(jobId) { //offcampus jobs
+//     try {
+//         const response = await OffCampusApplication.find({ job: jobId, currentStatus: 'Shortlisted' })
+//             .populate({
+//                 path: 'user',
+//                 // select: "name collegeName cgpa resumeUrl"
+//             })
+//             .populate({
+//                 path: 'job',
+//                 // select: "title"
+//             })
+//             .lean();
+//         return { success: true, data: response };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+// getshorlisted candidate by company
+export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType, posterField = "companyPosted") {
+    // console.log("type: ", companyId, targetStatus, applicantType, jobType);
+    try {
+        // determine which collection to lookup based on applicantType
+        let fromCollection, projectApplicant;
+
+        if (applicantType === "user") {
+            fromCollection = "onboardings";
+            projectApplicant = {
+                cgpa: "$applicantDetails.cgpa",
+                college: "$applicantDetails.college",
+                name: "$applicantDetails.name",
+                userId: "$applicantDetails.userId"
+            };
+        } else if (applicantType === "college") {
+            fromCollection = "collegeonboardings";
+            projectApplicant = {
+                college: "$applicantDetails.collegeUniversityDetails"
+            };
+        }
+        else if (applicantType == "company" || applicantType == 'employer') {
+            fromCollection = "CompanyProfile";
+            projectApplicant = {
+                company: "$applicantDetails.companyDetails"
+            }
+        }
+        else {
+            throw new Error(`Unsupported applicantType: ${applicantType}`);
+        }
+
+        const candidates = await Application.aggregate([
+            // Lookup job details
+            {
+                $lookup: {
+                    from: "jobpostingtables",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails"
+                }
+            },
+            {
+                $match: {
+                    [
+                        `jobDetails.${posterField}`
+                    ]: new mongoose.Types.ObjectId(companyId),
+                    currentStatus: targetStatus,
+                    // applicantType: applicantType,
+                    jobType: jobType
+                }
+            },
+            // left-outer join applicant details based on type
+            {
+                $lookup: {
+                    from: fromCollection,
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicantDetails"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$applicantDetails",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    currentStatus: 1,
+                    statusHistory: 1,
+                    jobTitle: "$jobDetails.jobRoles",
+                    applicant: projectApplicant
+                }
+            }
+        ]);
+
+        return { success: true, response: candidates };
+    } catch (error) {
+        console.log("Error in fetchCandidatesbyStatus:", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export async function getCandidateDashboardStatsService(profileId) {
+  try {
+    const objectId = new mongoose.Types.ObjectId(profileId);
+
+    const stats = await Application.aggregate([
+      {
+        $match: {
+          applicant: objectId,
+          applicantType: { $in: ["student", "fresher", "professional"] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+
+          // total saved jobs
+          savedCount: {
+            $sum: { $cond: [{ $eq: ["$currentStatus", "Saved"] }, 1, 0] },
+          },
+
+          // total applications (all jobTypes, excludes Saved)
+          totalApplications: {
+            $sum: {
+              $cond: [{ $ne: ["$currentStatus", "Saved"] }, 1, 0],
+            },
+          },
+
+          // referral applications specifically
+          referralApplications: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ["$jobType", "Referral"] },
+                    { $ne: ["$currentStatus", "Saved"] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          savedCount: 1,
+          totalApplications: 1,
+          referralApplications: 1,
+        },
+      },
+    ]);
+
+    // aggregate returns [] if no documents match
+    const data = stats[0] ?? {
+      savedCount: 0,
+      totalApplications: 0,
+      referralApplications: 0,
+    };
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("getCandidateDashboardStatsService error:", error);
+    throw new Error("Failed to fetch candidate dashboard stats");
+  }
+}
+
+export const getAllApplications = async (jobId) => {
+  try {
+    const applications = await Application.aggregate([
+      {
+        $match: {
+          job: new mongoose.Types.ObjectId(jobId),
+          currentStatus: { $ne: "Saved" }
+        }
+      },
+
+      // College applicant
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "collegeApplicant"
+        }
+      },
+
+      // Company / Employer applicant
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "companyApplicant"
+        }
+      },
+
+      // Student / Professional / Fresher applicant
+      {
+        $lookup: {
+          from: "onboardings",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "candidateApplicant"
+        }
+      },
+
+      {
+        $addFields: {
+          applicantName: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ["$applicantType", "college"]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$collegeApplicant.collegeUniversityDetails.collegeName",
+                      0
+                    ]
+                  }
+                },
+                {
+                  case: {
+                    $in: ["$applicantType", ["company", "employer"]]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$companyApplicant.companyDetails.companyName",
+                      0
+                    ]
+                  }
+                }
+              ],
+              default: {
+                $arrayElemAt: [
+                  "$candidateApplicant.name",
+                  0
+                ]
+              }
+            }
+          },
+
+          // Get actual Auth userId
+          userId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ["$applicantType", "college"]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$collegeApplicant.userId",
+                      0
+                    ]
+                  }
+                },
+                {
+                  case: {
+                    $in: ["$applicantType", ["company", "employer"]]
+                  },
+                  then: {
+                    $arrayElemAt: [
+                      "$companyApplicant.userId",
+                      0
+                    ]
+                  }
+                }
+              ],
+              default: {
+                $arrayElemAt: [
+                  "$candidateApplicant.userId",
+                  0
+                ]
+              }
+            }
+          }
+        }
+      },
+
+      {
+        $project: {
+          collegeApplicant: 0,
+          companyApplicant: 0,
+          candidateApplicant: 0
+        }
+      }
+    ]);
+
+    return applications;
+
+  } catch (error) {
+    console.log("Error fetching applications:", error);
+    throw error;
+  }
+};

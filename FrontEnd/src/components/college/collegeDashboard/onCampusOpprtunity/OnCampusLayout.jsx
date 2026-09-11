@@ -1,0 +1,131 @@
+import { useState } from "react";
+import JobsListingPage from "@/pages/college/collegeDashboard/onCampusOpportunity/JobListingPage";
+import JobDetailModal from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal";
+import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+const OnCampusLayout = () => {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isZoomedView, setIsZoomedView] = useState(false);
+  const location = useLocation();
+  const modalRef = useRef(null);
+  const handleJobSelect = (job) => {
+    console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
+    setSelectedJob(job);
+    setIsModalOpen(true);
+    setIsZoomedView(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+    setIsZoomedView(false);
+  };
+
+  /**
+   * ✅ FORCE CLOSE FOR NAVIGATION
+   * This function is passed to the Modal. When the user clicks "Login",
+   * it resets all layout states to ensure the "Zoomed View" return block
+   * doesn't block the React Router navigation.
+   */
+  const handleForceCloseForNavigation = () => {
+    setIsModalOpen(false);
+    setIsZoomedView(false);
+    setSelectedJob(null);
+  };
+  useEffect(() => {
+    if (location.state?.openCollege) {
+      handleJobSelect(location.state.openCollege);
+    }
+  }, [location.state]);
+  /* ======================================================
+      ZOOMED VIEW — MODAL + SIDEBAR COMBINED
+  ====================================================== */
+  if (isZoomedView && isModalOpen && selectedJob) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Backdrop - Added onClick to close for better UX */}
+        <div 
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm" 
+          onClick={handleCloseModal}
+        />
+        
+        {/* Modal + Sidebar wrapper */}
+        <div ref={modalRef}
+        className="relative z-10 flex h-[82vh] w-full max-w-[1220px] mx-auto my-auto shadow-2xl">
+          
+          {/* ================= MODAL (Left) ================= */}
+          <div className="w-[900px] h-full rounded-l-2xl overflow-hidden bg-white relative">
+            <JobDetailModal
+              jobId={selectedJob._id}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              parentRef={modalRef}
+              // ✅ Pass the navigation cleanup helper
+              onNavigateAway={handleForceCloseForNavigation}
+            />
+          </div>
+
+          {/* ================= SIDEBAR (Right) ================= */}
+          <div className="w-[320px] h-full border-l rounded-r-2xl overflow-hidden bg-white relative flex flex-col">
+            {/* Sidebar header */}
+            <div className="h-[88px] flex items-center border-b px-6 bg-white rounded-tr-2xl">
+              <div className="flex items-center justify-between w-full">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">Other Opportunities</h2>
+                  <p className="text-sm text-gray-600">Browse more jobs</p>
+                </div>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Scroll Area */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50">
+              <JobsListingPage
+                compact={true}
+                onJobSelect={handleJobSelect}
+                selectedJobId={selectedJob?._id}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ======================================================
+      NORMAL VIEW — LIST ONLY
+  ====================================================== */
+  return (
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      <div className="h-full overflow-y-auto p-4 md:p-2">
+        <JobsListingPage 
+          onJobSelect={handleJobSelect}
+        />
+      </div>
+
+      {/* Modal for normal view (fullscreen backdrop) */}
+      {isModalOpen && selectedJob && !isZoomedView && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCloseModal} />
+          <JobDetailModal
+            jobId={selectedJob._id}
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            parentRef={modalRef}
+            onNavigateAway={handleForceCloseForNavigation}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default OnCampusLayout;
