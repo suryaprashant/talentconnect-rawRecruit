@@ -31,7 +31,7 @@ router.delete(
 router.patch(
     '/referral/:jobId',
     secureRoute,
-    deleteAccountLimiter,
+    
     deleteReferralJob
 );
 
