@@ -4,9 +4,9 @@ const axiosClient = createAxiosClient();
 export default axiosClient;
 export const getCompanyImageUrl = (companyId) => {
   // Make sure this matches your backend route exactly
-  
+
   return axiosClient.get(`/api/companyDashboard/getInformation/${companyId}`)
-  .then((response) => response)
+    .then((response) => response)
     .catch((error) => error);
 };
 // college
@@ -86,9 +86,16 @@ export function postInternship(payload) {
 // }
 // In Company_AxiosInstance.js
 export const getPostedJobs = (jobType, status, active) => {
-    const params = { jobType, status };
-    if (active !== undefined) params.active = active;
-    return axiosClient.get('/company/jobmanagement', { params });
+  const params = { jobType, status };
+  if (active !== undefined) params.active = active;
+  return axiosClient.get('/company/jobmanagement', { params });
+};
+
+export const reactivateJobById = (jobId, startDate, endDate) => {
+  return axiosClient.patch(`/company/jobmanagement/reactivate/${jobId}`, {
+    startDate,
+    endDate,
+  });
 };
 
 export function getEmployerJobs(jobType) {
@@ -683,17 +690,17 @@ export function getShortlistedCandidates() {
         success: true,
         data: []
       };
-      
+
       if (oncampusRes.data?.success && Array.isArray(oncampusRes.data.data)) {
-        data.data.push(...oncampusRes.data.data.map(item => ({...item, category: 'On-campus'})));
+        data.data.push(...oncampusRes.data.data.map(item => ({ ...item, category: 'On-campus' })));
       }
       if (poolcampusRes.data?.success && Array.isArray(poolcampusRes.data.data)) {
-        data.data.push(...poolcampusRes.data.data.map(item => ({...item, category: 'Pool-campus'})));
+        data.data.push(...poolcampusRes.data.data.map(item => ({ ...item, category: 'Pool-campus' })));
       }
       if (offcampusRes.data?.success && Array.isArray(offcampusRes.data.data)) {
-        data.data.push(...offcampusRes.data.data.map(item => ({...item, category: 'Off-campus'})));
+        data.data.push(...offcampusRes.data.data.map(item => ({ ...item, category: 'Off-campus' })));
       }
-      
+
       return { data };
     })
     .catch((error) => {
@@ -715,17 +722,17 @@ export function getAcceptedCandidates() {
         success: true,
         data: []
       };
-      
+
       if (oncampusRes.data?.success && Array.isArray(oncampusRes.data.data)) {
-        data.data.push(...oncampusRes.data.data.map(item => ({...item, category: 'On-campus'})));
+        data.data.push(...oncampusRes.data.data.map(item => ({ ...item, category: 'On-campus' })));
       }
       if (poolcampusRes.data?.success && Array.isArray(poolcampusRes.data.data)) {
-        data.data.push(...poolcampusRes.data.data.map(item => ({...item, category: 'Pool-campus'})));
+        data.data.push(...poolcampusRes.data.data.map(item => ({ ...item, category: 'Pool-campus' })));
       }
       if (offcampusRes.data?.success && Array.isArray(offcampusRes.data.data)) {
-        data.data.push(...offcampusRes.data.data.map(item => ({...item, category: 'Off-campus'})));
+        data.data.push(...offcampusRes.data.data.map(item => ({ ...item, category: 'Off-campus' })));
       }
-      
+
       return { data };
     })
     .catch((error) => {

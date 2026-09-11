@@ -98,7 +98,14 @@ export function getCollegePostedJobs(jobType, key, active) {
     .then(response => response)
     .catch(error => error);
 }
-export function getApplicationByJobOfManagement(jobId, jobType, targetStatus,isVisited) {
+
+export function reactivateCollegeJob(jobId, startDate, endDate) {
+  return axiosClient.patch(`/company/jobmanagement/reactivate/${jobId}`, { startDate, endDate })
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getApplicationByJobOfManagement(jobId, jobType, targetStatus, isVisited) {
   return axiosClient.get(`application/manage/college`, {
     params: {
       jobId: jobId,
@@ -129,7 +136,7 @@ export function getMyApplicationStatus(jobType) {
 //     .catch(error => error);
 // }
 
-export function fetchAllCollegesName (){
+export function fetchAllCollegesName() {
   return axiosClient.get("/api/colleges/all");
 }
 
@@ -137,7 +144,7 @@ export function fetchAllCollegesName (){
 
 // ADD the 'export' keyword here
 
-export function registerNewCollege (name){
+export function registerNewCollege(name) {
   return axiosClient.post("/api/colleges/register", { name });
 }
 //export const registerNewCollege = (name) => API.post("/register", { name });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight, Building2, MapPin, Calendar, Users, FileText, AlertCircle, RotateCcw, Archive } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { getPostedJobs, reactivateJobById } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const JOB_TYPES = [
@@ -18,6 +18,9 @@ export default function InactiveJobManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('On-campus');
+  const [reactivatingJobId, setReactivatingJobId] = useState(null);
+  const [reactivateJob, setReactivateJob] = useState(null);
+  const [reactivateForm, setReactivateForm] = useState({ startDate: '', endDate: '' });
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -70,19 +73,19 @@ export default function InactiveJobManagement() {
 
   const filteredJobs = Array.isArray(jobs)
     ? jobs.filter(job => {
-        const searchLower = searchQuery.toLowerCase();
-        const locationsMatch = Array.isArray(job.location)
-          ? job.location.some(loc => loc?.toLowerCase().includes(searchLower))
-          : false;
-        return (
-          job.lookingFor?.toLowerCase().includes(searchLower) ||
-          locationsMatch ||
-          job._id?.toLowerCase().includes(searchLower) ||
-          (Array.isArray(job.jobRoles)
-            ? job.jobRoles.some(r => r?.toLowerCase().includes(searchLower))
-            : job.jobRoles?.toLowerCase().includes(searchLower))
-        );
-      })
+      const searchLower = searchQuery.toLowerCase();
+      const locationsMatch = Array.isArray(job.location)
+        ? job.location.some(loc => loc?.toLowerCase().includes(searchLower))
+        : false;
+      return (
+        job.lookingFor?.toLowerCase().includes(searchLower) ||
+        locationsMatch ||
+        job._id?.toLowerCase().includes(searchLower) ||
+        (Array.isArray(job.jobRoles)
+          ? job.jobRoles.some(r => r?.toLowerCase().includes(searchLower))
+          : job.jobRoles?.toLowerCase().includes(searchLower))
+      );
+    })
     : [];
 
   const totalItems = filteredJobs.length;
@@ -96,6 +99,69 @@ export default function InactiveJobManagement() {
       return new Date(date).toUTCString().slice(0, 16);
     } catch {
       return 'N/A';
+    }
+  };
+
+  const getDateInputValue = (offsetDays = 0) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + offsetDays);
+    return date.toISOString().split('T')[0];
+  };
+
+  const openReactivateModal = (job) => {
+    setReactivateJob(job);
+    setReactivateForm({
+      startDate: getDateInputValue(0),
+      endDate: getDateInputValue(30),
+    });
+  };
+
+  const closeReactivateModal = () => {
+    setReactivateJob(null);
+    setReactivateForm({ startDate: '', endDate: '' });
+  };
+
+  const handleReactivateJob = async () => {
+    if (!reactivateJob?._id) return;
+
+    const { startDate, endDate } = reactivateForm;
+    if (!startDate || !endDate) {
+      toast.error('Please select both the start and end date.');
+      return;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      toast.error('Please enter valid dates.');
+      return;
+    }
+
+    if (end <= start) {
+      toast.error('End date must be after the start date.');
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (start < today) {
+      toast.error('Start date cannot be in the past.');
+      return;
+    }
+
+    try {
+      setReactivatingJobId(reactivateJob._id);
+      await reactivateJobById(reactivateJob._id, start.toISOString(), end.toISOString());
+      toast.success('Job reactivated successfully.');
+      closeReactivateModal();
+      await fetchJobs(activeTab);
+    } catch (err) {
+      console.error('Error reactivating job:', err);
+      toast.error(err.response?.data?.msg || err.response?.data?.message || 'Failed to reactivate job.');
+    } finally {
+      setReactivatingJobId(null);
     }
   };
 
@@ -123,11 +189,10 @@ export default function InactiveJobManagement() {
               <button
                 key={value}
                 onClick={() => handleTabChange(value)}
-                className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${
-                  activeTab === value
+                className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${activeTab === value
                     ? 'bg-[#143694] text-white shadow-sm'
                     : 'text-gray-500 hover:text-[#143694]'
-                }`}
+                  }`}
               >
                 {label}
               </button>
@@ -150,7 +215,7 @@ export default function InactiveJobManagement() {
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
-           
+
 
             {/* Search */}
             <div className="relative w-full md:w-72">
@@ -190,9 +255,9 @@ export default function InactiveJobManagement() {
               <div className="col-span-3">Role / Offering</div>
               <div className="col-span-2">Locations</div>
               <div className="col-span-2">End Date</div>
-              <div className="col-span-2 text-center">Views</div>
-              <div className="col-span-2 text-center">Applications</div>
-              <div className="col-span-1 text-center">Status</div>
+              <div className="col-span-1 text-center">Views</div>
+              <div className="col-span-1 text-center">Apps</div>
+              <div className="col-span-3 text-center">Status</div>
             </div>
           </div>
 
@@ -248,7 +313,6 @@ export default function InactiveJobManagement() {
                       <div className="flex items-center gap-2">
                         <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                         <span className="text-gray-700 text-sm capitalize truncate">
-                        {console.log(job)}
                           {displayLocations(job.location, job.workLocation)}
                         </span>
                       </div>
@@ -265,24 +329,34 @@ export default function InactiveJobManagement() {
                     </div>
 
                     {/* Views */}
-                    <div className="col-span-2 text-center">
+                    <div className="col-span-1 text-center">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                         {job?.views || 0}
                       </span>
                     </div>
 
                     {/* Applications */}
-                    <div className="col-span-2 text-center">
+                    <div className="col-span-1 text-center">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium">
                         {job?.applicationCount || 0}
                       </span>
                     </div>
 
                     {/* Status Badge */}
-                    <div className="col-span-1 text-center">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-500 border border-red-100">
-                        Inactive
-                      </span>
+                    <div className="col-span-3 text-center">
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-500 border border-red-100">
+                          Inactive
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => openReactivateModal(job)}
+                          disabled={reactivatingJobId === job._id}
+                          className="inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {reactivatingJobId === job._id ? 'Reactivating...' : 'Reactivate'}
+                        </button>
+                      </div>
                     </div>
 
                   </div>
@@ -308,11 +382,10 @@ export default function InactiveJobManagement() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
-                      currentPage === page
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${currentPage === page
                         ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-lg shadow-[#143694]/30'
                         : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>
@@ -332,6 +405,63 @@ export default function InactiveJobManagement() {
 
         </div>
       </div>
+
+      {reactivateJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-[#143694]">Reactivate job</h3>
+              <button
+                type="button"
+                onClick={closeReactivateModal}
+                className="text-gray-500 hover:text-gray-700 text-xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Start date</label>
+                <input
+                  type="date"
+                  value={reactivateForm.startDate}
+                  onChange={(e) => setReactivateForm((prev) => ({ ...prev, startDate: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 focus:border-[#143694] focus:outline-none focus:ring-2 focus:ring-[#143694]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">End date</label>
+                <input
+                  type="date"
+                  value={reactivateForm.endDate}
+                  onChange={(e) => setReactivateForm((prev) => ({ ...prev, endDate: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 focus:border-[#143694] focus:outline-none focus:ring-2 focus:ring-[#143694]/20"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeReactivateModal}
+                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleReactivateJob}
+                disabled={reactivatingJobId === reactivateJob?._id}
+                className="rounded-xl bg-[#143694] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f2e72] disabled:opacity-60"
+              >
+                {reactivatingJobId === reactivateJob?._id ? 'Reactivating...' : 'Confirm reactivate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
