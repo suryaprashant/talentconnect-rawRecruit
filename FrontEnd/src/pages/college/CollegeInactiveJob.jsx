@@ -4,7 +4,8 @@ import {
     Search, Eye, ChevronLeft, ChevronRight,
     Calendar, MapPin, AlertCircle, Archive, RotateCcw
 } from 'lucide-react';
-import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
+import { getCollegePostedJobs, reactivateCollegeJob } from '@/lib/College_AxiosIntance';
+import toast from 'react-hot-toast';
 
 const JOB_TYPES = [
     { label: 'On-Campus', jobType: 'On-campus', key: 'campus-placement' },
@@ -20,6 +21,9 @@ function CollegeInactiveJobs() {
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [reactivatingJobId, setReactivatingJobId] = useState(null);
+    const [reactivateJob, setReactivateJob] = useState(null);
+    const [reactivateForm, setReactivateForm] = useState({ startDate: '', endDate: '' });
 
     const itemsPerPage = 5;
 
@@ -76,6 +80,70 @@ function CollegeInactiveJobs() {
         }
     };
 
+    const getDateInputValue = (offsetDays = 0) => {
+        const date = new Date();
+        date.setHours(0, 0, 0, 0);
+        date.setDate(date.getDate() + offsetDays);
+        return date.toISOString().split('T')[0];
+    };
+
+    const openReactivateModal = (job) => {
+        setReactivateJob(job);
+        setReactivateForm({
+            startDate: getDateInputValue(0),
+            endDate: getDateInputValue(30),
+        });
+    };
+
+    const closeReactivateModal = () => {
+        setReactivateJob(null);
+        setReactivateForm({ startDate: '', endDate: '' });
+    };
+
+    const handleReactivateJob = async () => {
+        if (!reactivateJob?._id) return;
+
+        const { startDate, endDate } = reactivateForm;
+        if (!startDate || !endDate) {
+            toast.error('Please select both the start and end date.');
+            return;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+            toast.error('Please enter valid dates.');
+            return;
+        }
+
+        if (end <= start) {
+            toast.error('End date must be after the start date.');
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (start < today) {
+            toast.error('Start date cannot be in the past.');
+            return;
+        }
+
+        try {
+            setReactivatingJobId(reactivateJob._id);
+            const response = await reactivateCollegeJob(reactivateJob._id, start.toISOString(), end.toISOString());
+            const message = response?.data?.msg || response?.msg || 'Job reactivated successfully.';
+            toast.success(message);
+            closeReactivateModal();
+            await fetchJobs(activeTab);
+        } catch (err) {
+            console.error('Error reactivating college job:', err);
+            toast.error(err?.response?.data?.msg || err?.response?.data?.message || 'Failed to reactivate job.');
+        } finally {
+            setReactivatingJobId(null);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
 
@@ -107,11 +175,10 @@ function CollegeInactiveJobs() {
                             <button
                                 key={tab.jobType}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${
-                                    activeTab.jobType === tab.jobType
+                                className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${activeTab.jobType === tab.jobType
                                         ? 'bg-[#143694] text-white shadow-sm'
                                         : 'text-gray-500 hover:text-[#143694]'
-                                }`}
+                                    }`}
                             >
                                 {tab.label}
                             </button>
@@ -134,7 +201,7 @@ function CollegeInactiveJobs() {
                 {/* Header Card */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-6 mb-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                      
+
 
                         {/* Search */}
                         <div className="relative w-full md:w-72">
@@ -167,15 +234,15 @@ function CollegeInactiveJobs() {
 
                 {/* Table */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
-{console.log(jobs)}
+                    {console.log(jobs)}
                     {/* Table Header */}
                     <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
                             <div className="col-span-4">Degree / Location</div>
                             <div className="col-span-3">End Date</div>
-                            <div className="col-span-2 text-center">Views</div>
-                            <div className="col-span-2 text-center">Applications</div>
-                            <div className="col-span-1 text-center">Status</div>
+                            <div className="col-span-1 text-center">Views</div>
+                            <div className="col-span-1 text-center">Apps</div>
+                            <div className="col-span-3 text-center">Status</div>
                         </div>
                     </div>
 
@@ -233,30 +300,40 @@ function CollegeInactiveJobs() {
                                                 <div className="flex items-center gap-2">
                                                     <Calendar className="h-3 w-3 text-red-400" />
                                                     <span className="text-red-400 text-sm font-medium">
-                                                        {formatDate(job.endDate)}
+                                                        {formatDate(job?.proposedSchedule?.endDate || job.endDate)}
                                                     </span>
                                                 </div>
                                             </div>
 
                                             {/* Views */}
-                                            <div className="col-span-2 text-center">
+                                            <div className="col-span-1 text-center">
                                                 <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-[#143694] rounded-full text-sm font-medium">
                                                     {job?.views ?? 0}
                                                 </span>
                                             </div>
 
                                             {/* Applications */}
-                                            <div className="col-span-2 text-center">
+                                            <div className="col-span-1 text-center">
                                                 <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium">
                                                     {job?.applicationCount || 0}
                                                 </span>
                                             </div>
 
                                             {/* Status */}
-                                            <div className="col-span-1 text-center">
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-500 border border-red-100">
-                                                    Inactive
-                                                </span>
+                                            <div className="col-span-3 text-center">
+                                                <div className="flex items-center justify-center gap-2 flex-wrap">
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-500 border border-red-100">
+                                                        Inactive
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openReactivateModal(job)}
+                                                        disabled={reactivatingJobId === jobId}
+                                                        className="inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                    >
+                                                        {reactivatingJobId === jobId ? 'Reactivating...' : 'Reactivate'}
+                                                    </button>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -283,11 +360,10 @@ function CollegeInactiveJobs() {
                                     <button
                                         key={page}
                                         onClick={() => setCurrentPage(page)}
-                                        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 font-medium ${
-                                            currentPage === page
+                                        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 font-medium ${currentPage === page
                                                 ? 'bg-gradient-to-r from-[#143694] to-[#1e4ed8] text-white shadow-md shadow-[#143694]/30'
                                                 : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                                        }`}
+                                            }`}
                                     >
                                         {page}
                                     </button>
@@ -306,6 +382,63 @@ function CollegeInactiveJobs() {
                     )}
                 </div>
             </div>
+
+            {reactivateJob && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-xl font-semibold text-[#143694]">Reactivate job</h3>
+                            <button
+                                type="button"
+                                onClick={closeReactivateModal}
+                                className="text-gray-500 hover:text-gray-700 text-xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Start date</label>
+                                <input
+                                    type="date"
+                                    value={reactivateForm.startDate}
+                                    onChange={(e) => setReactivateForm((prev) => ({ ...prev, startDate: e.target.value }))}
+                                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 focus:border-[#143694] focus:outline-none focus:ring-2 focus:ring-[#143694]/20"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">End date</label>
+                                <input
+                                    type="date"
+                                    value={reactivateForm.endDate}
+                                    onChange={(e) => setReactivateForm((prev) => ({ ...prev, endDate: e.target.value }))}
+                                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 focus:border-[#143694] focus:outline-none focus:ring-2 focus:ring-[#143694]/20"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={closeReactivateModal}
+                                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleReactivateJob}
+                                disabled={reactivatingJobId === reactivateJob?._id}
+                                className="rounded-xl bg-[#143694] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f2e72] disabled:opacity-60"
+                            >
+                                {reactivatingJobId === reactivateJob?._id ? 'Reactivating...' : 'Confirm reactivate'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
