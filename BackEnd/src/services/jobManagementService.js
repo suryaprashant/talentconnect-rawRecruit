@@ -89,8 +89,13 @@ export async function getOffCampusJobsService(companyId) {
 //         throw new Error("Failed to fetch jobs with applied application counts");
 //     }
 // };
-
-export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited, active) => {
+export const getJobPostedByCollegeService = async (
+    collegeId,
+    jobType,
+    key,
+    isVisited,
+    active
+) => {
     const targetMap = {
         "campus-placement": "Applied",
         "poolCampus-placement": "Applied",
@@ -102,28 +107,42 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
     const target = targetMap[key] || "";
 
     try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         let response = await JobPostingTable.aggregate([
             {
                 $match: {
                     collegePosted: new mongoose.Types.ObjectId(collegeId),
                     jobType: jobType,
-                    // ✅ active=false → inactive jobs, everything else → active jobs
+
                     ...(active === 'false'
-                        ? { inactive: true }
-                        : { inactive: { $ne: true } })
+                        ? {
+                            endDate: { $lt: today }
+                        }
+                        : {
+                            inactive: { $ne: true }
+                        })
                 }
             },
-            // --- NEW: Lookup College Details ---
+
+            // Lookup College Details
             {
                 $lookup: {
-                    from: "collegeonboardings", // Ensure this matches your MongoDB collection name
+                    from: "collegeonboardings",
                     localField: "collegePosted",
                     foreignField: "_id",
                     as: "collegeInfo"
                 }
             },
-            { $unwind: { path: "$collegeInfo", preserveNullAndEmptyArrays: true } },
-            // ----------------------------------
+
+            {
+                $unwind: {
+                    path: "$collegeInfo",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+
             {
                 $lookup: {
                     from: "applications",
@@ -132,17 +151,23 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
                     as: "jobApplications"
                 }
             },
+
             {
                 $addFields: {
-                    collegeName: "$collegeInfo.collegeUniversityDetails.collegeName",
-                    // Extracting the specific address fields you requested
-                    // FIXED
+                    collegeName:
+                        "$collegeInfo.collegeUniversityDetails.collegeName",
+
                     collegeAddress: {
-                        location: "$collegeInfo.collegeUniversityDetails.collegeLocation",
-                        city: "$collegeInfo.collegeUniversityDetails.city",
-                        state: "$collegeInfo.collegeUniversityDetails.state",
-                        pincode: "$collegeInfo.collegeUniversityDetails.pincode"
+                        location:
+                            "$collegeInfo.collegeUniversityDetails.collegeLocation",
+                        city:
+                            "$collegeInfo.collegeUniversityDetails.city",
+                        state:
+                            "$collegeInfo.collegeUniversityDetails.state",
+                        pincode:
+                            "$collegeInfo.collegeUniversityDetails.pincode"
                     },
+
                     applicationCount: {
                         $size: {
                             $filter: {
@@ -150,8 +175,19 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
                                 as: "application",
                                 cond: {
                                     $and: [
-                                        { $eq: ["$$application.currentStatus", target] },
-                                        { $eq: ["$$application.isVisited", isVisited === 'true' || isVisited === true] },
+                                        {
+                                            $eq: [
+                                                "$$application.currentStatus",
+                                                target
+                                            ]
+                                        },
+                                        {
+                                            $eq: [
+                                                "$$application.isVisited",
+                                                isVisited === 'true' ||
+                                                    isVisited === true
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -159,6 +195,7 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
                     }
                 }
             },
+
             {
                 $project: {
                     jobApplications: 0,
@@ -167,12 +204,99 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVi
             }
         ]);
 
-        return { success: true, response };
+        return {
+            success: true,
+            response
+        };
     } catch (error) {
         console.error("Aggregation Error:", error);
         throw new Error("Failed to fetch jobs with college address");
     }
 };
+
+// export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited, active) => {
+//     const targetMap = {
+//         "campus-placement": "Applied",
+//         "poolCampus-placement": "Applied",
+//         "on-campus-opportunities": "Shortlisted",
+//         "pool-campus-opportunities": "Shortlisted",
+//         "poolcampus": "Shortlisted"
+//     };
+
+//     const target = targetMap[key] || "";
+
+//     try {
+//         let response = await JobPostingTable.aggregate([
+//             {
+//                 $match: {
+//                     collegePosted: new mongoose.Types.ObjectId(collegeId),
+//                     jobType: jobType,
+//                     // ✅ active=false → inactive jobs, everything else → active jobs
+//                     ...(active === 'false'
+//                         ? { inactive: true }
+//                         : { inactive: { $ne: true } })
+//                 }
+//             },
+//             // --- NEW: Lookup College Details ---
+//             {
+//                 $lookup: {
+//                     from: "collegeonboardings", // Ensure this matches your MongoDB collection name
+//                     localField: "collegePosted",
+//                     foreignField: "_id",
+//                     as: "collegeInfo"
+//                 }
+//             },
+//             { $unwind: { path: "$collegeInfo", preserveNullAndEmptyArrays: true } },
+//             // ----------------------------------
+//             {
+//                 $lookup: {
+//                     from: "applications",
+//                     localField: "_id",
+//                     foreignField: "job",
+//                     as: "jobApplications"
+//                 }
+//             },
+//             {
+//                 $addFields: {
+//                     collegeName: "$collegeInfo.collegeUniversityDetails.collegeName",
+//                     // Extracting the specific address fields you requested
+//                     // FIXED
+//                     collegeAddress: {
+//                         location: "$collegeInfo.collegeUniversityDetails.collegeLocation",
+//                         city: "$collegeInfo.collegeUniversityDetails.city",
+//                         state: "$collegeInfo.collegeUniversityDetails.state",
+//                         pincode: "$collegeInfo.collegeUniversityDetails.pincode"
+//                     },
+//                     applicationCount: {
+//                         $size: {
+//                             $filter: {
+//                                 input: "$jobApplications",
+//                                 as: "application",
+//                                 cond: {
+//                                     $and: [
+//                                         { $eq: ["$$application.currentStatus", target] },
+//                                         { $eq: ["$$application.isVisited", isVisited === 'true' || isVisited === true] },
+//                                     ]
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     jobApplications: 0,
+//                     collegeInfo: 0
+//                 }
+//             }
+//         ]);
+
+//         return { success: true, response };
+//     } catch (error) {
+//         console.error("Aggregation Error:", error);
+//         throw new Error("Failed to fetch jobs with college address");
+//     }
+// };
 
 export const getJobPostedWithCountsService = async (
     Id,

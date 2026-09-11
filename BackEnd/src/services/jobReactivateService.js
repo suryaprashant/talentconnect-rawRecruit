@@ -1,4 +1,4 @@
-import {JobPostingTable} from "../models/jobPostingsModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
 
 /**
  * Reactivates a job by updating its dates and marking it active.
@@ -20,10 +20,10 @@ export const reactivateJobService = async (
     // Map role → the field used in JobPostingTable to store owner reference
     const ownerFieldMap = {
         professional: "candidatePosted",
-        student:      "candidatePosted",
-        fresher:      "candidatePosted",
-        company:      "companyPosted",    // adjust to your actual field name
-        college:      "collegePosted",    // adjust to your actual field name
+        student: "candidatePosted",
+        fresher: "candidatePosted",
+        company: "companyPosted",    // adjust to your actual field name
+        college: "collegePosted",    // adjust to your actual field name
     };
 
     const ownerField = ownerFieldMap[profileType];
@@ -35,7 +35,7 @@ export const reactivateJobService = async (
 
     // Validate dates
     const start = new Date(startDate);
-    const end   = new Date(endDate);
+    const end = new Date(endDate);
 
     if (isNaN(start) || isNaN(end)) {
         const err = new Error("Invalid date format");
@@ -72,7 +72,7 @@ export const reactivateJobService = async (
         throw err;
     }
 
-    if (!job.inactive) {
+    if (!job.inactive && !['company', 'college'].includes(profileType)) {
         const err = new Error("Job is already active");
         err.status = 400;
         throw err;
@@ -81,9 +81,9 @@ export const reactivateJobService = async (
     const updatedJob = await JobPostingTable.findByIdAndUpdate(
         jobId,
         {
-            inactive:  false,
+            inactive: false,
             startDate: start,
-            endDate:   end,
+            endDate: end,
         },
         { new: true }
     );
