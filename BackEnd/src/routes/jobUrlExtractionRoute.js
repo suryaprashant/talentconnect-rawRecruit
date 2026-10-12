@@ -4,5 +4,5 @@ import { createExtraction, getExtractionStatus } from "../controllers/jobUrlExtr
 
 const router = express.Router();
 router.post("/extract-from-url",secureRoute,  createExtraction);
-router.get("/:jobId/status",secureRoute,  getExtractionStatus);
+router.get("/:jobId/status",secureRoute, getExtractionStatus);
 export default router;
