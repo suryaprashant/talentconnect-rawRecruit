@@ -37,21 +37,35 @@ export const JOB_PLATFORMS = Object.freeze({
 });
 
 // Platforms whose URLs we intentionally do NOT scrape/extract from.
-// Indeed is aggressively bot-protected (Cloudflare/interstitial pages),
-// which made every Indeed URL fall through the slow Playwright path only
-// to return empty results most of the time. We now reject these up front
-// - before any DNS lookup, HTTP request, or browser launch - so the
-// response is immediate instead of paying a multi-second timeout for a
-// result that was going to fail anyway.
+//
+// - Indeed is aggressively bot-protected (Cloudflare/interstitial pages),
+//   which made every Indeed URL fall through the slow Playwright path only
+//   to return empty results most of the time.
+// - Naukri is now blocked for the same reason: it started serving
+//   login/"authenticating" interstitials and CAPTCHA walls to both Axios
+//   and Playwright, so Naukri scrapes were failing (or worse, silently
+//   extracting the interstitial page as if it were the job page).
+//
+// We reject these up front - before any DNS lookup, HTTP request, or
+// browser launch - so the response is immediate instead of paying a
+// multi-second timeout for a result that was going to fail anyway.
+//
+// IMPORTANT: this set only lists platforms we recognize AND explicitly
+// refuse. It must never be used interchangeably with "platform is
+// UNKNOWN" - an unknown platform normally just means "this is an official
+// company career page, not one of the job boards we have special-cased",
+// and those URLs are exactly the ones we DO want to scrape generically.
+// See the isUnsupportedPlatform() call sites below for where that
+// distinction matters.
 export const UNSUPPORTED_JOB_PLATFORMS = Object.freeze(
-  new Set([JOB_PLATFORMS.INDEED]),
+  new Set([JOB_PLATFORMS.INDEED, JOB_PLATFORMS.NAUKRI]),
 );
 
 export const isUnsupportedPlatform = (platform) =>
   UNSUPPORTED_JOB_PLATFORMS.has(platform);
 
 const UNSUPPORTED_PLATFORM_MESSAGE =
-  "Please use a job URL from LinkedIn, Naukri, Unstop, Wellfound, Greenhouse, Lever, Workday, or Ashby instead.";
+  "This job board isn't supported. Please use a job URL from LinkedIn, Unstop, Wellfound, Greenhouse, Lever, Workday, or Ashby, or paste the direct job link from the company's own careers page.";
 
 const unsupportedPlatformResult = (platform) => ({
   jobTitle: "",
@@ -1909,10 +1923,14 @@ const fetchHtmlSafely = async (url) => {
   for (let i = 0; i <= MAX_REDIRECTS; i += 1) {
     const redirectPlatform = detectJobPlatform(currentUrl);
 
-    if (
-      redirectPlatform === JOB_PLATFORMS.UNKNOWN ||
-      isUnsupportedPlatform(redirectPlatform)
-    ) {
+    // Only block redirects that land on a platform we explicitly refuse
+    // (Indeed, Naukri). An UNKNOWN platform here just means "some other
+    // website" (typically the company's own domain, or a redirect between
+    // pages on that domain) and must be allowed through - otherwise no
+    // official company career page could ever be fetched, since the very
+    // first iteration (i = 0, currentUrl = the original input URL) would
+    // always be UNKNOWN for those URLs and immediately abort.
+    if (isUnsupportedPlatform(redirectPlatform)) {
       throw new Error("Redirected to an unsupported platform");
     }
 
@@ -2092,10 +2110,14 @@ const scrapeWithPlaywrightOnce = async (url, platform) => {
       if (request.isNavigationRequest()) {
         const requestPlatform = detectJobPlatform(request.url());
 
-        if (
-          requestPlatform === JOB_PLATFORMS.UNKNOWN ||
-          isUnsupportedPlatform(requestPlatform)
-        ) {
+        // Same rule as fetchHtmlSafely: only abort navigations that land
+        // on an explicitly unsupported platform (Indeed, Naukri). An
+        // UNKNOWN platform is just "some other website" - almost always
+        // the company's own domain - and must be allowed to load,
+        // otherwise Playwright could never render a single official
+        // company career page (every first navigation is UNKNOWN for
+        // those URLs).
+        if (isUnsupportedPlatform(requestPlatform)) {
           await route.abort();
           return;
         }
@@ -2219,10 +2241,13 @@ const scrapeJobInfoFromUrl = async (url, platform) => {
    *
    * This is particularly important because Axios commonly gets 403
    * on these platforms when hit with a plain HTTP request.
+   *
+   * Naukri used to be in this list too, but Naukri is now an explicitly
+   * unsupported platform (see UNSUPPORTED_JOB_PLATFORMS) and is rejected
+   * long before scrapeJobInfoFromUrl is ever called, so it has been
+   * removed here.
    */
-  const browserFirst = [JOB_PLATFORMS.LINKEDIN, JOB_PLATFORMS.NAUKRI].includes(
-    platform,
-  );
+  const browserFirst = [JOB_PLATFORMS.LINKEDIN].includes(platform);
 
   if (browserFirst) {
     debugLog("BROWSER_FIRST", {
@@ -2394,9 +2419,16 @@ const resolveJobInfoUncached = async (careerPageUrl) => {
     platform,
   });
 
-  // Unsupported and unknown platforms are rejected immediately - no DNS
-  // lookup, HTTP request, Cheerio processing, or browser launch.
-  if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+  // Only reject platforms we explicitly refuse (Indeed, Naukri) - no DNS
+  // lookup, HTTP request, Cheerio processing, or browser launch for those.
+  //
+  // Platform === UNKNOWN is intentionally NOT rejected here: an unknown
+  // platform means the URL is not one of our special-cased job boards,
+  // which is exactly the shape of an official company career page
+  // (e.g. https://company.com/careers/software-engineer). Those must be
+  // allowed to fall through to the generic scraping/extraction pipeline
+  // below instead of being told "platform not supported".
+  if (isUnsupportedPlatform(platform)) {
     debugLog("PLATFORM_NOT_SUPPORTED", {
       platform,
       normalizedUrl,
@@ -2448,13 +2480,10 @@ const resolveJobInfoUncached = async (careerPageUrl) => {
   };
 
   /*
-   * Always try the page for protected/ambiguous platforms.
-   *
-   * This prevents Naukri URL guesses such as:
-   *
-   * business-analyst-risk-domain-infosysltd
-   *
-   * from automatically becoming the final answer.
+   * Always try the page for protected/ambiguous platforms, and for
+   * official company career pages (platform === UNKNOWN), since a URL
+   * slug guess is unreliable and the real page usually has JSON-LD or
+   * structured markup with the actual company name.
    */
   const page = await scrapeJobInfoFromUrl(normalizedUrl, platform);
 
@@ -2569,12 +2598,14 @@ export const resolveJobInfoFromCareerUrl = async (careerPageUrl = "") => {
       };
     }
 
-    // Fast-path rejection before even touching the cache/DNS: unsupported
-    // and unknown URLs always resolve the same way, so there is nothing
-    // worth caching or looking up here either.
+    // Fast-path rejection before even touching the cache/DNS: platforms we
+    // explicitly refuse (Indeed, Naukri) always resolve the same way, so
+    // there is nothing worth caching or looking up here either. UNKNOWN
+    // platforms (official company career pages) are NOT rejected here -
+    // they proceed to the normal cache + resolution pipeline below.
     const platform = detectJobPlatform(normalizedUrl);
 
-    if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+    if (isUnsupportedPlatform(platform)) {
       return unsupportedPlatformResult(platform);
     }
 
@@ -2650,14 +2681,19 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
     };
   }
 
-  // Detect the platform as early as possible. Unsupported platforms
-  // (Indeed) are rejected right here - before the homepage check, the
-  // DNS-safety check, and the DB lookup - so an Indeed URL fails fast
-  // with a clear message instead of paying for work whose outcome is
-  // already decided.
+  // Detect the platform as early as possible. Explicitly unsupported
+  // platforms (Indeed, Naukri) are rejected right here - before the
+  // homepage check, the DNS-safety check, and the DB lookup - so those
+  // URLs fail fast with a clear message instead of paying for work whose
+  // outcome is already decided.
+  //
+  // Platform === UNKNOWN is deliberately allowed to continue: it is the
+  // normal case for an official company career page and must go through
+  // the rest of the validation/resolution pipeline below, not be rejected
+  // here.
   const platform = detectJobPlatform(normalizedUrl);
 
-  if (platform === JOB_PLATFORMS.UNKNOWN || isUnsupportedPlatform(platform)) {
+  if (isUnsupportedPlatform(platform)) {
     return {
       valid: false,
       unsupportedPlatform: true,
@@ -2712,6 +2748,10 @@ export const validateCareerPageUrl = async (careerPageUrl = "") => {
     logger.error("Career page lookup failed", error);
   }
 
+  // Company's own domain (platform === UNKNOWN) is fine as long as the URL
+  // itself looks like a specific job posting (contains a career/job
+  // keyword). Known job-board hosts skip this check since they're already
+  // whitelisted by isKnownJobPlatform.
   if (!isKnownJobPlatform(getHost(parsed)) && !hasJobKeywordInUrl(parsed)) {
     return {
       valid: false,

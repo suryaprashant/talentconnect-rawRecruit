@@ -1,44 +1,40 @@
 import express from "express";
-import { alumniPosted , trendingjobs} from "../controllers/fomoController.js";
+import { alumniPosted, trendingjobs } from "../controllers/fomoController.js";
 
 // import { fetchOpportunitiesForCollegeStudent, findRelevantJoblistingOpportunity, findRelevantOpportunityById } from "../controllers/relevantJobsController.js";
 import {
-    // fetchOnCampusOpportunities, 
-    findJobListingOpportunityById, findOffcampusOpportunityById,
-    findReferalOpportunityById,
-    // findOpportunityById
+  // fetchOnCampusOpportunities,
+  findJobListingOpportunityById,
+  findOffcampusOpportunityById,
+  findReferalOpportunityById,
+  // findOpportunityById
 } from "../controllers/jobController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js";
 import verifyUser from "../middlewares/verifyUser.js";
-import {
-    searchLimiter,
-} from "../middlewares/ratelimiter/index.js";
+import { searchLimiter } from "../middlewares/ratelimiter/index.js";
 
 const router = express.Router();
 
 // api '.../jobs'
 
-
-router.get(
-    '/jobDetails/:jobId',
-    searchLimiter,
-    findOffcampusOpportunityById
-);
+router.get("/jobDetails/:jobId", searchLimiter, findOffcampusOpportunityById);
 
 // GET joblisting job details - uses searchLimiter (60 per minute)
 router.get(
-    '/jobDetails/joblisting/:jobId',
-    searchLimiter,
-    findJobListingOpportunityById
+  "/jobDetails/joblisting/:jobId",
+  searchLimiter,
+  findJobListingOpportunityById,
 );
 
 // GET referral job details - uses searchLimiter (60 per minute)
 router.get(
-    '/jobDetails/referral/:jobId',
-    verifyUser,
-    searchLimiter,
-    findReferalOpportunityById
+  "/jobDetails/referral/:jobId",
+  verifyUser,
+  searchLimiter,
+  findReferalOpportunityById,
 );
+
+
 
 // ============================================================
 // Commented out routes for reference
@@ -64,14 +60,5 @@ router.get(
 
 export default router;
 
-router.get(
-    '/alumni-posted',
-    verifyUser,
-    searchLimiter,
-    alumniPosted
-);
-router.get(
-    '/trending',
-    searchLimiter,
-    trendingjobs
-);
+router.get("/alumni-posted", verifyUser, searchLimiter, alumniPosted);
+router.get("/trending", searchLimiter, trendingjobs);
