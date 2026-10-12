@@ -118,15 +118,8 @@ async function validatePublicUrl(raw) {
 }
 
 export async function createExtraction(req, res) {
-  const userId = req.user._id;
+ 
 
-  console.log(userId);
-
-  if (!userId) {
-    return res.status(401).json({
-      message: "Authentication required."
-    });
-  }
 
   let url;
 
@@ -229,13 +222,7 @@ export async function createExtraction(req, res) {
 }
 
 export async function getExtractionStatus(req, res) {
-  const userId = req.user._id;
-
-  if (!userId) {
-    return res.status(401).json({
-      message: "Authentication required."
-    });
-  }
+ 
 
   const jobId = String(req.params.jobId || "");
 

@@ -3,6 +3,6 @@ import secureRoute from "../middlewares/secureRouteMiddleware.js";
 import { createExtraction, getExtractionStatus } from "../controllers/jobUrlExtractionController.js";
 
 const router = express.Router();
-router.post("/extract-from-url",secureRoute,  createExtraction);
-router.get("/:jobId/status",secureRoute,  getExtractionStatus);
+router.post("/extract-from-url",createExtraction);
+router.get("/:jobId/status",getExtractionStatus);
 export default router;
