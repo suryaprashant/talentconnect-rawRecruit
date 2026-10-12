@@ -10,7 +10,7 @@ import { startRankingCron } from "./cron/rankingCron.js";
 import paginate from "./middlewares/paginate.js";
 import { refreshFuseIndex } from "./services/fuseIndexService.js";
 import backupCron from "./cron/backup.cron.js";
-import reqInfoRoutes from './routes/reqInfoRoutes.js';
+import reqInfoRoutes from "./routes/reqInfoRoutes.js";
 startRankingCron();
 // DB & Socket
 import Connection from "../config/Db.js";
@@ -152,12 +152,14 @@ import blogRoutes from "./routes/blogRoutes.js";
 import deleteJobRoute from "./routes/deleteJobRoute.js";
 import companyJobRoutes from "./routes/companyJobRoutes.js";
 import backupRoutes from "./routes/backup.routes.js";
+import jobUrlExtractionRoute from "./routes/jobUrlExtractionRoute.js";
+
 
 
 app.use("/api/auth", authRoutes);
 app.use("/api/colleges", collegeRoutes);
 app.use("/api/blogs", blogRoutes);
-
+app.use("/api/job-extraction",jobUrlExtractionRoute)
 app.use("/api/candidate", CandidateRoute);
 
 //care
@@ -176,13 +178,13 @@ app.use("/api/admin/servicerequest", serviceRequestManagement);
 app.use("/api/ticker", LiveTicker);
 app.use("/api/backup", backupRoutes);
 
-app.use('/api/rawrecruit', reqInfoRoutes);
-
+app.use("/api/rawrecruit", reqInfoRoutes);
 
 app.use("/api/meta", CustomDropDown);
 // admin relatd auth ends
 
 app.use("/api", student_onboardingroutes);
+app.use("/api/jobs", Jobs);
 app.use("/api/hiring-channels", jobPosting);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/student-profile", studentProfileRoutes);
