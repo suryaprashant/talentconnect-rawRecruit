@@ -1,4 +1,5 @@
-// src/workers/index.js
+import dotenv from "dotenv";
+dotenv.config();
 
 console.log("🚀 Starting workers...");
 
@@ -8,7 +9,4 @@ await import("./alumniNetworkWorker.js");
 await import("./welcomeEmailWorker.js");
 await import("./newReqinfoWorker.js");
 await import("./resolveInfoWorker.js");
-await import("./jobExtractionWorker.js");
-await import("./playwrightRenderWorker.js");
-
 console.log("✅ All workers loaded");
